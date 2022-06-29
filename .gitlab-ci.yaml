@@ -2,7 +2,7 @@ image: node:latest
 
 stages:
   - installation
-  - test
+  - coverage
 
 cache:
   paths:
@@ -15,9 +15,9 @@ install_dependencies:
   artifacts:
     paths:
       - node_modules/
-test:
+coverage:
   script:
-    - npm run coverage
+    - npm run coverag
   artifacts:
     reports:
       cobertura: coverage/cobertura-coverage.xml
