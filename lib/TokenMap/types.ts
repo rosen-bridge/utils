@@ -1,21 +1,5 @@
-export type ErgoToken = {
-    tokenID: string,
-    tokenName: string,
-};
-
-export type CardanoToken = {
-    fingerprint: string,
-    policyID: string,
-    assetID: string,
-}
-
-export type Token = {
-    ergo: ErgoToken,
-    cardano: CardanoToken,
-}
-
 export type TokensMap = {
-    tokens: Array<Token>
+    tokens: Array<{ [key: string]: { [key: string]: string } }>
 };
 
 export enum Chain{

@@ -1,4 +1,5 @@
-import { Chain, Token, TokensMap } from "./types";
+import { TokensMap } from "./types";
+import * as _ from "lodash";
 
 export class TokenMap{
     private tokensConfig: TokensMap
@@ -7,79 +8,40 @@ export class TokenMap{
         this.tokensConfig = tokens;
     }
 
-    /**
-     * search in a specific token and specific chain for specific search key
-     * @param token
-     * @param chain
-     * @param searchKey
-     */
-    searchChain = (token: Token, chain: number, searchKey: string) => {
-        let searchResult = "";
-        switch (chain) {
-            case Chain.ERGO: {
-                const resultChain = token.ergo;
-                switch (searchKey) {
-                    case("tokenID"): {
-                        searchResult = resultChain.tokenID;
-                        break;
-                    }
-                    case("tokenName"): {
-                        searchResult = resultChain.tokenName;
-                        break;
-                    }
-                }
-                break;
-            }
-
-            case Chain.CARDANO: {
-                const resultChain = token.cardano;
-                switch (searchKey) {
-                    case("fingerprint"): {
-                        searchResult = resultChain.fingerprint;
-                        break;
-                    }
-                    case("policyID"): {
-                        searchResult = resultChain.policyID;
-                        break;
-                    }
-                    case("assetID"): {
-                        searchResult = resultChain.assetID;
-                        break;
-                    }
-                }
-            }
-        }
-        return (searchResult === "" ? {searchResult: searchResult, result: false} : {
-            searchResult: searchResult,
-            result: true
-        });
-    }
-
-    /**
-     * search the map for specific token key with its value and returns specific token key in corresponding chain
-     * @param searchOn
-     * @param searchFor
-     */
     search = (
-        searchOn: {
-            chain: number,
-            search: {
-                key: string,
-                value: string
-            }
-        },
-        searchFor: {
-            chain: number,
-            value: string
-        }
+        filter: { chain: string, condition: { [key: string]: string } },
+        result: { chain: string, value: Array<string> }
     ) => {
-        for (const token of this.tokensConfig.tokens) {
-            const searchResult = this.searchChain(token, searchOn.chain, searchOn.search.key);
-            if (searchResult.result && searchResult.searchResult === searchOn.search.value) {
-                return this.searchChain(token, searchFor.chain, searchFor.value);
+        const res = this.tokensConfig.tokens.filter((token) => {
+            if (Object.hasOwnProperty.call(token, filter.chain)) {
+                const chain = token[filter.chain];
+                for (const [key, val] of Object.entries(filter.condition)) {
+                    if (Object.hasOwnProperty.call(chain, key)) {
+                        if (chain[key] !== val) {
+                            return false;
+                        }
+                    } else {
+                        return false;
+                    }
+                }
+            } else {
+                return false;
+            }
+            return true;
+        })
+
+        if (res.length > 0) {
+            if (Object.hasOwnProperty.call(res[0], result.chain)) {
+                const chain = res[0][result.chain];
+                for (const key of Object.keys(chain)) {
+                    if (!result.value.includes(key)) {
+                        delete chain[key]
+                    }
+                }
+                return chain;
             }
         }
-        return {searchResult: "", result: false}
+        return {}
     }
 
 }
