@@ -7,6 +7,12 @@ export class TokenMap{
         this.tokensConfig = tokens;
     }
 
+    /**
+     * search in a specific token and specific chain for specific search key
+     * @param token
+     * @param chain
+     * @param searchKey
+     */
     searchChain = (token: Token, chain: number, searchKey: string) => {
         let searchResult = "";
         switch (chain) {
@@ -49,6 +55,11 @@ export class TokenMap{
         });
     }
 
+    /**
+     * search the map for specific token key with its value and returns specific token key in corresponding chain
+     * @param searchOn
+     * @param searchFor
+     */
     search = (
         searchOn: {
             chain: number,
