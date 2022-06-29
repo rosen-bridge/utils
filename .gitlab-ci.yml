@@ -17,7 +17,7 @@ install_dependencies:
       - node_modules/
 test:
   script:
-    - npm run coverag
+    - npm run coverage
   artifacts:
     reports:
       cobertura: coverage/cobertura-coverage.xml
