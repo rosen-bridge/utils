@@ -5,56 +5,50 @@ import { expect } from "chai";
 
 describe("TokenMap", () => {
     describe("search", () => {
-        it("checks should return assets finger print in cardano", () => {
+        it("should return asset with condition on the policyID and assetID", () => {
             const map: TokensMap = firstSample;
             const tokenMap = new TokenMap(map);
             const res = tokenMap.search(
+                "cardano",
                 {
-                    chain: "cardano",
-                    condition: {
-                        policyID: "22222222222222222222222222222222222222222222222222222222",
-                        assetID: "3333333333333333333333333333333333333333333333333333333333333333333333333333"
-                    }
-                }, {
-                    chain: "cardano",
-                    value: ["fingerprint"]
-                })
+                    policyID: "22222222222222222222222222222222222222222222222222222222",
+                    assetID: "3333333333333333333333333333333333333333333333333333333333333333333333333333"
+                }
+            )
             expect(res.length).to.be.eql(1);
-            expect(res[0]).to.be.eql({fingerprint: "asset111111111111111111111111111111111111111"})
+            expect(res[0]).to.be.eql({
+                "ergo": {
+                    "tokenID": "1111111111111111111111111111111111111111111111111111111111111111",
+                    "tokenName": "test token1"
+                },
+                "cardano": {
+                    "fingerprint": "asset111111111111111111111111111111111111111",
+                    "policyID": "22222222222222222222222222222222222222222222222222222222",
+                    "assetID": "3333333333333333333333333333333333333333333333333333333333333333333333333333"
+                }
+            })
         });
 
-        it("returns asset fingerprint in cardano with ergo tokenID", () => {
+        it("returns asset with specific ergo tokenID", () => {
             const map: TokensMap = firstSample;
             const tokenMap = new TokenMap(map);
             const res = tokenMap.search(
+                "ergo",
                 {
-                    chain: "ergo",
-                    condition: {
-                        tokenID: "tokenId",
-                    }
-                }, {
-                    chain: "cardano",
-                    value: ["fingerprint"]
+                    tokenID: "tokenId",
                 })
             expect(res.length).to.be.eql(1);
-            expect(res[0]).to.be.eql({fingerprint: "asset3fingerprint"})
-        });
-
-        it("returns ergo tokenID with cardano asset fingerPrint", () => {
-            const map: TokensMap = firstSample;
-            const tokenMap = new TokenMap(map);
-            const res = tokenMap.search(
-                {
-                    chain: "cardano",
-                    condition: {
-                        fingerprint: "asset122222222222222222222222222222222222222",
-                    }
-                }, {
-                    chain: "ergo",
-                    value: ["tokenID"]
-                })
-            expect(res.length).to.be.eql(1);
-            expect(res[0]).to.be.eql({tokenID: "2222222222222222222222222222222222222222222222222222222222222222"})
+            expect(res[0]).to.be.eql({
+                "ergo": {
+                    "tokenID": "tokenId",
+                    "tokenName": "test token3"
+                },
+                "cardano": {
+                    "fingerprint": "asset3fingerprint",
+                    "policyID": "policyID3",
+                    "assetID": "assetID3"
+                }
+            })
         });
 
     })

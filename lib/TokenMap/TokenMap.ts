@@ -17,44 +17,28 @@ export class TokenMap{
     }
 
     /**
-     * it searches tokens for data specified in `filter` and returns data specified
-     *  in `result` function input
-     * @param filter
-     *  example: {chain: "ergo", condition: {tokenID:"tokenID"}}
-     * @param result
-     *  example: {chain: "cardano", value:["fingerprint"]}
+     * it returns specific token with respect to condition on the specific chain
+     * @param chain
+     *  example: "ergo"
+     * @param condition
+     *  example: {tokenID:"tokenID"}
      */
     search = (
-        filter: { chain: string, condition: { [key: string]: string } },
-        result: { chain: string, value: Array<string> }
+        chain: string,
+        condition: { [key: string]: string },
     ) => {
         return this.tokensConfig.tokens.filter((token) => {
-            if (Object.hasOwnProperty.call(token, filter.chain)) {
-                const chain = token[filter.chain];
-                for (const [key, val] of Object.entries(filter.condition)) {
-                    if (Object.hasOwnProperty.call(chain, key)) {
-                        if (chain[key] !== val) {
-                            return false;
-                        }
-                    } else {
+            if (Object.hasOwnProperty.call(token, chain)) {
+                const resToken = token[chain];
+                for (const [key, val] of Object.entries(condition)) {
+                    if (!Object.hasOwnProperty.call(resToken, key) || resToken[key] !== val) {
                         return false;
                     }
                 }
+                return true;
             } else {
                 return false;
             }
-            return true;
-        }).map((token) => {
-            if (Object.hasOwnProperty.call(token, result.chain)) {
-                const chain = token[result.chain];
-                for (const key of Object.keys(chain)) {
-                    if (!result.value.includes(key)) {
-                        delete chain[key]
-                    }
-                }
-                return chain;
-            }
-            return {}
         });
     }
 
