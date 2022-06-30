@@ -7,6 +7,11 @@ import tokensList from "../tokensList/tokensList.json"
 export class TokenMap{
     private tokensConfig: TokensMap
 
+    /**
+     * it takes input tokens list json and the default value is used for
+     *  production
+     * @param tokens tokens list as json
+     */
     constructor(tokens: TokensMap = tokensList) {
         this.tokensConfig = tokens;
     }
