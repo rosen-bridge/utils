@@ -14,7 +14,10 @@
     "type": "git",
     "url": "git@git.ergopool.io:rosen-bridge/tokens.git"
   },
-  "author": "sahandzoufan79@gmail.com",
+  "files": [
+      "dist"
+  ],
+  "author": "Sahand Zoufan",
   "license": "ISC",
   "devDependencies": {
     "@types/chai": "^4.3.1",
