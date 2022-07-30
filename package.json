@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/tokens",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "this project manage supported tokens",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -15,7 +15,7 @@
     "url": "git@git.ergopool.io:rosen-bridge/tokens.git"
   },
   "files": [
-      "dist"
+    "dist"
   ],
   "author": "Sahand Zoufan",
   "license": "ISC",
