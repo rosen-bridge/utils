@@ -1,5 +1,5 @@
 {
-  "name": "tokens",
+  "name": "@rosen-bridge/tokens",
   "version": "0.1.0",
   "description": "this project manage supported tokens",
   "main": "dist/index.js",
@@ -14,7 +14,7 @@
     "type": "git",
     "url": "git@git.ergopool.io:rosen-bridge/tokens.git"
   },
-  "author": "",
+  "author": "sahandzoufan79@gmail.com",
   "license": "ISC",
   "devDependencies": {
     "@types/chai": "^4.3.1",
@@ -25,5 +25,12 @@
     "mocha": "^10.0.0",
     "ts-node": "^10.8.1",
     "typescript": "^4.7.4"
-  }
+  },
+  "directories": {
+    "lib": "lib",
+    "test": "tests"
+  },
+  "keywords": [
+    "rosen"
+  ]
 }
