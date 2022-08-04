@@ -1,5 +1,4 @@
 import { RosenTokens } from "./types";
-import tokensList from "../tokensList/tokensList.json"
 
 /**
  * TokenMap class searches for different assets properties in different chains
@@ -12,7 +11,7 @@ export class TokenMap{
      *  production
      * @param tokens tokens list as json
      */
-    constructor(tokens: RosenTokens = tokensList) {
+    constructor(tokens: RosenTokens) {
         this.tokensConfig = tokens;
     }
 
