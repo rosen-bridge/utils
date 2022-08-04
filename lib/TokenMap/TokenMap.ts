@@ -50,7 +50,7 @@ export class TokenMap{
     getID = (
         token: { [key: string]: { [key: string]: string } },
         chain: string,
-    ) => {
+    ): string => {
         const chainID = this.tokensConfig.idKeys[chain];
         return token[chain][chainID];
     }
