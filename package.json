@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/tokens",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "this project manage supported tokens",
   "main": "dist/lib/index.js",
   "types": "dist/lib/index.d.ts",
