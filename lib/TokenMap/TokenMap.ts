@@ -44,7 +44,19 @@ export class TokenMap{
     /**
      * returns tokenId in specific chain with respect to idKeys in the tokensConfig
      * @param token
+     *  example: {
+     *       "ergo": {
+     *         "tokenID": "tokenId",
+     *         "tokenName": "token1"
+     *       },
+     *       "cardano": {
+     *         "fingerprint": "...",
+     *         "policyID": "policy",
+     *         "assetID": "id"
+     *       }
+     *     }
      * @param chain
+     *  example: "cardano"
      */
     getID = (
         token: { [key: string]: { [key: string]: string } },
