@@ -1,5 +1,6 @@
 import firstSample from './samples/firstSample.json'
-import { RosenTokens } from "../lib/TokenMap/types";
+import secondSample from './samples/secondSample.json'
+import { RosenTokens } from "../lib";
 import { TokenMap } from "../lib";
 import { expect } from "chai";
 
@@ -80,6 +81,19 @@ describe("TokenMap", () => {
             const tokenMap = new TokenMap(map);
             const res = tokenMap.getID(secondToken, 'cardano');
             expect(res).to.be.equal(secondToken.cardano.fingerprint);
+        })
+
+        it("tests that if idKeys is missed in the config throws error", () => {
+            const map: RosenTokens = secondSample;
+            const tokenMap = new TokenMap(map);
+            expect(() =>
+                tokenMap.getID(
+                    secondToken,
+                    'ergo'
+                )
+            ).to.throw(
+                `idKey of the ergo chain is missed in the config file`
+            );
         })
 
     })

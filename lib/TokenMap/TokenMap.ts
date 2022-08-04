@@ -62,8 +62,12 @@ export class TokenMap{
         token: { [key: string]: { [key: string]: string } },
         chain: string,
     ): string => {
-        const idKey = this.tokensConfig.idKeys[chain];
-        return token[chain][idKey];
+        if (Object.hasOwnProperty.call(this.tokensConfig.idKeys, chain)) {
+            const idKey = this.tokensConfig.idKeys[chain];
+            return token[chain][idKey];
+        } else {
+            throw new Error(`idKey of the ${chain} chain is missed in the config file`);
+        }
     }
 
 }
