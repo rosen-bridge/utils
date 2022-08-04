@@ -1,0 +1,18 @@
+{
+  "idKeys": {
+    "cardano": "fingerprint"
+  },
+  "tokens": [
+    {
+      "ergo": {
+        "tokenID": "tokenId",
+        "tokenName": "test token3"
+      },
+      "cardano": {
+        "fingerprint": "asset3fingerprint",
+        "policyID": "policyID3",
+        "assetID": "assetID3"
+      }
+    }
+  ]
+}
