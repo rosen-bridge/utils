@@ -1,5 +1,5 @@
 import firstSample from './samples/firstSample.json'
-import { TokensMap } from "../lib/TokenMap/types";
+import { RosenTokens } from "../lib/TokenMap/types";
 import { TokenMap } from "../lib";
 import { expect } from "chai";
 
@@ -15,7 +15,7 @@ const firstToken = {
     }
 }
 
-const thirdToken = {
+const secondToken = {
     "ergo": {
         "tokenID": "tokenId",
         "tokenName": "test token3"
@@ -30,7 +30,7 @@ const thirdToken = {
 describe("TokenMap", () => {
     describe("search", () => {
         it("should return asset with condition on the policyID and assetID", () => {
-            const map: TokensMap = firstSample;
+            const map: RosenTokens = firstSample;
             const tokenMap = new TokenMap(map);
             const res = tokenMap.search(
                 "cardano",
@@ -44,7 +44,7 @@ describe("TokenMap", () => {
         });
 
         it("returns asset with specific ergo tokenID", () => {
-            const map: TokensMap = firstSample;
+            const map: RosenTokens = firstSample;
             const tokenMap = new TokenMap(map);
             const res = tokenMap.search(
                 "ergo",
@@ -52,11 +52,11 @@ describe("TokenMap", () => {
                     tokenID: "tokenId",
                 })
             expect(res.length).to.be.eql(1);
-            expect(res[0]).to.be.eql(thirdToken)
+            expect(res[0]).to.be.eql(secondToken)
         });
 
         it("should return empty array in case of wrong chain", () => {
-            const map: TokensMap = firstSample;
+            const map: RosenTokens = firstSample;
             const tokenMap = new TokenMap(map);
             const res = tokenMap.search(
                 "bitcoin",
@@ -67,5 +67,20 @@ describe("TokenMap", () => {
         });
 
     })
+    describe("getID", () => {
+        it("should return ergo tokenId of tha passed token", () => {
+            const map: RosenTokens = firstSample;
+            const tokenMap = new TokenMap(map);
+            const res = tokenMap.getID(firstToken, 'ergo');
+            expect(res).to.be.equal(firstToken.ergo.tokenID);
+        })
 
+        it("should return cardano fingerprint of tha passed token", () => {
+            const map: RosenTokens = firstSample;
+            const tokenMap = new TokenMap(map);
+            const res = tokenMap.getID(secondToken, 'cardano');
+            expect(res).to.be.equal(secondToken.cardano.fingerprint);
+        })
+
+    })
 })

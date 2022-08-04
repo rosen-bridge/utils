@@ -1,18 +1,18 @@
-import { TokensMap } from "./types";
+import { RosenTokens } from "./types";
 import tokensList from "../tokensList/tokensList.json"
 
 /**
  * TokenMap class searches for different assets properties in different chains
  */
 export class TokenMap{
-    private tokensConfig: TokensMap
+    private tokensConfig: RosenTokens
 
     /**
      * it takes input tokens list json and the default value is used for
      *  production
      * @param tokens tokens list as json
      */
-    constructor(tokens: TokensMap = tokensList) {
+    constructor(tokens: RosenTokens = tokensList) {
         this.tokensConfig = tokens;
     }
 
@@ -40,6 +40,19 @@ export class TokenMap{
                 return false;
             }
         });
+    }
+
+    /**
+     * returns tokenId in specific chain with respect to idKeys in the tokensConfig
+     * @param token
+     * @param chain
+     */
+    getID = (
+        token: { [key: string]: { [key: string]: string } },
+        chain: string,
+    ) => {
+        const chainID = this.tokensConfig.idKeys[chain];
+        return token[chain][chainID];
     }
 
 }
