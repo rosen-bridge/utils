@@ -16,14 +16,6 @@ installation:
   script:
     - npm ci
 
-install_dependencies:
-  stage: installation
-  script:
-    - npm install
-  artifacts:
-    paths:
-      - node_modules/
-
 type_check:
   stage: type_check
   cache:
@@ -46,13 +38,14 @@ lint:
 
 test:
   stage: test
-  script:
-    - npm run coverage
   cache:
     key: $CI_COMMIT_REF_NAME
     policy: pull
     paths:
       - node_modules
+  script:
+    - npm run coverage
+  coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
   artifacts:
     reports:
       cobertura: coverage/cobertura-coverage.xml
