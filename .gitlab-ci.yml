@@ -1,12 +1,20 @@
-image: node:latest
+image: node:16.17
 
 stages:
   - installation
+  - type_check
+  - lint
   - test
 
-cache:
-  paths:
-    - node_modules/
+installation:
+  stage: installation
+  cache:
+    key: $CI_COMMIT_REF_NAME
+    policy: push
+    paths:
+      - node_modules
+  script:
+    - npm ci
 
 install_dependencies:
   stage: installation
@@ -15,9 +23,36 @@ install_dependencies:
   artifacts:
     paths:
       - node_modules/
+
+type_check:
+  stage: type_check
+  cache:
+    key: $CI_COMMIT_REF_NAME
+    policy: pull
+    paths:
+      - node_modules
+  script:
+    - npm run type-check
+
+lint:
+  stage: lint
+  cache:
+    key: $CI_COMMIT_REF_NAME
+    policy: pull
+    paths:
+      - node_modules
+  script:
+    - npm run lint
+
 test:
+  stage: test
   script:
     - npm run coverage
+  cache:
+    key: $CI_COMMIT_REF_NAME
+    policy: pull
+    paths:
+      - node_modules
   artifacts:
     reports:
       cobertura: coverage/cobertura-coverage.xml

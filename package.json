@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/tokens",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "this project manage supported tokens",
   "main": "dist/lib/index.js",
   "types": "dist/lib/index.d.ts",
@@ -10,7 +10,7 @@
     "start": "npm run build && node dist/lib/index.js",
     "build": "tsc",
     "type-check": "tsc --noEmit",
-    "test": "tsc --noEmit && npm run lint && mocha -r ts-node/register 'tests/**/*.ts'",
+    "test": "mocha -r ts-node/register 'tests/**/*.ts'",
     "coverage": "c8 npm run test",
     "release": "npm run test && npm run build && npm publish --access public",
     "prepare": "husky install"
