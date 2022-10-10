@@ -12,8 +12,7 @@
     "type-check": "tsc --noEmit",
     "test": "mocha -r ts-node/register 'tests/**/*.ts'",
     "coverage": "c8 npm run test",
-    "release": "npm run test && npm run build && npm publish --access public",
-    "prepare": "husky install"
+    "release": "npm run test && npm run build && npm publish --access public"
   },
   "repository": {
     "type": "git",
