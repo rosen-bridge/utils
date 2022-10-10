@@ -13,6 +13,7 @@ installation:
     policy: push
     paths:
       - node_modules
+      - packages/*/node_modules
   script:
     - npm ci
 
@@ -23,6 +24,8 @@ type_check:
     policy: pull
     paths:
       - node_modules
+        - packages/*/node_modules
+        - packages/*/dist
   script:
     - npm run type-check
 
@@ -33,6 +36,8 @@ lint:
     policy: pull
     paths:
       - node_modules
+      - packages/*/node_modules
+      - packages/*/dist
   script:
     - npm run lint
 
@@ -43,9 +48,11 @@ test:
     policy: pull
     paths:
       - node_modules
+      - packages/*/node_modules
+      - packages/*/dist
   script:
     - npm run coverage
   coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
   artifacts:
     reports:
-      cobertura: coverage/cobertura-coverage.xml
+      cobertura: packages/*/coverage/cobertura-coverage.xml
