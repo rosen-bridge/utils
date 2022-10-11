@@ -2,8 +2,7 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "dist",
-    "rootDir": "./",
-    "allowJs": false
+    "rootDir": "./"
   },
   "exclude": ["lib/**/*.spec.ts", "lib/**/*.test.ts", "lib/**/*.mock.ts"],
   "include": ["lib/**/*"]

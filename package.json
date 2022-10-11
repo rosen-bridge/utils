@@ -1,5 +1,5 @@
 {
-  "name": "rosen-bridge",
+  "name": "tokens",
   "private": true,
   "workspaces": {
     "packages": [

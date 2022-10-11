@@ -24,8 +24,8 @@ type_check:
     policy: pull
     paths:
       - node_modules
-        - packages/*/node_modules
-        - packages/*/dist
+      - packages/*/node_modules
+      - packages/*/dist
   script:
     - npm run type-check
 
