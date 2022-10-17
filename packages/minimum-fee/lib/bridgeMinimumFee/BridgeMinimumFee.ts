@@ -6,6 +6,7 @@ export class BridgeMinimumFee {
   protected readonly explorer: ExplorerApi;
   protected readonly feeConfigErgoTreeTemplateHash: string;
   protected readonly feeConfigTokenId: string;
+  readonly ratioDivisor: bigint = 100000n;
 
   /**
    * initializes class parameters
