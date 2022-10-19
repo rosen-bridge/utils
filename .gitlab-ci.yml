@@ -57,4 +57,4 @@ test:
     reports:
       coverage_report:
         coverage_format: cobertura
-        path: coverage/cobertura-coverage.xml
+        path: packages/*/coverage/cobertura-coverage.xml
