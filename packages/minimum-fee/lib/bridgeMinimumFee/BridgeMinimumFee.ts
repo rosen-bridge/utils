@@ -1,6 +1,7 @@
-import ExplorerApi from '../explorerApi/ExplorerApi';
+import ExplorerApi from '../network/ExplorerApi';
 import { Fee, FeeConfig } from './types';
 import { ErgoBox } from 'ergo-lib-wasm-nodejs';
+import { JsonBI } from '../network/parser';
 
 export class BridgeMinimumFee {
   protected readonly explorer: ExplorerApi;
@@ -45,7 +46,7 @@ export class BridgeMinimumFee {
         );
 
       // convert box to ErgoBox
-      const box = ErgoBox.from_json(JSON.stringify(boxes.items[0]));
+      const box = ErgoBox.from_json(JsonBI.stringify(boxes.items[0]));
 
       // get registers data
       const chains = box.register_value(4)?.to_coll_coll_byte();
@@ -84,9 +85,9 @@ export class BridgeMinimumFee {
           const height = heights[i][j];
 
           chainConfig[height] = {
-            bridgeFee: bridgeFees[i][j],
-            networkFee: networkFees[i][j],
-            rsnRatio: rsnRatios[i][j],
+            bridgeFee: BigInt(bridgeFees[i][j]),
+            networkFee: BigInt(networkFees[i][j]),
+            rsnRatio: BigInt(rsnRatios[i][j]),
           };
         }
 

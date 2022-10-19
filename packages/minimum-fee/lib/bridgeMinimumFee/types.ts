@@ -1,8 +1,8 @@
 interface Fee {
   [key: string]: {
-    bridgeFee: string;
-    networkFee: string;
-    rsnRatio: string;
+    bridgeFee: bigint;
+    networkFee: bigint;
+    rsnRatio: bigint;
   };
 }
 

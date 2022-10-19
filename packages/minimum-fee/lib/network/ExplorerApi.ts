@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { Boxes } from './types';
+import { JsonBI } from './parser';
 
 export default class ExplorerApi {
   private explorerApi;
@@ -25,10 +26,16 @@ export default class ExplorerApi {
     tokenIds: string[]
   ): Promise<Boxes> => {
     return this.explorerApi
-      .post<Boxes>(`/v1/boxes/unspent/search`, {
-        ergoTreeTemplateHash: ergoTreeTemplateHash,
-        assets: tokenIds,
-      })
+      .post<Boxes>(
+        `/v1/boxes/unspent/search`,
+        {
+          ergoTreeTemplateHash: ergoTreeTemplateHash,
+          assets: tokenIds,
+        },
+        {
+          transformResponse: (data) => JsonBI.parse(data),
+        }
+      )
       .then((res) => res.data)
       .catch((e) => {
         throw Error(

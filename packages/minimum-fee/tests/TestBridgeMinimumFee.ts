@@ -1,4 +1,4 @@
-import ExplorerApi from '../lib/explorerApi/ExplorerApi';
+import ExplorerApi from '../lib/network/ExplorerApi';
 import { BridgeMinimumFee } from '../lib/bridgeMinimumFee/BridgeMinimumFee';
 
 export class TestBridgeMinimumFee extends BridgeMinimumFee {
