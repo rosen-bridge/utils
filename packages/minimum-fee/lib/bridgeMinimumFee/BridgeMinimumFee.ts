@@ -1,5 +1,5 @@
 import ExplorerApi from '../network/ExplorerApi';
-import { Fee, FeeConfig } from './types';
+import { ChainFee, Fee, FeeConfig } from './types';
 import { ErgoBox } from 'ergo-lib-wasm-nodejs';
 import { JsonBI } from '../network/parser';
 
@@ -80,7 +80,7 @@ export class BridgeMinimumFee {
       for (let i = 0; i < chains.length; i++) {
         const chain = Buffer.from(chains[i]).toString();
 
-        const chainConfig: Fee = {};
+        const chainConfig: ChainFee = {};
         for (let j = 0; j < heights[i].length; j++) {
           const height = heights[i][j];
 
@@ -100,5 +100,33 @@ export class BridgeMinimumFee {
         `An error occurred while getting config for token [${tokenId}]: ${e}`
       );
     }
+  };
+
+  /**
+   * returns minimum fee config for given token on given chain and height
+   * @param tokenId the token id
+   * @param chain the given chain
+   * @param height the given height
+   */
+  getFee = async (
+    tokenId: string,
+    chain: string,
+    height: bigint
+  ): Promise<Fee> => {
+    const feeConfig = await this.search(tokenId);
+
+    if (chain in feeConfig) {
+      const heights = Object.keys(feeConfig[chain]).reverse();
+      for (const configHeight of heights) {
+        if (height >= BigInt(configHeight))
+          return feeConfig[chain][configHeight];
+      }
+      throw Error(
+        `Failed to get token minimum config: found no config for token [${tokenId}] in chain [${chain}] on height [${height}]`
+      );
+    } else
+      throw Error(
+        `Failed to get token minimum config: token [${tokenId}] has no config for chain [${chain}]`
+      );
   };
 }
