@@ -1,13 +1,15 @@
 interface Fee {
-  [key: string]: {
-    bridgeFee: bigint;
-    networkFee: bigint;
-    rsnRatio: bigint;
-  };
+  bridgeFee: bigint;
+  networkFee: bigint;
+  rsnRatio: bigint;
 }
 
-interface FeeConfig {
+interface ChainFee {
   [key: string]: Fee;
 }
 
-export { Fee, FeeConfig };
+interface FeeConfig {
+  [key: string]: ChainFee;
+}
+
+export { Fee, ChainFee, FeeConfig };
