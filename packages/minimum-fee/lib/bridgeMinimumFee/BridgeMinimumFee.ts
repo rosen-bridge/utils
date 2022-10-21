@@ -111,14 +111,16 @@ export class BridgeMinimumFee {
   getFee = async (
     tokenId: string,
     chain: string,
-    height: bigint
+    height: number
   ): Promise<Fee> => {
     const feeConfig = await this.search(tokenId);
 
     if (chain in feeConfig) {
-      const heights = Object.keys(feeConfig[chain]).reverse();
+      const heights = Object.keys(feeConfig[chain]);
+      heights.sort();
+      heights.reverse();
       for (const configHeight of heights) {
-        if (height >= BigInt(configHeight))
+        if (height >= Number(configHeight))
           return feeConfig[chain][configHeight];
       }
       throw Error(

@@ -126,11 +126,7 @@ describe('BridgeMinimumFee', () => {
       mockedExplorerApi.mockResolvedValue(boxes);
 
       // run test
-      const result = await bridgeMinimumFee.getFee(
-        'target',
-        'erg',
-        BigInt('10999')
-      );
+      const result = await bridgeMinimumFee.getFee('target', 'erg', 10999);
 
       // check result
       const expectedResult: Fee = {
