@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/tokens",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "this project manage supported tokens",
   "main": "dist/lib/index.js",
   "types": "dist/lib/index.d.ts",
@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rosen-bridge/tokens.git"
+    "url": "git+https://github.com/rosen-bridge/utils.git"
   },
   "files": [
     "dist"
