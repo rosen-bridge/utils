@@ -85,4 +85,17 @@ describe('TokenMap', () => {
       );
     });
   });
+  describe('getIdKey', () => {
+    it('should return `tokenId`for ergo chain', function () {
+      const map: RosenTokens = firstSample;
+      const tokenMap = new TokenMap(map);
+      expect(tokenMap.getIdKey('ergo')).to.be.equal('tokenID');
+    });
+
+    it('should throw exception for unknown chain', function () {
+      const map: RosenTokens = firstSample;
+      const tokenMap = new TokenMap(map);
+      expect(() => tokenMap.getIdKey('btc')).to.throw();
+    });
+  });
 });

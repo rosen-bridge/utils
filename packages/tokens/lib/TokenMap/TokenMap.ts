@@ -42,6 +42,17 @@ export class TokenMap {
   };
 
   /**
+   * returns ID key for specific chain.
+   * @param chain: one of supported tokens
+   */
+  getIdKey = (chain: string): string => {
+    if (Object.hasOwnProperty.call(this.tokensConfig.idKeys, chain)) {
+      return this.tokensConfig.idKeys[chain];
+    }
+    throw Error(`chain ${chain} not supported in current config`);
+  };
+
+  /**
    * returns tokenId in specific chain with respect to idKeys in the tokensConfig
    * @param token
    *  example: {
