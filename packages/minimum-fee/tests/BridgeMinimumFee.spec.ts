@@ -1,4 +1,4 @@
-import { ErgoBox } from 'ergo-lib-wasm-nodejs';
+import { ErgoBox } from 'ergo-lib-wasm-browser';
 import { TestBridgeMinimumFee } from './TestBridgeMinimumFee';
 import { Box, Boxes } from '../lib/network/types';
 import { Fee, FeeConfig } from '../lib';

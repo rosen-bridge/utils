@@ -22,7 +22,7 @@
   ],
   "license": "GPL-3.0",
   "dependencies": {
-    "ergo-lib-wasm-nodejs": "^0.20.1",
+    "ergo-lib-wasm-browser": "^0.20.1",
     "json-bigint": "^1.0.0",
     "axios": "^0.27.2"
   },

@@ -1,11 +1,13 @@
 {
   "compilerOptions": {
-    "target": "esnext",
+    "target": "ES5",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "declaration": true,
-    "module": "Commonjs",
-    "resolveJsonModule": true,
+    "module": "ES2015",
+    "lib": ["es5", "es2015.promise", "dom", "es2015"],
+    "resolveJsonModule": false,
+    "moduleResolution": "Node",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,

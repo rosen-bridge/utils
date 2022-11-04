@@ -1,13 +1,13 @@
 import ExplorerApi from '../network/ExplorerApi';
 import { ChainFee, Fee, FeeConfig } from './types';
-import { ErgoBox } from 'ergo-lib-wasm-nodejs';
+import { ErgoBox } from 'ergo-lib-wasm-browser';
 import { JsonBI } from '../network/parser';
 
 export class BridgeMinimumFee {
   protected readonly explorer: ExplorerApi;
   protected readonly feeConfigErgoTreeTemplateHash: string;
   protected readonly feeConfigTokenId: string;
-  readonly ratioDivisor: bigint = 100000n;
+  readonly ratioDivisor: bigint = BigInt(100000);
 
   /**
    * initializes class parameters
