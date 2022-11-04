@@ -1,5 +1,5 @@
 {
-  "name": "@rosen-bridge/minimum-fee",
+  "name": "@rosen-bridge/minimum-fee-browser",
   "version": "0.1.1",
   "description": "this project gets minimum fee of the bridge for supported tokens from blockchain",
   "main": "dist/lib/index.js",
