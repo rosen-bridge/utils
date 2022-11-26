@@ -32,9 +32,11 @@ export class BridgeMinimumFee {
   search = async (tokenId: string): Promise<FeeConfig> => {
     try {
       // get config box from Explorer
+      const tokenIds = [this.feeConfigTokenId];
+      if (tokenId !== 'erg') tokenIds.push(tokenId);
       const boxes = await this.explorer.boxSearch(
         this.feeConfigErgoTreeTemplateHash,
-        [this.feeConfigTokenId, tokenId]
+        tokenIds
       );
       // appropriate log or error for suspects cases
       if (boxes.total < 1) throw Error(`Found no config box`);
