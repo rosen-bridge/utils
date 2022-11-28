@@ -32,21 +32,30 @@ export class BridgeMinimumFee {
   search = async (tokenId: string): Promise<FeeConfig> => {
     try {
       // get config box from Explorer
-      const boxes = await this.explorer.boxSearch(
+      const tokenIds = [this.feeConfigTokenId];
+      let allowedTokenCount = 1;
+      if (tokenId !== 'erg') {
+        tokenIds.push(tokenId);
+        allowedTokenCount++;
+      }
+      const fetchedBoxes = await this.explorer.boxSearch(
         this.feeConfigErgoTreeTemplateHash,
-        [this.feeConfigTokenId, tokenId]
+        tokenIds
+      );
+      const boxes = fetchedBoxes.items.filter(
+        (box) => box.assets.length <= allowedTokenCount
       );
       // appropriate log or error for suspects cases
-      if (boxes.total < 1) throw Error(`Found no config box`);
-      if (boxes.total > 1)
+      if (boxes.length < 1) throw Error(`Found no config box`);
+      if (boxes.length > 1)
         throw Error(
-          `Found more than one config box. Ids: ${boxes.items.map(
+          `Found more than one config box. Ids: ${boxes.map(
             (box) => box.boxId
           )}`
         );
 
       // convert box to ErgoBox
-      const box = ErgoBox.from_json(JsonBI.stringify(boxes.items[0]));
+      const box = ErgoBox.from_json(JsonBI.stringify(boxes[0]));
 
       // get registers data
       const chains = box.register_value(4)?.to_coll_coll_byte();
