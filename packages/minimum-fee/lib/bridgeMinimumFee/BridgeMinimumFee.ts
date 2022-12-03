@@ -1,7 +1,8 @@
 import ExplorerApi from '../network/ExplorerApi';
 import { ChainFee, Fee, FeeConfig } from './types';
+import { Box } from '../network/types';
 import { ErgoBox } from 'ergo-lib-wasm-nodejs';
-import { JsonBI } from '../network/parser';
+import { JsonBI, checkConfigRegisters } from '../network/parser';
 
 export class BridgeMinimumFee {
   protected readonly explorer: ExplorerApi;
@@ -32,21 +33,39 @@ export class BridgeMinimumFee {
   search = async (tokenId: string): Promise<FeeConfig> => {
     try {
       // get config box from Explorer
-      const boxes = await this.explorer.boxSearch(
-        this.feeConfigErgoTreeTemplateHash,
-        [this.feeConfigTokenId, tokenId]
-      );
-      // appropriate log or error for suspects cases
-      if (boxes.total < 1) throw Error(`Found no config box`);
-      if (boxes.total > 1)
-        throw Error(
-          `Found more than one config box. Ids: ${boxes.items.map(
-            (box) => box.boxId
-          )}`
+      let boxFound = false;
+      let configBox: Box | undefined;
+      let page = 0;
+      while (!boxFound) {
+        const boxes = await this.explorer.searchBoxByTokenId(
+          this.feeConfigTokenId,
+          page++
         );
+        if (boxes.items.length === 0) break;
+        const filteredBoxes = boxes.items.filter((box) => {
+          const ergoBox = ErgoBox.from_json(JsonBI.stringify(box));
+          if (checkConfigRegisters(ergoBox)) {
+            if (tokenId === 'erg' && ergoBox.tokens().len() === 1) return true;
+            else if (tokenId !== 'erg' && ergoBox.tokens().len() === 2) {
+              const token = ergoBox.tokens().get(1);
+              if (tokenId === token.id().to_str()) {
+                return true;
+              }
+            }
+          }
+          return false;
+        });
+        if (filteredBoxes.length == 1) {
+          boxFound = true;
+          configBox = filteredBoxes[0];
+        }
+      }
+
+      // appropriate log or error for suspects cases
+      if (!configBox) throw Error(`Found no config box`);
 
       // convert box to ErgoBox
-      const box = ErgoBox.from_json(JsonBI.stringify(boxes.items[0]));
+      const box = ErgoBox.from_json(JsonBI.stringify(configBox));
 
       // get registers data
       const chains = box.register_value(4)?.to_coll_coll_byte();
