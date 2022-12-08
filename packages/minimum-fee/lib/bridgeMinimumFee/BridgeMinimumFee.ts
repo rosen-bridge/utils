@@ -44,13 +44,12 @@ export class BridgeMinimumFee {
         if (boxes.items.length === 0) break;
         const filteredBoxes = boxes.items.filter((box) => {
           const ergoBox = ErgoBox.from_json(JsonBI.stringify(box));
-          if (checkConfigRegisters(ergoBox)) {
-            if (tokenId === 'erg' && ergoBox.tokens().len() === 1) return true;
-            else if (tokenId !== 'erg' && ergoBox.tokens().len() === 2) {
-              const token = ergoBox.tokens().get(1);
-              if (tokenId === token.id().to_str()) {
-                return true;
-              }
+          if (tokenId === 'erg' && ergoBox.tokens().len() === 1)
+            return checkConfigRegisters(ergoBox);
+          if (tokenId !== 'erg' && ergoBox.tokens().len() === 2) {
+            const token = ergoBox.tokens().get(1);
+            if (tokenId === token.id().to_str()) {
+              return checkConfigRegisters(ergoBox);
             }
           }
           return false;
