@@ -1,12 +1,13 @@
 import JSONBigInt from 'json-bigint';
 import { ErgoBox } from 'ergo-lib-wasm-nodejs';
+import { ConfigBox } from './types';
 
 export const JsonBI = JSONBigInt({
   useNativeBigInt: true,
   alwaysParseAsBig: true,
 });
 
-export const checkConfigRegisters = (box: ErgoBox): boolean => {
+export const extractConfigRegisters = (box: ErgoBox): ConfigBox => {
   const chains = box.register_value(4)?.to_coll_coll_byte();
   const heights: Array<Array<string>> | undefined = box
     .register_value(5)
@@ -21,11 +22,21 @@ export const checkConfigRegisters = (box: ErgoBox): boolean => {
     .register_value(8)
     ?.to_js();
 
+  return {
+    chains,
+    heights,
+    bridgeFees,
+    networkFees,
+    rsnRatios,
+  };
+};
+
+export const isConfigDefined = (configs: ConfigBox) => {
   return (
-    chains !== undefined &&
-    heights !== undefined &&
-    bridgeFees !== undefined &&
-    networkFees !== undefined &&
-    rsnRatios !== undefined
+    configs.bridgeFees !== undefined &&
+    configs.chains !== undefined &&
+    configs.heights !== undefined &&
+    configs.networkFees !== undefined &&
+    configs.rsnRatios !== undefined
   );
 };

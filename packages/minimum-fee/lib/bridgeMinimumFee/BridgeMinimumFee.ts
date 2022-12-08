@@ -1,8 +1,12 @@
 import ExplorerApi from '../network/ExplorerApi';
 import { ChainFee, Fee, FeeConfig } from './types';
-import { Box } from '../network/types';
+import { ConfigBox } from '../network/types';
 import { ErgoBox } from 'ergo-lib-wasm-nodejs';
-import { JsonBI, checkConfigRegisters } from '../network/parser';
+import {
+  JsonBI,
+  extractConfigRegisters,
+  isConfigDefined,
+} from '../network/parser';
 
 export class BridgeMinimumFee {
   protected readonly explorer: ExplorerApi;
@@ -34,8 +38,14 @@ export class BridgeMinimumFee {
     try {
       // get config box from Explorer
       let boxFound = false;
-      let configBox: Box | undefined;
       let page = 0;
+      let configs: ConfigBox = {
+        bridgeFees: undefined,
+        chains: undefined,
+        heights: undefined,
+        networkFees: undefined,
+        rsnRatios: undefined,
+      };
       while (!boxFound) {
         const boxes = await this.explorer.searchBoxByTokenId(
           this.feeConfigTokenId,
@@ -44,54 +54,35 @@ export class BridgeMinimumFee {
         if (boxes.items.length === 0) break;
         const filteredBoxes = boxes.items.filter((box) => {
           const ergoBox = ErgoBox.from_json(JsonBI.stringify(box));
-          if (tokenId === 'erg' && ergoBox.tokens().len() === 1)
-            return checkConfigRegisters(ergoBox);
+          if (tokenId === 'erg' && ergoBox.tokens().len() === 1) {
+            configs = extractConfigRegisters(ergoBox);
+            return isConfigDefined(configs);
+          }
           if (tokenId !== 'erg' && ergoBox.tokens().len() === 2) {
             const token = ergoBox.tokens().get(1);
             if (tokenId === token.id().to_str()) {
-              return checkConfigRegisters(ergoBox);
+              configs = extractConfigRegisters(ergoBox);
+              return isConfigDefined(configs);
             }
           }
           return false;
         });
         if (filteredBoxes.length == 1) {
           boxFound = true;
-          configBox = filteredBoxes[0];
         }
       }
 
       // appropriate log or error for suspects cases
-      if (!configBox) throw Error(`Found no config box`);
-
-      // convert box to ErgoBox
-      const box = ErgoBox.from_json(JsonBI.stringify(configBox));
-
-      // get registers data
-      const chains = box.register_value(4)?.to_coll_coll_byte();
-      const heights: Array<Array<string>> | undefined = box
-        .register_value(5)
-        ?.to_js();
-      const bridgeFees: Array<Array<string>> | undefined = box
-        .register_value(6)
-        ?.to_js();
-      const networkFees: Array<Array<string>> | undefined = box
-        .register_value(7)
-        ?.to_js();
-      const rsnRatios: Array<Array<string>> | undefined = box
-        .register_value(8)
-        ?.to_js();
-
-      // throw error if any registers is undefined
-      if (chains === undefined)
-        throw Error(`Box [${box.box_id().to_str()}] has no config in R4`);
-      if (heights === undefined)
-        throw Error(`Box [${box.box_id().to_str()}] has no config in R5`);
-      if (bridgeFees === undefined)
-        throw Error(`Box [${box.box_id().to_str()}] has no config in R6`);
-      if (networkFees === undefined)
-        throw Error(`Box [${box.box_id().to_str()}] has no config in R7`);
-      if (rsnRatios === undefined)
-        throw Error(`Box [${box.box_id().to_str()}] has no config in R8`);
+      if (!boxFound) throw Error(`Found no config box`);
+      const { chains, heights, bridgeFees, networkFees, rsnRatios } = configs;
+      if (
+        chains === undefined ||
+        heights === undefined ||
+        bridgeFees === undefined ||
+        networkFees === undefined ||
+        rsnRatios === undefined
+      )
+        throw Error(`Found no config box`);
 
       // create json of config
       const config: FeeConfig = {};
