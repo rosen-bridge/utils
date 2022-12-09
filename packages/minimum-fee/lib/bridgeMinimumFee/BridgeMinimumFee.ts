@@ -46,13 +46,12 @@ export class BridgeMinimumFee {
         rsnRatios: undefined,
       };
       for (;;) {
-        const boxes = await this.explorer.searchBoxByTokenId(
-          this.feeConfigTokenId,
-          page++
-        );
-        if (boxes.items.length === 0) break;
-        const filteredBoxes = boxes.items.filter((box) => {
-          const ergoBox = ErgoBox.from_json(JsonBI.stringify(box));
+        const boxes = (
+          await this.explorer.searchBoxByTokenId(this.feeConfigTokenId, page++)
+        ).items;
+        if (boxes.length === 0) break;
+        for (let i = 0; i < boxes.length; i++) {
+          const ergoBox = ErgoBox.from_json(JsonBI.stringify(boxes[i]));
           if (
             (ergoBox.tokens().len() === 1 && tokenId === 'erg') ||
             (ergoBox.tokens().len() === 2 &&
@@ -61,12 +60,11 @@ export class BridgeMinimumFee {
             const localConfigs = extractConfigRegisters(ergoBox);
             if (isConfigDefined(localConfigs)) {
               configs = localConfigs;
-              return true;
+              break;
             }
           }
-          return false;
-        });
-        if (filteredBoxes.length == 1) {
+        }
+        if (configs.chains !== undefined) {
           break;
         }
       }
