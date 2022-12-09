@@ -37,7 +37,6 @@ export class BridgeMinimumFee {
   search = async (tokenId: string): Promise<FeeConfig> => {
     try {
       // get config box from Explorer
-      let boxFound = false;
       let page = 0;
       let configs: ConfigBox = {
         bridgeFees: undefined,
@@ -46,7 +45,7 @@ export class BridgeMinimumFee {
         networkFees: undefined,
         rsnRatios: undefined,
       };
-      while (!boxFound) {
+      for (;;) {
         const boxes = await this.explorer.searchBoxByTokenId(
           this.feeConfigTokenId,
           page++
@@ -68,12 +67,11 @@ export class BridgeMinimumFee {
           return false;
         });
         if (filteredBoxes.length == 1) {
-          boxFound = true;
+          break;
         }
       }
 
       // appropriate log or error for suspects cases
-      if (!boxFound) throw Error(`Found no config box`);
       const { chains, heights, bridgeFees, networkFees, rsnRatios } = configs;
       if (
         chains === undefined ||
