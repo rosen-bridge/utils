@@ -7,6 +7,7 @@ import {
   extractConfigRegisters,
   isConfigDefined,
 } from '../network/parser';
+import { Consts } from './consts';
 
 export class BridgeMinimumFee {
   protected readonly explorer: ExplorerApi;
@@ -53,7 +54,7 @@ export class BridgeMinimumFee {
         for (let i = 0; i < boxes.length; i++) {
           const ergoBox = ErgoBox.from_json(JsonBI.stringify(boxes[i]));
           if (
-            (ergoBox.tokens().len() === 1 && tokenId === 'erg') ||
+            (ergoBox.tokens().len() === 1 && tokenId === Consts.ergTokenName) ||
             (ergoBox.tokens().len() === 2 &&
               tokenId === ergoBox.tokens().get(1).id().to_str())
           ) {
