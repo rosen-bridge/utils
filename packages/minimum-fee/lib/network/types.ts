@@ -23,4 +23,12 @@ interface ExplorerRegister {
   renderedValue: string;
 }
 
-export { Asset, Box, Boxes };
+interface ConfigBox {
+  chains: Uint8Array[] | undefined;
+  heights: string[][] | undefined;
+  bridgeFees: string[][] | undefined;
+  networkFees: string[][] | undefined;
+  rsnRatios: string[][] | undefined;
+}
+
+export { Asset, Box, Boxes, ConfigBox };

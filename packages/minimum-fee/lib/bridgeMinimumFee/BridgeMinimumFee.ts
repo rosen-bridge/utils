@@ -1,7 +1,13 @@
 import ExplorerApi from '../network/ExplorerApi';
 import { ChainFee, Fee, FeeConfig } from './types';
+import { ConfigBox } from '../network/types';
 import { ErgoBox } from 'ergo-lib-wasm-nodejs';
-import { JsonBI } from '../network/parser';
+import {
+  JsonBI,
+  extractConfigRegisters,
+  isConfigDefined,
+} from '../network/parser';
+import { Consts } from './consts';
 
 export class BridgeMinimumFee {
   protected readonly explorer: ExplorerApi;
@@ -32,57 +38,48 @@ export class BridgeMinimumFee {
   search = async (tokenId: string): Promise<FeeConfig> => {
     try {
       // get config box from Explorer
-      const tokenIds = [this.feeConfigTokenId];
-      let allowedTokenCount = 1;
-      if (tokenId !== 'erg') {
-        tokenIds.push(tokenId);
-        allowedTokenCount++;
+      let page = 0;
+      let configs: ConfigBox = {
+        bridgeFees: undefined,
+        chains: undefined,
+        heights: undefined,
+        networkFees: undefined,
+        rsnRatios: undefined,
+      };
+      for (;;) {
+        const boxes = (
+          await this.explorer.searchBoxByTokenId(this.feeConfigTokenId, page++)
+        ).items;
+        if (boxes.length === 0) break;
+        for (let i = 0; i < boxes.length; i++) {
+          const ergoBox = ErgoBox.from_json(JsonBI.stringify(boxes[i]));
+          if (
+            (ergoBox.tokens().len() === 1 && tokenId === Consts.ergTokenName) ||
+            (ergoBox.tokens().len() === 2 &&
+              tokenId === ergoBox.tokens().get(1).id().to_str())
+          ) {
+            const localConfigs = extractConfigRegisters(ergoBox);
+            if (isConfigDefined(localConfigs)) {
+              configs = localConfigs;
+              break;
+            }
+          }
+        }
+        if (configs.chains !== undefined) {
+          break;
+        }
       }
-      const fetchedBoxes = await this.explorer.boxSearch(
-        this.feeConfigErgoTreeTemplateHash,
-        tokenIds
-      );
-      const boxes = fetchedBoxes.items.filter(
-        (box) => box.assets.length <= allowedTokenCount
-      );
+
       // appropriate log or error for suspects cases
-      if (boxes.length < 1) throw Error(`Found no config box`);
-      if (boxes.length > 1)
-        throw Error(
-          `Found more than one config box. Ids: ${boxes.map(
-            (box) => box.boxId
-          )}`
-        );
-
-      // convert box to ErgoBox
-      const box = ErgoBox.from_json(JsonBI.stringify(boxes[0]));
-
-      // get registers data
-      const chains = box.register_value(4)?.to_coll_coll_byte();
-      const heights: Array<Array<string>> | undefined = box
-        .register_value(5)
-        ?.to_js();
-      const bridgeFees: Array<Array<string>> | undefined = box
-        .register_value(6)
-        ?.to_js();
-      const networkFees: Array<Array<string>> | undefined = box
-        .register_value(7)
-        ?.to_js();
-      const rsnRatios: Array<Array<string>> | undefined = box
-        .register_value(8)
-        ?.to_js();
-
-      // throw error if any registers is undefined
-      if (chains === undefined)
-        throw Error(`Box [${box.box_id().to_str()}] has no config in R4`);
-      if (heights === undefined)
-        throw Error(`Box [${box.box_id().to_str()}] has no config in R5`);
-      if (bridgeFees === undefined)
-        throw Error(`Box [${box.box_id().to_str()}] has no config in R6`);
-      if (networkFees === undefined)
-        throw Error(`Box [${box.box_id().to_str()}] has no config in R7`);
-      if (rsnRatios === undefined)
-        throw Error(`Box [${box.box_id().to_str()}] has no config in R8`);
+      const { chains, heights, bridgeFees, networkFees, rsnRatios } = configs;
+      if (
+        chains === undefined ||
+        heights === undefined ||
+        bridgeFees === undefined ||
+        networkFees === undefined ||
+        rsnRatios === undefined
+      )
+        throw Error(`Found no config box`);
 
       // create json of config
       const config: FeeConfig = {};

@@ -21,17 +21,16 @@ export default class ExplorerApi {
    * @param ergoTreeTemplateHash the ergoTreeTemplateHash of the box
    * @param tokenIds the list of tokens which the box should contains
    */
-  boxSearch = async (
-    ergoTreeTemplateHash: string,
-    tokenIds: string[]
+  searchBoxByTokenId = async (
+    tokenId: string,
+    page = 0,
+    limit = 20
   ): Promise<Boxes> => {
     return this.explorerApi
-      .post<Boxes>(
-        `/v1/boxes/unspent/search`,
-        {
-          ergoTreeTemplateHash: ergoTreeTemplateHash,
-          assets: tokenIds,
-        },
+      .get<Boxes>(
+        `/v1/boxes/unspent/byTokenId/${tokenId}?offset=${
+          page * limit
+        }&limit=${limit}`,
         {
           transformResponse: (data) => JsonBI.parse(data),
         }
@@ -39,9 +38,7 @@ export default class ExplorerApi {
       .then((res) => res.data)
       .catch((e) => {
         throw Error(
-          `An error occurred while getting boxes for ErgoTreeTemplateHash [${ergoTreeTemplateHash}] containing tokens ${JSON.stringify(
-            tokenIds
-          )}: ${e}`
+          `An error occurred while getting boxes for token ${tokenId}: ${e}`
         );
       });
   };
