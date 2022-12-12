@@ -11,23 +11,16 @@ import { Consts } from './consts';
 
 export class BridgeMinimumFee {
   protected readonly explorer: ExplorerApi;
-  protected readonly feeConfigErgoTreeTemplateHash: string;
   protected readonly feeConfigTokenId: string;
   readonly ratioDivisor: bigint = BigInt(100000);
 
   /**
    * initializes class parameters
    * @param explorerBaseUrl base url to explorer api
-   * @param feeConfigErgoTreeTemplateHash the ergoTreeTemplateHash of all minimum fee config boxes
    * @param feeConfigTokenId the token id which all minimum fee config boxes contain
    */
-  constructor(
-    explorerBaseUrl: string,
-    feeConfigErgoTreeTemplateHash: string,
-    feeConfigTokenId: string
-  ) {
+  constructor(explorerBaseUrl: string, feeConfigTokenId: string) {
     this.explorer = new ExplorerApi(explorerBaseUrl);
-    this.feeConfigErgoTreeTemplateHash = feeConfigErgoTreeTemplateHash;
     this.feeConfigTokenId = feeConfigTokenId;
   }
 
