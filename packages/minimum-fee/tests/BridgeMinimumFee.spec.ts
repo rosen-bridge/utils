@@ -96,7 +96,6 @@ describe('BridgeMinimumFee', () => {
       // initialize BridgeMinimumFee
       const bridgeMinimumFee = new TestBridgeMinimumFee(
         'explorerUrl',
-        'templateHash',
         'tokenId'
       );
       const explorerApi = bridgeMinimumFee.getExplorer();
@@ -147,7 +146,6 @@ describe('BridgeMinimumFee', () => {
       // initialize BridgeMinimumFee
       const bridgeMinimumFee = new TestBridgeMinimumFee(
         'explorerUrl',
-        'templateHash',
         'tokenId'
       );
       const explorerApi = bridgeMinimumFee.getExplorer();
@@ -196,7 +194,6 @@ describe('BridgeMinimumFee', () => {
       // initialize BridgeMinimumFee
       const bridgeMinimumFee = new TestBridgeMinimumFee(
         'explorerUrl',
-        'templateHash',
         'tokenId'
       );
       const explorerApi = bridgeMinimumFee.getExplorer();
@@ -234,7 +231,6 @@ describe('BridgeMinimumFee', () => {
       // initialize BridgeMinimumFee
       const bridgeMinimumFee = new TestBridgeMinimumFee(
         'explorerUrl',
-        'templateHash',
         'tokenId'
       );
       const explorerApi = bridgeMinimumFee.getExplorer();
