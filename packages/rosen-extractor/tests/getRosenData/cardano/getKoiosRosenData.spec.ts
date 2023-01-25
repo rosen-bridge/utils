@@ -68,6 +68,6 @@ describe('getKoiosRosenData', () => {
     const result = getKoiosRosenData(metadata);
 
     // check return value
-    expect(result).toEqual(undefined);
+    expect(result).toBeUndefined();
   });
 });

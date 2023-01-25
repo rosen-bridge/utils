@@ -105,6 +105,6 @@ describe('getExplorerRosenData', () => {
     const result = getExplorerRosenData(tx.outputs[0]);
 
     // check return value
-    expect(result).toEqual(undefined);
+    expect(result).toBeUndefined();
   });
 });

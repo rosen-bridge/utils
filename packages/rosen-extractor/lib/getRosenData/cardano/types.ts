@@ -6,6 +6,14 @@ interface CardanoRosenData {
   fromAddress: string;
 }
 
+interface RawCardanoRosenData {
+  to: string;
+  networkFee: string;
+  bridgeFee: string;
+  toAddress: string;
+  fromAddress: string[];
+}
+
 interface MetaData {
   [key: string]: JSON;
 }
@@ -19,6 +27,7 @@ type MetadataObject = JsonObject | ListObject | NativeValue;
 
 export {
   CardanoRosenData,
+  RawCardanoRosenData,
   MetaData,
   MetadataObject,
   JsonObject,
