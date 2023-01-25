@@ -3,7 +3,7 @@ import AbstractLogger from '../../logger/AbstractLogger';
 
 /**
  * returns rosenData object if the box format is like rosen bridge observations otherwise returns undefined
- * @param metaData the transaction metadata
+ * @param metaData the transaction metadata (Koios format)
  * @param logger logger object
  */
 const getKoiosRosenData = (
@@ -40,7 +40,7 @@ const getKoiosRosenData = (
     } catch (e) {
       if (logger)
         logger.debug(
-          `An error occurred while getting Cardano rosen data: ${e}`
+          `An error occurred while getting Cardano rosen data from Koios: ${e}`
         );
       return undefined;
     }

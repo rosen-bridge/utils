@@ -22,6 +22,7 @@
   ],
   "license": "GPL-3.0",
   "dependencies": {
+    "@cardano-ogmios/schema": "^5.5.7",
     "ergo-lib-wasm-nodejs": "^0.20.1",
     "json-bigint": "^1.0.0"
   },

@@ -10,4 +10,18 @@ interface MetaData {
   [key: string]: JSON;
 }
 
-export { CardanoRosenData, MetaData };
+type ListObject = Array<MetadataObject>;
+type NativeValue = string | undefined;
+interface JsonObject {
+  [key: string]: MetadataObject;
+}
+type MetadataObject = JsonObject | ListObject | NativeValue;
+
+export {
+  CardanoRosenData,
+  MetaData,
+  MetadataObject,
+  JsonObject,
+  ListObject,
+  NativeValue,
+};
