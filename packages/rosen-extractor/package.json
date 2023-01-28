@@ -4,6 +4,7 @@
   "description": "this project contains methods to get rosen data from blockchain",
   "main": "dist/lib/index.js",
   "types": "dist/lib/index.d.ts",
+  "type": "module",
   "scripts": {
     "prettify": "prettier --write . --ignore-path .gitignore",
     "lint": "eslint --fix . && npm run prettify",

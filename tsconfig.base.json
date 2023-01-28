@@ -1,16 +1,20 @@
 {
   "compilerOptions": {
-    "target": "esnext",
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
+    "composite": true,
     "declaration": true,
-    "module": "Commonjs",
-    "resolveJsonModule": true,
+    "declarationMap": true,
+    "emitDecoratorMetadata": true,
     "esModuleInterop": true,
+    "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
+    "inlineSourceMap": true,
+    "inlineSources": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
     "strict": true,
     "strictPropertyInitialization": false,
-    "skipLibCheck": true,
-    "composite": true
+    "target": "esnext"
   }
 }
