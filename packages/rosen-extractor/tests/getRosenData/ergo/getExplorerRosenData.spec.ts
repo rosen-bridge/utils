@@ -3,11 +3,7 @@ import { getExplorerRosenData } from '../../../lib';
 import { ERGO_NATIVE_TOKEN } from '../../../lib/getRosenData/const';
 
 describe('getExplorerRosenData', () => {
-  const bankSK =
-    'f133100250abf1494e9ff5a0f998dc2fea7a5aa35641454ba723c913bff0e8fa';
   const watcherAddress = '9i1EZHaRPTLajwJivCFpdoi65r7A8ZgJxVbMtxZ23W5Z2gDkKdM';
-  const watcherSK =
-    '3870dab5e5fb3eebfdcb30031b65a8dbb8eec75ffe3558e7d0c7ef9529984ee1';
 
   /**
    * Target: getExplorerRosenData
@@ -22,15 +18,16 @@ describe('getExplorerRosenData', () => {
    */
   it('should extract valid rosenData transferring token successfully', async () => {
     // generate valid rosen data transferring token
-    const tx = TestUtils.observationTxGenerator(
-      true,
-      ['cardano', 'address', '10000', '1000', watcherAddress],
-      bankSK,
-      watcherSK
-    );
+    const tx = TestUtils.mockCustomLockBox(true, [
+      'cardano',
+      'address',
+      '10000',
+      '1000',
+      watcherAddress,
+    ]);
 
     // run test
-    const result = getExplorerRosenData(tx.outputs[0]);
+    const result = getExplorerRosenData(tx);
 
     // check return value
     expect(result).toStrictEqual({
@@ -58,16 +55,14 @@ describe('getExplorerRosenData', () => {
    */
   it('should extract valid rosenData transferring erg successfully', async () => {
     // generate valid rosen data transferring erg
-    const tx = TestUtils.observationTxGenerator(
+    const tx = TestUtils.mockCustomLockBox(
       false,
       ['cardano', 'address', '10000', '1000', watcherAddress],
-      bankSK,
-      watcherSK,
       '100000000000'
     );
 
     // run test
-    const result = getExplorerRosenData(tx.outputs[0]);
+    const result = getExplorerRosenData(tx);
 
     // check return value
     expect(result).toStrictEqual({
@@ -94,15 +89,36 @@ describe('getExplorerRosenData', () => {
    */
   it('should return undefined when register value is invalid', async () => {
     // generate invalid rosen data (invalid register value)
-    const tx = TestUtils.observationTxGenerator(
-      true,
-      ['Cardano', 'address', '10000'],
-      bankSK,
-      watcherSK
-    );
+    const tx = TestUtils.mockCustomLockBox(true, [
+      'Cardano',
+      'address',
+      '10000',
+    ]);
 
     // run test
-    const result = getExplorerRosenData(tx.outputs[0]);
+    const result = getExplorerRosenData(tx);
+
+    // check return value
+    expect(result).toBeUndefined();
+  });
+
+  /**
+   * Target: getExplorerRosenData
+   * Dependencies:
+   *  -
+   * Scenario:
+   *  generate invalid rosen data (invalid register type)
+   *  run test
+   *  check return value
+   * Expected:
+   *  function returns rosenData object
+   */
+  it('should return undefined when register type is invalid', async () => {
+    // generate invalid rosen data (invalid register type)
+    const tx = TestUtils.mockLockBoxWithLongTypeR4();
+
+    // run test
+    const result = getExplorerRosenData(tx);
 
     // check return value
     expect(result).toBeUndefined();

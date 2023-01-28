@@ -331,7 +331,18 @@ class TestUtils {
     },
   ];
 
-  static observationTxGenerator = (
+  static bankSecret =
+    'f133100250abf1494e9ff5a0f998dc2fea7a5aa35641454ba723c913bff0e8fa';
+  static watcherSecret =
+    '3870dab5e5fb3eebfdcb30031b65a8dbb8eec75ffe3558e7d0c7ef9529984ee1';
+
+  /**
+   * mocks a custom lock box
+   * @param hasToken
+   * @param data
+   * @param boxValue
+   */
+  static mockCustomLockBox = (
     hasToken = true,
     data: Array<string> = [
       'cardano',
@@ -340,16 +351,14 @@ class TestUtils {
       '1000',
       '9i1EZHaRPTLajwJivCFpdoi65r7A8ZgJxVbMtxZ23W5Z2gDkKdM',
     ],
-    bankSecret: string,
-    watcherSecret: string,
     boxValue = '1100000000'
   ) => {
     const bankSK = wasm.SecretKey.dlog_from_bytes(
-      Uint8Array.from(Buffer.from(bankSecret, 'hex'))
+      Uint8Array.from(Buffer.from(this.bankSecret, 'hex'))
     );
     const bankAddress = wasm.Contract.pay_to_address(bankSK.get_address());
     const watcherSK = wasm.SecretKey.dlog_from_bytes(
-      Uint8Array.from(Buffer.from(watcherSecret, 'hex'))
+      Uint8Array.from(Buffer.from(this.watcherSecret, 'hex'))
     );
     const watcherAddress = wasm.Contract.pay_to_address(
       watcherSK.get_address()
@@ -440,7 +449,106 @@ class TestUtils {
       unspentBoxes,
       wasm.ErgoBoxes.from_boxes_json([])
     );
-    return this.JsonBI.parse(signed.to_json()) as ExplorerTransaction;
+    return (this.JsonBI.parse(signed.to_json()) as ExplorerTransaction)
+      .outputs[0];
+  };
+
+  /**
+   * mocks an output box (contains R4 with type of I64)
+   * @param boxValue
+   */
+  static mockLockBoxWithLongTypeR4 = (boxValue = '1100000000') => {
+    const bankSK = wasm.SecretKey.dlog_from_bytes(
+      Uint8Array.from(Buffer.from(this.bankSecret, 'hex'))
+    );
+    const bankAddress = wasm.Contract.pay_to_address(bankSK.get_address());
+    const watcherSK = wasm.SecretKey.dlog_from_bytes(
+      Uint8Array.from(Buffer.from(this.watcherSecret, 'hex'))
+    );
+    const watcherAddress = wasm.Contract.pay_to_address(
+      watcherSK.get_address()
+    );
+    const outBoxValue = wasm.BoxValue.from_i64(wasm.I64.from_str(boxValue));
+    const outBoxBuilder = new wasm.ErgoBoxCandidateBuilder(
+      outBoxValue,
+      bankAddress,
+      0
+    );
+    outBoxBuilder.add_token(
+      wasm.TokenId.from_str(
+        'f6a69529b12a7e2326acffee8383e0c44408f87a872886fadf410fe8498006d3'
+      ),
+      wasm.TokenAmount.from_i64(wasm.I64.from_str('10'))
+    );
+    outBoxBuilder.set_register_value(
+      4,
+      wasm.Constant.from_i64(wasm.I64.from_str('100000'))
+    );
+
+    const outBox = outBoxBuilder.build();
+    const tokens = new wasm.Tokens();
+    tokens.add(
+      new wasm.Token(
+        wasm.TokenId.from_str(
+          'f6a69529b12a7e2326acffee8383e0c44408f87a872886fadf410fe8498006d3'
+        ),
+        wasm.TokenAmount.from_i64(wasm.I64.from_str('10'))
+      )
+    );
+
+    const inputBoxBank = new wasm.ErgoBox(
+      wasm.BoxValue.from_i64(wasm.I64.from_str(boxValue)),
+      0,
+      bankAddress,
+      wasm.TxId.zero(),
+      0,
+      new wasm.Tokens()
+    );
+
+    const inputBoxWatcher = new wasm.ErgoBox(
+      wasm.BoxValue.from_i64(wasm.I64.from_str(boxValue)),
+      0,
+      watcherAddress,
+      wasm.TxId.zero(),
+      0,
+      tokens
+    );
+
+    const unspentBoxes = new wasm.ErgoBoxes(inputBoxBank);
+    unspentBoxes.add(inputBoxWatcher);
+    const txOutputs = new wasm.ErgoBoxCandidates(outBox);
+    const fee = wasm.TxBuilder.SUGGESTED_TX_FEE();
+    const boxSelector = new wasm.SimpleBoxSelector();
+    const targetBalance = wasm.BoxValue.from_i64(
+      outBoxValue.as_i64().checked_add(fee.as_i64())
+    );
+    const boxSelection = boxSelector.select(
+      unspentBoxes,
+      targetBalance,
+      tokens
+    );
+    const tx = wasm.TxBuilder.new(
+      boxSelection,
+      txOutputs,
+      0,
+      fee,
+      watcherSK.get_address()
+    ).build();
+    const blockHeaders = wasm.BlockHeaders.from_json(this.last10BlockHeader);
+    const preHeader = wasm.PreHeader.from_block_header(blockHeaders.get(0));
+    const ctx = new wasm.ErgoStateContext(preHeader, blockHeaders);
+    const sks = new wasm.SecretKeys();
+    sks.add(watcherSK);
+    sks.add(bankSK);
+    const wallet = wasm.Wallet.from_secrets(sks);
+    const signed = wallet.sign_transaction(
+      ctx,
+      tx,
+      unspentBoxes,
+      wasm.ErgoBoxes.from_boxes_json([])
+    );
+    return (this.JsonBI.parse(signed.to_json()) as ExplorerTransaction)
+      .outputs[0];
   };
 }
 
