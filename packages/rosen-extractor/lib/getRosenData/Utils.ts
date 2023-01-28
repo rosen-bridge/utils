@@ -7,31 +7,31 @@ import {
 } from '@cardano-ogmios/schema';
 import { JsonObject, ListObject, MetadataObject } from './cardano/types';
 
-// TODO: add doc string for functions (#18)
 class Utils {
-  static getObjectKeyAsStringOrUndefined = (
-    val: JsonObject,
-    key: string
-  ): string | undefined => {
-    if (Object.prototype.hasOwnProperty.call(val, key)) {
-      const res = val[key];
-      if (typeof res === 'string') return res;
-    }
-    return undefined;
-  };
-
+  /**
+   * extracts int value from metadata object
+   * @param val
+   */
   static getIntValue = (val: Metadatum) => {
     return Object.prototype.hasOwnProperty.call(val, 'int')
       ? (val as Int).int.toString()
       : undefined;
   };
 
+  /**
+   * extracts string value from metadata object
+   * @param val
+   */
   static getStringValue = (val: Metadatum) => {
     return Object.prototype.hasOwnProperty.call(val, 'string')
       ? (val as OgmiosString).string
       : undefined;
   };
 
+  /**
+   * extracts list value from metadata object
+   * @param val
+   */
   static getListValue = (val: Metadatum): ListObject | undefined => {
     if (Object.prototype.hasOwnProperty.call(val, 'list')) {
       const list = (val as List).list;
