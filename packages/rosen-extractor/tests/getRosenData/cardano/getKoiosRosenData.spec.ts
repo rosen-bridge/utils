@@ -1,4 +1,5 @@
 import { getKoiosRosenData } from '../../../lib';
+import TestUtils from './TestUtils';
 
 describe('getKoiosRosenData', () => {
   /**
@@ -12,31 +13,15 @@ describe('getKoiosRosenData', () => {
    * Expected:
    *  function returns rosenData object
    */
-  it('should extract valid rosenData successfully', async () => {
+  it('should extract valid rosenData successfully', () => {
     // generate valid rosen data
-    const metadata = {
-      '0': JSON.parse(
-        '{' +
-          '"to": "ergo",' +
-          '"bridgeFee": "10000",' +
-          '"networkFee": "1000",' +
-          '"toAddress": "ergoAddress",' +
-          '"fromAddress": ["hash"]' +
-          '}'
-      ),
-    };
+    const metadata = TestUtils.ValidMetaData;
 
     // run test
     const result = getKoiosRosenData(metadata);
 
     // check return value
-    expect(result).toStrictEqual({
-      toChain: 'ergo',
-      bridgeFee: '10000',
-      networkFee: '1000',
-      toAddress: 'ergoAddress',
-      fromAddress: 'hash',
-    });
+    expect(result).toStrictEqual(TestUtils.ValidMetaDataResult);
   });
 
   /**
@@ -50,24 +35,19 @@ describe('getKoiosRosenData', () => {
    * Expected:
    *  function returns undefined
    */
-  it('should return undefined when a required key missing', async () => {
-    // generate valid rosen data
-    const metadata = {
-      '0': JSON.parse(
-        '{' +
-          '"to": "ergo",' +
-          '"bridgeFee": "10000",' +
-          '"networkFee": "1000",' +
-          '"toAddress": "ergoAddress",' +
-          '"targetChainTokenId": "cardanoTokenId"' +
-          '}'
-      ),
-    };
+  it.each(['to', 'bridgeFee', 'networkFee', 'toAddress', 'fromAddress'])(
+    'should return undefined when metadata missing %p',
+    (key) => {
+      // generate invalid rosen data (missing key)
+      const metadata = JSON.parse(
+        JSON.stringify(TestUtils.ValidMetaData).replace(key, key + 'Fake')
+      );
 
-    // run test
-    const result = getKoiosRosenData(metadata);
+      // run test
+      const result = getKoiosRosenData(metadata);
 
-    // check return value
-    expect(result).toBeUndefined();
-  });
+      // check return value
+      expect(result).toBeUndefined();
+    }
+  );
 });

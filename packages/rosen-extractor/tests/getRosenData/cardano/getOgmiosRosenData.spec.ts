@@ -86,16 +86,24 @@ describe('getOgmiosRosenData', () => {
    * Expected:
    *  function returns undefined
    */
-  it('should return undefined when rosenData missing a required key', () => {
-    // generate invalid rosen data (invalid key)
-    const metadata = TestUtils.AuxiliaryData.wrongKey;
+  it.each(['to', 'bridgeFee', 'networkFee', 'toAddress', 'fromAddress'])(
+    'should return undefined when rosenData missing %p',
+    (key) => {
+      // generate invalid rosen data (invalid key)
+      const metadata = JSON.parse(
+        JSON.stringify(TestUtils.AuxiliaryData.validEvent).replace(
+          key,
+          key + 'Fake'
+        )
+      );
 
-    // run test
-    const result = getOgmiosRosenData(metadata);
+      // run test
+      const result = getOgmiosRosenData(metadata);
 
-    // check return value
-    expect(result).toBeUndefined();
-  });
+      // check return value
+      expect(result).toBeUndefined();
+    }
+  );
 
   /**
    * Target: getKoiosRosenData
