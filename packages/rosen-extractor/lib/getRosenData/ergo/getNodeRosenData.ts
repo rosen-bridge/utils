@@ -39,8 +39,9 @@ const getNodeRosenData = (
       logger.debug(
         `An error occurred while getting Ergo rosen data from Explorer: ${e}`
       );
-      if (Object.prototype.hasOwnProperty.call(e, 'stack')) {
-        logger.debug((e as { stack: any }).stack);
+      const err = e as { stack?: string | undefined };
+      if (err.stack) {
+        logger.debug(err.stack);
       }
     }
     return undefined;

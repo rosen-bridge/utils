@@ -42,8 +42,9 @@ const getKoiosRosenData = (
         logger.debug(
           `An error occurred while getting Cardano rosen data from Koios: ${e}`
         );
-        if (Object.prototype.hasOwnProperty.call(e, 'stack')) {
-          logger.debug((e as { stack: any }).stack);
+        const err = e as { stack?: string | undefined };
+        if (err.stack) {
+          logger.debug(err.stack);
         }
       }
       return undefined;
