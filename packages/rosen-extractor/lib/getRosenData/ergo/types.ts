@@ -8,12 +8,12 @@ interface ErgoRosenData {
   amount: bigint;
 }
 
-interface ExplorerAsset {
+interface NodeAsset {
   tokenId: string;
   amount: bigint;
 }
 
-interface ExplorerAdditionalRegisters {
+interface NodeAdditionalRegisters {
   R4?: string;
   R5?: string;
   R6?: string;
@@ -22,31 +22,31 @@ interface ExplorerAdditionalRegisters {
   R9?: string;
 }
 
-interface ExplorerOutputBox {
+interface NodeOutputBox {
   boxId: string;
   value: bigint;
   ergoTree: string;
   creationHeight: bigint | number;
-  assets?: Array<ExplorerAsset>;
-  additionalRegisters?: ExplorerAdditionalRegisters;
+  assets?: Array<NodeAsset>;
+  additionalRegisters?: NodeAdditionalRegisters;
   transactionId: string;
   index: bigint | number;
 }
 
-interface ExplorerInputBox {
+interface NodeInputBox {
   boxId: string;
 }
 
-interface ExplorerDataInput {
+interface NodeDataInput {
   boxId: string;
 }
 
-interface ExplorerTransaction {
+interface NodeTransaction {
   id: string;
-  inputs: Array<ExplorerInputBox>;
-  dataInputs: Array<ExplorerDataInput>;
-  outputs: Array<ExplorerOutputBox>;
+  inputs: Array<NodeInputBox>;
+  dataInputs: Array<NodeDataInput>;
+  outputs: Array<NodeOutputBox>;
   size?: bigint;
 }
 
-export { ErgoRosenData, ExplorerOutputBox, ExplorerTransaction };
+export { ErgoRosenData, NodeOutputBox, NodeTransaction };

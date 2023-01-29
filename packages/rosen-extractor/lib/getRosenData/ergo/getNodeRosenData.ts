@@ -1,6 +1,6 @@
 import { ERGO_NATIVE_TOKEN } from '../const';
 import AbstractLogger from '../../logger/AbstractLogger';
-import { ErgoRosenData, ExplorerOutputBox } from './types';
+import { ErgoRosenData, NodeOutputBox } from './types';
 import { Constant } from 'ergo-lib-wasm-nodejs';
 
 /**
@@ -8,8 +8,8 @@ import { Constant } from 'ergo-lib-wasm-nodejs';
  * @param box the output box
  * @param logger logger object
  */
-const getExplorerRosenData = (
-  box: ExplorerOutputBox,
+const getNodeRosenData = (
+  box: NodeOutputBox,
   logger?: AbstractLogger
 ): ErgoRosenData | undefined => {
   try {
@@ -35,13 +35,14 @@ const getExplorerRosenData = (
       }
     }
   } catch (e) {
-    if (logger)
+    if (logger) {
       logger.debug(
         `An error occurred while getting Ergo rosen data from Explorer: ${e}`
       );
+    }
     return undefined;
   }
   return undefined;
 };
 
-export { getExplorerRosenData };
+export { getNodeRosenData };

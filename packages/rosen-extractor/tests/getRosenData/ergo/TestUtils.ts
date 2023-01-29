@@ -1,6 +1,6 @@
 import * as wasm from 'ergo-lib-wasm-nodejs';
 import JSONBigInt from 'json-bigint';
-import { ExplorerTransaction } from '../../../lib/getRosenData/ergo/types';
+import { NodeTransaction } from '../../../lib/getRosenData/ergo/types';
 
 class TestUtils {
   static JsonBI = JSONBigInt({
@@ -337,14 +337,14 @@ class TestUtils {
     '3870dab5e5fb3eebfdcb30031b65a8dbb8eec75ffe3558e7d0c7ef9529984ee1';
 
   /**
-   * mocks a custom lock box
+   * mocks a custom lock box (custom value and register data, with or without token)
    * @param hasToken
-   * @param data
+   * @param registerData
    * @param boxValue
    */
   static mockCustomLockBox = (
     hasToken = true,
-    data: Array<string> = [
+    registerData: Array<string> = [
       'cardano',
       'address',
       '10000',
@@ -377,7 +377,7 @@ class TestUtils {
         wasm.TokenAmount.from_i64(wasm.I64.from_str('10'))
       );
     }
-    const registerValue = data.map((val) => {
+    const registerValue = registerData.map((val) => {
       return new Uint8Array(Buffer.from(val));
     });
     outBoxBuilder.set_register_value(
@@ -449,8 +449,7 @@ class TestUtils {
       unspentBoxes,
       wasm.ErgoBoxes.from_boxes_json([])
     );
-    return (this.JsonBI.parse(signed.to_json()) as ExplorerTransaction)
-      .outputs[0];
+    return (this.JsonBI.parse(signed.to_json()) as NodeTransaction).outputs[0];
   };
 
   /**
@@ -547,8 +546,7 @@ class TestUtils {
       unspentBoxes,
       wasm.ErgoBoxes.from_boxes_json([])
     );
-    return (this.JsonBI.parse(signed.to_json()) as ExplorerTransaction)
-      .outputs[0];
+    return (this.JsonBI.parse(signed.to_json()) as NodeTransaction).outputs[0];
   };
 }
 

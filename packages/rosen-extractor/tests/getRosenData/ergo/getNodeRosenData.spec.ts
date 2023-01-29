@@ -1,8 +1,8 @@
 import TestUtils from './TestUtils';
-import { getExplorerRosenData } from '../../../lib';
+import { getNodeRosenData } from '../../../lib';
 import { ERGO_NATIVE_TOKEN } from '../../../lib/getRosenData/const';
 
-describe('getExplorerRosenData', () => {
+describe('getNodeRosenData', () => {
   const watcherAddress = '9i1EZHaRPTLajwJivCFpdoi65r7A8ZgJxVbMtxZ23W5Z2gDkKdM';
 
   /**
@@ -27,7 +27,7 @@ describe('getExplorerRosenData', () => {
     ]);
 
     // run test
-    const result = getExplorerRosenData(tx);
+    const result = getNodeRosenData(tx);
 
     // check return value
     expect(result).toStrictEqual({
@@ -62,7 +62,7 @@ describe('getExplorerRosenData', () => {
     );
 
     // run test
-    const result = getExplorerRosenData(tx);
+    const result = getNodeRosenData(tx);
 
     // check return value
     expect(result).toStrictEqual({
@@ -96,7 +96,7 @@ describe('getExplorerRosenData', () => {
     ]);
 
     // run test
-    const result = getExplorerRosenData(tx);
+    const result = getNodeRosenData(tx);
 
     // check return value
     expect(result).toBeUndefined();
@@ -118,7 +118,7 @@ describe('getExplorerRosenData', () => {
     const tx = TestUtils.mockLockBoxWithLongTypeR4();
 
     // run test
-    const result = getExplorerRosenData(tx);
+    const result = getNodeRosenData(tx);
 
     // check return value
     expect(result).toBeUndefined();
