@@ -63,10 +63,14 @@ const getOgmiosRosenData = (
       }
     }
   } catch (e) {
-    if (logger)
+    if (logger) {
       logger.debug(
         `An error occurred while getting Cardano rosen data from Ogmios: ${e}`
       );
+      if (Object.prototype.hasOwnProperty.call(e, 'stack')) {
+        logger.debug((e as { stack: any }).stack);
+      }
+    }
   }
   return undefined;
 };

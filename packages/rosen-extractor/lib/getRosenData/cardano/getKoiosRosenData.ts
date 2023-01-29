@@ -38,10 +38,14 @@ const getKoiosRosenData = (
       }
       return undefined;
     } catch (e) {
-      if (logger)
+      if (logger) {
         logger.debug(
           `An error occurred while getting Cardano rosen data from Koios: ${e}`
         );
+        if (Object.prototype.hasOwnProperty.call(e, 'stack')) {
+          logger.debug((e as { stack: any }).stack);
+        }
+      }
       return undefined;
     }
   }
