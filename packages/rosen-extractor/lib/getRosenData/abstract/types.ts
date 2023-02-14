@@ -5,7 +5,7 @@ interface RosenData {
   networkFee: string;
   fromAddress: string;
   sourceChainTokenId: string;
-  amount: bigint;
+  amount: string;
   targetChainTokenId: string;
   sourceTxId: string;
   sourceBlockId: string;

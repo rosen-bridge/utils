@@ -1,4 +1,4 @@
-export { getKoiosRosenData } from './getRosenData/cardano/getKoiosRosenData';
+export { KoiosRosenExtractor } from './getRosenData/cardano/KoiosRosenExtractor';
 export { getOgmiosRosenData } from './getRosenData/cardano/getOgmiosRosenData';
 export { CardanoRosenData } from './getRosenData/cardano/types';
 

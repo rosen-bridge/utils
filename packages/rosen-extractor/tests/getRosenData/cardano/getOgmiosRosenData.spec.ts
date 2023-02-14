@@ -1,5 +1,5 @@
 import { getOgmiosRosenData } from '../../../lib';
-import TestUtils from './TestUtils';
+import CardanoTestUtils from './CardanoTestUtils';
 
 describe('getOgmiosRosenData', () => {
   /**
@@ -15,7 +15,7 @@ describe('getOgmiosRosenData', () => {
    */
   it('should extract valid rosenData successfully', () => {
     // generate valid rosen data
-    const metadata = TestUtils.AuxiliaryData.validEvent;
+    const metadata = CardanoTestUtils.AuxiliaryData.validEvent;
 
     // run test
     const result = getOgmiosRosenData(metadata);
@@ -44,7 +44,7 @@ describe('getOgmiosRosenData', () => {
    */
   it('should return undefined when metadata has no blob', () => {
     // generate invalid rosen data (no blob in metadata)
-    const metadata = TestUtils.AuxiliaryData.noBlob;
+    const metadata = CardanoTestUtils.AuxiliaryData.noBlob;
 
     // run test
     const result = getOgmiosRosenData(metadata);
@@ -66,7 +66,7 @@ describe('getOgmiosRosenData', () => {
    */
   it("should return undefined when metadata blob missing '0' key", () => {
     // generate invalid rosen data (invalid blob)
-    const metadata = TestUtils.AuxiliaryData.noBlobZeroKey;
+    const metadata = CardanoTestUtils.AuxiliaryData.noBlobZeroKey;
 
     // run test
     const result = getOgmiosRosenData(metadata);
@@ -91,7 +91,7 @@ describe('getOgmiosRosenData', () => {
     (key) => {
       // generate invalid rosen data (invalid key)
       const metadata = JSON.parse(
-        JSON.stringify(TestUtils.AuxiliaryData.validEvent).replace(
+        JSON.stringify(CardanoTestUtils.AuxiliaryData.validEvent).replace(
           key,
           key + 'Fake'
         )
@@ -118,7 +118,7 @@ describe('getOgmiosRosenData', () => {
    */
   it('should return undefined when rosenData contains invalid type for a required key', () => {
     // generate invalid rosen data (invalid type)
-    const metadata = TestUtils.AuxiliaryData.invalidType;
+    const metadata = CardanoTestUtils.AuxiliaryData.invalidType;
 
     // run test
     const result = getOgmiosRosenData(metadata);
@@ -140,7 +140,7 @@ describe('getOgmiosRosenData', () => {
    */
   it('should return undefined when metadata is not json', () => {
     // generate invalid rosen data (no json metadata)
-    const metadata = TestUtils.AuxiliaryData.noJson;
+    const metadata = CardanoTestUtils.AuxiliaryData.noJson;
 
     // run test
     const result = getOgmiosRosenData(metadata);

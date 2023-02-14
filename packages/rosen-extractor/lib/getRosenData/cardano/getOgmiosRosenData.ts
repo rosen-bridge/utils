@@ -2,7 +2,7 @@ import {
   CardanoRosenData,
   JsonObject,
   MetadataObject,
-  RawCardanoRosenData,
+  CardanoMetadataRosenData,
 } from './types';
 import AbstractLogger from '../../logger/AbstractLogger';
 import { AuxiliaryData } from '@cardano-ogmios/schema';
@@ -18,7 +18,8 @@ const isCardanoRosenData = (
 ): metadataObject is JsonObject => {
   if (!isPlainObject(metadataObject)) return false;
 
-  const assertedMetadataObject = metadataObject as Partial<RawCardanoRosenData>;
+  const assertedMetadataObject =
+    metadataObject as Partial<CardanoMetadataRosenData>;
 
   const isToChainValid = isString(assertedMetadataObject.to);
   const isNetworkFeeValid = isString(assertedMetadataObject.networkFee);
@@ -52,7 +53,7 @@ const getOgmiosRosenData = (
       const value = Utils.getDictValue(blob['0']);
 
       if (isCardanoRosenData(value)) {
-        const rawRosenData = value as unknown as RawCardanoRosenData;
+        const rawRosenData = value as unknown as CardanoMetadataRosenData;
         return {
           toChain: rawRosenData.to,
           bridgeFee: rawRosenData.bridgeFee,

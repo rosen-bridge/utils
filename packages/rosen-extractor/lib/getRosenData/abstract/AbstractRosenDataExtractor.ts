@@ -21,5 +21,5 @@ export default abstract class AbstractRosenDataExtractor {
   /**
    * extracts RosenData from given lock transaction
    */
-  abstract get: (transaction: unknown) => RosenData | undefined;
+  abstract get: (transaction: any) => RosenData | undefined;
 }
