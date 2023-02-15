@@ -186,13 +186,41 @@ describe('KoiosRosenExtractor', () => {
      * Dependencies:
      *  -
      * Scenario:
+     *  generate a UTXO with valid asset transformation in index 1
+     *  run test
+     *  check return value
+     * Expected:
+     *  function returns tokenTransformation object
+     */
+    it('should be able to extract asset transformation regardless of asset position', () => {
+      // generate a UTXO with valid asset transformation in index 1
+      const adaLockedUtxo = CardanoTestUtils.koiosUtxos.secondAssetLocked;
+
+      // run test
+      const extractor = new KoiosRosenExtractor(
+        CardanoTestUtils.lockAddress,
+        TestUtils.tokens
+      );
+      const result = extractor.getAssetTransformation(adaLockedUtxo, toChain);
+
+      // check return value
+      expect(result).toStrictEqual(
+        CardanoTestUtils.koiosAssetTransformations.tokenLocked
+      );
+    });
+
+    /**
+     * Target: KoiosRosenExtractor.getAssetTransformation
+     * Dependencies:
+     *  -
+     * Scenario:
      *  generate a UTXO with invalid asset transformation
      *  run test
      *  check return value
      * Expected:
-     *  function returns undefined
+     *  function returns tokenTransformation object
      */
-    it('should return undefined when first locked asset is not supported', () => {
+    it('should return ADA transformation when no locked asset is not supported', () => {
       // generate a UTXO with invalid asset transformation
       const adaLockedUtxo = CardanoTestUtils.koiosUtxos.wrongAssetLocked;
 
@@ -204,7 +232,9 @@ describe('KoiosRosenExtractor', () => {
       const result = extractor.getAssetTransformation(adaLockedUtxo, toChain);
 
       // check return value
-      expect(result).toBeUndefined();
+      expect(result).toStrictEqual(
+        CardanoTestUtils.koiosAssetTransformations.wrongAssetLocked
+      );
     });
 
     /**

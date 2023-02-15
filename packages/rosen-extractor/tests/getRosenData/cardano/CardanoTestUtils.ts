@@ -318,6 +318,30 @@ export default class CardanoTestUtils {
       value: '1000000000',
       asset_list: [],
     },
+    secondAssetLocked: {
+      payment_addr: {
+        bech32:
+          'addr_test1vze7yqqlg8cjlyhz7jzvsg0f3fhxpuu6m3llxrajfzqecggw704re',
+        cred: 'b3e2001f41f12f92e2f484c821e98a6e60f39adc7ff30fb248819c21',
+      },
+      tx_hash:
+        '9f00d372e930d685c3b410a10f2bd035cd9a927c4fd8ef8e419c79b210af7ba6',
+      stake_addr: null,
+      tx_index: 0,
+      value: '10000000',
+      asset_list: [
+        {
+          policy_id: 'ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2',
+          asset_name: '646f6765',
+          quantity: '10',
+        },
+        {
+          policy_id: 'ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2',
+          asset_name: '7369676d61',
+          quantity: '10',
+        },
+      ],
+    },
     wrongAssetLocked: {
       payment_addr: {
         bech32:
@@ -349,6 +373,11 @@ export default class CardanoTestUtils {
       from: 'lovelace',
       to: 'f6a69529b12a7e2326acffee8383e0c44408f87a872886fadf410fe8498006d3',
       amount: '1000000000',
+    },
+    wrongAssetLocked: {
+      from: 'lovelace',
+      to: 'f6a69529b12a7e2326acffee8383e0c44408f87a872886fadf410fe8498006d3',
+      amount: '10000000',
     },
   };
 

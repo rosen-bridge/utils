@@ -192,14 +192,14 @@ describe('OgmiosRosenExtractor', () => {
      * Dependencies:
      *  -
      * Scenario:
-     *  generate a UTXO with invalid asset transformation
+     *  generate a UTXO with valid asset transformation in index 1
      *  run test
      *  check return value
      * Expected:
      *  function returns tokenTransformation object
      */
     it('should be able to extract asset transformation regardless of asset position', () => {
-      // generate a UTXO with invalid asset transformation
+      // generate a UTXO with valid asset transformation in index 1
       const adaLockedUtxo = CardanoTestUtils.ogmiosTxOuts.secondAssetLocked;
 
       // run test

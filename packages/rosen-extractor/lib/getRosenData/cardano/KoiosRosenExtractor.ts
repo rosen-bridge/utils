@@ -82,20 +82,20 @@ export class KoiosRosenExtractor extends AbstractRosenDataExtractor {
     box: Utxo,
     toChain: string
   ): TokenTransformation | undefined => {
-    // try to build transformation using first locked asset
+    // try to build transformation using locked assets
     if (box.asset_list.length > 0) {
-      const asset = box.asset_list[0];
-      const token = this.tokens.search(CARDANO_CHAIN, {
-        assetName: asset.asset_name,
-        policyId: asset.policy_id,
-      });
-      if (token.length > 0)
-        return {
-          from: this.tokens.getID(token[0], CARDANO_CHAIN),
-          to: this.tokens.getID(token[0], toChain),
-          amount: asset.quantity,
-        };
-      else return undefined;
+      for (const asset of box.asset_list) {
+        const token = this.tokens.search(CARDANO_CHAIN, {
+          assetName: asset.asset_name,
+          policyId: asset.policy_id,
+        });
+        if (token.length > 0)
+          return {
+            from: this.tokens.getID(token[0], CARDANO_CHAIN),
+            to: this.tokens.getID(token[0], toChain),
+            amount: asset.quantity,
+          };
+      }
     }
 
     // try to build transformation using locked ADA

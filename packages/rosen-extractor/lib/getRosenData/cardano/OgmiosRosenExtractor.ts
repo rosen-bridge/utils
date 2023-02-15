@@ -86,7 +86,7 @@ export class OgmiosRosenExtractor extends AbstractRosenDataExtractor {
     box: TxOut,
     toChain: string
   ): TokenTransformation | undefined => {
-    // try to build transformation using first locked asset
+    // try to build transformation using locked assets
     if (box.value.assets) {
       const assets = Object.keys(box.value.assets);
       if (assets.length > 0) {
