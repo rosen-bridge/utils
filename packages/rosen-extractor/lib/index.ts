@@ -1,5 +1,5 @@
 export { KoiosRosenExtractor } from './getRosenData/cardano/KoiosRosenExtractor';
-export { getOgmiosRosenData } from './getRosenData/cardano/getOgmiosRosenData';
+export { OgmiosRosenExtractor } from './getRosenData/cardano/OgmiosRosenExtractor';
 export { CardanoRosenData } from './getRosenData/cardano/types';
 
 export { getNodeRosenData } from './getRosenData/ergo/getNodeRosenData';
