@@ -59,7 +59,6 @@ export class OgmiosRosenExtractor extends AbstractRosenDataExtractor {
                   amount: assetTransformation.amount,
                   targetChainTokenId: assetTransformation.to,
                   sourceTxId: transaction.id,
-                  sourceBlockId: transaction.id, // TODO: fix this. should enter tx blockId
                 };
               }
             }

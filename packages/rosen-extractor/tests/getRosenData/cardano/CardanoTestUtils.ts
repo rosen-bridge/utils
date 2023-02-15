@@ -268,8 +268,6 @@ export default class CardanoTestUtils {
       targetChainTokenId: 'erg',
       sourceTxId:
         '9f00d372e930d685c3b410a10f2bd035cd9a927c4fd8ef8e419c79b210af7ba6',
-      sourceBlockId:
-        '2e930d689e38e9ecd3e000c432dcb2521aff4b5c00cabd6422fd738058e419c7',
     },
     validAdaLock: {
       toChain: 'ergo',
@@ -284,8 +282,6 @@ export default class CardanoTestUtils {
         'f6a69529b12a7e2326acffee8383e0c44408f87a872886fadf410fe8498006d3',
       sourceTxId:
         '9f00d372e930d685c3b410a10f2bd035cd9a927c4fd8ef8e419c79b210af7ba7',
-      sourceBlockId:
-        '7c914e850837df2246dbac00c5b4ffa1252bcd234c000e3dce9e83e986d039e2',
     },
   };
 
@@ -773,8 +769,6 @@ export default class CardanoTestUtils {
       targetChainTokenId: 'erg',
       sourceTxId:
         '55ec4f12b1a8656e07bc5e4281af3c12bf7b63bf39811eb5762a2f522be2600f',
-      sourceBlockId:
-        '55ec4f12b1a8656e07bc5e4281af3c12bf7b63bf39811eb5762a2f522be2600f',
     },
     validAdaLock: {
       toChain: 'ergo',
@@ -788,8 +782,6 @@ export default class CardanoTestUtils {
       targetChainTokenId:
         'f6a69529b12a7e2326acffee8383e0c44408f87a872886fadf410fe8498006d3',
       sourceTxId:
-        '55ec4f12b1a8656e07bc5e4281af3c12bf7b63bf39811eb5762a2f522be2600f',
-      sourceBlockId:
         '55ec4f12b1a8656e07bc5e4281af3c12bf7b63bf39811eb5762a2f522be2600f',
     },
   };

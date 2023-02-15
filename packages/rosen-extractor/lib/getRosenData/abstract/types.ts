@@ -8,7 +8,6 @@ interface RosenData {
   amount: string;
   targetChainTokenId: string;
   sourceTxId: string;
-  sourceBlockId: string;
 }
 
 export { RosenData };

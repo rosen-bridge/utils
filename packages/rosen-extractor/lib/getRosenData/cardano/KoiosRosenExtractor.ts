@@ -56,7 +56,6 @@ export class KoiosRosenExtractor extends AbstractRosenDataExtractor {
                 amount: assetTransformation.amount,
                 targetChainTokenId: assetTransformation.to,
                 sourceTxId: transaction.tx_hash,
-                sourceBlockId: transaction.block_hash,
               };
             }
           }
