@@ -126,6 +126,114 @@ describe('OgmiosRosenExtractor', () => {
         expect(result).toBeUndefined();
       }
     );
+
+    /**
+     * Target: OgmiosRosenExtractor.get
+     * Dependencies:
+     *  -
+     * Scenario:
+     *  generate a transaction with invalid rosen data (no blob key in metadata)
+     *  run test
+     *  check return value
+     * Expected:
+     *  function returns rosenData object
+     */
+    it('should return undefined when metadata has no blob', () => {
+      // generate a transaction with invalid rosen data (no blob key in metadata)
+      const noLock = CardanoTestUtils.ogmiosTransactions
+        .noBlobMetadata as unknown as TxBabbage;
+
+      // run test
+      const extractor = new OgmiosRosenExtractor(
+        CardanoTestUtils.lockAddress,
+        TestUtils.tokens
+      );
+      const result = extractor.get(noLock);
+
+      // check return value
+      expect(result).toBeUndefined();
+    });
+
+    /**
+     * Target: OgmiosRosenExtractor.get
+     * Dependencies:
+     *  -
+     * Scenario:
+     *  generate a transaction with invalid rosen data (no '0' key in blob)
+     *  run test
+     *  check return value
+     * Expected:
+     *  function returns rosenData object
+     */
+    it("should return undefined when metadata blob missing '0' key", () => {
+      // generate a transaction with invalid rosen data (no '0' key in blob)
+      const noLock = CardanoTestUtils.ogmiosTransactions
+        .noBlobZeroKeyMetadata as unknown as TxBabbage;
+
+      // run test
+      const extractor = new OgmiosRosenExtractor(
+        CardanoTestUtils.lockAddress,
+        TestUtils.tokens
+      );
+      const result = extractor.get(noLock);
+
+      // check return value
+      expect(result).toBeUndefined();
+    });
+
+    /**
+     * Target: OgmiosRosenExtractor.get
+     * Dependencies:
+     *  -
+     * Scenario:
+     *  generate a transaction with invalid rosen data (invalid type metadata)
+     *  run test
+     *  check return value
+     * Expected:
+     *  function returns rosenData object
+     */
+    it('should return undefined when rosenData contains invalid type for a required key', () => {
+      // generate a transaction with invalid rosen data (invalid type metadata)
+      const noLock = CardanoTestUtils.ogmiosTransactions
+        .invalidTypeMetadata as unknown as TxBabbage;
+
+      // run test
+      const extractor = new OgmiosRosenExtractor(
+        CardanoTestUtils.lockAddress,
+        TestUtils.tokens
+      );
+      const result = extractor.get(noLock);
+
+      // check return value
+      expect(result).toBeUndefined();
+    });
+
+    /**
+     * Target: OgmiosRosenExtractor.get
+     * Dependencies:
+     *  -
+     * Scenario:
+     *  generate a transaction with invalid rosen data (metadata is not json)
+     *  run test
+     *  check return value
+     * Expected:
+     *  function returns rosenData object
+     */
+    it('should return undefined when metadata is not json', () => {
+      // generate a transaction with invalid rosen data (no json in metadata)
+      const noLock = CardanoTestUtils.ogmiosTransactions
+        .noJsonMetadata as unknown as TxBabbage;
+
+      // run test
+      const extractor = new OgmiosRosenExtractor(
+        CardanoTestUtils.lockAddress,
+        TestUtils.tokens
+      );
+      const result = extractor.get(noLock);
+
+      // check return value
+      expect(result).toBeUndefined();
+    });
   });
 
   describe('getAssetTransformation', () => {

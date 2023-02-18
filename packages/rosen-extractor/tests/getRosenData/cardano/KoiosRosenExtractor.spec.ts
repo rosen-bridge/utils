@@ -102,7 +102,7 @@ describe('KoiosRosenExtractor', () => {
     it.each(['to', 'bridgeFee', 'networkFee', 'toAddress', 'fromAddress'])(
       'should return undefined when tx metadata does NOT contain %p',
       (key) => {
-        // generate a transaction with invalid rosen data (missing fromAddress key)
+        // generate a transaction with invalid rosen data (missing a key)
         const invalidTx = JSON.parse(
           JSON.stringify(
             CardanoTestUtils.koiosTransactions.validTokenLock
