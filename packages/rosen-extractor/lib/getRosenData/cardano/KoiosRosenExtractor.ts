@@ -102,7 +102,7 @@ export class KoiosRosenExtractor extends AbstractRosenDataExtractor {
     const lovelace = this.tokens.search(CARDANO_CHAIN, {
       [this.tokens.getIdKey(CARDANO_CHAIN)]: CARDANO_NATIVE_TOKEN,
     });
-    if (lovelace.length) {
+    if (lovelace.length > 0) {
       return {
         from: CARDANO_NATIVE_TOKEN,
         to: this.tokens.getID(lovelace[0], toChain),
