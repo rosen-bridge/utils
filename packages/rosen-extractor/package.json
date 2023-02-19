@@ -10,7 +10,7 @@
     "lint": "eslint --fix . && npm run prettify",
     "build": "tsc --build",
     "type-check": "tsc --noEmit",
-    "test": "jest",
+    "test": "jest --detectOpenHandles",
     "coverage": "c8 npm run test",
     "release": "npm run test && npm run build && npm publish --access public"
   },
