@@ -1,5 +1,5 @@
-import { OgmiosRosenExtractor } from '../../../lib';
-import CardanoTestUtils from './CardanoTestUtils';
+import { CardanoOgmiosRosenExtractor } from '../../../lib';
+import CardanoTestData from './CardanoTestData';
 import TestUtils from '../TestUtils';
 import { TxBabbage } from '@cardano-ogmios/schema';
 import Utils from '../../../lib/getRosenData/Utils';
@@ -20,19 +20,19 @@ describe('OgmiosRosenExtractor', () => {
      */
     it('should extract rosenData from token locking tx successfully', () => {
       // generate a transaction with valid rosen data (locking token)
-      const validTokenLockTx = CardanoTestUtils.ogmiosTransactions
+      const validTokenLockTx = CardanoTestData.ogmiosTransactions
         .validTokenLock as unknown as TxBabbage;
 
       // run test
-      const extractor = new OgmiosRosenExtractor(
-        CardanoTestUtils.lockAddress,
+      const extractor = new CardanoOgmiosRosenExtractor(
+        CardanoTestData.lockAddress,
         TestUtils.tokens
       );
       const result = extractor.get(validTokenLockTx);
 
       // check return value
       expect(result).toStrictEqual(
-        CardanoTestUtils.ogmiosRosenData.validTokenLock
+        CardanoTestData.ogmiosRosenData.validTokenLock
       );
     });
 
@@ -49,19 +49,19 @@ describe('OgmiosRosenExtractor', () => {
      */
     it('should extract rosenData from ADA locking tx successfully', () => {
       // generate a transaction with valid rosen data (locking ADA)
-      const validAdaLockTx = CardanoTestUtils.ogmiosTransactions
+      const validAdaLockTx = CardanoTestData.ogmiosTransactions
         .validAdaLock as unknown as TxBabbage;
 
       // run test
-      const extractor = new OgmiosRosenExtractor(
-        CardanoTestUtils.lockAddress,
+      const extractor = new CardanoOgmiosRosenExtractor(
+        CardanoTestData.lockAddress,
         TestUtils.tokens
       );
       const result = extractor.get(validAdaLockTx);
 
       // check return value
       expect(result).toStrictEqual(
-        CardanoTestUtils.ogmiosRosenData.validAdaLock
+        CardanoTestData.ogmiosRosenData.validAdaLock
       );
     });
 
@@ -78,12 +78,12 @@ describe('OgmiosRosenExtractor', () => {
      */
     it('should return undefined when tx locks nothing', () => {
       // generate a transaction with no lock box
-      const noLock = CardanoTestUtils.ogmiosTransactions
+      const noLock = CardanoTestData.ogmiosTransactions
         .noLock as unknown as TxBabbage;
 
       // run test
-      const extractor = new OgmiosRosenExtractor(
-        CardanoTestUtils.lockAddress,
+      const extractor = new CardanoOgmiosRosenExtractor(
+        CardanoTestData.lockAddress,
         TestUtils.tokens
       );
       const result = extractor.get(noLock);
@@ -109,15 +109,15 @@ describe('OgmiosRosenExtractor', () => {
         // generate a transaction with invalid rosen data (missing fromAddress key)
         const invalidMetadata = Utils.JsonBI.parse(
           Utils.JsonBI.stringify(
-            CardanoTestUtils.ogmiosAuxiliaryData.validEvent
+            CardanoTestData.ogmiosAuxiliaryData.validEvent
           ).replace(key, key + 'Fake')
         );
-        const invalidTx = CardanoTestUtils.ogmiosTransactions.validTokenLock;
+        const invalidTx = CardanoTestData.ogmiosTransactions.validTokenLock;
         invalidTx.metadata = invalidMetadata;
 
         // run test
-        const extractor = new OgmiosRosenExtractor(
-          CardanoTestUtils.lockAddress,
+        const extractor = new CardanoOgmiosRosenExtractor(
+          CardanoTestData.lockAddress,
           TestUtils.tokens
         );
         const result = extractor.get(invalidTx as unknown as TxBabbage);
@@ -140,12 +140,12 @@ describe('OgmiosRosenExtractor', () => {
      */
     it('should return undefined when metadata has no blob', () => {
       // generate a transaction with invalid rosen data (no blob key in metadata)
-      const noLock = CardanoTestUtils.ogmiosTransactions
+      const noLock = CardanoTestData.ogmiosTransactions
         .noBlobMetadata as unknown as TxBabbage;
 
       // run test
-      const extractor = new OgmiosRosenExtractor(
-        CardanoTestUtils.lockAddress,
+      const extractor = new CardanoOgmiosRosenExtractor(
+        CardanoTestData.lockAddress,
         TestUtils.tokens
       );
       const result = extractor.get(noLock);
@@ -167,12 +167,12 @@ describe('OgmiosRosenExtractor', () => {
      */
     it("should return undefined when metadata blob missing '0' key", () => {
       // generate a transaction with invalid rosen data (no '0' key in blob)
-      const noLock = CardanoTestUtils.ogmiosTransactions
+      const noLock = CardanoTestData.ogmiosTransactions
         .noBlobZeroKeyMetadata as unknown as TxBabbage;
 
       // run test
-      const extractor = new OgmiosRosenExtractor(
-        CardanoTestUtils.lockAddress,
+      const extractor = new CardanoOgmiosRosenExtractor(
+        CardanoTestData.lockAddress,
         TestUtils.tokens
       );
       const result = extractor.get(noLock);
@@ -194,12 +194,12 @@ describe('OgmiosRosenExtractor', () => {
      */
     it('should return undefined when rosenData contains invalid type for a required key', () => {
       // generate a transaction with invalid rosen data (invalid type metadata)
-      const noLock = CardanoTestUtils.ogmiosTransactions
+      const noLock = CardanoTestData.ogmiosTransactions
         .invalidTypeMetadata as unknown as TxBabbage;
 
       // run test
-      const extractor = new OgmiosRosenExtractor(
-        CardanoTestUtils.lockAddress,
+      const extractor = new CardanoOgmiosRosenExtractor(
+        CardanoTestData.lockAddress,
         TestUtils.tokens
       );
       const result = extractor.get(noLock);
@@ -221,12 +221,12 @@ describe('OgmiosRosenExtractor', () => {
      */
     it('should return undefined when metadata is not json', () => {
       // generate a transaction with invalid rosen data (no json in metadata)
-      const noLock = CardanoTestUtils.ogmiosTransactions
+      const noLock = CardanoTestData.ogmiosTransactions
         .noJsonMetadata as unknown as TxBabbage;
 
       // run test
-      const extractor = new OgmiosRosenExtractor(
-        CardanoTestUtils.lockAddress,
+      const extractor = new CardanoOgmiosRosenExtractor(
+        CardanoTestData.lockAddress,
         TestUtils.tokens
       );
       const result = extractor.get(noLock);
@@ -252,18 +252,18 @@ describe('OgmiosRosenExtractor', () => {
      */
     it('should extract asset transformation from token locked UTXO successfully', () => {
       // generate a UTXO with valid asset transformation
-      const tokenLockedUtxo = CardanoTestUtils.ogmiosTxOuts.tokenLocked;
+      const tokenLockedUtxo = CardanoTestData.ogmiosTxOuts.tokenLocked;
 
       // run test
-      const extractor = new OgmiosRosenExtractor(
-        CardanoTestUtils.lockAddress,
+      const extractor = new CardanoOgmiosRosenExtractor(
+        CardanoTestData.lockAddress,
         TestUtils.tokens
       );
       const result = extractor.getAssetTransformation(tokenLockedUtxo, toChain);
 
       // check return value
       expect(result).toStrictEqual(
-        CardanoTestUtils.ogmiosAssetTransformations.tokenLocked
+        CardanoTestData.ogmiosAssetTransformations.tokenLocked
       );
     });
 
@@ -280,18 +280,18 @@ describe('OgmiosRosenExtractor', () => {
      */
     it('should extract asset transformation from ADA locked UTXO successfully', () => {
       // generate a UTXO with valid native token transformation
-      const adaLockedUtxo = CardanoTestUtils.ogmiosTxOuts.adaLocked;
+      const adaLockedUtxo = CardanoTestData.ogmiosTxOuts.adaLocked;
 
       // run test
-      const extractor = new OgmiosRosenExtractor(
-        CardanoTestUtils.lockAddress,
+      const extractor = new CardanoOgmiosRosenExtractor(
+        CardanoTestData.lockAddress,
         TestUtils.tokens
       );
       const result = extractor.getAssetTransformation(adaLockedUtxo, toChain);
 
       // check return value
       expect(result).toStrictEqual(
-        CardanoTestUtils.ogmiosAssetTransformations.adaLocked
+        CardanoTestData.ogmiosAssetTransformations.adaLocked
       );
     });
 
@@ -308,18 +308,18 @@ describe('OgmiosRosenExtractor', () => {
      */
     it('should be able to extract asset transformation regardless of asset position', () => {
       // generate a UTXO with valid asset transformation in index 1
-      const adaLockedUtxo = CardanoTestUtils.ogmiosTxOuts.secondAssetLocked;
+      const adaLockedUtxo = CardanoTestData.ogmiosTxOuts.secondAssetLocked;
 
       // run test
-      const extractor = new OgmiosRosenExtractor(
-        CardanoTestUtils.lockAddress,
+      const extractor = new CardanoOgmiosRosenExtractor(
+        CardanoTestData.lockAddress,
         TestUtils.tokens
       );
       const result = extractor.getAssetTransformation(adaLockedUtxo, toChain);
 
       // check return value
       expect(result).toStrictEqual(
-        CardanoTestUtils.ogmiosAssetTransformations.tokenLocked
+        CardanoTestData.ogmiosAssetTransformations.tokenLocked
       );
     });
 
@@ -336,18 +336,18 @@ describe('OgmiosRosenExtractor', () => {
      */
     it('should return ADA transformation when no locked asset is not supported', () => {
       // generate a UTXO with invalid asset transformation
-      const adaLockedUtxo = CardanoTestUtils.ogmiosTxOuts.wrongAssetLocked;
+      const adaLockedUtxo = CardanoTestData.ogmiosTxOuts.wrongAssetLocked;
 
       // run test
-      const extractor = new OgmiosRosenExtractor(
-        CardanoTestUtils.lockAddress,
+      const extractor = new CardanoOgmiosRosenExtractor(
+        CardanoTestData.lockAddress,
         TestUtils.tokens
       );
       const result = extractor.getAssetTransformation(adaLockedUtxo, toChain);
 
       // check return value
       expect(result).toStrictEqual(
-        CardanoTestUtils.ogmiosAssetTransformations.wrongAssetLocked
+        CardanoTestData.ogmiosAssetTransformations.wrongAssetLocked
       );
     });
 
@@ -364,11 +364,11 @@ describe('OgmiosRosenExtractor', () => {
      */
     it('should return undefined when no asset locked and ADA is not supported', () => {
       // generate a UTXO with invalid asset transformation
-      const adaLockedUtxo = CardanoTestUtils.ogmiosTxOuts.adaLocked;
+      const adaLockedUtxo = CardanoTestData.ogmiosTxOuts.adaLocked;
 
       // run test
-      const extractor = new OgmiosRosenExtractor(
-        CardanoTestUtils.lockAddress,
+      const extractor = new CardanoOgmiosRosenExtractor(
+        CardanoTestData.lockAddress,
         TestUtils.noNativeTokens
       );
       const result = extractor.getAssetTransformation(adaLockedUtxo, toChain);

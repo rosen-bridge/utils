@@ -1,4 +1,4 @@
-export { KoiosRosenExtractor } from './getRosenData/cardano/KoiosRosenExtractor';
-export { OgmiosRosenExtractor } from './getRosenData/cardano/OgmiosRosenExtractor';
-export { NodeRosenExtractor } from './getRosenData/ergo/NodeRosenExtractor';
+export { CardanoKoiosRosenExtractor } from './getRosenData/cardano/CardanoKoiosRosenExtractor';
+export { CardanoOgmiosRosenExtractor } from './getRosenData/cardano/CardanoOgmiosRosenExtractor';
+export { ErgoNodeRosenExtractor } from './getRosenData/ergo/ErgoNodeRosenExtractor';
 export { RosenData } from './getRosenData/abstract/types';

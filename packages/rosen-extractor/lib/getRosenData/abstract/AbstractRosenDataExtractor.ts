@@ -8,7 +8,7 @@ export default abstract class AbstractRosenDataExtractor {
   protected readonly tokens: TokenMap;
   protected readonly lockAddress: string;
 
-  protected constructor(
+  constructor(
     lockAddress: string,
     tokens: RosenTokens,
     logger?: AbstractLogger

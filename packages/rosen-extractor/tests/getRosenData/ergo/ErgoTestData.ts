@@ -1,4 +1,4 @@
-class ErgoTestUtils {
+class ErgoTestData {
   static lockAddress =
     '2CBjjwbY9Rokj7Ue9qT2pbMR2WhLDmdcL2V9pRgCEEMks9QRXiQ7K73wNANLAczY1XLimkNBu6Nt3hW1zACrk4zQxu';
 
@@ -731,4 +731,4 @@ class ErgoTestUtils {
   };
 }
 
-export default ErgoTestUtils;
+export default ErgoTestData;

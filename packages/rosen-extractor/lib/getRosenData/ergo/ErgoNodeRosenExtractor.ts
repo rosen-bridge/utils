@@ -1,12 +1,12 @@
-import { RosenTokens } from '@rosen-bridge/tokens';
 import { RosenData } from '../abstract/types';
-import AbstractLogger from '../../logger/AbstractLogger';
 import AbstractRosenDataExtractor from '../abstract/AbstractRosenDataExtractor';
 import { ERGO_CHAIN, ERGO_NATIVE_TOKEN } from '../const';
 import { NodeOutputBox, NodeTransaction, TokenTransformation } from './types';
+import AbstractLogger from '../../logger/AbstractLogger';
+import { RosenTokens } from '@rosen-bridge/tokens';
 import { Address, Constant } from 'ergo-lib-wasm-nodejs';
 
-export class NodeRosenExtractor extends AbstractRosenDataExtractor {
+export class ErgoNodeRosenExtractor extends AbstractRosenDataExtractor {
   lockErgoTree: string;
 
   constructor(
@@ -63,7 +63,7 @@ export class NodeRosenExtractor extends AbstractRosenDataExtractor {
       this.logger.debug(
         `An error occurred while getting Ergo rosen data: ${e}`
       );
-      const err = e as { stack?: string | undefined };
+      const err = e as { stack?: string };
       if (err.stack) {
         this.logger.debug(err.stack);
       }

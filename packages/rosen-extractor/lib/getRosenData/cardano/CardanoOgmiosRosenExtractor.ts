@@ -1,6 +1,4 @@
-import { RosenTokens } from '@rosen-bridge/tokens';
 import { RosenData } from '../abstract/types';
-import AbstractLogger from '../../logger/AbstractLogger';
 import AbstractRosenDataExtractor from '../abstract/AbstractRosenDataExtractor';
 import { CARDANO_CHAIN, CARDANO_NATIVE_TOKEN } from '../const';
 import Utils from '../Utils';
@@ -8,15 +6,7 @@ import { TxBabbage, TxOut } from '@cardano-ogmios/schema';
 import { CardanoMetadataRosenData, TokenTransformation } from './types';
 import { isArray, isString } from 'lodash-es';
 
-export class OgmiosRosenExtractor extends AbstractRosenDataExtractor {
-  constructor(
-    lockAddress: string,
-    tokens: RosenTokens,
-    logger?: AbstractLogger
-  ) {
-    super(lockAddress, tokens, logger);
-  }
-
+export class CardanoOgmiosRosenExtractor extends AbstractRosenDataExtractor {
   /**
    * extracts RosenData from given lock transaction in Ogmios format
    * @param transaction the lock transaction in Koios format
@@ -69,7 +59,7 @@ export class OgmiosRosenExtractor extends AbstractRosenDataExtractor {
       this.logger.debug(
         `An error occurred while getting Cardano rosen data from Ogmios: ${e}`
       );
-      const err = e as { stack?: string | undefined };
+      const err = e as { stack?: string };
       if (err.stack) {
         this.logger.debug(err.stack);
       }

@@ -1,6 +1,4 @@
-import { RosenTokens } from '@rosen-bridge/tokens';
 import { RosenData } from '../abstract/types';
-import AbstractLogger from '../../logger/AbstractLogger';
 import AbstractRosenDataExtractor from '../abstract/AbstractRosenDataExtractor';
 import { CARDANO_CHAIN, CARDANO_NATIVE_TOKEN } from '../const';
 import {
@@ -10,15 +8,7 @@ import {
   Utxo,
 } from './types';
 
-export class KoiosRosenExtractor extends AbstractRosenDataExtractor {
-  constructor(
-    lockAddress: string,
-    tokens: RosenTokens,
-    logger?: AbstractLogger
-  ) {
-    super(lockAddress, tokens, logger);
-  }
-
+export class CardanoKoiosRosenExtractor extends AbstractRosenDataExtractor {
   /**
    * extracts RosenData from given lock transaction in Koios format
    * @param transaction the lock transaction in Koios format
@@ -65,7 +55,7 @@ export class KoiosRosenExtractor extends AbstractRosenDataExtractor {
       this.logger.debug(
         `An error occurred while getting Cardano rosen data from Koios: ${e}`
       );
-      const err = e as { stack?: string | undefined };
+      const err = e as { stack?: string };
       if (err.stack) {
         this.logger.debug(err.stack);
       }
