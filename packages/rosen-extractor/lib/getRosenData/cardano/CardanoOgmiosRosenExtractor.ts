@@ -59,9 +59,8 @@ export class CardanoOgmiosRosenExtractor extends AbstractRosenDataExtractor<TxBa
       this.logger.debug(
         `An error occurred while getting Cardano rosen data from Ogmios: ${e}`
       );
-      const err = e as { stack?: string };
-      if (err.stack) {
-        this.logger.debug(err.stack);
+      if (e instanceof Error && e.stack) {
+        this.logger.debug(e.stack);
       }
     }
     return undefined;
