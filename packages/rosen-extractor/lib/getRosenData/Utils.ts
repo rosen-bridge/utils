@@ -6,8 +6,14 @@ import {
   Map,
 } from '@cardano-ogmios/schema';
 import { JsonObject, ListObject, MetadataObject } from './cardano/types';
+import JSONBigInt from 'json-bigint';
 
 class Utils {
+  static JsonBI = JSONBigInt({
+    useNativeBigInt: true,
+    alwaysParseAsBig: true,
+  });
+
   /**
    * extracts int value from Metadatum object
    * @param val
@@ -51,7 +57,7 @@ class Utils {
   };
 
   /**
-   * Extract one of int or string from Metadatum object
+   * extracts one of int or string from Metadatum object
    * @param val
    * @returns : native value or undefined if parameter is not a string or int
    */
@@ -63,7 +69,7 @@ class Utils {
   };
 
   /**
-   * Extract dictionary from Metadatum object
+   * extracts dictionary from Metadatum object
    * @param val
    * @returns : dictionary value or undefined if parameter is not a dict
    */

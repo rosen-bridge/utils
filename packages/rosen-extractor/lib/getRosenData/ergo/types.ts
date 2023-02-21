@@ -1,13 +1,3 @@
-interface ErgoRosenData {
-  toChain: string;
-  toAddress: string;
-  networkFee: string;
-  bridgeFee: string;
-  fromAddress: string;
-  tokenId: string;
-  amount: bigint;
-}
-
 interface NodeAsset {
   tokenId: string;
   amount: bigint;
@@ -49,4 +39,10 @@ interface NodeTransaction {
   size?: bigint;
 }
 
-export { ErgoRosenData, NodeOutputBox, NodeTransaction };
+interface TokenTransformation {
+  from: string;
+  to: string;
+  amount: bigint;
+}
+
+export { NodeOutputBox, NodeTransaction, TokenTransformation };

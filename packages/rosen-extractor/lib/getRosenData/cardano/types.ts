@@ -1,3 +1,41 @@
+interface PaymentAddr {
+  bech32: string;
+  cred: string;
+}
+
+interface Asset {
+  policy_id: string;
+  asset_name: string;
+  quantity: string;
+}
+
+interface Utxo {
+  payment_addr: PaymentAddr;
+  stake_addr?: string | null;
+  tx_hash: string;
+  tx_index: number;
+  value: string;
+  asset_list: Array<Asset>;
+}
+
+interface Metadata {
+  [key: string]: Record<string, unknown>;
+}
+
+interface KoiosTransaction {
+  tx_hash: string;
+  block_hash: string;
+  inputs: Array<Utxo>;
+  outputs: Array<Utxo>;
+  metadata?: Metadata;
+}
+
+interface TokenTransformation {
+  from: string;
+  to: string;
+  amount: string;
+}
+
 interface CardanoRosenData {
   toChain: string;
   toAddress: string;
@@ -6,16 +44,12 @@ interface CardanoRosenData {
   fromAddress: string;
 }
 
-interface RawCardanoRosenData {
+interface CardanoMetadataRosenData {
   to: string;
   networkFee: string;
   bridgeFee: string;
   toAddress: string;
   fromAddress: string[];
-}
-
-interface MetaData {
-  [key: string]: JSON;
 }
 
 type ListObject = Array<MetadataObject>;
@@ -26,9 +60,12 @@ interface JsonObject {
 type MetadataObject = JsonObject | ListObject | NativeValue;
 
 export {
+  Utxo,
+  KoiosTransaction,
+  TokenTransformation,
   CardanoRosenData,
-  RawCardanoRosenData,
-  MetaData,
+  CardanoMetadataRosenData,
+  Metadata,
   MetadataObject,
   JsonObject,
   ListObject,
