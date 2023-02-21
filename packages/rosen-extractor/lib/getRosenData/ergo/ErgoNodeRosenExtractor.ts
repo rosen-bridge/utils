@@ -6,7 +6,7 @@ import AbstractLogger from '../../logger/AbstractLogger';
 import { RosenTokens } from '@rosen-bridge/tokens';
 import { Address, Constant } from 'ergo-lib-wasm-nodejs';
 
-export class ErgoNodeRosenExtractor extends AbstractRosenDataExtractor {
+export class ErgoNodeRosenExtractor extends AbstractRosenDataExtractor<NodeTransaction> {
   lockErgoTree: string;
 
   constructor(
@@ -27,11 +27,7 @@ export class ErgoNodeRosenExtractor extends AbstractRosenDataExtractor {
   get = (transaction: NodeTransaction): RosenData | undefined => {
     try {
       for (const box of transaction.outputs) {
-        if (
-          box.ergoTree === this.lockErgoTree &&
-          box.additionalRegisters &&
-          box.additionalRegisters.R4
-        ) {
+        if (box.ergoTree === this.lockErgoTree && box.additionalRegisters?.R4) {
           const R4 = Constant.decode_from_base16(box.additionalRegisters.R4);
           if (R4) {
             const R4Serialized = R4.to_coll_coll_byte();

@@ -6,7 +6,7 @@ import { TxBabbage, TxOut } from '@cardano-ogmios/schema';
 import { CardanoMetadataRosenData, TokenTransformation } from './types';
 import { isArray, isString } from 'lodash-es';
 
-export class CardanoOgmiosRosenExtractor extends AbstractRosenDataExtractor {
+export class CardanoOgmiosRosenExtractor extends AbstractRosenDataExtractor<TxBabbage> {
   /**
    * extracts RosenData from given lock transaction in Ogmios format
    * @param transaction the lock transaction in Koios format

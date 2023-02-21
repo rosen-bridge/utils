@@ -3,7 +3,7 @@ import DummyLogger from '../../logger/DummyLogger';
 import { RosenTokens, TokenMap } from '@rosen-bridge/tokens';
 import { RosenData } from './types';
 
-export default abstract class AbstractRosenDataExtractor {
+export default abstract class AbstractRosenDataExtractor<TransactionType> {
   protected readonly logger: AbstractLogger;
   protected readonly tokens: TokenMap;
   protected readonly lockAddress: string;
@@ -21,5 +21,5 @@ export default abstract class AbstractRosenDataExtractor {
   /**
    * extracts RosenData from given lock transaction
    */
-  abstract get: (transaction: any) => RosenData | undefined;
+  abstract get: (transaction: TransactionType) => RosenData | undefined;
 }

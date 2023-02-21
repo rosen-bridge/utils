@@ -8,7 +8,7 @@ import {
   Utxo,
 } from './types';
 
-export class CardanoKoiosRosenExtractor extends AbstractRosenDataExtractor {
+export class CardanoKoiosRosenExtractor extends AbstractRosenDataExtractor<KoiosTransaction> {
   /**
    * extracts RosenData from given lock transaction in Koios format
    * @param transaction the lock transaction in Koios format

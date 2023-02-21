@@ -117,6 +117,59 @@ describe('KoiosRosenExtractor', () => {
         expect(result).toBeUndefined();
       }
     );
+
+    /**
+     * Target: KoiosRosenExtractor.get
+     * Dependencies:
+     *  -
+     * Scenario:
+     *  generate a transaction with no rosen data
+     *  run test
+     *  check return value
+     * Expected:
+     *  function returns rosenData object
+     */
+    it('should return undefined when tx does NOT contain metadata', () => {
+      // generate a transaction with no rosen data
+      const noMetadata = CardanoTestData.koiosTransactions.noMetadata;
+
+      // run test
+      const extractor = new CardanoKoiosRosenExtractor(
+        CardanoTestData.lockAddress,
+        TestUtils.tokens
+      );
+      const result = extractor.get(noMetadata);
+
+      // check return value
+      expect(result).toBeUndefined();
+    });
+
+    /**
+     * Target: KoiosRosenExtractor.get
+     * Dependencies:
+     *  -
+     * Scenario:
+     *  generate a transaction with invalid rosen data (no '0' key in metadata)
+     *  run test
+     *  check return value
+     * Expected:
+     *  function returns rosenData object
+     */
+    it("should return undefined when metadata does NOT contain '0' key", () => {
+      // generate a transaction with invalid rosen data (no '0' key in metadata)
+      const noZeroKeyMetadata =
+        CardanoTestData.koiosTransactions.noZeroKeyMetadata;
+
+      // run test
+      const extractor = new CardanoKoiosRosenExtractor(
+        CardanoTestData.lockAddress,
+        TestUtils.tokens
+      );
+      const result = extractor.get(noZeroKeyMetadata);
+
+      // check return value
+      expect(result).toBeUndefined();
+    });
   });
 
   describe('getAssetTransformation', () => {

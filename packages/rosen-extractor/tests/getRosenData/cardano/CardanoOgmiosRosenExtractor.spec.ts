@@ -132,6 +132,33 @@ describe('OgmiosRosenExtractor', () => {
      * Dependencies:
      *  -
      * Scenario:
+     *  generate a transaction with no rosen data
+     *  run test
+     *  check return value
+     * Expected:
+     *  function returns rosenData object
+     */
+    it('should return undefined when tx does NOT contain metadata', () => {
+      // generate a transaction with no rosen data
+      const noLock = CardanoTestData.ogmiosTransactions
+        .noMetadata as unknown as TxBabbage;
+
+      // run test
+      const extractor = new CardanoOgmiosRosenExtractor(
+        CardanoTestData.lockAddress,
+        TestUtils.tokens
+      );
+      const result = extractor.get(noLock);
+
+      // check return value
+      expect(result).toBeUndefined();
+    });
+
+    /**
+     * Target: OgmiosRosenExtractor.get
+     * Dependencies:
+     *  -
+     * Scenario:
      *  generate a transaction with invalid rosen data (no blob key in metadata)
      *  run test
      *  check return value
@@ -165,7 +192,7 @@ describe('OgmiosRosenExtractor', () => {
      * Expected:
      *  function returns rosenData object
      */
-    it("should return undefined when metadata blob missing '0' key", () => {
+    it("should return undefined when metadata blob does NOT contain '0' key", () => {
       // generate a transaction with invalid rosen data (no '0' key in blob)
       const noLock = CardanoTestData.ogmiosTransactions
         .noBlobZeroKeyMetadata as unknown as TxBabbage;

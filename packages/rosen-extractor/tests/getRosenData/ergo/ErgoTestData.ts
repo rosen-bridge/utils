@@ -528,6 +528,109 @@ class ErgoTestData {
         mainChain: true,
       },
     ],
+    noRegister: [
+      {
+        boxId:
+          '75a836e2c548c4e47fa75761c85168e6f0563bf7ec9db4aa21b6863a701b0637',
+        transactionId:
+          'd04fc93dc15a28a1f0e50b0fffc94f360037dcedddaf8a2e25905a892cd48378',
+        blockId:
+          '6e74499171d828ee51266d3b65011cf958afe551ce7a0d74e5f6aba9029ae90c',
+        value: 1100000,
+        index: 0,
+        globalIndex: 548120,
+        creationHeight: 253476,
+        settlementHeight: 253478,
+        ergoTree:
+          '10010e20a6ac381e6fa99929fd1477b3ba9499790a775e91d4c14c5aa86e9a118dfac853d1aea4d9010163aedb63087201d901034d0e938c7203017300',
+        address:
+          '2CBjjwbY9Rokj7Ue9qT2pbMR2WhLDmdcL2V9pRgCEEMks9QRXiQ7K73wNANLAczY1XLimkNBu6Nt3hW1zACrk4zQxu',
+        assets: [
+          {
+            tokenId:
+              'f6a69529b12a7e2326acffee8383e0c44408f87a872886fadf410fe8498006d3',
+            index: 0,
+            amount: 2000000,
+            name: 'SWSE',
+            decimals: 0,
+            type: 'EIP-004',
+          },
+        ],
+        additionalRegisters: {},
+        spentTransactionId: null,
+        mainChain: true,
+      },
+      {
+        boxId:
+          'c9044cd4b2cbc1bca6acb3eae8a634533c8f91bb14fe1f04579b2ca240c56778',
+        transactionId:
+          'd04fc93dc15a28a1f0e50b0fffc94f360037dcedddaf8a2e25905a892cd48378',
+        blockId:
+          '6e74499171d828ee51266d3b65011cf958afe551ce7a0d74e5f6aba9029ae90c',
+        value: 997900000,
+        index: 1,
+        globalIndex: 548121,
+        creationHeight: 253476,
+        settlementHeight: 253478,
+        ergoTree:
+          '0008cd028bcc85fa22006fa13767ab00af28ae0b2389d576fb59cfd0e46865e0449eeb8a',
+        address: '9fadVRGYyiSBCgD7QtZU13BfGoDyTQ1oX918P8py22MJuMEwSuo',
+        assets: [
+          {
+            tokenId:
+              '064c58ea394d41fada074a3c560a132467adf4ca1512c409c014c625ca285e9c',
+            index: 0,
+            amount: 1,
+            name: null,
+            decimals: null,
+            type: null,
+          },
+          {
+            tokenId:
+              'a2a6c892c38d508a659caf857dbe29da4343371e597efd42e40f9bc99099a516',
+            index: 1,
+            amount: 9000,
+            name: 'RSN',
+            decimals: 0,
+            type: 'EIP-004',
+          },
+          {
+            tokenId:
+              '0034c44f0c7a38f833190d44125ff9b3a0dd9dbb89138160182a930bc521db95',
+            index: 2,
+            amount: 18,
+            name: 'SWSE',
+            decimals: 0,
+            type: 'EIP-004',
+          },
+        ],
+        additionalRegisters: {},
+        spentTransactionId:
+          'ce0208fb246f031d105ef48baeb45165dbcf201d06ecd2ea1cd3abb471864883',
+        mainChain: true,
+      },
+      {
+        boxId:
+          '158145208df21577e9832d7fbd3d945cf00b133b371acca53904380e7eeb6942',
+        transactionId:
+          'd04fc93dc15a28a1f0e50b0fffc94f360037dcedddaf8a2e25905a892cd48378',
+        blockId:
+          '6e74499171d828ee51266d3b65011cf958afe551ce7a0d74e5f6aba9029ae90c',
+        value: 1100000,
+        index: 2,
+        globalIndex: 548122,
+        creationHeight: 253476,
+        settlementHeight: 253478,
+        ergoTree:
+          '1005040004000e36100204a00b08cd0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ea02d192a39a8cc7a701730073011001020402d19683030193a38cc7b2a57300000193c2b2a57301007473027303830108cdeeac93b1a57304',
+        address:
+          '2iHkR7CWvD1R4j1yZg5bkeDRQavjAaVPeTDFGGLZduHyfWMuYpmhHocX8GJoaieTx78FntzJbCBVL6rf96ocJoZdmWBL2fci7NqWgAirppPQmZ7fN9V6z13Ay6brPriBKYqLp1bT2Fk4FkFLCfdPpe',
+        assets: [],
+        additionalRegisters: {},
+        spentTransactionId: null,
+        mainChain: true,
+      },
+    ],
   };
 
   static nodeTransactions = {
@@ -550,6 +653,10 @@ class ErgoTestData {
     invalidRegisterType: {
       ...this.nodeBaseTransaction,
       outputs: this.nodeTransactionOutputs.invalidRegisterType,
+    },
+    noRegister: {
+      ...this.nodeBaseTransaction,
+      outputs: this.nodeTransactionOutputs.noRegister,
     },
   };
 

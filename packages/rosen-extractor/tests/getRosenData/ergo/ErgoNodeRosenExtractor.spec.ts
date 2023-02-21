@@ -119,25 +119,22 @@ describe('ErgoNodeRosenExtractor', () => {
      * Dependencies:
      *  -
      * Scenario:
-     *  generate a transaction with invalid rosen data (invalid register type)
+     *  generate a transaction with invalid rosen data (no register)
      *  run test
      *  check return value
      * Expected:
      *  function returns undefined
      */
-    it('should return undefined when lock box R4 register type is invalid', () => {
-      // generate a transaction with invalid rosen data (invalid register type)
-      const invalidRegisterType =
-        ErgoTestData.nodeTransactions.invalidRegisterType;
+    it('should return undefined when lock box has no R4', () => {
+      // generate a transaction with invalid rosen data (no register)
+      const noRegister = ErgoTestData.nodeTransactions.noRegister;
 
       // run test
       const extractor = new ErgoNodeRosenExtractor(
         ErgoTestData.lockAddress,
         TestUtils.tokens
       );
-      const result = extractor.get(
-        invalidRegisterType as unknown as NodeTransaction
-      );
+      const result = extractor.get(noRegister as unknown as NodeTransaction);
 
       // check return value
       expect(result).toBeUndefined();
