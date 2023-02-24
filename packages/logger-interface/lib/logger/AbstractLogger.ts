@@ -1,6 +1,6 @@
 export abstract class AbstractLogger {
-  abstract info: (message: string) => void;
-  abstract warn: (message: string) => void;
-  abstract error: (message: string) => void;
-  abstract debug: (message: string) => void;
+  abstract info: (message: string) => unknown;
+  abstract warn: (message: string) => unknown;
+  abstract error: (message: string) => unknown;
+  abstract debug: (message: string) => unknown;
 }
