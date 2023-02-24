@@ -9,8 +9,8 @@
     "prettify": "prettier --write . --ignore-path .gitignore",
     "lint": "eslint --fix . && npm run prettify",
     "build": "tsc --build",
-    "test": "",
-    "coverage": "",
+    "test": "jest --passWithNoTests",
+    "coverage": "npm run test -- --coverage",
     "type-check": "tsc --noEmit",
     "release": "npm run test && npm run build && npm publish --access public"
   },
