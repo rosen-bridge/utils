@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/minimum-fee",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "this project gets minimum fee of the bridge for supported tokens from blockchain",
   "main": "dist/lib/index.js",
   "types": "dist/lib/index.d.ts",
