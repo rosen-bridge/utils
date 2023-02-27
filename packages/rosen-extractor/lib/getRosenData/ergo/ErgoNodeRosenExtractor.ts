@@ -4,7 +4,7 @@ import { ERGO_CHAIN, ERGO_NATIVE_TOKEN } from '../const';
 import { NodeOutputBox, NodeTransaction, TokenTransformation } from './types';
 import { RosenTokens } from '@rosen-bridge/tokens';
 import { Address, Constant } from 'ergo-lib-wasm-nodejs';
-import { AbstractLogger } from '@rosen-bridge/logger-interface/lib';
+import { AbstractLogger } from '@rosen-bridge/logger-interface';
 
 export class ErgoNodeRosenExtractor extends AbstractRosenDataExtractor<NodeTransaction> {
   lockErgoTree: string;
