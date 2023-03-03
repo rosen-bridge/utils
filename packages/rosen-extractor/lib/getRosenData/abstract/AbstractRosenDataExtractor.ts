@@ -1,7 +1,6 @@
-import AbstractLogger from '../../logger/AbstractLogger';
-import DummyLogger from '../../logger/DummyLogger';
 import { RosenTokens, TokenMap } from '@rosen-bridge/tokens';
 import { RosenData } from './types';
+import { AbstractLogger, DummyLogger } from '@rosen-bridge/logger-interface';
 
 export default abstract class AbstractRosenDataExtractor<TransactionType> {
   protected readonly logger: AbstractLogger;
