@@ -2,5 +2,6 @@
   "verbose": true,
   "testEnvironment": "node",
   "preset": "ts-jest/presets/js-with-babel",
+  "transformIgnorePatterns": ["node_modules/(?!(lodash-es)/)"],
   "coverageReporters": ["lcov", "cobertura", "text", "text-summary"]
 }
