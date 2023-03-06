@@ -66,4 +66,72 @@ const findLastReleasesWith = async (
   return result;
 };
 
-export { fetchReleasesPage, findLastReleasesWith };
+/**
+ * Check if an asset name matches a specific chain type
+ * @param chainType
+ */
+const assetNameMatchesChainType = (chainType: string) => (assetName: string) =>
+  new RegExp(`contracts-.+-${chainType}-.+.json`).test(assetName);
+
+/**
+ * Check if a release has at least one asset for a specific chain type
+ * @param chainType
+ * @param release
+ */
+const hasAssetForChainType = (chainType: string, release: GithubRelease) =>
+  release.assets
+    .map((asset) => asset.name)
+    .some(assetNameMatchesChainType(chainType));
+
+/**
+ * Return a function which checks if a release is not a prerelease and has some
+ * asset matching a specific chain type
+ * @param chainType
+ */
+const isLatestWithChainType = (chainType: string) => (release: GithubRelease) =>
+  !release.prerelease && hasAssetForChainType(chainType, release);
+
+/**
+ * Return a function which checks if a release is a prerelease and has some asset
+ * matching a specific chain type
+ * @param chainType
+ */
+const isPrereleaseWithChainType =
+  (chainType: string) => (release: GithubRelease) =>
+    release.prerelease && hasAssetForChainType(chainType, release);
+
+/**
+ * Find latest release having some asset matching a specific chain type
+ * @param chainType
+ */
+const findLatestRelease = async (chainType: string) => {
+  const [latest] = await findLastReleasesWith([
+    isLatestWithChainType(chainType),
+    isPrereleaseWithChainType(chainType),
+  ]);
+  return latest;
+};
+
+/**
+ * Find latest and prerelease releases having some asset matching a specific
+ * chain type
+ * @param chainType
+ */
+const findLatestAndPrereleaseReleases = async (chainType: string) => {
+  const [latest, prerelease] = await findLastReleasesWith([
+    isLatestWithChainType(chainType),
+    isPrereleaseWithChainType(chainType),
+  ]);
+  return { latest, prerelease };
+};
+
+export {
+  assetNameMatchesChainType,
+  fetchReleasesPage,
+  findLastReleasesWith,
+  findLatestAndPrereleaseReleases,
+  findLatestRelease,
+  hasAssetForChainType,
+  isLatestWithChainType,
+  isPrereleaseWithChainType,
+};
