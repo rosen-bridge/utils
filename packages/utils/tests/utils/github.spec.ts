@@ -16,18 +16,18 @@ import { DEFAULT_RELEASES_FETCHING_PAGE_SIZE } from '../../lib/constants';
 jest.mock('octokit');
 
 const mockOctokit = () =>
-  (Octokit as jest.MockedClass<typeof Octokit>).mockImplementation(() => {
+  jest.mocked(Octokit).mockImplementation(() => {
     let page = 0;
     return {
       rest: {
         repos: {
-          listReleases: (async () => {
+          listReleases: async () => {
             const currentIndex = DEFAULT_RELEASES_FETCHING_PAGE_SIZE * page;
             page += 1;
             return {
               data: releases.slice(currentIndex, currentIndex + 5),
             };
-          }) as any,
+          },
         },
       },
     } as any;
