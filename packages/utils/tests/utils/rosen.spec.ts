@@ -1,4 +1,4 @@
-import { isValidAssetName } from '../../lib/utils/rosen';
+import { isValidAssetName, truncateAssetName } from '../../lib/utils/rosen';
 
 describe('assetNameMatchesChainType', () => {
   /**
@@ -60,5 +60,51 @@ describe('assetNameMatchesChainType', () => {
     const invalidAssetName = 'invalid-name.json';
 
     expect(isValidAssetName('mainnet')(invalidAssetName)).toBe(false);
+  });
+});
+
+describe('truncateAssetName', () => {
+  /**
+   * Target:
+   * It should truncate asset name correctly
+   *
+   * Dependencies:
+   * N/A
+   *
+   * Scenario:
+   * N/A
+   *
+   * Expected output:
+   * A truncated asset name
+   */
+  it('should truncate asset name correctly', () => {
+    const addressAssetName = 'contracts-awesomechain-mainnet-1.json';
+    const tokensMapAssetName = 'tokensMap-mainnet-1.json';
+
+    expect(truncateAssetName(addressAssetName)).toBe(
+      'contracts-awesomechain.json'
+    );
+    expect(truncateAssetName(tokensMapAssetName)).toBe('tokensMap.json');
+  });
+
+  /**
+   * Target:
+   * It should truncate asset name correctly, appending suffix if provided
+   *
+   * Dependencies:
+   * N/A
+   *
+   * Scenario:
+   * N/A
+   *
+   * Expected output:
+   * A truncated asset name with a suffix appended to the name
+   */
+  it('should truncate asset name correctly, appending suffix if provided', () => {
+    const assetName = 'contracts-awesomechain-mainnet-1.json';
+
+    expect(truncateAssetName(assetName, 'suffix')).toBe(
+      'contracts-awesomechain-suffix.json'
+    );
   });
 });
