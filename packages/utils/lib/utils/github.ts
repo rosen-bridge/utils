@@ -1,5 +1,7 @@
 import { Octokit } from 'octokit';
 
+import { isValidAssetName } from './rosen';
+
 import {
   CONTRACT_REPO_NAME,
   DEFAULT_RELEASES_FETCHING_PAGE_SIZE,
@@ -58,22 +60,13 @@ const findLastRelease = async (
 };
 
 /**
- * Check if an asset name matches a specific chain type
- * @param chainType
- */
-const assetNameMatchesChainType = (chainType: string) => (assetName: string) =>
-  new RegExp(`contracts-.+-${chainType}-.+.json`).test(assetName);
-
-/**
  * Return a function which checks if a release has at least one asset for a
  * specific chain type
  * @param chainType
  * @param release
  */
 const hasAssetForChainType = (chainType: string) => (release: GithubRelease) =>
-  release.assets
-    .map((asset) => asset.name)
-    .some(assetNameMatchesChainType(chainType));
+  release.assets.map((asset) => asset.name).some(isValidAssetName(chainType));
 
 /**
  * Return a function which checks if a release is a stable (that is, non-prerelease)
@@ -101,7 +94,6 @@ const findLatestStableRelease = async (chainType: string) =>
   findLastRelease(isStableReleaseForChainType(chainType));
 
 export {
-  assetNameMatchesChainType,
   fetchReleasesPage,
   findLastRelease,
   findLatestRelease,

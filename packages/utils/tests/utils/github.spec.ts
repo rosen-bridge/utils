@@ -2,7 +2,6 @@ import { Octokit } from 'octokit';
 
 import {
   fetchReleasesPage,
-  assetNameMatchesChainType,
   findLatestRelease,
   hasAssetForChainType,
   findLastRelease,
@@ -123,29 +122,6 @@ describe('findLastReleaseWith', () => {
     );
 
     expect(foundReleases).toBe(null);
-  });
-});
-
-describe('assetNameMatchesChainType', () => {
-  /**
-   * Target:
-   * It should check if asset name matches chain type correctly
-   *
-   * Dependencies:
-   * N/A
-   *
-   * Scenario:
-   * N/A
-   *
-   * Expected output:
-   * N/A
-   */
-  it('should check if asset name matches chain type correctly', () => {
-    const matchAssetName = 'contracts-awesomechain-mainnet-1.json';
-    const notMatchAssetName = 'contracts-awesomechain-testnet-1.json';
-
-    expect(assetNameMatchesChainType('mainnet')(matchAssetName)).toBe(true);
-    expect(assetNameMatchesChainType('mainnet')(notMatchAssetName)).toBe(false);
   });
 });
 
