@@ -1,5 +1,4 @@
 import { Octokit } from 'octokit';
-import { compact } from 'lodash-es';
 
 import {
   CONTRACT_REPO_NAME,
@@ -39,31 +38,23 @@ async function* fetchReleasesPage(
 }
 
 /**
- * For any predicate in a list, find the last release matching that predicate
- * and return corresponding releases list. If all releases are iterated and no
- * matching release is found, return `null` for that predicate.
- * @param predicates a list of predicates we want to find a matching release for
+ * Find the last release matching the predicate. If all releases are iterated and
+ * no matching release is found, return null.
+ * @param predicate
  */
-const findLastReleasesWith = async (
-  predicates: ((release: GithubRelease) => boolean)[]
+const findLastRelease = async (
+  predicate: (release: GithubRelease) => boolean = () => true
 ) => {
   const releasesPageIterator = fetchReleasesPage();
 
-  const result: GithubRelease[] = Array(predicates.length).fill(null);
-
   for await (const releasesPage of releasesPageIterator) {
-    predicates.forEach((predicate, index) => {
-      const foundRelease = releasesPage.find(predicate);
-      if (foundRelease) {
-        result[index] = foundRelease;
-      }
-    });
+    const foundRelease = releasesPage.find(predicate);
 
-    if (compact(result).length === predicates.length) {
-      return result;
+    if (foundRelease) {
+      return foundRelease;
     }
   }
-  return result;
+  return null;
 };
 
 /**
@@ -74,64 +65,47 @@ const assetNameMatchesChainType = (chainType: string) => (assetName: string) =>
   new RegExp(`contracts-.+-${chainType}-.+.json`).test(assetName);
 
 /**
- * Check if a release has at least one asset for a specific chain type
+ * Return a function which checks if a release has at least one asset for a
+ * specific chain type
  * @param chainType
  * @param release
  */
-const hasAssetForChainType = (chainType: string, release: GithubRelease) =>
+const hasAssetForChainType = (chainType: string) => (release: GithubRelease) =>
   release.assets
     .map((asset) => asset.name)
     .some(assetNameMatchesChainType(chainType));
 
 /**
- * Return a function which checks if a release is not a prerelease and has some
- * asset matching a specific chain type
+ * Return a function which checks if a release is a stable (that is, non-prerelease)
+ * and has some asset matching a specific chain type
  * @param chainType
  */
-const isLatestWithChainType = (chainType: string) => (release: GithubRelease) =>
-  !release.prerelease && hasAssetForChainType(chainType, release);
-
-/**
- * Return a function which checks if a release is a prerelease and has some asset
- * matching a specific chain type
- * @param chainType
- */
-const isPrereleaseWithChainType =
+const isStableReleaseForChainType =
   (chainType: string) => (release: GithubRelease) =>
-    release.prerelease && hasAssetForChainType(chainType, release);
+    !release.prerelease && hasAssetForChainType(chainType)(release);
 
 /**
- * Find latest release having some asset matching a specific chain type
+ * Find latest release (prerelease or non-prerelease) having some asset matching
+ * a specific chain type
  * @param chainType
  */
-const findLatestRelease = async (chainType: string) => {
-  const [latest] = await findLastReleasesWith([
-    isLatestWithChainType(chainType),
-    isPrereleaseWithChainType(chainType),
-  ]);
-  return latest;
-};
+const findLatestRelease = async (chainType: string) =>
+  findLastRelease(hasAssetForChainType(chainType));
 
 /**
- * Find latest and prerelease releases having some asset matching a specific
- * chain type
+ * Find latest stable (that is, non-prerelease) release having some asset matching
+ * a specific chain type
  * @param chainType
  */
-const findLatestAndPrereleaseReleases = async (chainType: string) => {
-  const [latest, prerelease] = await findLastReleasesWith([
-    isLatestWithChainType(chainType),
-    isPrereleaseWithChainType(chainType),
-  ]);
-  return { latest, prerelease };
-};
+const findLatestStableRelease = async (chainType: string) =>
+  findLastRelease(isStableReleaseForChainType(chainType));
 
 export {
   assetNameMatchesChainType,
   fetchReleasesPage,
-  findLastReleasesWith,
-  findLatestAndPrereleaseReleases,
+  findLastRelease,
   findLatestRelease,
+  findLatestStableRelease,
   hasAssetForChainType,
-  isLatestWithChainType,
-  isPrereleaseWithChainType,
+  isStableReleaseForChainType,
 };

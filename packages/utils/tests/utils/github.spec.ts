@@ -3,12 +3,11 @@ import { Octokit } from 'octokit';
 import {
   fetchReleasesPage,
   assetNameMatchesChainType,
-  findLastReleasesWith,
-  findLatestAndPrereleaseReleases,
   findLatestRelease,
   hasAssetForChainType,
-  isLatestWithChainType,
-  isPrereleaseWithChainType,
+  findLastRelease,
+  isStableReleaseForChainType,
+  findLatestStableRelease,
 } from '../../lib/utils/github';
 
 import { releases } from './github.data';
@@ -60,10 +59,10 @@ describe('fetchReleasesPage', () => {
   });
 });
 
-describe('findLastReleasesWith', () => {
+describe('findLastReleaseWith', () => {
   /**
    * Target:
-   * It should find last releases correctly
+   * It should find last release correctly
    *
    * Dependencies:
    * - mocked Octokit
@@ -72,38 +71,19 @@ describe('findLastReleasesWith', () => {
    * N/A
    *
    * Expected output:
-   * The function should return correct releases
+   * The function should return correct release
    */
   it('should find last releases correctly', async () => {
-    (Octokit as jest.MockedClass<typeof Octokit>).mockImplementation(() => {
-      let page = 0;
-      return {
-        rest: {
-          repos: {
-            listReleases: (async () => {
-              const currentIndex = DEFAULT_RELEASES_FETCHING_PAGE_SIZE * page;
-              page += 1;
-              return {
-                data: releases.slice(currentIndex, currentIndex + 5),
-              };
-            }) as any,
-          },
-        },
-      } as any;
-    });
+    mockOctokit();
 
-    const foundReleases = await findLastReleasesWith([
-      (release) => release.id === 2,
-      (release) => release.id === 5,
-    ]);
+    const foundReleases = await findLastRelease((release) => release.id === 2);
 
-    expect(foundReleases[0].id).toBe(2);
-    expect(foundReleases[1].id).toBe(5);
+    expect(foundReleases?.id).toBe(2);
   });
 
   /**
    * Target:
-   * It should return null for any predicate with no matching release
+   * It should return last release if no predicate is provided
    *
    * Dependencies:
    * - mocked Octokit
@@ -112,33 +92,37 @@ describe('findLastReleasesWith', () => {
    * N/A
    *
    * Expected output:
-   * The function should return null if no matching release is found
+   * The function should return correct release
    */
-  it('should return null for any predicate with no matching release', async () => {
-    (Octokit as jest.MockedClass<typeof Octokit>).mockImplementation(() => {
-      let page = 0;
-      return {
-        rest: {
-          repos: {
-            listReleases: (async () => {
-              const currentIndex = DEFAULT_RELEASES_FETCHING_PAGE_SIZE * page;
-              page += 1;
-              return {
-                data: releases.slice(currentIndex, currentIndex + 5),
-              };
-            }) as any,
-          },
-        },
-      } as any;
-    });
+  it('should return last release if no predicate is provided', async () => {
+    mockOctokit();
 
-    const foundReleases = await findLastReleasesWith([
-      (release) => release.id === 100,
-      (release) => release.id === 2,
-    ]);
+    const foundReleases = await findLastRelease();
 
-    expect(foundReleases[0]).toBe(null);
-    expect(foundReleases[1].id).toBe(2);
+    expect(foundReleases?.id).toBe(1);
+  });
+
+  /**
+   * Target:
+   * It should return null if no matching release is found
+   *
+   * Dependencies:
+   * - mocked Octokit
+   *
+   * Scenario:
+   * N/A
+   *
+   * Expected output:
+   * N/A
+   */
+  it('should return null if no matching release is found', async () => {
+    mockOctokit();
+
+    const foundReleases = await findLastRelease(
+      (release) => release.id === 100
+    );
+
+    expect(foundReleases).toBe(null);
   });
 });
 
@@ -180,16 +164,16 @@ describe('hasAssetForChainType', () => {
    * N/A
    */
   it('should check if a release has some assets for chain type correctly', () => {
-    expect(hasAssetForChainType('mainnet', releases[0] as any)).toBe(true);
-    expect(hasAssetForChainType('mainnet', releases[3] as any)).toBe(false);
+    expect(hasAssetForChainType('mainnet')(releases[0] as any)).toBe(true);
+    expect(hasAssetForChainType('mainnet')(releases[3] as any)).toBe(false);
   });
 });
 
-describe('isLatestWithChainType', () => {
+describe('isStableReleaseForChainType', () => {
   /**
    * Target:
-   * It should check if a release is latest and has some assets for chain type
-   * correctly
+   * It should check if a release is stable (that is, non-prerelease) and has
+   * some assets for chain type correctly
    *
    * Dependencies:
    * N/A
@@ -200,34 +184,14 @@ describe('isLatestWithChainType', () => {
    * Expected output:
    * N/A
    */
-  it('should check if a release is latest and has some assets for chain type correctly', () => {
-    expect(isLatestWithChainType('mainnet')(releases[0] as any)).toBe(false);
-    expect(isLatestWithChainType('mainnet')(releases[1] as any)).toBe(true);
-    expect(isLatestWithChainType('mainnet')(releases[3] as any)).toBe(false);
-  });
-});
-
-describe('isPrereleaseWithChainType', () => {
-  /**
-   * Target:
-   * It should check if a release is prerelease and has some assets for chain
-   * type correctly
-   *
-   * Dependencies:
-   * N/A
-   *
-   * Scenario:
-   * N/A
-   *
-   * Expected output:
-   * N/A
-   */
-  it('should check if a release is prerelease and has some assets for chain type correctly', () => {
-    expect(isPrereleaseWithChainType('mainnet')(releases[0] as any)).toBe(true);
-    expect(isPrereleaseWithChainType('mainnet')(releases[1] as any)).toBe(
+  it('should check if a release is stable and has some assets for chain type correctly', () => {
+    expect(isStableReleaseForChainType('mainnet')(releases[0] as any)).toBe(
       false
     );
-    expect(isPrereleaseWithChainType('mainnet')(releases[3] as any)).toBe(
+    expect(isStableReleaseForChainType('mainnet')(releases[1] as any)).toBe(
+      true
+    );
+    expect(isStableReleaseForChainType('mainnet')(releases[3] as any)).toBe(
       false
     );
   });
@@ -253,15 +217,15 @@ describe('findLatestRelease', () => {
     const latestMainNet = await findLatestRelease('mainnet');
     const latestTestNet = await findLatestRelease('testnet');
 
-    expect(latestMainNet.id).toBe(2);
-    expect(latestTestNet.id).toBe(5);
+    expect(latestMainNet?.id).toBe(1);
+    expect(latestTestNet?.id).toBe(4);
   });
 });
 
-describe('findLatestAndPrereleaseRelease', () => {
+describe('findLatestStableRelease', () => {
   /**
    * Target:
-   * It should find latest and prerelease releases correctly
+   * It should find latest stable (that is, non-prerelease) release correctly
    *
    * Dependencies:
    * - mocked Octokit
@@ -272,17 +236,13 @@ describe('findLatestAndPrereleaseRelease', () => {
    * Expected output:
    * N/A
    */
-  it('should find latest and prerelease releases correctly', async () => {
+  it('should find latest stable release correctly', async () => {
     mockOctokit();
 
-    const { latest: latestMainNet, prerelease: prereleaseMainNet } =
-      await findLatestAndPrereleaseReleases('mainnet');
-    const { latest: latestTestNet, prerelease: prereleaseTestNet } =
-      await findLatestAndPrereleaseReleases('testnet');
+    const latestMainNet = await findLatestStableRelease('mainnet');
+    const latestTestNet = await findLatestStableRelease('testnet');
 
-    expect(latestMainNet.id).toBe(2);
-    expect(prereleaseMainNet.id).toBe(1);
-    expect(latestTestNet.id).toBe(5);
-    expect(prereleaseTestNet.id).toBe(4);
+    expect(latestMainNet?.id).toBe(2);
+    expect(latestTestNet?.id).toBe(5);
   });
 });
