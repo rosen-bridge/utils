@@ -9,28 +9,15 @@ import {
   findLatestStableRelease,
 } from '../../lib/utils/github';
 
-import { releases } from './github.data';
-import { DEFAULT_RELEASES_FETCHING_PAGE_SIZE } from '../../lib/constants';
+import {
+  mainNetPrereleaseRelease,
+  mainNetStableRelease,
+  releases,
+  testNetPrereleaseRelease,
+  testNetStableRelease,
+} from '../data/octokit.data';
 
-jest.mock('octokit');
-
-const mockOctokit = () =>
-  jest.mocked(Octokit).mockImplementation(() => {
-    let page = 0;
-    return {
-      rest: {
-        repos: {
-          listReleases: async () => {
-            const currentIndex = DEFAULT_RELEASES_FETCHING_PAGE_SIZE * page;
-            page += 1;
-            return {
-              data: releases.slice(currentIndex, currentIndex + 5),
-            };
-          },
-        },
-      },
-    } as any;
-  });
+import { mockOctokit } from '../mocks/octokit.mock';
 
 describe('fetchReleasesPage', () => {
   /**
@@ -75,9 +62,11 @@ describe('findLastReleaseWith', () => {
   it('should find last releases correctly', async () => {
     mockOctokit();
 
-    const foundReleases = await findLastRelease((release) => release.id === 2);
+    const foundReleases = await findLastRelease(
+      (release) => release.id === mainNetStableRelease.id
+    );
 
-    expect(foundReleases?.id).toBe(2);
+    expect(foundReleases?.id).toBe(mainNetStableRelease.id);
   });
 
   /**
@@ -98,7 +87,7 @@ describe('findLastReleaseWith', () => {
 
     const foundReleases = await findLastRelease();
 
-    expect(foundReleases?.id).toBe(1);
+    expect(foundReleases?.id).toBe(releases[0].id);
   });
 
   /**
@@ -140,8 +129,12 @@ describe('hasAssetForChainType', () => {
    * N/A
    */
   it('should check if a release has some assets for chain type correctly', () => {
-    expect(hasAssetForChainType('mainnet')(releases[0] as any)).toBe(true);
-    expect(hasAssetForChainType('mainnet')(releases[3] as any)).toBe(false);
+    expect(
+      hasAssetForChainType('mainnet')(mainNetPrereleaseRelease as any)
+    ).toBe(true);
+    expect(
+      hasAssetForChainType('mainnet')(testNetPrereleaseRelease as any)
+    ).toBe(false);
   });
 });
 
@@ -161,15 +154,15 @@ describe('isStableReleaseForChainType', () => {
    * N/A
    */
   it('should check if a release is stable and has some assets for chain type correctly', () => {
-    expect(isStableReleaseForChainType('mainnet')(releases[0] as any)).toBe(
-      false
-    );
-    expect(isStableReleaseForChainType('mainnet')(releases[1] as any)).toBe(
-      true
-    );
-    expect(isStableReleaseForChainType('mainnet')(releases[3] as any)).toBe(
-      false
-    );
+    expect(
+      isStableReleaseForChainType('mainnet')(mainNetPrereleaseRelease as any)
+    ).toBe(false);
+    expect(
+      isStableReleaseForChainType('mainnet')(mainNetStableRelease as any)
+    ).toBe(true);
+    expect(
+      isStableReleaseForChainType('mainnet')(testNetStableRelease as any)
+    ).toBe(false);
   });
 });
 
@@ -193,8 +186,8 @@ describe('findLatestRelease', () => {
     const latestMainNet = await findLatestRelease('mainnet');
     const latestTestNet = await findLatestRelease('testnet');
 
-    expect(latestMainNet?.id).toBe(1);
-    expect(latestTestNet?.id).toBe(4);
+    expect(latestMainNet?.id).toBe(mainNetPrereleaseRelease.id);
+    expect(latestTestNet?.id).toBe(testNetPrereleaseRelease.id);
   });
 });
 
@@ -218,7 +211,7 @@ describe('findLatestStableRelease', () => {
     const latestMainNet = await findLatestStableRelease('mainnet');
     const latestTestNet = await findLatestStableRelease('testnet');
 
-    expect(latestMainNet?.id).toBe(2);
-    expect(latestTestNet?.id).toBe(5);
+    expect(latestMainNet?.id).toBe(mainNetStableRelease.id);
+    expect(latestTestNet?.id).toBe(testNetStableRelease.id);
   });
 });

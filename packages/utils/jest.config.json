@@ -1,7 +1,8 @@
 {
-  "verbose": true,
-  "testEnvironment": "node",
+  "coverageReporters": ["lcov", "cobertura", "text", "text-summary"],
   "preset": "ts-jest/presets/js-with-babel",
+  "setupFiles": ["./tests/setup.ts"],
+  "testEnvironment": "node",
   "transformIgnorePatterns": ["node_modules/(?!(lodash-es)/)"],
-  "coverageReporters": ["lcov", "cobertura", "text", "text-summary"]
+  "verbose": true
 }

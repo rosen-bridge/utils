@@ -20,6 +20,7 @@
   },
   "license": "GPL-3.0",
   "devDependencies": {
+    "@types/download": "^8.0.2",
     "@babel/preset-env": "^7.19.0",
     "@types/download": "^8.0.2",
     "@types/jest": "^29.1.2",
