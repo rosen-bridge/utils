@@ -89,7 +89,7 @@ describe('truncateAssetName', () => {
 
   /**
    * Target:
-   * It should truncate asset name correctly, appending suffix if provided
+   * It should truncate asset name and append suffix correctly
    *
    * Dependencies:
    * N/A
@@ -100,7 +100,7 @@ describe('truncateAssetName', () => {
    * Expected output:
    * A truncated asset name with a suffix appended to the name
    */
-  it('should truncate asset name correctly, appending suffix if provided', () => {
+  it('should truncate asset name and append suffix correctly', () => {
     const assetName = 'contracts-awesomechain-mainnet-1.json';
 
     expect(truncateAssetName(assetName, 'suffix')).toBe(

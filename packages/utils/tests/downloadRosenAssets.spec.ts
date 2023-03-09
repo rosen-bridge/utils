@@ -81,7 +81,7 @@ it('should download Rosen assets correctly when including prereleases', async ()
 
 /**
  * Target:
- * It should download Rosen assets correctly, adding a suffix when provided
+ * It should download Rosen assets and add a suffix correctly
  *
  * Dependencies:
  * - mocked Octokit
@@ -92,7 +92,7 @@ it('should download Rosen assets correctly when including prereleases', async ()
  * Expected output:
  * N/A
  */
-it('should download Rosen assets correctly, adding a suffix when provided', async () => {
+it('should download Rosen assets and add a suffix correctly', async () => {
   mockOctokit();
 
   await downloadRosenAssets('mainnet', 'rosen', false, 'suffix');
@@ -111,6 +111,29 @@ it('should download Rosen assets correctly, adding a suffix when provided', asyn
       filename: 'tokensMap-suffix.json',
     }
   );
+});
+
+/**
+ * Target:
+ * It should download Rosen assets correctly
+ *
+ * Dependencies:
+ * - mocked Octokit
+ * - empty mocked download package
+ *
+ * Scenario:
+ * N/A
+ *
+ * Expected output:
+ * N/A
+ */
+it('should not call `download` function if no matching release is found', async () => {
+  mockOctokit();
+  jest.mocked(download).mockClear();
+
+  await downloadRosenAssets('no-release-net', 'rosen');
+
+  expect(download).toHaveBeenCalledTimes(0);
 });
 
 /**
