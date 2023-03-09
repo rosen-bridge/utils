@@ -43,8 +43,6 @@ it('should download Rosen assets correctly', async () => {
       filename: 'tokensMap.json',
     }
   );
-
-  expect(true).toBe(true);
 });
 
 /**
@@ -79,8 +77,6 @@ it('should download Rosen assets correctly when including prereleases', async ()
       filename: 'tokensMap.json',
     }
   );
-
-  expect(true).toBe(true);
 });
 
 /**
@@ -115,8 +111,6 @@ it('should download Rosen assets correctly, adding a suffix when provided', asyn
       filename: 'tokensMap-suffix.json',
     }
   );
-
-  expect(true).toBe(true);
 });
 
 /**
