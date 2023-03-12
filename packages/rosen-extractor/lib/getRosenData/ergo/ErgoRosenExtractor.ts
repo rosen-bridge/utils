@@ -24,8 +24,8 @@ export class ErgoRosenExtractor extends AbstractRosenDataExtractor<string> {
   }
 
   /**
-   * extracts RosenData from given lock transaction in Node format
-   * @param serializedTransaction the sigma serialize bytes of transaction
+   * extracts RosenData from given lock transaction in wasm sigma serialized bytes
+   * @param serializedTransaction the sigma serialized bytes of transaction
    */
   get = (serializedTransaction: string): RosenData | undefined => {
     let transaction: Transaction;
