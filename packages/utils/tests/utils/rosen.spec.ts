@@ -17,8 +17,8 @@ describe('isValidAssetName', () => {
     const matchAssetName = 'contracts-awesomechain-mainnet-1.json';
     const notMatchAssetName = 'contracts-awesomechain-testnet-1.json';
 
-    expect(isValidAssetName('mainnet')(matchAssetName)).toBe(true);
-    expect(isValidAssetName('mainnet')(notMatchAssetName)).toBe(false);
+    expect(isValidAssetName('mainnet')(matchAssetName)).toEqual(true);
+    expect(isValidAssetName('mainnet')(notMatchAssetName)).toEqual(false);
   });
 
   /**
@@ -37,8 +37,8 @@ describe('isValidAssetName', () => {
     const matchAssetName = 'tokensMap-mainnet-1.json';
     const notMatchAssetName = 'tokensMap-testnet-1.json';
 
-    expect(isValidAssetName('mainnet')(matchAssetName)).toBe(true);
-    expect(isValidAssetName('mainnet')(notMatchAssetName)).toBe(false);
+    expect(isValidAssetName('mainnet')(matchAssetName)).toEqual(true);
+    expect(isValidAssetName('mainnet')(notMatchAssetName)).toEqual(false);
   });
 
   /**
@@ -54,7 +54,7 @@ describe('isValidAssetName', () => {
   it("should return false when asset name doesn't match Rosen format assets", () => {
     const invalidAssetName = 'invalid-name.json';
 
-    expect(isValidAssetName('mainnet')(invalidAssetName)).toBe(false);
+    expect(isValidAssetName('mainnet')(invalidAssetName)).toEqual(false);
   });
 });
 
@@ -74,10 +74,10 @@ describe('truncateAssetName', () => {
     const addressAssetName = 'contracts-awesomechain-mainnet-1.json';
     const tokensMapAssetName = 'tokensMap-mainnet-1.json';
 
-    expect(truncateAssetName(addressAssetName)).toBe(
+    expect(truncateAssetName(addressAssetName)).toEqual(
       'contracts-awesomechain.json'
     );
-    expect(truncateAssetName(tokensMapAssetName)).toBe('tokensMap.json');
+    expect(truncateAssetName(tokensMapAssetName)).toEqual('tokensMap.json');
   });
 
   /**
@@ -92,7 +92,7 @@ describe('truncateAssetName', () => {
   it('should truncate asset name and append suffix correctly', () => {
     const assetName = 'contracts-awesomechain-mainnet-1.json';
 
-    expect(truncateAssetName(assetName, 'suffix')).toBe(
+    expect(truncateAssetName(assetName, 'suffix')).toEqual(
       'contracts-awesomechain-suffix.json'
     );
   });

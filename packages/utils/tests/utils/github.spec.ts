@@ -36,10 +36,10 @@ describe('fetchReleasesPage', () => {
 
     const iterator = fetchReleasesPage();
 
-    expect((await iterator.next()).value?.length).toBe(5);
-    expect((await iterator.next()).value?.length).toBe(4);
-    expect((await iterator.next()).value).toBe(undefined);
-    expect((await iterator.next()).done).toBe(true);
+    expect((await iterator.next()).value?.length).toEqual(5);
+    expect((await iterator.next()).value?.length).toEqual(4);
+    expect((await iterator.next()).value).toEqual(undefined);
+    expect((await iterator.next()).done).toEqual(true);
   });
 });
 
@@ -61,7 +61,7 @@ describe('findLastRelease', () => {
       (release) => release.id === mainNetStableRelease.id
     );
 
-    expect(foundReleases?.id).toBe(mainNetStableRelease.id);
+    expect(foundReleases?.id).toEqual(mainNetStableRelease.id);
   });
 
   /**
@@ -80,7 +80,7 @@ describe('findLastRelease', () => {
 
     const foundReleases = await findLastRelease();
 
-    expect(foundReleases?.id).toBe(releases[0].id);
+    expect(foundReleases?.id).toEqual(releases[0].id);
   });
 
   /**
@@ -101,7 +101,7 @@ describe('findLastRelease', () => {
       (release) => release.id === 100
     );
 
-    expect(foundReleases).toBe(null);
+    expect(foundReleases).toEqual(null);
   });
 });
 
@@ -120,10 +120,10 @@ describe('hasAssetForChainType', () => {
   it('should check if a release has some assets for chain type correctly', () => {
     expect(
       hasAssetForChainType('mainnet')(mainNetPrereleaseRelease as any)
-    ).toBe(true);
+    ).toEqual(true);
     expect(
       hasAssetForChainType('mainnet')(testNetPrereleaseRelease as any)
-    ).toBe(false);
+    ).toEqual(false);
   });
 });
 
@@ -144,13 +144,13 @@ describe('isStableReleaseForChainType', () => {
   it('should check if a release is stable and has some assets for chain type correctly', () => {
     expect(
       isStableReleaseForChainType('mainnet')(mainNetPrereleaseRelease as any)
-    ).toBe(false);
+    ).toEqual(false);
     expect(
       isStableReleaseForChainType('mainnet')(mainNetStableRelease as any)
-    ).toBe(true);
+    ).toEqual(true);
     expect(
       isStableReleaseForChainType('mainnet')(testNetStableRelease as any)
-    ).toBe(false);
+    ).toEqual(false);
   });
 });
 
@@ -175,8 +175,8 @@ describe('findLatestRelease', () => {
     const latestMainNet = await findLatestRelease('mainnet');
     const latestTestNet = await findLatestRelease('testnet');
 
-    expect(latestMainNet?.id).toBe(mainNetPrereleaseRelease.id);
-    expect(latestTestNet?.id).toBe(testNetPrereleaseRelease.id);
+    expect(latestMainNet?.id).toEqual(mainNetPrereleaseRelease.id);
+    expect(latestTestNet?.id).toEqual(testNetPrereleaseRelease.id);
   });
 });
 
@@ -202,7 +202,7 @@ describe('findLatestStableRelease', () => {
     const latestMainNet = await findLatestStableRelease('mainnet');
     const latestTestNet = await findLatestStableRelease('testnet');
 
-    expect(latestMainNet?.id).toBe(mainNetStableRelease.id);
-    expect(latestTestNet?.id).toBe(testNetStableRelease.id);
+    expect(latestMainNet?.id).toEqual(mainNetStableRelease.id);
+    expect(latestTestNet?.id).toEqual(testNetStableRelease.id);
   });
 });
