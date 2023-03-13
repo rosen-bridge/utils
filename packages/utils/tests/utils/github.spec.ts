@@ -28,7 +28,8 @@ describe('fetchReleasesPage', () => {
    * - mocked Octokit
    *
    * Scenario:
-   * N/A
+   * - mock Octokit `listReleases` to return 9 releases
+   * - create an iterator by calling `fetchReleasesPage` generator function
    *
    * Expected output:
    * The generator function should work as expected
@@ -54,12 +55,13 @@ describe('findLastRelease', () => {
    * - mocked Octokit
    *
    * Scenario:
-   * N/A
+   * - mock Octokit `listReleases` to return 9 releases
+   * - call `findLastRelease` with a predicate
    *
    * Expected output:
    * The function should return correct release
    */
-  it('should find last releases correctly', async () => {
+  it('should find last releases correctly when a predicate is provided', async () => {
     mockOctokit();
 
     const foundReleases = await findLastRelease(
@@ -77,7 +79,8 @@ describe('findLastRelease', () => {
    * - mocked Octokit
    *
    * Scenario:
-   * N/A
+   * - mock Octokit `listReleases` to return 9 releases
+   * - call `findLastRelease` without a predicate
    *
    * Expected output:
    * The function should return correct release
@@ -98,7 +101,8 @@ describe('findLastRelease', () => {
    * - mocked Octokit
    *
    * Scenario:
-   * N/A
+   * - mock Octokit `listReleases` to return 9 releases
+   * - call `findLastRelease` with a predicate which does not match any release
    *
    * Expected output:
    * N/A
@@ -176,7 +180,9 @@ describe('findLatestRelease', () => {
    * - mocked Octokit
    *
    * Scenario:
-   * N/A
+   * - mock Octokit `listReleases` to return 9 releases
+   * - call `findLatestRelease` to find latest mainnet release
+   * - call `findLatestRelease` to find latest testnet release
    *
    * Expected output:
    * N/A
@@ -202,7 +208,9 @@ describe('findLatestStableRelease', () => {
    * - mocked Octokit
    *
    * Scenario:
-   * N/A
+   * - mock Octokit `listReleases` to return 9 releases
+   * - call `findLatestStableRelease` to find latest stable mainnet release
+   * - call `findLatestStableRelease` to find latest stable testnet release
    *
    * Expected output:
    * N/A

@@ -5,9 +5,11 @@ import downloadRosenAssets from '../lib/downloadRosenAssets';
 import {
   mainNetPrereleaseRelease,
   mainNetStableRelease,
+  releases,
 } from './data/octokit.data';
 
 import { mockOctokit } from './mocks/octokit.mock';
+import { Octokit } from 'octokit';
 
 jest.mock('download');
 
@@ -20,7 +22,8 @@ describe('downloadRosenAssets', () => {
    * - mocked Octokit
    *
    * Scenario:
-   * N/A
+   * - mock Octokit `listReleases` to return 9 releases
+   * - call `downloadRosenAssets` to download mainnet assets in `rosen` directory
    *
    * Expected output:
    * N/A
@@ -55,7 +58,9 @@ describe('downloadRosenAssets', () => {
    * - mocked Octokit
    *
    * Scenario:
-   * N/A
+   * - mock Octokit `listReleases` to return 9 releases
+   * - call `downloadRosenAssets` to download mainnet assets in `rosen` directory
+   *   while taking prereleases into account when finding a matching release
    *
    * Expected output:
    * N/A
@@ -89,7 +94,9 @@ describe('downloadRosenAssets', () => {
    * - mocked Octokit
    *
    * Scenario:
-   * N/A
+   * - mock Octokit `listReleases` to return 9 releases
+   * - call `downloadRosenAssets` to download mainnet assets in `rosen` directory
+   *   and add a suffix to the asset names
    *
    * Expected output:
    * N/A
@@ -124,7 +131,10 @@ describe('downloadRosenAssets', () => {
    * - emptied mocked download package
    *
    * Scenario:
-   * N/A
+   * - mock Octokit `listReleases` to return 9 releases
+   * - clear download package mock data (so that we can check calls count)
+   * - call `downloadRosenAssets` to download releases for a network whose release
+   *   doesn't exist
    *
    * Expected output:
    * N/A
@@ -147,7 +157,9 @@ describe('downloadRosenAssets', () => {
    * - mocked download package
    *
    * Scenario:
-   * N/A
+   * - mock Octokit `listReleases` to return 9 releases
+   * - mock download package to throw an error
+   * - call `downloadRosenAssets` to download mainnet assets in `rosen` directory
    *
    * Expected output:
    * N/A
@@ -156,12 +168,7 @@ describe('downloadRosenAssets', () => {
     mockOctokit();
     jest.mocked(download).mockRejectedValue(new Error('Bad!'));
 
-    const downloadPromise = downloadRosenAssets(
-      'mainnet',
-      'rosen',
-      false,
-      'suffix'
-    );
+    const downloadPromise = downloadRosenAssets('mainnet', 'rosen');
 
     await expect(downloadPromise).rejects.toThrow('');
   });
