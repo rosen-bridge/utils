@@ -150,6 +150,7 @@ describe('downloadRosenAssets', () => {
    * - call `downloadRosenAssets` to download mainnet assets in `rosen`
    *   directory
    * @expected
+   * - The function should throw
    */
   it('should throw an error when an error happens', async () => {
     jest.mocked(download).mockRejectedValue(new Error('Bad!'));
