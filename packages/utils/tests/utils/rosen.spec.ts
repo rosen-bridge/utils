@@ -2,17 +2,12 @@ import { isValidAssetName, truncateAssetName } from '../../lib/utils/rosen';
 
 describe('isValidAssetName', () => {
   /**
-   * Target:
+   * @target
    * `isValidAssetName` should check if asset name matches chain type correctly
    * for address assets
-   *
-   * Dependencies:
-   * N/A
-   *
-   * Scenario:
-   * N/A
-   *
-   * Expected output:
+   * @dependencies
+   * @scenario
+   * @expected
    * - Checking if an address file containing "mainnet" is a valid mainnet asset
    *   name should return true
    * - Checking if an address file not containing "mainnet" is a valid mainnet
@@ -27,19 +22,14 @@ describe('isValidAssetName', () => {
   });
 
   /**
-   * Target:
+   * @target
    * `isValidAssetName` should check if asset name matches chain type correctly
    * for tokensMap asset
-   *
-   * Dependencies:
-   * N/A
-   *
-   * Scenario:
-   * N/A
-   *
-   * Expected output:
-   * - Checking if a tokensMap file containing "mainnet" is a valid mainnet asset
-   *   name should return false
+   * @dependencies
+   * @scenario
+   * @expected
+   * - Checking if a tokensMap file containing "mainnet" is a valid mainnet
+   *   asset name should return false
    * - Checking if a tokensMap file not containing "mainnet" is a valid mainnet
    *   asset name should return false
    */
@@ -52,21 +42,16 @@ describe('isValidAssetName', () => {
   });
 
   /**
-   * Target:
-   * `isValidAssetName` should return false if asset name doesn't match Rosen
+   * @target
+   * `isValidAssetName` should return false when asset name doesn't match Rosen
    * format assets
-   *
-   * Dependencies:
-   * N/A
-   *
-   * Scenario:
-   * N/A
-   *
-   * Expected output:
+   * @dependencies
+   * @scenario
+   * @expected
    * - Checking if a file with wrong rosen file name format is a valid mainnet
    *   asset name should return false
    */
-  it("should return false if asset name doesn't match Rosen format assets", () => {
+  it("should return false when asset name doesn't match Rosen format assets", () => {
     const invalidAssetName = 'invalid-name.json';
 
     expect(isValidAssetName('mainnet')(invalidAssetName)).toBe(false);
@@ -75,16 +60,11 @@ describe('isValidAssetName', () => {
 
 describe('truncateAssetName', () => {
   /**
-   * Target:
+   * @target
    * `truncateAssetName` should truncate asset name correctly
-   *
-   * Dependencies:
-   * N/A
-   *
-   * Scenario:
-   * N/A
-   *
-   * Expected output:
+   * @dependencies
+   * @scenario
+   * @expected
    * - A truncated address file name should return the same name without chain
    *   type and tag name
    * - A truncated tokensMap file name should return the same name without chain
@@ -101,18 +81,13 @@ describe('truncateAssetName', () => {
   });
 
   /**
-   * Target:
+   * @target
    * `truncateAssetName` should truncate asset name and append suffix correctly
-   *
-   * Dependencies:
-   * N/A
-   *
-   * Scenario:
-   * N/A
-   *
-   * Expected output:
-   * - A truncated asset file name should return the same name without chain type
-   *   and tag name, but with the suffix provided
+   * @dependencies
+   * @scenario
+   * @expected
+   * - A truncated asset file name should return the same name without chain
+   *   type and tag name, but with the suffix provided
    */
   it('should truncate asset name and append suffix correctly', () => {
     const assetName = 'contracts-awesomechain-mainnet-1.json';

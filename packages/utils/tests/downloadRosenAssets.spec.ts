@@ -13,17 +13,14 @@ jest.mock('download');
 
 describe('downloadRosenAssets', () => {
   /**
-   * Target:
-   * `downloadRosenAssets` should download Rosen assets correctly
-   *
-   * Dependencies:
+   * @target `downloadRosenAssets` should download Rosen assets correctly
+   * @dependencies
    * - mocked Octokit
-   *
-   * Scenario:
+   * @scenario
    * - mock Octokit `listReleases` to return 9 releases
-   * - call `downloadRosenAssets` to download mainnet assets in `rosen` directory
-   *
-   * Expected output:
+   * - call `downloadRosenAssets` to download mainnet assets in `rosen`
+   *   directory
+   * @expected
    * - The download function should have been called two times with the download
    *   urls of assets of mainnet stable release, 'rosen' directory name and
    *   truncated file names
@@ -50,19 +47,16 @@ describe('downloadRosenAssets', () => {
   });
 
   /**
-   * Target:
-   * `downloadRosenAssets` should download Rosen assets correctly when including
-   * prereleases
-   *
-   * Dependencies:
+   * @target `downloadRosenAssets` should download Rosen assets correctly when
+   * including prereleases
+   * @dependencies
    * - mocked Octokit
-   *
-   * Scenario:
+   * @scenario
    * - mock Octokit `listReleases` to return 9 releases
-   * - call `downloadRosenAssets` to download mainnet assets in `rosen` directory
-   *   while taking prereleases into account when finding a matching release
-   *
-   * Expected output:
+   * - call `downloadRosenAssets` to download mainnet assets in `rosen`
+   *   directory while taking prereleases into account when finding a matching
+   *   release
+   * @expected
    * - The download function should have been called two times with the download
    *   urls of assets of mainnet prerelease release, 'rosen' directory name and
    *   truncated file names
@@ -89,18 +83,15 @@ describe('downloadRosenAssets', () => {
   });
 
   /**
-   * Target:
-   * `downloadRosenAssets` should download Rosen assets and add a suffix correctly
-   *
-   * Dependencies:
+   * @target `downloadRosenAssets` should download Rosen assets and add a suffix
+   * correctly
+   * @dependencies
    * - mocked Octokit
-   *
-   * Scenario:
+   * @scenario
    * - mock Octokit `listReleases` to return 9 releases
-   * - call `downloadRosenAssets` to download mainnet assets in `rosen` directory
-   *   and add a suffix to the asset names
-   *
-   * Expected output:
+   * - call `downloadRosenAssets` to download mainnet assets in `rosen`
+   *   directory and add a suffix to the asset names
+   * @expected
    * - The download function should have been called two times with the download
    *   urls of assets of mainnet stable release, 'rosen' directory name and
    *   truncated file names including the suffix
@@ -127,23 +118,20 @@ describe('downloadRosenAssets', () => {
   });
 
   /**
-   * Target:
-   * `downloadRosenAssets` should download Rosen assets correctly
-   *
-   * Dependencies:
+   * @target `downloadRosenAssets` should not call `download` function when no
+   * matching release is found
+   * @dependencies
    * - mocked Octokit
    * - emptied mocked download package
-   *
-   * Scenario:
+   * @scenario
    * - mock Octokit `listReleases` to return 9 releases
    * - clear download package mock data (so that we can check calls count)
-   * - call `downloadRosenAssets` to download releases for a network whose release
-   *   doesn't exist
-   *
-   * Expected output:
+   * - call `downloadRosenAssets` to download releases for a network whose
+   *   release doesn't exist
+   * @expected
    * - The download function not get called
    */
-  it('should not call `download` function if no matching release is found', async () => {
+  it('should not call `download` function when no matching release is found', async () => {
     mockOctokit();
     jest.mocked(download).mockClear();
 
@@ -153,21 +141,18 @@ describe('downloadRosenAssets', () => {
   });
 
   /**
-   * Target:
-   * `downloadRosenAssets` should throw an error if an error happens
-   *
-   * Dependencies:
+   * @target `downloadRosenAssets` should throw an error when an error happens
+   * @dependencies
    * - mocked Octokit
    * - mocked download package
-   *
-   * Scenario:
+   * @scenario
    * - mock Octokit `listReleases` to return 9 releases
    * - mock download package to throw an error
-   * - call `downloadRosenAssets` to download mainnet assets in `rosen` directory
-   *
-   * Expected output:
+   * - call `downloadRosenAssets` to download mainnet assets in `rosen`
+   *   directory
+   * @expected
    */
-  it('should throw an error if an error happens', async () => {
+  it('should throw an error when an error happens', async () => {
     mockOctokit();
     jest.mocked(download).mockRejectedValue(new Error('Bad!'));
 
