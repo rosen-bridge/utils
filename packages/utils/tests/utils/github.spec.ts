@@ -22,7 +22,7 @@ import { mockOctokit } from '../mocks/octokit.mock';
 describe('fetchReleasesPage', () => {
   /**
    * Target:
-   * It should generate releases correctly
+   * `fetchReleasesPage` should generate releases correctly
    *
    * Dependencies:
    * - mocked Octokit
@@ -45,10 +45,10 @@ describe('fetchReleasesPage', () => {
   });
 });
 
-describe('findLastReleaseWith', () => {
+describe('findLastRelease', () => {
   /**
    * Target:
-   * It should find last release correctly
+   * `findLastRelease` should find last release correctly
    *
    * Dependencies:
    * - mocked Octokit
@@ -71,7 +71,7 @@ describe('findLastReleaseWith', () => {
 
   /**
    * Target:
-   * It should return last release if no predicate is provided
+   * `findLastRelease` should return last release if no predicate is provided
    *
    * Dependencies:
    * - mocked Octokit
@@ -92,7 +92,7 @@ describe('findLastReleaseWith', () => {
 
   /**
    * Target:
-   * It should return null if no matching release is found
+   * `findLastRelease` should return null if no matching release is found
    *
    * Dependencies:
    * - mocked Octokit
@@ -117,7 +117,8 @@ describe('findLastReleaseWith', () => {
 describe('hasAssetForChainType', () => {
   /**
    * Target:
-   * It should check if a release has some assets for chain type correctly
+   * `hasAssetForChainType` should check if a release has some assets for chain
+   * type correctly
    *
    * Dependencies:
    * N/A
@@ -141,8 +142,8 @@ describe('hasAssetForChainType', () => {
 describe('isStableReleaseForChainType', () => {
   /**
    * Target:
-   * It should check if a release is stable (that is, non-prerelease) and has
-   * some assets for chain type correctly
+   * `isStableReleaseForChainType` should check if a release is stable (that is,
+   * non-prerelease) and has some assets for chain type correctly
    *
    * Dependencies:
    * N/A
@@ -169,7 +170,7 @@ describe('isStableReleaseForChainType', () => {
 describe('findLatestRelease', () => {
   /**
    * Target:
-   * It should find latest release correctly
+   * `findLatestRelease` should find latest release correctly
    *
    * Dependencies:
    * - mocked Octokit
@@ -194,7 +195,8 @@ describe('findLatestRelease', () => {
 describe('findLatestStableRelease', () => {
   /**
    * Target:
-   * It should find latest stable (that is, non-prerelease) release correctly
+   * `findLatestStableRelease` should find latest stable (that is, non-prerelease)
+   * release correctly
    *
    * Dependencies:
    * - mocked Octokit

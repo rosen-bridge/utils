@@ -1,9 +1,10 @@
 import { isValidAssetName, truncateAssetName } from '../../lib/utils/rosen';
 
-describe('assetNameMatchesChainType', () => {
+describe('isValidAssetName', () => {
   /**
    * Target:
-   * It should check if asset name matches chain type correctly for address assets
+   * `isValidAssetName` should check if asset name matches chain type correctly
+   * for address assets
    *
    * Dependencies:
    * N/A
@@ -24,7 +25,8 @@ describe('assetNameMatchesChainType', () => {
 
   /**
    * Target:
-   * It should check if asset name matches chain type correctly for tokensMap asset
+   * `isValidAssetName` should check if asset name matches chain type correctly
+   * for tokensMap asset
    *
    * Dependencies:
    * N/A
@@ -45,7 +47,8 @@ describe('assetNameMatchesChainType', () => {
 
   /**
    * Target:
-   * It should return false if asset name doesn't match Rosen format assets
+   * `isValidAssetName` should return false if asset name doesn't match Rosen
+   * format assets
    *
    * Dependencies:
    * N/A
@@ -66,7 +69,7 @@ describe('assetNameMatchesChainType', () => {
 describe('truncateAssetName', () => {
   /**
    * Target:
-   * It should truncate asset name correctly
+   * `truncateAssetName` should truncate asset name correctly
    *
    * Dependencies:
    * N/A
@@ -89,7 +92,7 @@ describe('truncateAssetName', () => {
 
   /**
    * Target:
-   * It should truncate asset name and append suffix correctly
+   * `truncateAssetName` should truncate asset name and append suffix correctly
    *
    * Dependencies:
    * N/A

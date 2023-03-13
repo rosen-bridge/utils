@@ -14,7 +14,7 @@ jest.mock('download');
 describe('downloadRosenAssets', () => {
   /**
    * Target:
-   * It should download Rosen assets correctly
+   * `downloadRosenAssets` should download Rosen assets correctly
    *
    * Dependencies:
    * - mocked Octokit
@@ -48,7 +48,8 @@ describe('downloadRosenAssets', () => {
 
   /**
    * Target:
-   * It should download Rosen assets correctly when including prereleases
+   * `downloadRosenAssets` should download Rosen assets correctly when including
+   * prereleases
    *
    * Dependencies:
    * - mocked Octokit
@@ -82,7 +83,7 @@ describe('downloadRosenAssets', () => {
 
   /**
    * Target:
-   * It should download Rosen assets and add a suffix correctly
+   * `downloadRosenAssets` should download Rosen assets and add a suffix correctly
    *
    * Dependencies:
    * - mocked Octokit
@@ -116,7 +117,7 @@ describe('downloadRosenAssets', () => {
 
   /**
    * Target:
-   * It should download Rosen assets correctly
+   * `downloadRosenAssets` should download Rosen assets correctly
    *
    * Dependencies:
    * - mocked Octokit
@@ -139,7 +140,7 @@ describe('downloadRosenAssets', () => {
 
   /**
    * Target:
-   * It should throw an error if an error happens
+   * `downloadRosenAssets` should throw an error if an error happens
    *
    * Dependencies:
    * - mocked Octokit
