@@ -1,5 +1,3 @@
-import { Octokit } from 'octokit';
-
 import {
   fetchReleasesPage,
   findLatestRelease,
@@ -32,7 +30,10 @@ describe('fetchReleasesPage', () => {
    * - create an iterator by calling `fetchReleasesPage` generator function
    *
    * Expected output:
-   * The generator function should work as expected
+   * - The first iteration result should have a length of 5
+   * - The second iteration result should have a length of 4
+   * - The third iteration result should be undefined and its `done` property
+   *   should be `true`
    */
   it('should generate releases correctly', async () => {
     mockOctokit();
@@ -59,7 +60,7 @@ describe('findLastRelease', () => {
    * - call `findLastRelease` with a predicate
    *
    * Expected output:
-   * The function should return correct release
+   * - The found release id should equal mainnet stable release id
    */
   it('should find last releases correctly when a predicate is provided', async () => {
     mockOctokit();
@@ -83,7 +84,7 @@ describe('findLastRelease', () => {
    * - call `findLastRelease` without a predicate
    *
    * Expected output:
-   * The function should return correct release
+   * - The found release id should equal the last release id
    */
   it('should return last release if no predicate is provided', async () => {
     mockOctokit();
@@ -105,7 +106,7 @@ describe('findLastRelease', () => {
    * - call `findLastRelease` with a predicate which does not match any release
    *
    * Expected output:
-   * N/A
+   * - The found release should be null
    */
   it('should return null if no matching release is found', async () => {
     mockOctokit();
@@ -131,7 +132,10 @@ describe('hasAssetForChainType', () => {
    * N/A
    *
    * Expected output:
-   * N/A
+   * - Checking the existence of mainnet assets in a mainnet release should return
+   *   true
+   * - Checking the existence of mainnet assets in a testnet release should return
+   *   false
    */
   it('should check if a release has some assets for chain type correctly', () => {
     expect(
@@ -156,7 +160,12 @@ describe('isStableReleaseForChainType', () => {
    * N/A
    *
    * Expected output:
-   * N/A
+   * - Checking if a release is stable release for mainnet chain type when provided
+   *   a mainnet prerelease release should return false
+   * - Checking if a release is stable release for mainnet chain type when provided
+   *   a mainnet stable release should return true
+   * - Checking if a release is stable release for testnet chain type when provided
+   *   a testnet stable release should return false
    */
   it('should check if a release is stable and has some assets for chain type correctly', () => {
     expect(
@@ -185,7 +194,8 @@ describe('findLatestRelease', () => {
    * - call `findLatestRelease` to find latest testnet release
    *
    * Expected output:
-   * N/A
+   * - Found latest mainnet release id should equal mainnet prerelease release id
+   * - Found latest testnet release id should equal testnet prerelease release id
    */
   it('should find latest release correctly', async () => {
     mockOctokit();
@@ -213,7 +223,10 @@ describe('findLatestStableRelease', () => {
    * - call `findLatestStableRelease` to find latest stable testnet release
    *
    * Expected output:
-   * N/A
+   * - Found latest mainnet stable release id should equal mainnet stable release
+   *   id
+   * - Found latest testnet stable release id should equal testnet stable release
+   *   id
    */
   it('should find latest stable release correctly', async () => {
     mockOctokit();

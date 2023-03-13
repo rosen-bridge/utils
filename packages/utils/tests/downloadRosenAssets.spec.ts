@@ -5,11 +5,9 @@ import downloadRosenAssets from '../lib/downloadRosenAssets';
 import {
   mainNetPrereleaseRelease,
   mainNetStableRelease,
-  releases,
 } from './data/octokit.data';
 
 import { mockOctokit } from './mocks/octokit.mock';
-import { Octokit } from 'octokit';
 
 jest.mock('download');
 
@@ -26,7 +24,9 @@ describe('downloadRosenAssets', () => {
    * - call `downloadRosenAssets` to download mainnet assets in `rosen` directory
    *
    * Expected output:
-   * N/A
+   * - The download function should have been called two times with the download
+   *   urls of assets of mainnet stable release, 'rosen' directory name and
+   *   truncated file names
    */
   it('should download Rosen assets correctly', async () => {
     mockOctokit();
@@ -63,7 +63,9 @@ describe('downloadRosenAssets', () => {
    *   while taking prereleases into account when finding a matching release
    *
    * Expected output:
-   * N/A
+   * - The download function should have been called two times with the download
+   *   urls of assets of mainnet prerelease release, 'rosen' directory name and
+   *   truncated file names
    */
   it('should download Rosen assets correctly when including prereleases', async () => {
     mockOctokit();
@@ -99,7 +101,9 @@ describe('downloadRosenAssets', () => {
    *   and add a suffix to the asset names
    *
    * Expected output:
-   * N/A
+   * - The download function should have been called two times with the download
+   *   urls of assets of mainnet stable release, 'rosen' directory name and
+   *   truncated file names including the suffix
    */
   it('should download Rosen assets and add a suffix correctly', async () => {
     mockOctokit();
@@ -137,7 +141,7 @@ describe('downloadRosenAssets', () => {
    *   doesn't exist
    *
    * Expected output:
-   * N/A
+   * - The download function not get called
    */
   it('should not call `download` function if no matching release is found', async () => {
     mockOctokit();
@@ -162,7 +166,6 @@ describe('downloadRosenAssets', () => {
    * - call `downloadRosenAssets` to download mainnet assets in `rosen` directory
    *
    * Expected output:
-   * N/A
    */
   it('should throw an error if an error happens', async () => {
     mockOctokit();

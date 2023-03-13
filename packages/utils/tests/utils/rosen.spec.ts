@@ -13,7 +13,10 @@ describe('isValidAssetName', () => {
    * N/A
    *
    * Expected output:
-   * N/A
+   * - Checking if an address file containing "mainnet" is a valid mainnet asset
+   *   name should return true
+   * - Checking if an address file not containing "mainnet" is a valid mainnet
+   *   asset name should return false
    */
   it('should check if asset name matches chain type correctly for address assets', () => {
     const matchAssetName = 'contracts-awesomechain-mainnet-1.json';
@@ -35,7 +38,10 @@ describe('isValidAssetName', () => {
    * N/A
    *
    * Expected output:
-   * N/A
+   * - Checking if a tokensMap file containing "mainnet" is a valid mainnet asset
+   *   name should return false
+   * - Checking if a tokensMap file not containing "mainnet" is a valid mainnet
+   *   asset name should return false
    */
   it('should check if asset name matches chain type correctly for tokensMap asset', () => {
     const matchAssetName = 'tokensMap-mainnet-1.json';
@@ -57,7 +63,8 @@ describe('isValidAssetName', () => {
    * N/A
    *
    * Expected output:
-   * N/A
+   * - Checking if a file with wrong rosen file name format is a valid mainnet
+   *   asset name should return false
    */
   it("should return false if asset name doesn't match Rosen format assets", () => {
     const invalidAssetName = 'invalid-name.json';
@@ -78,7 +85,10 @@ describe('truncateAssetName', () => {
    * N/A
    *
    * Expected output:
-   * A truncated asset name
+   * - A truncated address file name should return the same name without chain
+   *   type and tag name
+   * - A truncated tokensMap file name should return the same name without chain
+   *   type and tag name
    */
   it('should truncate asset name correctly', () => {
     const addressAssetName = 'contracts-awesomechain-mainnet-1.json';
@@ -101,7 +111,8 @@ describe('truncateAssetName', () => {
    * N/A
    *
    * Expected output:
-   * A truncated asset name with a suffix appended to the name
+   * - A truncated asset file name should return the same name without chain type
+   *   and tag name, but with the suffix provided
    */
   it('should truncate asset name and append suffix correctly', () => {
     const assetName = 'contracts-awesomechain-mainnet-1.json';
