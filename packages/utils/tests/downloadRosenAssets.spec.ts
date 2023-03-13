@@ -2,6 +2,8 @@ import download from 'download';
 
 import downloadRosenAssets from '../lib/downloadRosenAssets';
 
+import { RosenAssetsDownloadError } from '../lib';
+
 import {
   mainNetPrereleaseRelease,
   mainNetStableRelease,
@@ -158,6 +160,6 @@ describe('downloadRosenAssets', () => {
 
     const downloadPromise = downloadRosenAssets('mainnet', 'rosen');
 
-    await expect(downloadPromise).rejects.toThrow('');
+    await expect(downloadPromise).rejects.toThrow(RosenAssetsDownloadError);
   });
 });
