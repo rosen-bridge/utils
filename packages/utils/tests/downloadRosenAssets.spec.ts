@@ -121,7 +121,7 @@ describe('downloadRosenAssets', () => {
    *
    * Dependencies:
    * - mocked Octokit
-   * - empty mocked download package
+   * - emptied mocked download package
    *
    * Scenario:
    * N/A
@@ -144,7 +144,7 @@ describe('downloadRosenAssets', () => {
    *
    * Dependencies:
    * - mocked Octokit
-   * - mocked download package (throwing an error)
+   * - mocked download package
    *
    * Scenario:
    * N/A
