@@ -24,12 +24,15 @@ describe('downloadRosenAssets', () => {
    * - mocked Octokit
    * @scenario
    * - mock Octokit `listReleases` to return 9 releases
-   * - call `downloadRosenAssets` to download mainnet assets in `rosen`
+   * - call `downloadRosenAssets` with mainnet chain type and `rosen` download
    *   directory
    * @expected
-   * - The download function should have been called two times with the download
-   *   urls of assets of mainnet stable release, 'rosen' directory name and
-   *   truncated file names
+   * - `download` function should be called with first asset of mainnet stable
+   *    release download url, `rosen` download directory and corresponding
+   *    truncated asset name
+   * - `download` function should be called with second asset of mainnet stable
+   *    release download url, `rosen` download directory and corresponding
+   *    truncated asset name
    */
   it('should download Rosen assets correctly', async () => {
     await downloadRosenAssets('mainnet', 'rosen');
@@ -57,13 +60,15 @@ describe('downloadRosenAssets', () => {
    * - mocked Octokit
    * @scenario
    * - mock Octokit `listReleases` to return 9 releases
-   * - call `downloadRosenAssets` to download mainnet assets in `rosen`
-   *   directory while taking prereleases into account when finding a matching
-   *   release
+   * - call `downloadRosenAssets` with mainnet chain type, `rosen` download
+   *   directory and including prereleases
    * @expected
-   * - The download function should have been called two times with the download
-   *   urls of assets of mainnet prerelease release, 'rosen' directory name and
-   *   truncated file names
+   * - `download` function should be called with first asset of mainnet
+   *    prerelease release download url, `rosen` download directory and
+   *    corresponding truncated asset name
+   * - `download` function should be called with second asset of mainnet
+   *    prerelease release download url, `rosen` download directory and
+   *    corresponding truncated asset name
    */
   it('should download Rosen assets correctly when including prereleases', async () => {
     await downloadRosenAssets('mainnet', 'rosen', true);
@@ -91,12 +96,15 @@ describe('downloadRosenAssets', () => {
    * - mocked Octokit
    * @scenario
    * - mock Octokit `listReleases` to return 9 releases
-   * - call `downloadRosenAssets` to download mainnet assets in `rosen`
-   *   directory and add a suffix to the asset names
+   * - call `downloadRosenAssets` with mainnet chain type, `rosen` download
+   *   directory, including prereleases and a providing a suffix
    * @expected
-   * - The download function should have been called two times with the download
-   *   urls of assets of mainnet stable release, 'rosen' directory name and
-   *   truncated file names including the suffix
+   * - `download` function should be called with first asset of mainnet stable
+   *    release download url, `rosen` download directory and corresponding
+   *    truncated asset name
+   * - `download` function should be called with second asset of mainnet stable
+   *    release download url, `rosen` download directory and corresponding
+   *    truncated asset name
    */
   it('should download Rosen assets and add a suffix correctly', async () => {
     await downloadRosenAssets('mainnet', 'rosen', false, 'suffix');
@@ -126,10 +134,10 @@ describe('downloadRosenAssets', () => {
    * @scenario
    * - mock Octokit `listReleases` to return 9 releases
    * - clear download package mock data (so that we can check calls count)
-   * - call `downloadRosenAssets` to download releases for a network whose
-   *   release doesn't exist
+   * - call `downloadRosenAssets` with "no-release-net" chain type and `rosen`
+   *   download directory
    * @expected
-   * - The download function not get called
+   * - `download` function should not get called
    */
   it('should not call `download` function when no matching release is found', async () => {
     jest.mocked(download).mockClear();
@@ -147,10 +155,10 @@ describe('downloadRosenAssets', () => {
    * @scenario
    * - mock Octokit `listReleases` to return 9 releases
    * - mock download package to throw an error
-   * - call `downloadRosenAssets` to download mainnet assets in `rosen`
+   * - call `downloadRosenAssets` with mainnet chain type and `rosen` download
    *   directory
    * @expected
-   * - The function should throw
+   * - `download` function should throw `RosenAssetsDownloadError`
    */
   it('should throw an error when an error happens', async () => {
     jest.mocked(download).mockRejectedValue(new Error('Bad!'));
