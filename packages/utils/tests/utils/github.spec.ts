@@ -44,6 +44,10 @@ describe('fetchReleasesPage', () => {
 });
 
 describe('findLastRelease', () => {
+  beforeEach(() => {
+    mockOctokit();
+  });
+
   /**
    * @target `findLastRelease` should find last release correctly
    * @dependencies
@@ -55,8 +59,6 @@ describe('findLastRelease', () => {
    * - The found release id should equal mainnet stable release id
    */
   it('should find last releases correctly when a predicate is provided', async () => {
-    mockOctokit();
-
     const foundReleases = await findLastRelease(
       (release) => release.id === mainNetStableRelease.id
     );
@@ -76,8 +78,6 @@ describe('findLastRelease', () => {
    * - The found release id should equal the last release id
    */
   it('should return last release when no predicate is provided', async () => {
-    mockOctokit();
-
     const foundReleases = await findLastRelease();
 
     expect(foundReleases?.id).toEqual(releases[0].id);
@@ -95,8 +95,6 @@ describe('findLastRelease', () => {
    * - The found release should be null
    */
   it('should return null when no matching release is found', async () => {
-    mockOctokit();
-
     const foundReleases = await findLastRelease(
       (release) => release.id === 100
     );

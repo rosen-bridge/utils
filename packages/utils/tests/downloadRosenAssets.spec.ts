@@ -14,6 +14,10 @@ import { mockOctokit } from './mocks/octokit.mock';
 jest.mock('download');
 
 describe('downloadRosenAssets', () => {
+  beforeEach(() => {
+    mockOctokit();
+  });
+
   /**
    * @target `downloadRosenAssets` should download Rosen assets correctly
    * @dependencies
@@ -28,8 +32,6 @@ describe('downloadRosenAssets', () => {
    *   truncated file names
    */
   it('should download Rosen assets correctly', async () => {
-    mockOctokit();
-
     await downloadRosenAssets('mainnet', 'rosen');
 
     expect(download).toHaveBeenCalledWith(
@@ -64,8 +66,6 @@ describe('downloadRosenAssets', () => {
    *   truncated file names
    */
   it('should download Rosen assets correctly when including prereleases', async () => {
-    mockOctokit();
-
     await downloadRosenAssets('mainnet', 'rosen', true);
 
     expect(download).toHaveBeenCalledWith(
@@ -99,8 +99,6 @@ describe('downloadRosenAssets', () => {
    *   truncated file names including the suffix
    */
   it('should download Rosen assets and add a suffix correctly', async () => {
-    mockOctokit();
-
     await downloadRosenAssets('mainnet', 'rosen', false, 'suffix');
 
     expect(download).toHaveBeenCalledWith(
@@ -134,7 +132,6 @@ describe('downloadRosenAssets', () => {
    * - The download function not get called
    */
   it('should not call `download` function when no matching release is found', async () => {
-    mockOctokit();
     jest.mocked(download).mockClear();
 
     await downloadRosenAssets('no-release-net', 'rosen');
@@ -155,7 +152,6 @@ describe('downloadRosenAssets', () => {
    * @expected
    */
   it('should throw an error when an error happens', async () => {
-    mockOctokit();
     jest.mocked(download).mockRejectedValue(new Error('Bad!'));
 
     const downloadPromise = downloadRosenAssets('mainnet', 'rosen');
