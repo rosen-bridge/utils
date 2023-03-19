@@ -1,0 +1,6 @@
+{
+  "coverageReporters": ["lcov", "cobertura", "text", "text-summary"],
+  "preset": "ts-jest/presets/js-with-babel",
+  "testEnvironment": "node",
+  "verbose": true
+}
