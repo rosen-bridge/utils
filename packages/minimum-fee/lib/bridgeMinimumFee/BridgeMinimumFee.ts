@@ -13,6 +13,7 @@ export class BridgeMinimumFee {
   protected readonly explorer: ExplorerApi;
   protected readonly feeConfigTokenId: string;
   readonly ratioDivisor: bigint = 100000n;
+  readonly feeRatioDivisor: bigint = 10000n;
 
   /**
    * initializes class parameters
@@ -38,6 +39,7 @@ export class BridgeMinimumFee {
         heights: undefined,
         networkFees: undefined,
         rsnRatios: undefined,
+        feeRatios: undefined,
       };
       for (;;) {
         const boxes = (
@@ -64,13 +66,15 @@ export class BridgeMinimumFee {
       }
 
       // appropriate log or error for suspects cases
-      const { chains, heights, bridgeFees, networkFees, rsnRatios } = configs;
+      const { chains, heights, bridgeFees, networkFees, rsnRatios, feeRatios } =
+        configs;
       if (
         chains === undefined ||
         heights === undefined ||
         bridgeFees === undefined ||
         networkFees === undefined ||
-        rsnRatios === undefined
+        rsnRatios === undefined ||
+        feeRatios === undefined
       )
         throw Error(`Found no config box`);
 
@@ -87,6 +91,7 @@ export class BridgeMinimumFee {
             bridgeFee: BigInt(bridgeFees[i][j]),
             networkFee: BigInt(networkFees[i][j]),
             rsnRatio: BigInt(rsnRatios[i][j]),
+            feeRation: BigInt(feeRatios[i][j]),
           };
         }
 

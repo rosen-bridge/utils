@@ -21,6 +21,9 @@ export const extractConfigRegisters = (box: ErgoBox): ConfigBox => {
   const rsnRatios: Array<Array<string>> | undefined = box
     .register_value(8)
     ?.to_js();
+  const feeRatios: Array<Array<string>> | undefined = box
+    .register_value(9)
+    ?.to_js();
 
   return {
     chains,
@@ -28,6 +31,7 @@ export const extractConfigRegisters = (box: ErgoBox): ConfigBox => {
     bridgeFees,
     networkFees,
     rsnRatios,
+    feeRatios,
   };
 };
 
@@ -37,6 +41,7 @@ export const isConfigDefined = (configs: ConfigBox) => {
     configs.chains !== undefined &&
     configs.heights !== undefined &&
     configs.networkFees !== undefined &&
-    configs.rsnRatios !== undefined
+    configs.rsnRatios !== undefined &&
+    configs.feeRatios !== undefined
   );
 };
