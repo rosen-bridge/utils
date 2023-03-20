@@ -1,9 +1,9 @@
 import { SqliteDriver } from 'typeorm/driver/sqlite/SqliteDriver';
 import { Mutex } from 'async-mutex';
 import { DataSource, QueryRunner, ReplicationMode } from 'typeorm';
-import AtomicTransactionQueryRunner from './AtomicTransactionQueryRunner';
+import { CustomQueryRunner } from './CustomQueryRunner';
 
-class AtomicTransactionSqliteDriver extends SqliteDriver {
+class CustomSqliteDriver extends SqliteDriver {
   protected mutex: Mutex;
 
   constructor(connection: DataSource) {
@@ -13,9 +13,9 @@ class AtomicTransactionSqliteDriver extends SqliteDriver {
 
   createQueryRunner = (mode: ReplicationMode): QueryRunner => {
     if (!this.queryRunner)
-      this.queryRunner = new AtomicTransactionQueryRunner(this, this.mutex);
+      this.queryRunner = new CustomQueryRunner(this, this.mutex);
     return this.queryRunner;
   };
 }
 
-export default AtomicTransactionSqliteDriver;
+export { CustomSqliteDriver as SqliteDriver };

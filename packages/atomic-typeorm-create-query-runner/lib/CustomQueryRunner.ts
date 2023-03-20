@@ -3,7 +3,7 @@ import { IsolationLevel } from 'typeorm/driver/types/IsolationLevel';
 import { Mutex, MutexInterface } from 'async-mutex';
 import { SqliteDriver } from 'typeorm/driver/sqlite/SqliteDriver';
 
-class AtomicTransactionQueryRunner extends SqliteQueryRunner {
+class CustomQueryRunner extends SqliteQueryRunner {
   releaseMutex: MutexInterface.Releaser | null;
   readonly mutex: Mutex;
 
@@ -36,4 +36,4 @@ class AtomicTransactionQueryRunner extends SqliteQueryRunner {
   };
 }
 
-export default AtomicTransactionQueryRunner;
+export { CustomQueryRunner };
