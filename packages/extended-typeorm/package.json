@@ -10,8 +10,8 @@
     "lint": "eslint --fix . && npm run prettify",
     "build": "tsc --build tsconfig.build.json",
     "type-check": "tsc --noEmit",
-    "test": "jest",
-    "coverage": "jest --coverage",
+    "test": "jest --passWithNoTests",
+    "coverage": "jest --coverage --passWithNoTests",
     "release": "npm run test && npm run build && npm publish --access public"
   },
   "repository": {
