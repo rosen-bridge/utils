@@ -1,7 +1,7 @@
 {
-  "name": "@rosen-bridge/atomic-typeorm-create-query-runner",
+  "name": "@rosen-bridge/extended-typeorm",
   "version": "0.0.1",
-  "description": "An alternative to default typeorm's createQueryRunner which behaves atomic and supports parallel transactions for sqlite",
+  "description": "An extended typeorm datasource with run some queries better",
   "main": "dist/lib/index.js",
   "types": "dist/lib/index.d.ts",
   "type": "module",
