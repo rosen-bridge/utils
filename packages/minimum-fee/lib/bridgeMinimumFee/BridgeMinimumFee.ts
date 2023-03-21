@@ -91,7 +91,7 @@ export class BridgeMinimumFee {
             bridgeFee: BigInt(bridgeFees[i][j]),
             networkFee: BigInt(networkFees[i][j]),
             rsnRatio: BigInt(rsnRatios[i][j]),
-            feeRation: BigInt(feeRatios[i][j]),
+            feeRatio: BigInt(feeRatios[i][j]),
           };
         }
 

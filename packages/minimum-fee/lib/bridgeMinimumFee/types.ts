@@ -2,7 +2,7 @@ interface Fee {
   bridgeFee: bigint;
   networkFee: bigint;
   rsnRatio: bigint;
-  feeRation: bigint;
+  feeRatio: bigint;
 }
 
 interface ChainFee {

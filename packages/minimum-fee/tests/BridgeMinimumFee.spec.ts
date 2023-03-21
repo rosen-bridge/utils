@@ -24,11 +24,11 @@ describe('BridgeMinimumFee', () => {
         ],
         "additionalRegisters": {
           "R4": "1a02046572676f0763617264616e6f",
-          "R6": "1d02018088debe0101808ece1c",
-          "R9": "1d0201900301d804",
           "R5": "1d0201a2d26901c88acc07",
+          "R6": "1d02018088debe0101808ece1c",
           "R7": "1d020180897a018092f401",
-          "R8": "1d0201140114"
+          "R8": "1d0201140114",
+          "R9": "1d0201900301d804"
         },
         "creationHeight": 1,
         "transactionId": "10338bf8e12ec32f9e10bb28784e8f36316555d23a392d71a59ff45bb6d553e7",
@@ -60,11 +60,11 @@ describe('BridgeMinimumFee', () => {
         ],
         "additionalRegisters": {
           "R4": "1a02046572676f0763617264616e6f",
-          "R6": "1d0201a01f01f02e",
-          "R9": "1d0201900301d804",
           "R5": "1d0201a2d26901c88acc07",
+          "R6": "1d0201a01f01f02e",
           "R7": "1d0201900301d804",
-          "R8": "1d0201c09a0c01c09a0c"
+          "R8": "1d0201c09a0c01c09a0c",
+          "R9": "1d0201900301d804"
         },
         "creationHeight": 1,
         "transactionId": "ad455a3f2a4b51c72634b756caf7c15230df616eae1a4ddd91054192b6c15af3",
@@ -119,7 +119,7 @@ describe('BridgeMinimumFee', () => {
             bridgeFee: BigInt('200000000'),
             networkFee: BigInt('1000000'),
             rsnRatio: BigInt('10'),
-            feeRation: BigInt('200'),
+            feeRatio: BigInt('200'),
           },
         },
         cardano: {
@@ -127,7 +127,7 @@ describe('BridgeMinimumFee', () => {
             bridgeFee: BigInt('30000000'),
             networkFee: BigInt('2000000'),
             rsnRatio: BigInt('10'),
-            feeRation: BigInt('300'),
+            feeRatio: BigInt('300'),
           },
         },
       };
@@ -171,7 +171,7 @@ describe('BridgeMinimumFee', () => {
             bridgeFee: BigInt('2000'),
             networkFee: BigInt('200'),
             rsnRatio: BigInt('100000'),
-            feeRation: BigInt('200'),
+            feeRatio: BigInt('200'),
           },
         },
         cardano: {
@@ -179,7 +179,7 @@ describe('BridgeMinimumFee', () => {
             bridgeFee: BigInt('3000'),
             networkFee: BigInt('300'),
             rsnRatio: BigInt('100000'),
-            feeRation: BigInt('300'),
+            feeRatio: BigInt('300'),
           },
         },
       };
@@ -219,7 +219,7 @@ describe('BridgeMinimumFee', () => {
         bridgeFee: BigInt('200000000'),
         networkFee: BigInt('1000000'),
         rsnRatio: BigInt('10'),
-        feeRation: BigInt('200'),
+        feeRatio: BigInt('200'),
       };
       expect(result).toEqual(expectedResult);
     });
@@ -257,7 +257,7 @@ describe('BridgeMinimumFee', () => {
         bridgeFee: BigInt('3000'),
         networkFee: BigInt('300'),
         rsnRatio: BigInt('100000'),
-        feeRation: BigInt('300'),
+        feeRatio: BigInt('300'),
       };
       expect(result).toEqual(expectedResult);
     });
