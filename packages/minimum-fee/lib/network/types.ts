@@ -29,6 +29,7 @@ interface ConfigBox {
   bridgeFees: string[][] | undefined;
   networkFees: string[][] | undefined;
   rsnRatios: string[][] | undefined;
+  feeRatios: string[][] | undefined;
 }
 
 export { Asset, Box, Boxes, ConfigBox };
