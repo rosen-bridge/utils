@@ -1,4 +1,4 @@
-# @rosen-bridge/atomic-typeorm-create-query-runner
+# @rosen-bridge/extended-typeorm
 
 ## Table of contents
 
