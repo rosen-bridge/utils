@@ -36,4 +36,4 @@ const dataSource = DataSource({
 })
 ```
 
-And then all database transaction executed correctly
+Now all database transaction execute correctly without throwing an error, no matter if you call them simultaneously or not.
