@@ -11,7 +11,7 @@
     "build": "tsc",
     "type-check": "tsc --noEmit",
     "test": "jest --passWithNoTests",
-    "coverage": "jest --coverage",
+    "coverage": "jest --passWithNoTests --coverage",
     "release": "npm run test && npm run build"
   },
   "files": [
