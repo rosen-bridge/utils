@@ -1,3 +1,5 @@
+import { AbstractLogger } from '@rosen-bridge/logger-interface';
+
 /**
  * MessageType type for communication between nodes in the network
  */
@@ -47,10 +49,30 @@ interface HeartbeatPayload {
   nounce: string;
 }
 
+/**
+ * GuardInfo interface for communication between nodes in the network
+ * @param peerId - peer id of the guard
+ * @param nounce - nounce of the guard
+ * @param lastUpdate - last update of the guard (timestamp)
+ **/
+interface GuardInfo {
+  peerId: string;
+  nounce: string;
+  lastUpdate: number; // timestamp
+}
+
+interface GuardDetectionConfig {
+  logger: AbstractLogger;
+  guardsPublicKey: string[];
+  publicKey: string;
+}
+
 export {
   MessageHandler,
   Message,
   RegisterPayload,
   ApprovePayload,
   HeartbeatPayload,
+  GuardInfo,
+  GuardDetectionConfig,
 };
