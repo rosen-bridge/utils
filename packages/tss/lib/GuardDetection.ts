@@ -11,13 +11,14 @@ import {
 import { AbstractLogger } from '@rosen-bridge/logger-interface';
 
 class GuardDetection {
-  private handler: MessageHandler;
-  private readonly publicKey: string;
-  private approvedPublicKeys: string[];
-  private guardsInfo: GuardInfo[] = [];
-  private readonly logger: AbstractLogger;
-  private readonly guardsRegisterTimeout: number = 2 * 60 * 1000; // 2 minutes
-  private readonly guardsHeartbeatTimeout: number = 1 * 60 * 1000; // 1 minutes
+  protected handler: MessageHandler;
+  protected readonly publicKey: string;
+  protected approvedPublicKeys: string[];
+  protected guardsInfo: GuardInfo[] = [];
+  protected readonly logger: AbstractLogger;
+  protected readonly guardsRegisterTimeout: number = 2 * 60 * 1000; // 2 minutes
+  protected readonly guardsHeartbeatTimeout: number = 1 * 60 * 1000; // 1 minutes
+  protected readonly timestampTolerance: number = 1 * 60 * 1000; // 1 minutes
   constructor(handler: MessageHandler, config: GuardDetectionConfig) {
     this.handler = handler;
     this.approvedPublicKeys = config.guardsPublicKey;
@@ -44,10 +45,12 @@ class GuardDetection {
    * @param parsedMessage - parsed message
    * @private
    */
-  private checkMessageSign(parsedMessage: Message): boolean {
+  protected checkMessageSign(parsedMessage: Message): boolean {
     try {
       if (this.approvedPublicKeys.includes(parsedMessage.pk)) {
-        if (this.handler.checkSign(parsedMessage.payload)) {
+        if (
+          this.handler.checkSign(parsedMessage.payload, parsedMessage.signature)
+        ) {
           return true;
         }
       }
@@ -57,12 +60,16 @@ class GuardDetection {
     return false;
   }
 
+  protected checkTimestamp(timestamp: number): boolean {
+    return Date.now() - timestamp < this.timestampTolerance;
+  }
+
   /**
    * returns the index of the public key in the approvedPublicKeys array
    * @param publicKey - public key of the guard
    * @private
    */
-  private publicKeyToIndex(publicKey: string): number {
+  protected publicKeyToIndex(publicKey: string): number {
     return this.approvedPublicKeys.indexOf(publicKey);
   }
 
@@ -73,7 +80,7 @@ class GuardDetection {
    * @param sender - public key of sender
    * @private
    */
-  private handleRegisterMessage(
+  protected handleRegisterMessage(
     _payload: RegisterPayload,
     sender: string
   ): void {
@@ -82,6 +89,7 @@ class GuardDetection {
     const payload: ApprovePayload = {
       nounce: nounce,
       receivedNounce: receivedNounce,
+      timestamp: Date.now(),
     };
     this.guardsInfo[this.publicKeyToIndex(sender)].nounce = nounce;
     this.handler.send({
@@ -97,24 +105,30 @@ class GuardDetection {
    * handle Approve message from other node in the network
    * @param _payload - ApprovePayload
    * @param sender - public key of sender
+   * @param senderPeerId - peerId of sender
    * @private
    */
-  private handleApproveMessage(_payload: ApprovePayload, sender: string): void {
+  protected handleApproveMessage(
+    _payload: ApprovePayload,
+    sender: string,
+    senderPeerId: string
+  ): void {
     const receivedNounce = _payload.receivedNounce;
     const nounce = _payload.nounce;
     const index = this.publicKeyToIndex(sender);
     if (this.guardsInfo[index].nounce === receivedNounce) {
       const currentTime = Date.now();
       if (
-        currentTime - this.guardsInfo[index].lastUpdate >
+        currentTime - this.guardsInfo[index].lastUpdate <
         this.guardsHeartbeatTimeout
       ) {
-        this.guardsInfo[index].peerId = 'save guard peer ID'; //TODO: save guard peer ID
+        this.guardsInfo[index].peerId = senderPeerId;
         this.guardsInfo[index].lastUpdate = currentTime;
       }
       if (nounce) {
         const payload: ApprovePayload = {
           receivedNounce: nounce,
+          timestamp: Date.now(),
         };
         const payloadString = JSON.stringify(payload);
 
@@ -136,13 +150,14 @@ class GuardDetection {
    * @param sender - public key of sender
    * @private
    */
-  private handleHeartbeatMessage(
+  protected handleHeartbeatMessage(
     _payload: HeartbeatPayload,
     sender: string
   ): void {
     const nounce = _payload.nounce;
     const payload: ApprovePayload = {
       receivedNounce: nounce,
+      timestamp: Date.now(),
     };
     const payloadString = JSON.stringify(payload);
     this.handler.send({
@@ -157,12 +172,20 @@ class GuardDetection {
   /**
    * handle receive message from other node in the network
    * @param message - message from other node in the network
+   * @param senderPeerId - peer id of sender
    * @private
    */
-  private handleReceiveMessage(message: string): void {
+  protected handleReceiveMessage(message: string, senderPeerId: string): void {
     const parsedMessage: Message = JSON.parse(message);
     if (this.checkMessageSign(parsedMessage)) {
-      const payload = JSON.parse(this.handler.decrypt(parsedMessage.payload));
+      const payload: RegisterPayload | ApprovePayload | HeartbeatPayload =
+        JSON.parse(this.handler.decrypt(parsedMessage.payload));
+      if (!this.checkTimestamp(payload.timestamp)) {
+        this.logger.debug(
+          `Message from peer ${senderPeerId} timestamp is not valid`
+        );
+        return;
+      }
       switch (parsedMessage.type) {
         case 'register':
           return this.handleRegisterMessage(
@@ -172,7 +195,8 @@ class GuardDetection {
         case 'approve':
           return this.handleApproveMessage(
             payload as ApprovePayload,
-            parsedMessage.pk
+            parsedMessage.pk,
+            senderPeerId
           );
         case 'heartbeat':
           return this.handleHeartbeatMessage(
@@ -189,44 +213,45 @@ class GuardDetection {
    * to that guard and the payload is the new nounce.
    * if guard is pass `guardRegisterTimeout` should message of type register send
    * to that guard and the payload is the new nounce.
-   * @private
+   * @protected
    */
-  private updateGuardsStatus() {
+  protected updateGuardsStatus() {
     const currentTime = Date.now();
-    const guards = this.guardsInfo.filter(
-      (guard) =>
-        currentTime - guard.lastUpdate > this.guardsHeartbeatTimeout ||
-        currentTime - guard.lastUpdate > this.guardsRegisterTimeout
-    );
-    guards.forEach((guard) => {
+    for (let index = 0; index < this.guardsInfo.length; index++) {
+      const guard = this.guardsInfo[index];
       if (currentTime - guard.lastUpdate > this.guardsRegisterTimeout) {
         const nounce = this.generateNounce();
-        const signature = this.handler.sign(nounce);
+        const payload: HeartbeatPayload = {
+          nounce: nounce,
+          timestamp: Date.now(),
+        };
+        const payloadString = JSON.stringify(payload);
+
         this.handler.send({
           type: 'register',
-          payload: nounce,
-          signature: signature,
-          receiver: guard.peerId,
+          payload: this.handler.encrypt(payloadString),
+          signature: this.handler.sign(payloadString),
+          receiver: this.approvedPublicKeys[index],
           pk: this.publicKey,
         });
         guard.nounce = nounce;
-        guard.lastUpdate = currentTime;
       } else {
         const nounce = this.generateNounce();
         const payload: HeartbeatPayload = {
           nounce: nounce,
+          timestamp: Date.now(),
         };
         const payloadString = JSON.stringify(payload);
         this.handler.send({
           type: 'heartbeat',
           payload: this.handler.encrypt(payloadString),
           signature: this.handler.sign(payloadString),
-          receiver: guard.peerId,
+          receiver: this.approvedPublicKeys[index],
           pk: this.publicKey,
         });
         guard.nounce = nounce;
       }
-    });
+    }
   }
 
   /**
@@ -245,3 +270,5 @@ class GuardDetection {
       .map((guard) => guard.peerId);
   }
 }
+
+export { GuardDetection };
