@@ -76,6 +76,9 @@ class mockGuardDetection extends GuardDetection {
     return this.handleReceiveMessage(message, senderPeerId);
   }
 
+  getCheckTimestamp(timestamp: number) {
+    return this.checkTimestamp(timestamp);
+  }
   runUpdateGuardsStatus() {
     this.updateGuardsStatus();
   }
@@ -132,6 +135,22 @@ describe('GuardDetection', () => {
         receiver: 'receiver',
       };
       const isValid = guardDetection.getCheckMessageSign(parsedMessage);
+      expect(isValid).toBeFalsy();
+    });
+  });
+
+  describe('checkTimestamp', () => {
+    it('should return true if the timestamp is valid', () => {
+      const guardDetection = new mockGuardDetection(handler, config);
+      const isValid = guardDetection.getCheckTimestamp(Date.now());
+      expect(isValid).toBeTruthy();
+    });
+
+    it('should return false if the timestamp is not valid', () => {
+      const guardDetection = new mockGuardDetection(handler, config);
+      const isValid = guardDetection.getCheckTimestamp(
+        Date.now() - 2 * 60 * 1000
+      );
       expect(isValid).toBeFalsy();
     });
   });
