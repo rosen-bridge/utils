@@ -32,21 +32,24 @@ type Message = {
 interface MessageHandler {
   sign(message: string): string;
   encrypt(message: string): string;
-  checkSign(message: string): boolean;
+  checkSign(message: string, signature: string): boolean;
   decrypt(message: string): string;
   send(message: Message): void;
 }
 
 interface RegisterPayload {
   nounce: string;
+  timestamp: number;
 }
 
 interface ApprovePayload {
   nounce?: string;
   receivedNounce: string;
+  timestamp: number;
 }
 interface HeartbeatPayload {
   nounce: string;
+  timestamp: number;
 }
 
 /**
