@@ -60,6 +60,11 @@ class GuardDetection {
     return false;
   }
 
+  /**
+   * Check if the timestamp is less than the timestampTolerance
+   * @param timestamp - timestamp to check
+   * @protected
+   */
   protected checkTimestamp(timestamp: number): boolean {
     return Date.now() - timestamp < this.timestampTolerance;
   }
@@ -67,7 +72,7 @@ class GuardDetection {
   /**
    * returns the index of the public key in the approvedPublicKeys array
    * @param publicKey - public key of the guard
-   * @private
+   * @protected
    */
   protected publicKeyToIndex(publicKey: string): number {
     return this.approvedPublicKeys.indexOf(publicKey);
@@ -78,7 +83,7 @@ class GuardDetection {
    * message with new nounce
    * @param _payload - RegisterPayload
    * @param sender - public key of sender
-   * @private
+   * @protected
    */
   protected handleRegisterMessage(
     _payload: RegisterPayload,
