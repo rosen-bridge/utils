@@ -32,7 +32,7 @@ class GuardDetection {
   }
 
   /**
-   * Generate a random nounce
+   * Generate a random nounce in base64 format
    * @param size - size of the nounce in bytes
    * @private
    */
@@ -84,21 +84,27 @@ class GuardDetection {
     _payload: RegisterPayload,
     sender: string
   ): void {
-    const receivedNounce = _payload.nounce;
-    const nounce = this.generateNounce();
-    const payload: ApprovePayload = {
-      nounce: nounce,
-      receivedNounce: receivedNounce,
-      timestamp: Date.now(),
-    };
-    this.guardsInfo[this.publicKeyToIndex(sender)].nounce = nounce;
-    this.handler.send({
-      type: 'approve',
-      payload: this.handler.encrypt(JSON.stringify(payload)),
-      signature: this.handler.sign(JSON.stringify(payload)),
-      receiver: sender,
-      pk: this.publicKey,
-    });
+    try {
+      const receivedNounce = _payload.nounce;
+      const nounce = this.generateNounce();
+      const payload: ApprovePayload = {
+        nounce: nounce,
+        receivedNounce: receivedNounce,
+        timestamp: Date.now(),
+      };
+      this.guardsInfo[this.publicKeyToIndex(sender)].nounce = nounce;
+      this.handler.send({
+        type: 'approve',
+        payload: this.handler.encrypt(JSON.stringify(payload)),
+        signature: this.handler.sign(JSON.stringify(payload)),
+        receiver: sender,
+        pk: this.publicKey,
+      });
+    } catch (e) {
+      this.logger.warn(
+        `An Error occurred while handling register message: ${e}`
+      );
+    }
   }
 
   /**
@@ -113,33 +119,39 @@ class GuardDetection {
     sender: string,
     senderPeerId: string
   ): void {
-    const receivedNounce = _payload.receivedNounce;
-    const nounce = _payload.nounce;
-    const index = this.publicKeyToIndex(sender);
-    if (this.guardsInfo[index].nounce === receivedNounce) {
-      const currentTime = Date.now();
-      if (
-        currentTime - this.guardsInfo[index].lastUpdate <
-        this.guardsHeartbeatTimeout
-      ) {
-        this.guardsInfo[index].peerId = senderPeerId;
-        this.guardsInfo[index].lastUpdate = currentTime;
-      }
-      if (nounce) {
-        const payload: ApprovePayload = {
-          receivedNounce: nounce,
-          timestamp: Date.now(),
-        };
-        const payloadString = JSON.stringify(payload);
+    try {
+      const receivedNounce = _payload.receivedNounce;
+      const nounce = _payload.nounce;
+      const index = this.publicKeyToIndex(sender);
+      if (this.guardsInfo[index].nounce === receivedNounce) {
+        const currentTime = Date.now();
+        if (
+          currentTime - this.guardsInfo[index].lastUpdate <
+          this.guardsHeartbeatTimeout
+        ) {
+          this.guardsInfo[index].peerId = senderPeerId;
+          this.guardsInfo[index].lastUpdate = currentTime;
+        }
+        if (nounce) {
+          const payload: ApprovePayload = {
+            receivedNounce: nounce,
+            timestamp: Date.now(),
+          };
+          const payloadString = JSON.stringify(payload);
 
-        this.handler.send({
-          type: 'approve',
-          payload: this.handler.encrypt(payloadString),
-          signature: this.handler.sign(payloadString),
-          receiver: sender,
-          pk: this.publicKey,
-        });
+          this.handler.send({
+            type: 'approve',
+            payload: this.handler.encrypt(payloadString),
+            signature: this.handler.sign(payloadString),
+            receiver: sender,
+            pk: this.publicKey,
+          });
+        }
       }
+    } catch (e) {
+      this.logger.warn(
+        `An Error occurred while handling approve message: ${e}`
+      );
     }
   }
 
@@ -154,19 +166,25 @@ class GuardDetection {
     _payload: HeartbeatPayload,
     sender: string
   ): void {
-    const nounce = _payload.nounce;
-    const payload: ApprovePayload = {
-      receivedNounce: nounce,
-      timestamp: Date.now(),
-    };
-    const payloadString = JSON.stringify(payload);
-    this.handler.send({
-      type: 'approve',
-      payload: this.handler.encrypt(payloadString),
-      signature: this.handler.sign(payloadString),
-      receiver: sender,
-      pk: this.publicKey,
-    });
+    try {
+      const nounce = _payload.nounce;
+      const payload: ApprovePayload = {
+        receivedNounce: nounce,
+        timestamp: Date.now(),
+      };
+      const payloadString = JSON.stringify(payload);
+      this.handler.send({
+        type: 'approve',
+        payload: this.handler.encrypt(payloadString),
+        signature: this.handler.sign(payloadString),
+        receiver: sender,
+        pk: this.publicKey,
+      });
+    } catch (e) {
+      this.logger.warn(
+        `An Error occurred while handling heartbeat message: ${e}`
+      );
+    }
   }
 
   /**
@@ -176,34 +194,40 @@ class GuardDetection {
    * @private
    */
   protected handleReceiveMessage(message: string, senderPeerId: string): void {
-    const parsedMessage: Message = JSON.parse(message);
-    if (this.checkMessageSign(parsedMessage)) {
-      const payload: RegisterPayload | ApprovePayload | HeartbeatPayload =
-        JSON.parse(this.handler.decrypt(parsedMessage.payload));
-      if (!this.checkTimestamp(payload.timestamp)) {
-        this.logger.debug(
-          `Message from peer ${senderPeerId} timestamp is not valid`
-        );
-        return;
+    try {
+      const parsedMessage: Message = JSON.parse(message);
+      if (this.checkMessageSign(parsedMessage)) {
+        const payload: RegisterPayload | ApprovePayload | HeartbeatPayload =
+          JSON.parse(this.handler.decrypt(parsedMessage.payload));
+        if (!this.checkTimestamp(payload.timestamp)) {
+          this.logger.debug(
+            `Message from peer ${senderPeerId} timestamp is not valid`
+          );
+          return;
+        }
+        switch (parsedMessage.type) {
+          case 'register':
+            return this.handleRegisterMessage(
+              payload as RegisterPayload,
+              parsedMessage.pk
+            );
+          case 'approve':
+            return this.handleApproveMessage(
+              payload as ApprovePayload,
+              parsedMessage.pk,
+              senderPeerId
+            );
+          case 'heartbeat':
+            return this.handleHeartbeatMessage(
+              payload as HeartbeatPayload,
+              parsedMessage.pk
+            );
+        }
       }
-      switch (parsedMessage.type) {
-        case 'register':
-          return this.handleRegisterMessage(
-            payload as RegisterPayload,
-            parsedMessage.pk
-          );
-        case 'approve':
-          return this.handleApproveMessage(
-            payload as ApprovePayload,
-            parsedMessage.pk,
-            senderPeerId
-          );
-        case 'heartbeat':
-          return this.handleHeartbeatMessage(
-            payload as HeartbeatPayload,
-            parsedMessage.pk
-          );
-      }
+    } catch (e) {
+      this.logger.warn(
+        `An Error occurred while handling receive message: ${e}`
+      );
     }
   }
 
