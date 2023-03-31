@@ -203,7 +203,7 @@ describe('GuardDetection', () => {
      * @expected
      * - the sent message should be an approve message with the new nounce and the received nounce
      */
-    it('Should send an approve message with the new nounce and the received nounce', () => {
+    it('Should send an approve message with the new nounce and the received nounce', async () => {
       jest.spyOn(handler, 'send');
       const guardDetection = new mockGuardDetection(handler, config);
       jest
@@ -213,7 +213,10 @@ describe('GuardDetection', () => {
         nounce: 'nounce',
         timestamp: Date.now(),
       };
-      guardDetection.getHandleRegisterMessage(payload, guardsPublicKeys[1]);
+      await guardDetection.getHandleRegisterMessage(
+        payload,
+        guardsPublicKeys[1]
+      );
       expect(handler.send).toHaveBeenCalledWith(
         expect.objectContaining({
           type: 'approve',
@@ -246,7 +249,7 @@ describe('GuardDetection', () => {
     it(
       'Should save peerId in case of received nounce is equal to sender nounce' +
         ' and lastUpdate is less than guardsHeartbeatTimeout',
-      () => {
+      async () => {
         jest.spyOn(handler, 'send').mockClear();
         jest.spyOn(handler, 'send');
         const guardDetection = new mockGuardDetection(handler, config);
@@ -259,7 +262,7 @@ describe('GuardDetection', () => {
           receivedNounce: 'nounce',
           timestamp: Date.now(),
         };
-        guardDetection.getHandleApproveMessage(
+        await guardDetection.getHandleApproveMessage(
           payload,
           guardsPublicKeys[1],
           'peerId'
@@ -287,7 +290,7 @@ describe('GuardDetection', () => {
     it(
       'Should send approve message if nounce is set in the payload and received ' +
         'nounce is equal to sender nounce',
-      () => {
+      async () => {
         jest.spyOn(handler, 'send').mockClear();
         jest.spyOn(handler, 'send');
         const guardDetection = new mockGuardDetection(handler, config);
@@ -300,13 +303,13 @@ describe('GuardDetection', () => {
           receivedNounce: 'nounce',
           timestamp: Date.now(),
         };
-        guardDetection.getHandleApproveMessage(
+        await guardDetection.getHandleApproveMessage(
           payload,
           guardsPublicKeys[1],
           'peerId'
         );
         expect(guardDetection.getGuardInfo(0).nounce).toEqual('nounce');
-        expect(guardDetection.getGuardInfo(0).peerId).toEqual('');
+        expect(guardDetection.getGuardInfo(0).peerId).toEqual('peerId');
         expect(handler.send).toHaveBeenCalledWith(
           expect.objectContaining({
             type: 'approve',
@@ -335,7 +338,7 @@ describe('GuardDetection', () => {
      * - the sent message should be an approve message with the received nounce
      * and the timestamp
      */
-    it('Should send approve message just with the received nounce', () => {
+    it('Should send approve message just with the received nounce', async () => {
       jest.spyOn(handler, 'send').mockClear();
       jest.spyOn(handler, 'send');
       const guardDetection = new mockGuardDetection(handler, config);
@@ -343,7 +346,10 @@ describe('GuardDetection', () => {
         nounce: 'nounce',
         timestamp: Date.now(),
       };
-      guardDetection.getHandleHeartbeatMessage(payload, guardsPublicKeys[1]);
+      await guardDetection.getHandleHeartbeatMessage(
+        payload,
+        guardsPublicKeys[1]
+      );
       expect(handler.send).toHaveBeenCalledWith(
         expect.objectContaining({
           type: 'approve',
@@ -371,7 +377,7 @@ describe('GuardDetection', () => {
      * @expected
      * - the called handler should be `handleRegisterMessage`
      */
-    it('Should call the correct handler for the message register with correct signature', () => {
+    it('Should call the correct handler for the message register with correct signature', async () => {
       const guardDetection = new mockGuardDetection(handler, config);
       const spiedHandleRegister = jest.spyOn(
         Object.getPrototypeOf(guardDetection),
@@ -384,7 +390,7 @@ describe('GuardDetection', () => {
         signature: 'signature',
         receiver: 'receiver',
       };
-      guardDetection.getHandleReceivedMessage(
+      await guardDetection.getHandleReceivedMessage(
         JSON.stringify(parsedMessage),
         'peerId'
       );
@@ -404,7 +410,7 @@ describe('GuardDetection', () => {
      * @expected
      * - the called handler should be `handleApproveMessage`
      */
-    it('Should call the correct handler for the message approve with correct signature', () => {
+    it('Should call the correct handler for the message approve with correct signature', async () => {
       const guardDetection = new mockGuardDetection(handler, config);
       const spiedHandleApprove = jest.spyOn(
         Object.getPrototypeOf(guardDetection),
@@ -421,7 +427,7 @@ describe('GuardDetection', () => {
         signature: 'signature',
         receiver: 'receiver',
       };
-      guardDetection.getHandleReceivedMessage(
+      await guardDetection.getHandleReceivedMessage(
         JSON.stringify(parsedMessage),
         'peerId'
       );
@@ -441,7 +447,7 @@ describe('GuardDetection', () => {
      * @expected
      * - the called handler should be `handleHeartbeatMessage`
      */
-    it('Should call the correct handler for the message heartbeat with correct signature', () => {
+    it('Should call the correct handler for the message heartbeat with correct signature', async () => {
       const guardDetection = new mockGuardDetection(handler, config);
       const spiedHandleHeartbeat = jest.spyOn(
         Object.getPrototypeOf(guardDetection),
@@ -454,7 +460,7 @@ describe('GuardDetection', () => {
         signature: 'signature',
         receiver: 'receiver',
       };
-      guardDetection.getHandleReceivedMessage(
+      await guardDetection.getHandleReceivedMessage(
         JSON.stringify(parsedMessage),
         'peerId'
       );
@@ -474,7 +480,7 @@ describe('GuardDetection', () => {
      * @expected
      * - no handler should be called
      */
-    it('Should not call any handler if the signature is not correct', () => {
+    it('Should not call any handler if the signature is not correct', async () => {
       const guardDetection = new mockGuardDetection(handler, config);
       const spiedHandleHeartbeat = jest.spyOn(
         Object.getPrototypeOf(guardDetection),
@@ -495,7 +501,7 @@ describe('GuardDetection', () => {
         signature: 'wrong signature',
         receiver: 'receiver',
       };
-      guardDetection.getHandleReceivedMessage(
+      await guardDetection.getHandleReceivedMessage(
         JSON.stringify(parsedMessage),
         'peerId'
       );
@@ -515,7 +521,7 @@ describe('GuardDetection', () => {
      * @expected
      * - no handler should be called
      */
-    it('Should not call any handler if timestamp is not valid', () => {
+    it('Should not call any handler if timestamp is not valid', async () => {
       const guardDetection = new mockGuardDetection(handler, config);
       const spiedHandleHeartbeat = jest.spyOn(
         Object.getPrototypeOf(guardDetection),
@@ -539,7 +545,7 @@ describe('GuardDetection', () => {
         signature: 'signature',
         receiver: 'receiver',
       };
-      guardDetection.getHandleReceivedMessage(
+      await guardDetection.getHandleReceivedMessage(
         JSON.stringify(parsedMessage),
         'peerId'
       );
@@ -597,7 +603,7 @@ describe('GuardDetection', () => {
      * @expected
      * - the send handler should be called with the correct message
      */
-    it('Should send register message to guards that passed register timeout', () => {
+    it('Should send register message to guards that passed register timeout', async () => {
       const guardDetection = new mockGuardDetection(handler, config);
       jest
         .spyOn(Object.getPrototypeOf(guardDetection), 'generateNounce')
@@ -623,8 +629,8 @@ describe('GuardDetection', () => {
         },
         2
       );
-      guardDetection.runUpdateGuardsStatus();
-
+      jest.useFakeTimers();
+      await guardDetection.runUpdateGuardsStatus();
       expect(handler.send).toHaveBeenCalledWith(
         expect.objectContaining({
           type: 'register',
@@ -648,7 +654,7 @@ describe('GuardDetection', () => {
      * @expected
      * - the send handler should be called with the correct message
      */
-    it('Should send heartbeat message to guards that passed heartbeat timeout', () => {
+    it('Should send heartbeat message to guards that passed heartbeat timeout', async () => {
       const guardDetection = new mockGuardDetection(handler, config);
       jest
         .spyOn(Object.getPrototypeOf(guardDetection), 'generateNounce')
@@ -674,7 +680,7 @@ describe('GuardDetection', () => {
         },
         2
       );
-      guardDetection.runUpdateGuardsStatus();
+      await guardDetection.runUpdateGuardsStatus();
       expect(handler.send).toHaveBeenCalledWith(
         expect.objectContaining({
           type: 'heartbeat',
