@@ -32,7 +32,7 @@ const guardsPublicKeys = guardsPrivateKeys.map((privateKey) =>
  * Mocked handler for testing
  */
 const handler: MessageHandler = {
-  checkSign: (message, signature) => {
+  checkSign: (message, signature, signerPublicKey) => {
     return signature === 'signature';
   },
   decrypt: (message) => {
@@ -42,7 +42,9 @@ const handler: MessageHandler = {
     return message;
   },
   send: () => {
-    return {};
+    return new Promise((resolve) => {
+      resolve();
+    });
   },
   sign: (message) => {
     return 'signature';
@@ -69,31 +71,31 @@ class mockGuardDetection extends GuardDetection {
     return this.publicKeyToIndex(publicKey);
   }
 
-  getHandleRegisterMessage(payload: RegisterPayload, sender: string) {
-    return this.handleRegisterMessage(payload, sender);
+  async getHandleRegisterMessage(payload: RegisterPayload, sender: string) {
+    return await this.handleRegisterMessage(payload, sender);
   }
 
-  getHandleApproveMessage(
+  async getHandleApproveMessage(
     payload: ApprovePayload,
     sender: string,
     senderPeerId: string
   ) {
-    return this.handleApproveMessage(payload, sender, senderPeerId);
+    return await this.handleApproveMessage(payload, sender, senderPeerId);
   }
 
-  getHandleHeartbeatMessage(payload: HeartbeatPayload, sender: string) {
-    return this.handleHeartbeatMessage(payload, sender);
+  async getHandleHeartbeatMessage(payload: HeartbeatPayload, sender: string) {
+    return await this.handleHeartbeatMessage(payload, sender);
   }
 
-  getHandleReceivedMessage(message: string, senderPeerId: string) {
-    return this.handleReceiveMessage(message, senderPeerId);
+  async getHandleReceivedMessage(message: string, senderPeerId: string) {
+    return await this.handleReceiveMessage(message, senderPeerId);
   }
 
   getCheckTimestamp(timestamp: number) {
     return this.checkTimestamp(timestamp);
   }
-  runUpdateGuardsStatus() {
-    this.updateGuardsStatus();
+  async runUpdateGuardsStatus() {
+    await this.updateGuardsStatus();
   }
 
   setGuardsInfo(info: GuardInfo, index: number) {

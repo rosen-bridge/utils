@@ -32,9 +32,13 @@ type Message = {
 interface MessageHandler {
   sign(message: string): string;
   encrypt(message: string): string;
-  checkSign(message: string, signature: string): boolean;
+  checkSign(
+    message: string,
+    signature: string,
+    signerPublicKey: string
+  ): boolean;
   decrypt(message: string): string;
-  send(message: Message): void;
+  send(message: Message): Promise<void>;
 }
 
 interface RegisterPayload {
