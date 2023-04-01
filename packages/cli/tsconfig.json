@@ -4,5 +4,6 @@
     "outDir": "dist",
     "rootDir": "./"
   },
-  "include": ["bin"]
+  "include": ["bin"],
+  "references": [{ "path": "../utils" }]
 }
