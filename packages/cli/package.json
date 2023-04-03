@@ -1,0 +1,37 @@
+{
+  "name": "@rosen-bridge/cli",
+  "version": "0.1.0",
+  "description": "The official Rosen bridge cli, providing helpers for the tasks related to Rosen bridge",
+  "main": "dist/bin/index.js",
+  "bin": "dist/bin/index.js",
+  "type": "module",
+  "scripts": {
+    "prettify": "prettier --write . --ignore-path .gitignore",
+    "lint": "eslint --fix . && npm run prettify",
+    "build": "tsc --build",
+    "type-check": "tsc --noEmit",
+    "release": "npm run build && npm publish --access public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rosen-bridge/utils.git"
+  },
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.30.7",
+    "@typescript-eslint/parser": "^5.26.0",
+    "eslint": "^8.16.0",
+    "eslint-config-prettier": "^8.5.0",
+    "prettier": "^2.8.4",
+    "typescript": "^4.9.5"
+  },
+  "keywords": [
+    "rosen"
+  ],
+  "dependencies": {
+    "@rosen-bridge/utils": "^0.0.1",
+    "chalk": "^5.2.0",
+    "ora": "^6.3.0"
+  }
+}
