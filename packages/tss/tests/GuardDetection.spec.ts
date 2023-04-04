@@ -14,41 +14,41 @@ import {
 } from './mock/guardDetection.mock';
 
 describe('GuardDetection', () => {
-  describe('generateNounce', () => {
+  describe('generateNonce', () => {
     /**
      * @target
-     * `generateNounce` Should generate a random base64 encoded nounce with the default size 32
+     * `generateNonce` Should generate a random base64 encoded nonce with the default size 32
      * @dependencies
      *  - crypto library
      * @scenario
-     * - calling `generateNounce` without a size parameter and check
-     *  the length of the nounce should be 44 in base64
+     * - calling `generateNonce` without a size parameter and check
+     *  the length of the nonce should be 44 in base64
      * @expected
-     * - the length of the nounce should be 44 in base64
+     * - the length of the nonce should be 44 in base64
      */
-    it('Should generate a random base64 encoded nounce with the default size 32', () => {
+    it('Should generate a random base64 encoded nonce with the default size 32', () => {
       const guardDetection = new GuardDetection(handler, config);
       const guardDetectionProto = Object.getPrototypeOf(guardDetection);
-      const nounce = guardDetectionProto.generateNounce();
-      expect(nounce).toHaveLength(44);
+      const nonce = guardDetectionProto.generateNonce();
+      expect(nonce).toHaveLength(44);
     });
 
     /**
      * @target
-     * `generateNounce` Should generate a random base64 encoded nounce with the given size
+     * `generateNonce` Should generate a random base64 encoded nonce with the given size
      * @dependencies
      * - crypto library
      * @scenario
-     * - calling `generateNounce` with a size parameter and check
-     * the length of the nounce should be 16 in base64
+     * - calling `generateNonce` with a size parameter and check
+     * the length of the nonce should be 16 in base64
      * @expected
-     * - the length of the nounce should be 16 in base64
+     * - the length of the nonce should be 16 in base64
      */
-    it('Should generate a random base64 encoded nounce with the given size', () => {
+    it('Should generate a random base64 encoded nonce with the given size', () => {
       const guardDetection = new GuardDetection(handler, config);
       const guardDetectionProto = Object.getPrototypeOf(guardDetection);
-      const nounce = guardDetectionProto.generateNounce(10);
-      expect(nounce).toHaveLength(16);
+      const nonce = guardDetectionProto.generateNonce(10);
+      expect(nonce).toHaveLength(16);
     });
   });
 
@@ -176,7 +176,7 @@ describe('GuardDetection', () => {
       guardDetection.setGuardsInfo(
         {
           publicKey: guardsPublicKeys[1],
-          nounce: 'nounce',
+          nonce: 'nonce',
           lastUpdate: Date.now(),
           peerId: 'peerId',
         },
@@ -186,7 +186,7 @@ describe('GuardDetection', () => {
       guardDetection.setGuardsInfo(
         {
           publicKey: guardsPublicKeys[2],
-          nounce: 'nounce',
+          nonce: 'nonce',
           lastUpdate: Date.now(),
           peerId: 'peerId',
         },
@@ -196,7 +196,7 @@ describe('GuardDetection', () => {
       guardDetection.setGuardsInfo(
         {
           publicKey: guardsPublicKeys[3],
-          nounce: 'nounce',
+          nonce: 'nonce',
           lastUpdate: Date.now(),
           peerId: 'peerId',
         },
@@ -227,24 +227,24 @@ describe('GuardDetection', () => {
     /**
      * @target
      * `handleRegisterMessage` Should send an approve message with the new
-     *   nounce and the received nounce
+     *   nonce and the received nonce
      * @dependencies
-     * - `generateNounce`
+     * - `generateNonce`
      * - `send`
      * - Date library
      * @scenario
      * - calling `handleRegisterMessage` with a valid message and check the sent message
      * @expected
-     * - The sent message should be an approve message with the new nounce and the received nounce
+     * - The sent message should be an approve message with the new nonce and the received nonce
      */
-    it('Should send an approve message with the new nounce and the received nounce', async () => {
+    it('Should send an approve message with the new nonce and the received nonce', async () => {
       jest.spyOn(handler, 'send');
       const guardDetection = new mockGuardDetection(handler, config);
       jest
-        .spyOn(Object.getPrototypeOf(guardDetection), 'generateNounce')
-        .mockReturnValue('new nounce');
+        .spyOn(Object.getPrototypeOf(guardDetection), 'generateNonce')
+        .mockReturnValue('new nonce');
       const payload: RegisterPayload = {
-        nounce: 'nounce',
+        nonce: 'nonce',
         timestamp: Date.now(),
       };
       await guardDetection.getHandleRegisterMessage(
@@ -256,7 +256,7 @@ describe('GuardDetection', () => {
           type: 'approve',
           pk: guardsPublicKeys[0],
           payload: expect.stringContaining(
-            '{"nounce":"new nounce","receivedNounce":"nounce","timestamp":'
+            '{"nonce":"new nonce","receivedNonce":"nonce","timestamp":'
           ),
           signature: 'signature',
           receiver: guardsPublicKeys[1],
@@ -268,8 +268,8 @@ describe('GuardDetection', () => {
   describe('handleApproveMessage', () => {
     /**
      * @target
-     * `handleApproveMessage` Should save peerId in case of received nounce is
-     *  equal to sender nounce and lastUpdate is less than guardsHeartbeatTimeout
+     * `handleApproveMessage` Should save peerId in case of received nonce is
+     *  equal to sender nonce and lastUpdate is less than guardsHeartbeatTimeout
      * @dependencies
      * - Date library
      * - `send`
@@ -281,7 +281,7 @@ describe('GuardDetection', () => {
      *  greater than the lastUpdate before calling `handleApproveMessage`
      */
     it(
-      'Should save peerId in case of received nounce is equal to sender nounce' +
+      'Should save peerId in case of received nonce is equal to sender nonce' +
         ' and lastUpdate is less than guardsHeartbeatTimeout',
       async () => {
         jest.spyOn(handler, 'send').mockClear();
@@ -290,7 +290,7 @@ describe('GuardDetection', () => {
         const lastUpdate = Date.now() - 20 * 1000;
         guardDetection.setGuardsInfo(
           {
-            nounce: 'nounce',
+            nonce: 'nonce',
             lastUpdate: lastUpdate,
             peerId: '',
             publicKey: guardsPublicKeys[1],
@@ -298,7 +298,7 @@ describe('GuardDetection', () => {
           0
         );
         const payload: ApprovePayload = {
-          receivedNounce: 'nounce',
+          receivedNonce: 'nonce',
           timestamp: Date.now(),
         };
         await guardDetection.getHandleApproveMessage(
@@ -316,26 +316,26 @@ describe('GuardDetection', () => {
 
     /**
      * @target
-     * `handleApproveMessage` Should send approve message if nounce is set in
-     *  the payload and received nounce is equal to sender nounce
+     * `handleApproveMessage` Should send approve message if nonce is set in
+     *  the payload and received nonce is equal to sender nonce
      * @dependencies
      * - Date library
      * - `send`
      * @scenario
      * - calling `handleApproveMessage` with a valid message and check the sent message
      * @expected
-     * - the sent message should be an approve message with the new nounce and the received nounce
+     * - the sent message should be an approve message with the new nonce and the received nonce
      */
     it(
-      'Should send approve message if nounce is set in the payload and received ' +
-        'nounce is equal to sender nounce',
+      'Should send approve message if nonce is set in the payload and received ' +
+        'nonce is equal to sender nonce',
       async () => {
         jest.spyOn(handler, 'send').mockClear();
         jest.spyOn(handler, 'send');
         const guardDetection = new mockGuardDetection(handler, config);
         guardDetection.setGuardsInfo(
           {
-            nounce: 'nounce',
+            nonce: 'nonce',
             lastUpdate: 0,
             peerId: '',
             publicKey: guardsPublicKeys[1],
@@ -343,8 +343,8 @@ describe('GuardDetection', () => {
           0
         );
         const payload: ApprovePayload = {
-          nounce: 'new nounce',
-          receivedNounce: 'nounce',
+          nonce: 'new nonce',
+          receivedNonce: 'nonce',
           timestamp: Date.now(),
         };
         await guardDetection.getHandleApproveMessage(
@@ -352,14 +352,14 @@ describe('GuardDetection', () => {
           guardsPublicKeys[1],
           'peerId'
         );
-        expect(guardDetection.getGuardInfo(0).nounce).toEqual('nounce');
+        expect(guardDetection.getGuardInfo(0).nonce).toEqual('nonce');
         expect(guardDetection.getGuardInfo(0).peerId).toEqual('peerId');
         expect(handler.send).toHaveBeenCalledWith(
           expect.objectContaining({
             type: 'approve',
             pk: guardsPublicKeys[0],
             payload: expect.stringContaining(
-              '{"receivedNounce":"new nounce","timestamp"'
+              '{"receivedNonce":"new nonce","timestamp"'
             ),
             signature: 'signature',
             receiver: guardsPublicKeys[1],
@@ -372,22 +372,22 @@ describe('GuardDetection', () => {
   describe('handleHeartbeatMessage', () => {
     /**
      * @target
-     * `handleHeartbeatMessage` Should send approve message just with the received nounce
+     * `handleHeartbeatMessage` Should send approve message just with the received nonce
      * @dependencies
      * - Date library
      * - `send`
      * @scenario
      * - calling `handleHeartbeatMessage` with a valid message and check the sent message
      * @expected
-     * - the sent message should be an approve message with the received nounce
+     * - the sent message should be an approve message with the received nonce
      * and the timestamp
      */
-    it('Should send approve message just with the received nounce', async () => {
+    it('Should send approve message just with the received nonce', async () => {
       jest.spyOn(handler, 'send').mockClear();
       jest.spyOn(handler, 'send');
       const guardDetection = new mockGuardDetection(handler, config);
       const payload: HeartbeatPayload = {
-        nounce: 'nounce',
+        nonce: 'nonce',
         timestamp: Date.now(),
       };
       await guardDetection.getHandleHeartbeatMessage(
@@ -399,7 +399,7 @@ describe('GuardDetection', () => {
           type: 'approve',
           pk: guardsPublicKeys[0],
           payload: expect.stringContaining(
-            '{"receivedNounce":"nounce","timestamp"'
+            '{"receivedNonce":"nonce","timestamp"'
           ),
           signature: 'signature',
           receiver: guardsPublicKeys[1],
@@ -430,7 +430,7 @@ describe('GuardDetection', () => {
       const parsedMessage: Message = {
         type: 'register',
         pk: guardsPublicKeys[1],
-        payload: JSON.stringify({ nounce: 'nounce', timestamp: Date.now() }),
+        payload: JSON.stringify({ nonce: 'nonce', timestamp: Date.now() }),
         signature: 'signature',
         receiver: 'receiver',
       };
@@ -464,8 +464,8 @@ describe('GuardDetection', () => {
         type: 'approve',
         pk: guardsPublicKeys[1],
         payload: JSON.stringify({
-          nounce: 'nounce',
-          receivedNounce: 'nounce',
+          nonce: 'nonce',
+          receivedNonce: 'nonce',
           timestamp: Date.now(),
         }),
         signature: 'signature',
@@ -500,7 +500,7 @@ describe('GuardDetection', () => {
       const parsedMessage: Message = {
         type: 'heartbeat',
         pk: guardsPublicKeys[1],
-        payload: JSON.stringify({ nounce: 'nounce', timestamp: Date.now() }),
+        payload: JSON.stringify({ nonce: 'nonce', timestamp: Date.now() }),
         signature: 'signature',
         receiver: 'receiver',
       };
@@ -541,7 +541,7 @@ describe('GuardDetection', () => {
       const parsedMessage: Message = {
         type: 'heartbeat',
         pk: guardsPublicKeys[1],
-        payload: JSON.stringify({ nounce: 'nounce' }),
+        payload: JSON.stringify({ nonce: 'nonce' }),
         signature: 'wrong signature',
         receiver: 'receiver',
       };
@@ -583,7 +583,7 @@ describe('GuardDetection', () => {
         type: 'heartbeat',
         pk: guardsPublicKeys[1],
         payload: JSON.stringify({
-          nounce: 'nounce',
+          nonce: 'nonce',
           timestamp: Date.now() - 4 * 60 * 1000,
         }),
         signature: 'signature',
@@ -613,12 +613,12 @@ describe('GuardDetection', () => {
     it('Should return the active guards', () => {
       const guardDetection = new mockGuardDetection(handler, config);
       guardDetection.setGuardsInfo(
-        { nounce: 'nounce', lastUpdate: Date.now(), peerId: '', publicKey: '' },
+        { nonce: 'nonce', lastUpdate: Date.now(), peerId: '', publicKey: '' },
         0
       );
       guardDetection.setGuardsInfo(
         {
-          nounce: 'nounce',
+          nonce: 'nonce',
           lastUpdate: Date.now() - 3 * 60 * 1000,
           peerId: 'peerId1',
           publicKey: 'publicKey1',
@@ -627,7 +627,7 @@ describe('GuardDetection', () => {
       );
       guardDetection.setGuardsInfo(
         {
-          nounce: 'nounce',
+          nonce: 'nonce',
           lastUpdate: Date.now() - 50 * 1000,
           peerId: 'peerId2',
           publicKey: 'publicKey2',
@@ -653,12 +653,12 @@ describe('GuardDetection', () => {
     it('Should send register message to the guard', async () => {
       const guardDetection = new mockGuardDetection(handler, config);
       jest
-        .spyOn(Object.getPrototypeOf(guardDetection), 'generateNounce')
-        .mockReturnValue('new nounce');
+        .spyOn(Object.getPrototypeOf(guardDetection), 'generateNonce')
+        .mockReturnValue('new nonce');
       jest.spyOn(handler, 'send').mockClear();
       guardDetection.setGuardsInfo(
         {
-          nounce: 'nounce',
+          nonce: 'nonce',
           lastUpdate: Date.now(),
           peerId: 'peerId',
           publicKey: guardsPublicKeys[1],
@@ -670,9 +670,7 @@ describe('GuardDetection', () => {
         expect.objectContaining({
           type: 'register',
           pk: guardsPublicKeys[0],
-          payload: expect.stringContaining(
-            '{"nounce":"new nounce","timestamp"'
-          ),
+          payload: expect.stringContaining('{"nonce":"new nonce","timestamp"'),
           signature: 'signature',
           receiver: guardsPublicKeys[1],
         })
@@ -693,12 +691,12 @@ describe('GuardDetection', () => {
     it('Should send heartbeat message to the guard', async () => {
       const guardDetection = new mockGuardDetection(handler, config);
       jest
-        .spyOn(Object.getPrototypeOf(guardDetection), 'generateNounce')
-        .mockReturnValue('new nounce');
+        .spyOn(Object.getPrototypeOf(guardDetection), 'generateNonce')
+        .mockReturnValue('new nonce');
       jest.spyOn(handler, 'send').mockClear();
       guardDetection.setGuardsInfo(
         {
-          nounce: 'nounce',
+          nonce: 'nonce',
           lastUpdate: Date.now(),
           peerId: 'peerId',
           publicKey: guardsPublicKeys[1],
@@ -710,9 +708,7 @@ describe('GuardDetection', () => {
         expect.objectContaining({
           type: 'heartbeat',
           pk: guardsPublicKeys[0],
-          payload: expect.stringContaining(
-            '{"nounce":"new nounce","timestamp"'
-          ),
+          payload: expect.stringContaining('{"nonce":"new nonce","timestamp"'),
           signature: 'signature',
           receiver: guardsPublicKeys[1],
         })
@@ -734,12 +730,12 @@ describe('GuardDetection', () => {
     it('Should send register message to guards that passed register timeout', async () => {
       const guardDetection = new mockGuardDetection(handler, config);
       jest
-        .spyOn(Object.getPrototypeOf(guardDetection), 'generateNounce')
-        .mockReturnValue('new nounce');
+        .spyOn(Object.getPrototypeOf(guardDetection), 'generateNonce')
+        .mockReturnValue('new nonce');
       jest.spyOn(handler, 'send').mockClear();
       guardDetection.setGuardsInfo(
         {
-          nounce: 'nounce',
+          nonce: 'nonce',
           lastUpdate: Date.now(),
           peerId: 'peerId',
           publicKey: guardsPublicKeys[1],
@@ -748,7 +744,7 @@ describe('GuardDetection', () => {
       );
       guardDetection.setGuardsInfo(
         {
-          nounce: 'nounce',
+          nonce: 'nonce',
           lastUpdate: Date.now() - 3 * 60 * 1000,
           peerId: 'peerId1',
           publicKey: guardsPublicKeys[2],
@@ -757,7 +753,7 @@ describe('GuardDetection', () => {
       );
       guardDetection.setGuardsInfo(
         {
-          nounce: 'nounce',
+          nonce: 'nonce',
           lastUpdate: Date.now() - 55 * 1000,
           peerId: 'peerId2',
           publicKey: guardsPublicKeys[3],
@@ -770,9 +766,7 @@ describe('GuardDetection', () => {
         expect.objectContaining({
           type: 'register',
           pk: guardsPublicKeys[0],
-          payload: expect.stringContaining(
-            '{"nounce":"new nounce","timestamp"'
-          ),
+          payload: expect.stringContaining('{"nonce":"new nonce","timestamp"'),
           signature: 'signature',
           receiver: guardsPublicKeys[2],
         })
@@ -792,12 +786,12 @@ describe('GuardDetection', () => {
     it('Should send heartbeat message to guards that passed heartbeat timeout', async () => {
       const guardDetection = new mockGuardDetection(handler, config);
       jest
-        .spyOn(Object.getPrototypeOf(guardDetection), 'generateNounce')
-        .mockReturnValue('new nounce');
+        .spyOn(Object.getPrototypeOf(guardDetection), 'generateNonce')
+        .mockReturnValue('new nonce');
       jest.spyOn(handler, 'send').mockClear();
       guardDetection.setGuardsInfo(
         {
-          nounce: 'nounce',
+          nonce: 'nonce',
           lastUpdate: Date.now(),
           peerId: 'peerId',
           publicKey: guardsPublicKeys[1],
@@ -806,7 +800,7 @@ describe('GuardDetection', () => {
       );
       guardDetection.setGuardsInfo(
         {
-          nounce: 'nounce',
+          nonce: 'nonce',
           lastUpdate: Date.now() - 61 * 1000,
           peerId: 'peerId1',
           publicKey: guardsPublicKeys[2],
@@ -815,7 +809,7 @@ describe('GuardDetection', () => {
       );
       guardDetection.setGuardsInfo(
         {
-          nounce: 'nounce',
+          nonce: 'nonce',
           lastUpdate: Date.now() - 55 * 1000,
           peerId: 'peerId2',
           publicKey: guardsPublicKeys[3],
@@ -827,9 +821,7 @@ describe('GuardDetection', () => {
         expect.objectContaining({
           type: 'heartbeat',
           pk: guardsPublicKeys[0],
-          payload: expect.stringContaining(
-            '{"nounce":"new nounce","timestamp"'
-          ),
+          payload: expect.stringContaining('{"nonce":"new nonce","timestamp"'),
           signature: 'signature',
           receiver: guardsPublicKeys[2],
         })

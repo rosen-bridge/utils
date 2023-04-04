@@ -42,29 +42,29 @@ interface MessageHandler {
 }
 
 interface RegisterPayload {
-  nounce: string;
+  nonce: string;
   timestamp: number;
 }
 
 interface ApprovePayload {
-  nounce?: string;
-  receivedNounce: string;
+  nonce?: string;
+  receivedNonce: string;
   timestamp: number;
 }
 interface HeartbeatPayload {
-  nounce: string;
+  nonce: string;
   timestamp: number;
 }
 
 /**
  * GuardInfo interface for communication between nodes in the network
  * @param peerId - peer id of the guard
- * @param nounce - nounce of the guard
+ * @param nonce - nonce of the guard
  * @param lastUpdate - last update of the guard (timestamp)
  **/
 interface GuardInfo {
   peerId: string;
-  nounce: string;
+  nonce: string;
   lastUpdate: number; // timestamp
   publicKey: string;
 }
