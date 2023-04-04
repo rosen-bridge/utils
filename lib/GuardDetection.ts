@@ -118,16 +118,16 @@ class GuardDetection {
   /**
    * handle Register message from other node in the network and send approve
    * message with new nounce
-   * @param _payload - RegisterPayload
+   * @param registerPayload - RegisterPayload
    * @param sender - public key of sender
    * @protected
    */
   protected async handleRegisterMessage(
-    _payload: RegisterPayload,
+    registerPayload: RegisterPayload,
     sender: string
   ): Promise<void> {
     try {
-      const receivedNounce = _payload.nounce;
+      const receivedNounce = registerPayload.nounce;
       const nounce = this.generateNounce();
       const payload: ApprovePayload = {
         nounce: nounce,
@@ -151,23 +151,26 @@ class GuardDetection {
 
   /**
    * handle Approve message from other node in the network
-   * @param _payload - ApprovePayload
+   * @param approvePayload - ApprovePayload
    * @param sender - public key of sender
    * @param senderPeerId - peerId of sender
    * @private
    */
   protected async handleApproveMessage(
-    _payload: ApprovePayload,
+    approvePayload: ApprovePayload,
     sender: string,
     senderPeerId: string
   ): Promise<void> {
     try {
-      const receivedNounce = _payload.receivedNounce;
-      const nounce = _payload.nounce;
+      const receivedNounce = approvePayload.receivedNounce;
+      const nounce = approvePayload.nounce;
       const index = this.publicKeyToIndex(sender);
       if (this.guardsInfo[index].nounce === receivedNounce) {
         const currentTime = Date.now();
-        if (currentTime - _payload.timestamp < this.guardsHeartbeatTimeout) {
+        if (
+          currentTime - approvePayload.timestamp <
+          this.guardsHeartbeatTimeout
+        ) {
           this.guardsInfo[index].peerId = senderPeerId;
           this.guardsInfo[index].lastUpdate = currentTime;
         }
@@ -185,6 +188,8 @@ class GuardDetection {
             pk: this.publicKey,
           });
         }
+      } else {
+        this.logger.warn(`Received nounce from ${sender} is not valid`);
       }
     } catch (e) {
       this.logger.warn(
@@ -196,16 +201,16 @@ class GuardDetection {
   /**
    * handle Heartbeat message from other node in the network and send approve message
    * to sender of heartbeat message
-   * @param _payload - HeartbeatPayload
+   * @param heartbeatPayload - HeartbeatPayload
    * @param sender - public key of sender
    * @private
    */
   protected async handleHeartbeatMessage(
-    _payload: HeartbeatPayload,
+    heartbeatPayload: HeartbeatPayload,
     sender: string
   ): Promise<void> {
     try {
-      const nounce = _payload.nounce;
+      const nounce = heartbeatPayload.nounce;
       const payload: ApprovePayload = {
         receivedNounce: nounce,
         timestamp: Date.now(),
@@ -327,10 +332,7 @@ class GuardDetection {
     try {
       for (let index = 0; index < this.guardsInfo.length; index++) {
         const guard = this.guardsInfo[index];
-        if (
-          currentTime - this.guardsInfo[index].lastUpdate >
-          this.guardsRegisterTimeout
-        ) {
+        if (currentTime - guard.lastUpdate > this.guardsRegisterTimeout) {
           await this.sendRegisterMessage(index);
         } else if (
           currentTime - guard.lastUpdate >
