@@ -235,7 +235,7 @@ describe('GuardDetection', () => {
      * @scenario
      * - calling `handleRegisterMessage` with a valid message and check the sent message
      * @expected
-     * - the sent message should be an approve message with the new nounce and the received nounce
+     * - The sent message should be an approve message with the new nounce and the received nounce
      */
     it('Should send an approve message with the new nounce and the received nounce', async () => {
       jest.spyOn(handler, 'send');
