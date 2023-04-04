@@ -10,7 +10,7 @@ import {
 import crypto from 'crypto';
 import pkg from 'secp256k1';
 import { DummyLogger } from '@rosen-bridge/logger-interface';
-import { GuardDetection } from '../../lib/GuardDetection';
+import { GuardDetection } from '../../lib';
 
 /**
  * Generate 4 random private keys
@@ -89,6 +89,14 @@ class mockGuardDetection extends GuardDetection {
 
   async getHandleReceivedMessage(message: string, senderPeerId: string) {
     return await this.handleReceiveMessage(message, senderPeerId);
+  }
+
+  async getSendRegisterMessage(index: number) {
+    return await this.sendRegisterMessage(index);
+  }
+
+  async getSendHeartbeatMessage(index: number) {
+    return await this.sendHeartbeatMessage(index);
   }
 
   getCheckTimestamp(timestamp: number) {
