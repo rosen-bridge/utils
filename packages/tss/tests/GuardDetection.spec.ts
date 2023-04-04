@@ -63,18 +63,22 @@ describe('GuardDetection', () => {
      * @expected
      * - the return value should be true
      */
-    it('Should return true if the message have valid signature', () => {
-      const guardDetection = new mockGuardDetection(handler, config);
-      const parsedMessage: Message = {
-        type: 'approve',
-        pk: guardsPublicKeys[1],
-        payload: 'payload',
-        signature: 'signature',
-        receiver: 'receiver',
-      };
-      const isValid = guardDetection.getCheckMessageSign(parsedMessage);
-      expect(isValid).toBeTruthy();
-    });
+    it(
+      'Should return true if public key of sender' +
+        ' be in the valid public keys and message signature should be true',
+      () => {
+        const guardDetection = new mockGuardDetection(handler, config);
+        const parsedMessage: Message = {
+          type: 'approve',
+          pk: guardsPublicKeys[1],
+          payload: 'payload',
+          signature: 'signature',
+          receiver: 'receiver',
+        };
+        const isValid = guardDetection.getCheckMessageSign(parsedMessage);
+        expect(isValid).toBeTruthy();
+      }
+    );
 
     /**
      * @target
@@ -85,7 +89,7 @@ describe('GuardDetection', () => {
      * @expected
      * - the return value should be false
      */
-    it('Should return false if the message is not valid', () => {
+    it('Should return false if the message is not have valid signature', () => {
       const guardDetection = new mockGuardDetection(handler, config);
       const parsedMessage: Message = {
         type: 'approve',
@@ -169,6 +173,36 @@ describe('GuardDetection', () => {
      */
     it('Should return the index of the public key', () => {
       const guardDetection = new mockGuardDetection(handler, config);
+      guardDetection.setGuardsInfo(
+        {
+          publicKey: guardsPublicKeys[1],
+          nounce: 'nounce',
+          lastUpdate: Date.now(),
+          peerId: 'peerId',
+        },
+        0
+      );
+
+      guardDetection.setGuardsInfo(
+        {
+          publicKey: guardsPublicKeys[2],
+          nounce: 'nounce',
+          lastUpdate: Date.now(),
+          peerId: 'peerId',
+        },
+        1
+      );
+
+      guardDetection.setGuardsInfo(
+        {
+          publicKey: guardsPublicKeys[3],
+          nounce: 'nounce',
+          lastUpdate: Date.now(),
+          peerId: 'peerId',
+        },
+        2
+      );
+
       const index = guardDetection.getPublicKeyToIndex(guardsPublicKeys[1]);
       expect(index).toEqual(0);
     });
@@ -255,7 +289,12 @@ describe('GuardDetection', () => {
         const guardDetection = new mockGuardDetection(handler, config);
         const lastUpdate = Date.now() - 20 * 1000;
         guardDetection.setGuardsInfo(
-          { nounce: 'nounce', lastUpdate: lastUpdate, peerId: '' },
+          {
+            nounce: 'nounce',
+            lastUpdate: lastUpdate,
+            peerId: '',
+            publicKey: guardsPublicKeys[1],
+          },
           0
         );
         const payload: ApprovePayload = {
@@ -295,7 +334,12 @@ describe('GuardDetection', () => {
         jest.spyOn(handler, 'send');
         const guardDetection = new mockGuardDetection(handler, config);
         guardDetection.setGuardsInfo(
-          { nounce: 'nounce', lastUpdate: 0, peerId: '' },
+          {
+            nounce: 'nounce',
+            lastUpdate: 0,
+            peerId: '',
+            publicKey: guardsPublicKeys[1],
+          },
           0
         );
         const payload: ApprovePayload = {
@@ -569,7 +613,7 @@ describe('GuardDetection', () => {
     it('Should return the active guards', () => {
       const guardDetection = new mockGuardDetection(handler, config);
       guardDetection.setGuardsInfo(
-        { nounce: 'nounce', lastUpdate: Date.now(), peerId: '' },
+        { nounce: 'nounce', lastUpdate: Date.now(), peerId: '', publicKey: '' },
         0
       );
       guardDetection.setGuardsInfo(
@@ -577,6 +621,7 @@ describe('GuardDetection', () => {
           nounce: 'nounce',
           lastUpdate: Date.now() - 3 * 60 * 1000,
           peerId: 'peerId1',
+          publicKey: 'publicKey1',
         },
         1
       );
@@ -585,10 +630,93 @@ describe('GuardDetection', () => {
           nounce: 'nounce',
           lastUpdate: Date.now() - 50 * 1000,
           peerId: 'peerId2',
+          publicKey: 'publicKey2',
         },
         2
       );
-      expect(guardDetection.getActiveGuards()).toEqual(['peerId2']);
+      expect(guardDetection.getActiveGuards()).toEqual([
+        { peerId: 'peerId2', publicKey: 'publicKey2' },
+      ]);
+    });
+  });
+
+  describe('sendRegisterMessage', () => {
+    /**
+     * @target
+     * `sendRegisterMessage` Should send register message to the guard
+     * @dependencies
+     * @scenario
+     * - calling `sendRegisterMessage` and check the sent message
+     * @expected
+     * - the sent message should be the register message with the correct payload
+     */
+    it('Should send register message to the guard', async () => {
+      const guardDetection = new mockGuardDetection(handler, config);
+      jest
+        .spyOn(Object.getPrototypeOf(guardDetection), 'generateNounce')
+        .mockReturnValue('new nounce');
+      jest.spyOn(handler, 'send').mockClear();
+      guardDetection.setGuardsInfo(
+        {
+          nounce: 'nounce',
+          lastUpdate: Date.now(),
+          peerId: 'peerId',
+          publicKey: guardsPublicKeys[1],
+        },
+        0
+      );
+      await guardDetection.getSendRegisterMessage(0);
+      expect(handler.send).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'register',
+          pk: guardsPublicKeys[0],
+          payload: expect.stringContaining(
+            '{"nounce":"new nounce","timestamp"'
+          ),
+          signature: 'signature',
+          receiver: guardsPublicKeys[1],
+        })
+      );
+    });
+  });
+
+  describe('sendHeartbeatMessage', () => {
+    /**
+     * @target
+     * `sendHeartbeatMessage` Should send heartbeat message to the guard
+     * @dependencies
+     * @scenario
+     * - calling `sendHeartbeatMessage` and check the sent message
+     * @expected
+     * - the sent message should be the heartbeat message with the correct payload
+     */
+    it('Should send heartbeat message to the guard', async () => {
+      const guardDetection = new mockGuardDetection(handler, config);
+      jest
+        .spyOn(Object.getPrototypeOf(guardDetection), 'generateNounce')
+        .mockReturnValue('new nounce');
+      jest.spyOn(handler, 'send').mockClear();
+      guardDetection.setGuardsInfo(
+        {
+          nounce: 'nounce',
+          lastUpdate: Date.now(),
+          peerId: 'peerId',
+          publicKey: guardsPublicKeys[1],
+        },
+        0
+      );
+      await guardDetection.getSendHeartbeatMessage(0);
+      expect(handler.send).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'heartbeat',
+          pk: guardsPublicKeys[0],
+          payload: expect.stringContaining(
+            '{"nounce":"new nounce","timestamp"'
+          ),
+          signature: 'signature',
+          receiver: guardsPublicKeys[1],
+        })
+      );
     });
   });
 
@@ -610,7 +738,12 @@ describe('GuardDetection', () => {
         .mockReturnValue('new nounce');
       jest.spyOn(handler, 'send').mockClear();
       guardDetection.setGuardsInfo(
-        { nounce: 'nounce', lastUpdate: Date.now(), peerId: 'peerId' },
+        {
+          nounce: 'nounce',
+          lastUpdate: Date.now(),
+          peerId: 'peerId',
+          publicKey: guardsPublicKeys[1],
+        },
         0
       );
       guardDetection.setGuardsInfo(
@@ -618,6 +751,7 @@ describe('GuardDetection', () => {
           nounce: 'nounce',
           lastUpdate: Date.now() - 3 * 60 * 1000,
           peerId: 'peerId1',
+          publicKey: guardsPublicKeys[2],
         },
         1
       );
@@ -626,6 +760,7 @@ describe('GuardDetection', () => {
           nounce: 'nounce',
           lastUpdate: Date.now() - 55 * 1000,
           peerId: 'peerId2',
+          publicKey: guardsPublicKeys[3],
         },
         2
       );
@@ -661,7 +796,12 @@ describe('GuardDetection', () => {
         .mockReturnValue('new nounce');
       jest.spyOn(handler, 'send').mockClear();
       guardDetection.setGuardsInfo(
-        { nounce: 'nounce', lastUpdate: Date.now(), peerId: 'peerId' },
+        {
+          nounce: 'nounce',
+          lastUpdate: Date.now(),
+          peerId: 'peerId',
+          publicKey: guardsPublicKeys[1],
+        },
         0
       );
       guardDetection.setGuardsInfo(
@@ -669,6 +809,7 @@ describe('GuardDetection', () => {
           nounce: 'nounce',
           lastUpdate: Date.now() - 61 * 1000,
           peerId: 'peerId1',
+          publicKey: guardsPublicKeys[2],
         },
         1
       );
@@ -677,6 +818,7 @@ describe('GuardDetection', () => {
           nounce: 'nounce',
           lastUpdate: Date.now() - 55 * 1000,
           peerId: 'peerId2',
+          publicKey: guardsPublicKeys[3],
         },
         2
       );

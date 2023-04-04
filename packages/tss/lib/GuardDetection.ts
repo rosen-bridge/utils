@@ -8,22 +8,36 @@ import {
   MessageHandler,
   RegisterPayload,
 } from './types/types';
-import { AbstractLogger } from '@rosen-bridge/logger-interface';
+import { AbstractLogger, DummyLogger } from '@rosen-bridge/logger-interface';
+import {
+  approveType,
+  guardsUpdateStatusInterval,
+  heartbeatTimeout,
+  heartbeatType,
+  registerTimeout,
+  registerType,
+  timestampTolerance,
+} from './constants/constants';
 
 class GuardDetection {
   protected handler: MessageHandler;
   protected readonly publicKey: string;
-  protected approvedPublicKeys: string[];
   protected guardsInfo: GuardInfo[] = [];
   protected readonly logger: AbstractLogger;
-  protected readonly guardsRegisterTimeout: number = 2 * 60 * 1000; // 2 minutes
-  protected readonly guardsHeartbeatTimeout: number = 1 * 60 * 1000; // 1 minutes
-  protected readonly timestampTolerance: number = 1 * 60 * 1000; // 1 minutes
-  protected readonly guardsUpdateStatusInterval: number = 3 * 1000; // 3 seconds
+  protected readonly guardsRegisterTimeout: number;
+  protected readonly guardsHeartbeatTimeout: number;
+  protected readonly timestampTolerance: number;
+  protected readonly guardsUpdateStatusInterval: number;
   constructor(handler: MessageHandler, config: GuardDetectionConfig) {
     this.handler = handler;
-    this.approvedPublicKeys = config.guardsPublicKey;
-    this.logger = config.logger;
+    this.logger = config.logger || new DummyLogger();
+    this.guardsRegisterTimeout =
+      config.guardsRegisterTimeout || registerTimeout;
+    this.guardsHeartbeatTimeout =
+      config.guardsHeartbeatTimeout || heartbeatTimeout;
+    this.timestampTolerance = config.timestampTolerance || timestampTolerance;
+    this.guardsUpdateStatusInterval =
+      config.guardsUpdateStatusInterval || guardsUpdateStatusInterval;
     this.publicKey = config.publicKey;
     let guardsCount = config.guardsPublicKey.length;
     while (guardsCount--)
@@ -31,6 +45,7 @@ class GuardDetection {
         peerId: '',
         nounce: '',
         lastUpdate: 0,
+        publicKey: config.guardsPublicKey[guardsCount],
       });
   }
 
@@ -58,7 +73,7 @@ class GuardDetection {
    */
   protected checkMessageSign(parsedMessage: Message): boolean {
     try {
-      if (this.approvedPublicKeys.includes(parsedMessage.pk)) {
+      if (this.publicKeyToIndex(parsedMessage.pk) !== -1) {
         if (
           this.handler.checkSign(
             parsedMessage.payload,
@@ -68,6 +83,8 @@ class GuardDetection {
         ) {
           return true;
         }
+      } else {
+        this.logger.warn(`Public key ${parsedMessage.pk} is not approved`);
       }
     } catch (e) {
       this.logger.warn(`An Error occurred while checking message sign: ${e}`);
@@ -90,7 +107,10 @@ class GuardDetection {
    * @protected
    */
   protected publicKeyToIndex(publicKey: string): number {
-    return this.approvedPublicKeys.indexOf(publicKey);
+    for (let i = 0; i < this.guardsInfo.length; i++) {
+      if (this.guardsInfo[i].publicKey === publicKey) return i;
+    }
+    return -1;
   }
 
   /**
@@ -114,7 +134,7 @@ class GuardDetection {
       };
       this.guardsInfo[this.publicKeyToIndex(sender)].nounce = nounce;
       await this.handler.send({
-        type: 'approve',
+        type: approveType,
         payload: this.handler.encrypt(JSON.stringify(payload)),
         signature: this.handler.sign(JSON.stringify(payload)),
         receiver: sender,
@@ -156,7 +176,7 @@ class GuardDetection {
           };
           const payloadString = JSON.stringify(payload);
           await this.handler.send({
-            type: 'approve',
+            type: approveType,
             payload: this.handler.encrypt(payloadString),
             signature: this.handler.sign(payloadString),
             receiver: sender,
@@ -190,7 +210,7 @@ class GuardDetection {
       };
       const payloadString = JSON.stringify(payload);
       await this.handler.send({
-        type: 'approve',
+        type: approveType,
         payload: this.handler.encrypt(payloadString),
         signature: this.handler.sign(payloadString),
         receiver: sender,
@@ -225,18 +245,18 @@ class GuardDetection {
           return;
         }
         switch (parsedMessage.type) {
-          case 'register':
+          case registerType:
             return await this.handleRegisterMessage(
               payload as RegisterPayload,
               parsedMessage.pk
             );
-          case 'approve':
+          case approveType:
             return await this.handleApproveMessage(
               payload as ApprovePayload,
               parsedMessage.pk,
               senderPeerId
             );
-          case 'heartbeat':
+          case heartbeatType:
             return await this.handleHeartbeatMessage(
               payload as HeartbeatPayload,
               parsedMessage.pk
@@ -248,6 +268,48 @@ class GuardDetection {
         `An Error occurred while handling receive message: ${e}`
       );
     }
+  }
+
+  /**
+   * send register message to other node in the network
+   * @param guardIndex - index of guard in guardsInfo array
+   * @protected
+   */
+  protected async sendRegisterMessage(guardIndex: number) {
+    const nounce = this.generateNounce();
+    const payload: RegisterPayload = {
+      nounce: nounce,
+      timestamp: Date.now(),
+    };
+    const payloadString = JSON.stringify(payload);
+    await this.handler.send({
+      type: registerType,
+      payload: this.handler.encrypt(payloadString),
+      signature: this.handler.sign(payloadString),
+      receiver: this.guardsInfo[guardIndex].publicKey,
+      pk: this.publicKey,
+    });
+  }
+
+  /**
+   * send heartbeat message to other node in the network
+   * @param guardIndex - index of guard in guardsInfo array
+   * @protected
+   */
+  protected async sendHeartbeatMessage(guardIndex: number) {
+    const nounce = this.generateNounce();
+    const payload: HeartbeatPayload = {
+      nounce: nounce,
+      timestamp: Date.now(),
+    };
+    const payloadString = JSON.stringify(payload);
+    await this.handler.send({
+      type: heartbeatType,
+      payload: this.handler.encrypt(payloadString),
+      signature: this.handler.sign(payloadString),
+      receiver: this.guardsInfo[guardIndex].publicKey,
+      pk: this.publicKey,
+    });
   }
 
   /**
@@ -267,53 +329,25 @@ class GuardDetection {
           currentTime - this.guardsInfo[index].lastUpdate >
           this.guardsRegisterTimeout
         ) {
-          const nounce = this.generateNounce();
-          const payload: HeartbeatPayload = {
-            nounce: nounce,
-            timestamp: Date.now(),
-          };
-          const payloadString = JSON.stringify(payload);
-          this.guardsInfo[index].nounce = nounce;
-          await this.handler.send({
-            type: 'register',
-            payload: this.handler.encrypt(payloadString),
-            signature: this.handler.sign(payloadString),
-            receiver: this.approvedPublicKeys[index],
-            pk: this.publicKey,
-          });
+          await this.sendRegisterMessage(index);
         } else if (
           currentTime - guard.lastUpdate >
           this.guardsHeartbeatTimeout
         ) {
-          const nounce = this.generateNounce();
-          const payload: HeartbeatPayload = {
-            nounce: nounce,
-            timestamp: Date.now(),
-          };
-          const payloadString = JSON.stringify(payload);
-          guard.nounce = nounce;
-          await this.handler.send({
-            type: 'heartbeat',
-            payload: this.handler.encrypt(payloadString),
-            signature: this.handler.sign(payloadString),
-            receiver: this.approvedPublicKeys[index],
-            pk: this.publicKey,
-          });
+          await this.sendHeartbeatMessage(index);
         }
       }
     } catch (e) {
       this.logger.warn(`An Error occurred while updating guards status: ${e}`);
     }
-    setTimeout(() => {
-      this.updateGuardsStatus();
-    }, this.guardsUpdateStatusInterval);
   }
 
   /**
-   * getting active guards peer id
-   * @returns {string[]} - array of active guards peer id
+   * get active guards publicKey and peerId
+   * @public
+   * @returns { { peerId:string,publicKey:string }[] }
    */
-  public getActiveGuards(): string[] {
+  public getActiveGuards(): { peerId: string; publicKey: string }[] {
     const currentTime = Date.now();
     return this.guardsInfo
       .filter((guard) => {
@@ -322,7 +356,9 @@ class GuardDetection {
           currentTime - guard.lastUpdate < this.guardsRegisterTimeout
         );
       })
-      .map((guard) => guard.peerId);
+      .map((guard) => {
+        return { peerId: guard.peerId, publicKey: guard.publicKey };
+      });
   }
 }
 

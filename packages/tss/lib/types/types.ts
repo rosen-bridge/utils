@@ -66,12 +66,17 @@ interface GuardInfo {
   peerId: string;
   nounce: string;
   lastUpdate: number; // timestamp
+  publicKey: string;
 }
 
 interface GuardDetectionConfig {
-  logger: AbstractLogger;
+  logger?: AbstractLogger;
   guardsPublicKey: string[];
   publicKey: string;
+  guardsRegisterTimeout?: number;
+  guardsHeartbeatTimeout?: number;
+  timestampTolerance?: number;
+  guardsUpdateStatusInterval?: number;
 }
 
 export {
@@ -82,4 +87,5 @@ export {
   HeartbeatPayload,
   GuardInfo,
   GuardDetectionConfig,
+  MessageType,
 };
