@@ -82,6 +82,8 @@ class GuardDetection {
           )
         ) {
           return true;
+        } else {
+          this.logger.warn(`Signature from ${parsedMessage.pk} is not valid`);
         }
       } else {
         this.logger.warn(`Public key ${parsedMessage.pk} is not approved`);
