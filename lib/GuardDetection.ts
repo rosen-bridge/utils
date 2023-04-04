@@ -43,7 +43,7 @@ class GuardDetection {
     while (guardsCount--)
       this.guardsInfo.push({
         peerId: '',
-        nounce: '',
+        nonce: '',
         lastUpdate: 0,
         publicKey: config.guardsPublicKey[guardsCount],
       });
@@ -58,11 +58,11 @@ class GuardDetection {
   }
 
   /**
-   * Generate a random nounce in base64 format
-   * @param size - size of the nounce in bytes
+   * Generate a random nonce in base64 format
+   * @param size - size of the nonce in bytes
    * @private
    */
-  private generateNounce(size = 32): string {
+  private generateNonce(size = 32): string {
     return crypto.randomBytes(size).toString('base64');
   }
 
@@ -117,7 +117,7 @@ class GuardDetection {
 
   /**
    * handle Register message from other node in the network and send approve
-   * message with new nounce
+   * message with new nonce
    * @param registerPayload - RegisterPayload
    * @param sender - public key of sender
    * @protected
@@ -127,14 +127,14 @@ class GuardDetection {
     sender: string
   ): Promise<void> {
     try {
-      const receivedNounce = registerPayload.nounce;
-      const nounce = this.generateNounce();
+      const receivednonce = registerPayload.nonce;
+      const nonce = this.generateNonce();
       const payload: ApprovePayload = {
-        nounce: nounce,
-        receivedNounce: receivedNounce,
+        nonce: nonce,
+        receivedNonce: receivednonce,
         timestamp: Date.now(),
       };
-      this.guardsInfo[this.publicKeyToIndex(sender)].nounce = nounce;
+      this.guardsInfo[this.publicKeyToIndex(sender)].nonce = nonce;
       await this.handler.send({
         type: approveType,
         payload: this.handler.encrypt(JSON.stringify(payload)),
@@ -162,10 +162,10 @@ class GuardDetection {
     senderPeerId: string
   ): Promise<void> {
     try {
-      const receivedNounce = approvePayload.receivedNounce;
-      const nounce = approvePayload.nounce;
+      const receivedNonce = approvePayload.receivedNonce;
+      const nonce = approvePayload.nonce;
       const index = this.publicKeyToIndex(sender);
-      if (this.guardsInfo[index].nounce === receivedNounce) {
+      if (this.guardsInfo[index].nonce === receivedNonce) {
         const currentTime = Date.now();
         if (
           currentTime - approvePayload.timestamp <
@@ -174,9 +174,9 @@ class GuardDetection {
           this.guardsInfo[index].peerId = senderPeerId;
           this.guardsInfo[index].lastUpdate = currentTime;
         }
-        if (nounce) {
+        if (nonce) {
           const payload: ApprovePayload = {
-            receivedNounce: nounce,
+            receivedNonce: nonce,
             timestamp: Date.now(),
           };
           const payloadString = JSON.stringify(payload);
@@ -189,7 +189,7 @@ class GuardDetection {
           });
         }
       } else {
-        this.logger.warn(`Received nounce from ${sender} is not valid`);
+        this.logger.warn(`Received nonce from ${sender} is not valid`);
       }
     } catch (e) {
       this.logger.warn(
@@ -210,9 +210,9 @@ class GuardDetection {
     sender: string
   ): Promise<void> {
     try {
-      const nounce = heartbeatPayload.nounce;
+      const nonce = heartbeatPayload.nonce;
       const payload: ApprovePayload = {
-        receivedNounce: nounce,
+        receivedNonce: nonce,
         timestamp: Date.now(),
       };
       const payloadString = JSON.stringify(payload);
@@ -283,9 +283,9 @@ class GuardDetection {
    * @protected
    */
   protected async sendRegisterMessage(guardIndex: number) {
-    const nounce = this.generateNounce();
+    const nonce = this.generateNonce();
     const payload: RegisterPayload = {
-      nounce: nounce,
+      nonce: nonce,
       timestamp: Date.now(),
     };
     const payloadString = JSON.stringify(payload);
@@ -304,9 +304,9 @@ class GuardDetection {
    * @protected
    */
   protected async sendHeartbeatMessage(guardIndex: number) {
-    const nounce = this.generateNounce();
+    const nonce = this.generateNonce();
     const payload: HeartbeatPayload = {
-      nounce: nounce,
+      nonce: nonce,
       timestamp: Date.now(),
     };
     const payloadString = JSON.stringify(payload);
@@ -322,9 +322,9 @@ class GuardDetection {
   /**
    * update guards status
    * if guard is pass `guardHeartbeatTimeout` should message of type heartbeat send
-   * to that guard and the payload is the new nounce.
+   * to that guard and the payload is the new nonce.
    * if guard is pass `guardRegisterTimeout` should message of type register send
-   * to that guard and the payload is the new nounce.
+   * to that guard and the payload is the new nonce.
    * @protected
    */
   protected async updateGuardsStatus() {
