@@ -3,15 +3,11 @@ import {
   HeartbeatPayload,
   Message,
   RegisterPayload,
-} from '../lib/types/types';
-import { GuardDetection } from '../lib/GuardDetection';
-import { afterEach, before, beforeEach, describe } from 'node:test';
-import {
-  config,
-  guardsPublicKeys,
-  handler,
-  TestGuardDetection,
-} from './testUtils';
+} from '../lib/types';
+import { GuardDetection } from '../lib';
+import { describe } from 'node:test';
+import { config, guardsPublicKeys, handler } from './testUtils';
+import { TestGuardDetection } from './TestGuardDetection';
 
 describe('GuardDetection', () => {
   describe('generateNonce', () => {
@@ -20,8 +16,8 @@ describe('GuardDetection', () => {
      * `generateNonce` Should generate a random base64 encoded nonce with the default size 32
      * @dependencies
      * @scenario
-     * - calling `generateNonce` without a size parameter and check
-     *  the length of the nonce should be 32 byte after base64 decoding
+     * - run test without a size parameter
+     * - check returned value
      * @expected
      * - the length of the nonce should be 32 byte after base64 decoding
      */
@@ -38,8 +34,8 @@ describe('GuardDetection', () => {
      * `generateNonce` Should generate a random base64 encoded nonce with the given size
      * @dependencies
      * @scenario
-     * - calling `generateNonce` with a size parameter and check
-     * the length of the nonce should be 10 byte after base64 decoding
+     * - run test with size parameter
+     * - check returned value
      * @expected
      * - the length of the nonce should be 10 byte after base64 decoding
      */
@@ -59,14 +55,15 @@ describe('GuardDetection', () => {
      *   be in the valid public keys and message signature should be true
      * @dependencies
      * @scenario
-     * - calling `checkMessageSign` with a valid message and check the return value
+     * - Mocking a message with valid signature and public key
+     * - check the return value
      * @expected
      * - the return value should be true
      */
     it('Should return true if public key of sender be in the valid public keys and message signature should be true', () => {
       const guardDetection = new TestGuardDetection(handler, config);
       const parsedMessage: Message = {
-        type: 'approve',
+        type: 'approval',
         pk: guardsPublicKeys[1],
         payload: 'payload',
         signature: 'signature',
@@ -81,14 +78,15 @@ describe('GuardDetection', () => {
      * `checkMessageSign` Should return false if the message have not a valid signature
      * @dependencies
      * @scenario
-     * - calling `checkMessageSign` with a message with not valid signature and check the return value
+     * - Mock a message with not valid signature
+     * - check the return value
      * @expected
      * - the return value should be false
      */
     it('Should return false if the message is not have valid signature', () => {
       const guardDetection = new TestGuardDetection(handler, config);
       const parsedMessage: Message = {
-        type: 'approve',
+        type: 'approval',
         pk: guardsPublicKeys[1],
         payload: 'payload',
         signature: 'not valid signature',
@@ -103,14 +101,15 @@ describe('GuardDetection', () => {
      * `checkMessageSign` Should return false if the message have not a valid public key
      * @dependencies
      * @scenario
-     * - calling `checkMessageSign` with a message with not valid public key and check the return value
+     * - Mock a message with not valid public key
+     * - check the return value
      * @expected
      * - the return value should be false
      */
     it('Should return false if the message have not a valid public key', () => {
       const guardDetection = new TestGuardDetection(handler, config);
       const parsedMessage: Message = {
-        type: 'approve',
+        type: 'approval',
         pk: 'not valid public key',
         payload: 'payload',
         signature: 'signature',
@@ -127,7 +126,8 @@ describe('GuardDetection', () => {
      * `checkTimestamp` Should return true if the timestamp is less than timestampTolerance
      * @dependencies
      * @scenario
-     * - calling `checkTimestamp` with a timestamp less than timestampTolerance and check the return value
+     * - run test with a timestamp less than timestampTolerance
+     * - check the return value
      * @expected
      * - the return value should be true
      */
@@ -142,7 +142,8 @@ describe('GuardDetection', () => {
      * `checkTimestamp` Should return false if the timestamp is not less than timestampTolerance
      * @dependencies
      * @scenario
-     * - calling `checkTimestamp` with a timestamp not less than timestampTolerance and check the return value
+     * - run test with a timestamp not less than timestampTolerance
+     * - check the return value
      * @expected
      * - the return value should be false
      */
@@ -161,7 +162,8 @@ describe('GuardDetection', () => {
      * `publicKeyToIndex` Should return the index of the public key
      * @dependencies
      * @scenario
-     * - calling `publicKeyToIndex` with a valid public key and check the return value
+     * - run test with a valid public key
+     * - check the return value
      * @expected
      * - the return value should be the index of the public key
      */
@@ -206,7 +208,8 @@ describe('GuardDetection', () => {
      * `publicKeyToIndex` Should return -1 if the public key is not in the list
      * @dependencies
      * @scenario
-     * - calling `publicKeyToIndex` with a not valid public key and check the return value
+     * - run test with a not valid public key
+     * - check the return value
      * @expected
      * - the return value should be -1
      */
@@ -220,17 +223,20 @@ describe('GuardDetection', () => {
   describe('handleRegisterMessage', () => {
     /**
      * @target
-     * `handleRegisterMessage` Should send an approve message with the new
+     * `handleRegisterMessage` Should send an approval message with the new
      *   nonce and the received nonce
      * @dependencies
      * - `generateNonce`
      * - `send`
      * @scenario
-     * - calling `handleRegisterMessage` with a valid message and check the sent message
+     * - Mock a regsiter message
+     * - Mock the `generateNonce` method
+     * - run test
+     * - check the sent message
      * @expected
-     * - The sent message should be an approve message with the new nonce and the received nonce
+     * - The sent message should be an approval message with the new nonce and the received nonce
      */
-    it('Should send an approve message with the new nonce and the received nonce', async () => {
+    it('Should send an approval message with the new nonce and the received nonce', async () => {
       jest.spyOn(handler, 'send');
       const guardDetection = new TestGuardDetection(handler, config);
       jest
@@ -246,7 +252,7 @@ describe('GuardDetection', () => {
       );
       expect(handler.send).toHaveBeenCalledWith(
         expect.objectContaining({
-          type: 'approve',
+          type: 'approval',
           pk: guardsPublicKeys[0],
           payload: expect.stringContaining(
             '{"nonce":"new nonce","receivedNonce":"nonce","timestamp":'
@@ -266,13 +272,18 @@ describe('GuardDetection', () => {
      * @dependencies
      * - `send`
      * @scenario
-     * - calling `handleApproveMessage` with a valid message and check the saved peerId
-     *  and lastUpdate and the sent message
+     * - Mock a approval message
+     * - Mock the `send` method
+     * - run test
+     * - check the result
      * @expected
-     * - the saved peerId should be the received peerId and the lastUpdate should be
-     *  greater than the lastUpdate before calling `handleApproveMessage`
+     * - the saved peerId should be the received peerId
+     * - the lastUpdate should be greater than the lastUpdate before calling `handleApproveMessage`
+     * - the 'send' method should be called
      */
     it('Should save peerId in case of received nonce is equal to sender nonce and lastUpdate is less than guardsHeartbeatTimeout', async () => {
+      jest.spyOn(handler, 'send').mockClear();
+      jest.spyOn(handler, 'send');
       const guardDetection = new TestGuardDetection(handler, config);
       const lastUpdate = Date.now() - 20 * 1000;
       guardDetection.setGuardsInfo(
@@ -307,11 +318,13 @@ describe('GuardDetection', () => {
      * @dependencies
      * - `send`
      * @scenario
-     * - calling `handleApproveMessage` with a valid message and check the sent message
+     * - Mock approval payload
+     * - run test
+     * - check the sent message
      * @expected
      * - the sent message should be an approve message with the new nonce and the received nonce
      */
-    it('Should send approve message if nonce is set in the payload and received nonce is equal to sender nonce', async () => {
+    it('Should send approval message if nonce is set in the payload and received nonce is equal to sender nonce', async () => {
       const guardDetection = new TestGuardDetection(handler, config);
       guardDetection.setGuardsInfo(
         {
@@ -336,7 +349,7 @@ describe('GuardDetection', () => {
       expect(guardDetection.getGuardInfo(0).peerId).toEqual('peerId');
       expect(handler.send).toHaveBeenCalledWith(
         expect.objectContaining({
-          type: 'approve',
+          type: 'approval',
           pk: guardsPublicKeys[0],
           payload: expect.stringContaining(
             '{"receivedNonce":"new nonce","timestamp"'
@@ -351,16 +364,18 @@ describe('GuardDetection', () => {
   describe('handleHeartbeatMessage', () => {
     /**
      * @target
-     * `handleHeartbeatMessage` Should send approve message just with the received nonce
+     * `handleHeartbeatMessage` Should send approval message just with the received nonce
      * @dependencies
      * - `send`
      * @scenario
-     * - calling `handleHeartbeatMessage` with a valid message and check the sent message
+     * - Mock Heartbeat payload
+     * - run test
+     * - check the sent message
      * @expected
-     * - the sent message should be an approve message with the received nonce
+     * - the sent message should be an approval message with the received nonce
      * and the timestamp
      */
-    it('Should send approve message just with the received nonce', async () => {
+    it('Should send approval message just with the received nonce', async () => {
       jest.spyOn(handler, 'send').mockClear();
       jest.spyOn(handler, 'send');
       const guardDetection = new TestGuardDetection(handler, config);
@@ -374,7 +389,7 @@ describe('GuardDetection', () => {
       );
       expect(handler.send).toHaveBeenCalledWith(
         expect.objectContaining({
-          type: 'approve',
+          type: 'approval',
           pk: guardsPublicKeys[0],
           payload: expect.stringContaining(
             '{"receivedNonce":"nonce","timestamp"'
@@ -394,7 +409,9 @@ describe('GuardDetection', () => {
      * @dependencies
      * - `handleRegisterMessage`
      * @scenario
-     * - calling `handleReceiveMessage` with a valid message and check the called handler
+     * - Mock Message with a valid message
+     * - Run test
+     * - check the called handler
      * @expected
      * - the called handler should be `handleRegisterMessage`
      */
@@ -421,23 +438,25 @@ describe('GuardDetection', () => {
 
     /**
      * @target
-     * `handleReceiveMessage` Should call the correct handler for the message approve
+     * `handleReceiveMessage` Should call the correct handler for the message approval
      * with correct signature
      * @dependencies
      * - `handleHeartbeatMessage`
      * @scenario
-     * - calling `handleReceiveMessage` with a valid message and check the called handler
+     * - Mock Message with a valid message
+     * - Run test
+     * - check the called handler
      * @expected
      * - the called handler should be `handleApproveMessage`
      */
-    it('Should call the correct handler for the message approve with correct signature', async () => {
+    it('Should call the correct handler for the message approval with correct signature', async () => {
       const guardDetection = new TestGuardDetection(handler, config);
       const spiedHandleApprove = jest.spyOn(
         Object.getPrototypeOf(guardDetection),
         'handleApproveMessage'
       );
       const parsedMessage: Message = {
-        type: 'approve',
+        type: 'approval',
         pk: guardsPublicKeys[1],
         payload: JSON.stringify({
           nonce: 'nonce',
@@ -462,7 +481,9 @@ describe('GuardDetection', () => {
      * @dependencies
      * - `handleHeartbeatMessage`
      * @scenario
-     * - calling `handleReceiveMessage` with a valid message and check the called handler
+     * - Mock Message with a valid message
+     * - Run test
+     * - check the called handler
      * @expected
      * - the called handler should be `handleHeartbeatMessage`
      */
@@ -492,8 +513,9 @@ describe('GuardDetection', () => {
      * `handleReceiveMessage` Should not call any handler if the signature is not correct
      * @dependencies*
      * @scenario
-     * - calling `handleReceiveMessage` with a valid message with incorrect signature
-     * and check the called handler
+     * - - Mock Message with a valid message but wrong signature
+     * - Run test
+     * - check the called handler
      * @expected
      * - no handler should be called
      */
@@ -532,8 +554,9 @@ describe('GuardDetection', () => {
      * `handleReceiveMessage` Should not call any handler if timestamp is not valid
      * @dependencies
      * @scenario
-     * - calling `handleReceiveMessage` with a valid message with incorrect timestamp
-     * and check the called handler
+     * - Mock Message with a valid message but wrong timestamp
+     * - Run test
+     * - check the called handler
      * @expected
      * - no handler should be called
      */
@@ -577,7 +600,9 @@ describe('GuardDetection', () => {
      * `getActiveGuards` Should return the active guards
      * @dependencies
      * @scenario
-     * - calling `getActiveGuards` and check the returned value
+     * - Mock guardsInfo
+     * - Run test
+     * - check the returned value
      * @expected
      * - the returned value should be the active guards peerId
      */
@@ -617,7 +642,10 @@ describe('GuardDetection', () => {
      * `sendRegisterMessage` Should send register message to the guard
      * @dependencies
      * @scenario
-     * - calling `sendRegisterMessage` and check the sent message
+     * - Mock the guardDetection.generateNonce
+     * - Mock guardInfo
+     * - Run test
+     * - check the sent message
      * @expected
      * - the sent message should be the register message with the correct payload
      */
@@ -655,7 +683,10 @@ describe('GuardDetection', () => {
      * `sendHeartbeatMessage` Should send heartbeat message to the guard
      * @dependencies
      * @scenario
-     * - calling `sendHeartbeatMessage` and check the sent message
+     * - Mock the guardDetection.generateNonce
+     * - Mock guardInfo
+     * - Run test
+     * - check the sent message
      * @expected
      * - the sent message should be the heartbeat message with the correct payload
      */
@@ -693,7 +724,10 @@ describe('GuardDetection', () => {
      * `updateGuardsStatus` Should send register message to guards that passed register timeout
      * @dependencies
      * @scenario
-     * - calling `updateGuardsStatus` and check the send handler
+     * - Mock the guardDetection.generateNonce
+     * - Mock guardInfo
+     * - Run test
+     * - check the send handler
      * @expected
      * - the send handler should be called with the correct message
      */
@@ -748,7 +782,10 @@ describe('GuardDetection', () => {
      * `updateGuardsStatus` Should send heartbeat message to guards that passed heartbeat timeout
      * @dependencies
      * @scenario
-     * - calling `updateGuardsStatus` and check the send handler
+     * - Mock the guardDetection.generateNonce
+     * - Mock guardInfo
+     * - Run test
+     * - check the send handler
      * @expected
      * - the send handler should be called with the correct message
      */
