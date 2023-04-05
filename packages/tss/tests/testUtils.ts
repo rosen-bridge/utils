@@ -6,11 +6,11 @@ import {
   Message,
   MessageHandler,
   RegisterPayload,
-} from '../../lib/types/types';
+} from '../lib/types/types';
 import crypto from 'crypto';
 import pkg from 'secp256k1';
 import { DummyLogger } from '@rosen-bridge/logger-interface';
-import { GuardDetection } from '../../lib';
+import { GuardDetection } from '../lib';
 
 /**
  * Generate 4 random private keys
@@ -63,7 +63,7 @@ const config: GuardDetectionConfig = {
 /**
  * Mocked GuardDetection class for testing
  */
-class mockGuardDetection extends GuardDetection {
+class TestGuardDetection extends GuardDetection {
   getCheckMessageSign(message: Message) {
     return this.checkMessageSign(message);
   }
@@ -116,7 +116,7 @@ class mockGuardDetection extends GuardDetection {
 }
 
 export {
-  mockGuardDetection,
+  TestGuardDetection,
   handler,
   config,
   guardsPrivateKeys,

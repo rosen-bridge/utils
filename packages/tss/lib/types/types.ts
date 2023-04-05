@@ -79,6 +79,11 @@ interface GuardDetectionConfig {
   guardsUpdateStatusInterval?: number;
 }
 
+interface ActiveGuard {
+  peerId: string;
+  publicKey: string;
+}
+
 export {
   MessageHandler,
   Message,
@@ -88,4 +93,5 @@ export {
   GuardInfo,
   GuardDetectionConfig,
   MessageType,
+  ActiveGuard,
 };

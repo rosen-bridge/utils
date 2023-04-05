@@ -1,5 +1,6 @@
 import * as crypto from 'crypto';
 import {
+  ActiveGuard,
   ApprovePayload,
   GuardDetectionConfig,
   GuardInfo,
@@ -51,7 +52,7 @@ class GuardDetection {
 
   /**
    * Initialize the guard detection
-   * @returns {Promise<void>}
+   * @returns
    */
   public async init(): Promise<void> {
     await this.updateGuardsStatus();
@@ -90,6 +91,9 @@ class GuardDetection {
       }
     } catch (e) {
       this.logger.warn(`An Error occurred while checking message sign: ${e}`);
+      if (e instanceof Error && e.stack) {
+        this.logger.warn(e.stack);
+      }
     }
     return false;
   }
@@ -109,10 +113,7 @@ class GuardDetection {
    * @protected
    */
   protected publicKeyToIndex(publicKey: string): number {
-    for (let i = 0; i < this.guardsInfo.length; i++) {
-      if (this.guardsInfo[i].publicKey === publicKey) return i;
-    }
-    return -1;
+    return this.guardsInfo.findIndex((guard) => guard.publicKey === publicKey);
   }
 
   /**
@@ -127,11 +128,11 @@ class GuardDetection {
     sender: string
   ): Promise<void> {
     try {
-      const receivednonce = registerPayload.nonce;
+      const receivedNonce = registerPayload.nonce;
       const nonce = this.generateNonce();
       const payload: ApprovePayload = {
         nonce: nonce,
-        receivedNonce: receivednonce,
+        receivedNonce: receivedNonce,
         timestamp: Date.now(),
       };
       this.guardsInfo[this.publicKeyToIndex(sender)].nonce = nonce;
@@ -142,6 +143,9 @@ class GuardDetection {
         receiver: sender,
         pk: this.publicKey,
       });
+      this.logger.debug(
+        `Sent approve message to guard with public key [${sender}]`
+      );
     } catch (e) {
       this.logger.warn(
         `An Error occurred while handling register message: ${e}`
@@ -173,6 +177,9 @@ class GuardDetection {
         ) {
           this.guardsInfo[index].peerId = senderPeerId;
           this.guardsInfo[index].lastUpdate = currentTime;
+          this.logger.debug(
+            `Received approve message updating guard with public key [${sender}]`
+          );
         }
         if (nonce) {
           const payload: ApprovePayload = {
@@ -187,6 +194,9 @@ class GuardDetection {
             receiver: sender,
             pk: this.publicKey,
           });
+          this.logger.debug(
+            `Sent approve message to guard with public key [${sender}]`
+          );
         }
       } else {
         this.logger.warn(`Received nonce from ${sender} is not valid`);
@@ -223,6 +233,9 @@ class GuardDetection {
         receiver: sender,
         pk: this.publicKey,
       });
+      this.logger.debug(
+        `Sent approve message to guard with public key [${sender}]`
+      );
     } catch (e) {
       this.logger.warn(
         `An Error occurred while handling heartbeat message: ${e}`
@@ -246,7 +259,7 @@ class GuardDetection {
         const payload: RegisterPayload | ApprovePayload | HeartbeatPayload =
           JSON.parse(this.handler.decrypt(parsedMessage.payload));
         if (!this.checkTimestamp(payload.timestamp)) {
-          this.logger.debug(
+          this.logger.warn(
             `Message from peer ${senderPeerId} timestamp is not valid`
           );
           return;
@@ -283,6 +296,7 @@ class GuardDetection {
    * @protected
    */
   protected async sendRegisterMessage(guardIndex: number) {
+    this.logger.debug(`Sending register message to ${guardIndex} guard`);
     const nonce = this.generateNonce();
     const payload: RegisterPayload = {
       nonce: nonce,
@@ -304,6 +318,7 @@ class GuardDetection {
    * @protected
    */
   protected async sendHeartbeatMessage(guardIndex: number) {
+    this.logger.debug(`Sending heartbeat message to ${guardIndex} guard`);
     const nonce = this.generateNonce();
     const payload: HeartbeatPayload = {
       nonce: nonce,
@@ -321,10 +336,10 @@ class GuardDetection {
 
   /**
    * update guards status
-   * if guard is pass `guardHeartbeatTimeout` should message of type heartbeat send
-   * to that guard and the payload is the new nonce.
-   * if guard is pass `guardRegisterTimeout` should message of type register send
-   * to that guard and the payload is the new nonce.
+   * if `guardHeartbeatTimeout` seconds passed by guard last update, a heartbeat should be sent
+   * to the guard with a new nonce.
+   * if `guardRegisterTimeout` seconds passed by guard last update, a register message should be sent
+   * to the guard with a new nonce.
    * @protected
    */
   protected async updateGuardsStatus() {
@@ -351,7 +366,7 @@ class GuardDetection {
    * @public
    * @returns { { peerId:string,publicKey:string }[] }
    */
-  public getActiveGuards(): { peerId: string; publicKey: string }[] {
+  public getActiveGuards(): ActiveGuard[] {
     const currentTime = Date.now();
     return this.guardsInfo
       .filter((guard) => {
