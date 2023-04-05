@@ -1,6 +1,6 @@
-import { MessageType } from '../types/types';
+import { MessageType } from '../types';
 
-const approveType: MessageType = 'approve';
+const approveType: MessageType = 'approval';
 const heartbeatType: MessageType = 'heartbeat';
 const registerType: MessageType = 'register';
 

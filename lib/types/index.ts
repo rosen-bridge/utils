@@ -3,11 +3,11 @@ import { AbstractLogger } from '@rosen-bridge/logger-interface';
 /**
  * MessageType type for communication between nodes in the network
  */
-type MessageType = 'register' | 'approve' | 'heartbeat';
+type MessageType = 'register' | 'approval' | 'heartbeat';
 
 /**
  * Message interface for communication between nodes in the network
- * @param type - type of message (sign, register, approve)
+ * @param type - type of message (sign, register, approval)
  * @param payload - message payload
  * @param signature - message signature
  * @param receiver - public key of receiver

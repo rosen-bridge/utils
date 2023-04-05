@@ -5,4 +5,4 @@ export {
   Message,
   MessageHandler,
   ActiveGuard,
-} from './types/types';
+} from './types';

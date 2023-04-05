@@ -8,7 +8,7 @@ import {
   Message,
   MessageHandler,
   RegisterPayload,
-} from './types/types';
+} from './types';
 import { AbstractLogger, DummyLogger } from '@rosen-bridge/logger-interface';
 import {
   approveType,
@@ -117,7 +117,7 @@ class GuardDetection {
   }
 
   /**
-   * handle Register message from other node in the network and send approve
+   * handle Register message from other node in the network and send approval
    * message with new nonce
    * @param registerPayload - RegisterPayload
    * @param sender - public key of sender
@@ -144,7 +144,7 @@ class GuardDetection {
         pk: this.publicKey,
       });
       this.logger.debug(
-        `Sent approve message to guard with public key [${sender}]`
+        `Sent approval message to guard with public key [${sender}]`
       );
     } catch (e) {
       this.logger.warn(
@@ -154,7 +154,7 @@ class GuardDetection {
   }
 
   /**
-   * handle Approve message from other node in the network
+   * handle approval message from other node in the network
    * @param approvePayload - ApprovePayload
    * @param sender - public key of sender
    * @param senderPeerId - peerId of sender
@@ -178,7 +178,7 @@ class GuardDetection {
           this.guardsInfo[index].peerId = senderPeerId;
           this.guardsInfo[index].lastUpdate = currentTime;
           this.logger.debug(
-            `Received approve message updating guard with public key [${sender}]`
+            `Received approval message updating guard with public key [${sender}]`
           );
         }
         if (nonce) {
@@ -195,7 +195,7 @@ class GuardDetection {
             pk: this.publicKey,
           });
           this.logger.debug(
-            `Sent approve message to guard with public key [${sender}]`
+            `Sent approval message to guard with public key [${sender}]`
           );
         }
       } else {
@@ -203,13 +203,13 @@ class GuardDetection {
       }
     } catch (e) {
       this.logger.warn(
-        `An Error occurred while handling approve message: ${e}`
+        `An Error occurred while handling approval message: ${e}`
       );
     }
   }
 
   /**
-   * handle Heartbeat message from other node in the network and send approve message
+   * handle Heartbeat message from other node in the network and send approval message
    * to sender of heartbeat message
    * @param heartbeatPayload - HeartbeatPayload
    * @param sender - public key of sender
@@ -234,7 +234,7 @@ class GuardDetection {
         pk: this.publicKey,
       });
       this.logger.debug(
-        `Sent approve message to guard with public key [${sender}]`
+        `Sent approval message to guard with public key [${sender}]`
       );
     } catch (e) {
       this.logger.warn(
