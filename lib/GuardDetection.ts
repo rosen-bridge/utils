@@ -17,7 +17,7 @@ import {
   heartbeatType,
   registerTimeout,
   registerType,
-  timestampTolerance,
+  messageValidDuration,
 } from './constants/constants';
 
 class GuardDetection {
@@ -27,7 +27,7 @@ class GuardDetection {
   protected readonly logger: AbstractLogger;
   protected readonly guardsRegisterTimeout: number;
   protected readonly guardsHeartbeatTimeout: number;
-  protected readonly timestampTolerance: number;
+  protected readonly messageValidDuration: number;
   protected readonly guardsUpdateStatusInterval: number;
   constructor(handler: MessageHandler, config: GuardDetectionConfig) {
     this.handler = handler;
@@ -36,7 +36,8 @@ class GuardDetection {
       config.guardsRegisterTimeout || registerTimeout;
     this.guardsHeartbeatTimeout =
       config.guardsHeartbeatTimeout || heartbeatTimeout;
-    this.timestampTolerance = config.timestampTolerance || timestampTolerance;
+    this.messageValidDuration =
+      config.messageValidDuration || messageValidDuration;
     this.guardsUpdateStatusInterval =
       config.guardsUpdateStatusInterval || guardsUpdateStatusInterval;
     this.publicKey = config.publicKey;
@@ -104,7 +105,7 @@ class GuardDetection {
    * @protected
    */
   protected checkTimestamp(timestamp: number): boolean {
-    return Date.now() - timestamp < this.timestampTolerance;
+    return Date.now() - timestamp < this.messageValidDuration;
   }
 
   /**
@@ -135,7 +136,8 @@ class GuardDetection {
         receivedNonce: receivedNonce,
         timestamp: Date.now(),
       };
-      this.guardsInfo[this.publicKeyToIndex(sender)].nonce = nonce;
+      const guardIndex = this.publicKeyToIndex(sender);
+      this.guardsInfo[guardIndex].nonce = nonce;
       await this.handler.send({
         type: approveType,
         payload: this.handler.encrypt(JSON.stringify(payload)),
@@ -144,7 +146,7 @@ class GuardDetection {
         pk: this.publicKey,
       });
       this.logger.debug(
-        `Sent approval message to guard with public key [${sender}]`
+        `Sent approval to register request of guard [${guardIndex}]`
       );
     } catch (e) {
       this.logger.warn(
@@ -178,7 +180,7 @@ class GuardDetection {
           this.guardsInfo[index].peerId = senderPeerId;
           this.guardsInfo[index].lastUpdate = currentTime;
           this.logger.debug(
-            `Received approval message updating guard with public key [${sender}]`
+            `Received approval message updating guard with index [${index}]`
           );
         }
         if (nonce) {
@@ -195,11 +197,13 @@ class GuardDetection {
             pk: this.publicKey,
           });
           this.logger.debug(
-            `Sent approval message to guard with public key [${sender}]`
+            `Sent approval to register message guard with index [${index}]`
           );
         }
       } else {
-        this.logger.warn(`Received nonce from ${sender} is not valid`);
+        this.logger.warn(
+          `Received nonce from guard with index [${index}] is not valid`
+        );
       }
     } catch (e) {
       this.logger.warn(
@@ -234,7 +238,9 @@ class GuardDetection {
         pk: this.publicKey,
       });
       this.logger.debug(
-        `Sent approval message to guard with public key [${sender}]`
+        `Sent approval message to heartbeat message guard with index [${this.publicKeyToIndex(
+          sender
+        )}]`
       );
     } catch (e) {
       this.logger.warn(

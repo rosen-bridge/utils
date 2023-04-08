@@ -75,7 +75,7 @@ interface GuardDetectionConfig {
   publicKey: string;
   guardsRegisterTimeout?: number;
   guardsHeartbeatTimeout?: number;
-  timestampTolerance?: number;
+  messageValidDuration?: number;
   guardsUpdateStatusInterval?: number;
 }
 
