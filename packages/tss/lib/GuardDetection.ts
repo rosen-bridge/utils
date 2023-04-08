@@ -152,6 +152,9 @@ class GuardDetection {
       this.logger.warn(
         `An Error occurred while handling register message: ${e}`
       );
+      if (e instanceof Error && e.stack) {
+        this.logger.warn(e.stack);
+      }
     }
   }
 
@@ -209,6 +212,9 @@ class GuardDetection {
       this.logger.warn(
         `An Error occurred while handling approval message: ${e}`
       );
+      if (e instanceof Error && e.stack) {
+        this.logger.warn(e.stack);
+      }
     }
   }
 
@@ -246,6 +252,9 @@ class GuardDetection {
       this.logger.warn(
         `An Error occurred while handling heartbeat message: ${e}`
       );
+      if (e instanceof Error && e.stack) {
+        this.logger.warn(e.stack);
+      }
     }
   }
 
@@ -293,6 +302,9 @@ class GuardDetection {
       this.logger.warn(
         `An Error occurred while handling receive message: ${e}`
       );
+      if (e instanceof Error && e.stack) {
+        this.logger.warn(e.stack);
+      }
     }
   }
 
@@ -364,6 +376,9 @@ class GuardDetection {
       }
     } catch (e) {
       this.logger.warn(`An Error occurred while updating guards status: ${e}`);
+      if (e instanceof Error && e.stack) {
+        this.logger.warn(e.stack);
+      }
     }
   }
 
