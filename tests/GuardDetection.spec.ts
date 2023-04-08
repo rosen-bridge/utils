@@ -5,11 +5,13 @@ import {
   RegisterPayload,
 } from '../lib/types';
 import { GuardDetection } from '../lib';
-import { describe } from 'node:test';
 import { config, guardsPublicKeys, handler } from './testUtils';
 import { TestGuardDetection } from './TestGuardDetection';
 
 describe('GuardDetection', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
   describe('generateNonce', () => {
     /**
      * @target
@@ -282,7 +284,6 @@ describe('GuardDetection', () => {
      * - the 'send' method should be called
      */
     it('Should save peerId in case of received nonce is equal to sender nonce and lastUpdate is less than guardsHeartbeatTimeout', async () => {
-      jest.spyOn(handler, 'send').mockClear();
       jest.spyOn(handler, 'send');
       const guardDetection = new TestGuardDetection(handler, config);
       const lastUpdate = Date.now() - 20 * 1000;
@@ -376,7 +377,6 @@ describe('GuardDetection', () => {
      * and the timestamp
      */
     it('Should send approval message just with the received nonce', async () => {
-      jest.spyOn(handler, 'send').mockClear();
       jest.spyOn(handler, 'send');
       const guardDetection = new TestGuardDetection(handler, config);
       const payload: HeartbeatPayload = {
@@ -433,7 +433,6 @@ describe('GuardDetection', () => {
         'peerId'
       );
       expect(spiedHandleRegister).toHaveBeenCalled();
-      spiedHandleRegister.mockClear();
     });
 
     /**
@@ -471,7 +470,6 @@ describe('GuardDetection', () => {
         'peerId'
       );
       expect(spiedHandleApprove).toHaveBeenCalled();
-      spiedHandleApprove.mockClear();
     });
 
     /**
@@ -505,7 +503,6 @@ describe('GuardDetection', () => {
         'peerId'
       );
       expect(spiedHandleHeartbeat).toHaveBeenCalled();
-      spiedHandleHeartbeat.mockClear();
     });
 
     /**
@@ -654,7 +651,6 @@ describe('GuardDetection', () => {
       jest
         .spyOn(Object.getPrototypeOf(guardDetection), 'generateNonce')
         .mockReturnValue('new nonce');
-      jest.spyOn(handler, 'send').mockClear();
       guardDetection.setGuardsInfo(
         {
           nonce: 'nonce',
@@ -695,7 +691,6 @@ describe('GuardDetection', () => {
       jest
         .spyOn(Object.getPrototypeOf(guardDetection), 'generateNonce')
         .mockReturnValue('new nonce');
-      jest.spyOn(handler, 'send').mockClear();
       guardDetection.setGuardsInfo(
         {
           nonce: 'nonce',
@@ -736,7 +731,6 @@ describe('GuardDetection', () => {
       jest
         .spyOn(Object.getPrototypeOf(guardDetection), 'generateNonce')
         .mockReturnValue('new nonce');
-      jest.spyOn(handler, 'send').mockClear();
       guardDetection.setGuardsInfo(
         {
           nonce: 'nonce',
@@ -794,7 +788,6 @@ describe('GuardDetection', () => {
       jest
         .spyOn(Object.getPrototypeOf(guardDetection), 'generateNonce')
         .mockReturnValue('new nonce');
-      jest.spyOn(handler, 'send').mockClear();
       guardDetection.setGuardsInfo(
         {
           nonce: 'nonce',

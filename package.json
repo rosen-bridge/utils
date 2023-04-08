@@ -8,10 +8,10 @@
   "scripts": {
     "prettify": "prettier --write . --ignore-path .gitignore",
     "lint": "eslint --fix . && npm run prettify",
-    "build": "tsc",
+    "build": "tsc --build tsconfig.build.json",
     "type-check": "tsc --noEmit",
-    "test": "jest --passWithNoTests",
-    "coverage": "jest --passWithNoTests --coverage",
+    "test": "jest",
+    "coverage": "jest --coverage",
     "release": "npm run test && npm run build"
   },
   "files": [
