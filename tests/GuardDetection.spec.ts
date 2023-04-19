@@ -7,6 +7,7 @@ import {
 import { GuardDetection } from '../lib';
 import { config, guardsPublicKeys, handler } from './testUtils';
 import { TestGuardDetection } from './TestGuardDetection';
+import { describe } from 'node:test';
 
 describe('GuardDetection', () => {
   beforeEach(() => {
@@ -591,6 +592,78 @@ describe('GuardDetection', () => {
     });
   });
 
+  describe('isGuardActive', () => {
+    /**
+     * @target
+     * `isGuardActive` Should return false if the guard is not set
+     * @dependencies
+     * @scenario
+     * - mock the guard info
+     * - Run test
+     * - check the result
+     * @expected
+     * - the result should be false
+     */
+    it('Should return false if the guard is not set', () => {
+      const guardDetection = new TestGuardDetection(handler, config);
+      guardDetection.setGuardsInfo(
+        { nonce: 'nonce', lastUpdate: Date.now(), peerId: '', publicKey: '' },
+        0
+      );
+      expect(guardDetection.getIsGuardActive(0)).toEqual(false);
+    });
+
+    /**
+     * @target
+     * `isGuardActive` Should return false if the guard is not active
+     * @dependencies
+     * @scenario
+     * - mock the guard info
+     * - Run test
+     * - check the result
+     * @expected
+     * - the result should be false
+     */
+    it('Should return false if the guard is not active', () => {
+      const guardDetection = new TestGuardDetection(handler, config);
+      guardDetection.setGuardsInfo(
+        {
+          nonce: 'nonce',
+          lastUpdate: Date.now() - 3 * 60 * 1000,
+          peerId: 'peerId1',
+          publicKey: 'publicKey1',
+        },
+        1
+      );
+      expect(guardDetection.getIsGuardActive(1)).toEqual(false);
+    });
+
+    /**
+     * @target
+     * `isGuardActive` Should return true if the guard is active
+     * @dependencies
+     * @scenario
+     * - mock the guard info
+     * - Run test
+     * - check the result
+     * @expected
+     * - the result should be true
+     */
+    it('Should return true if the guard is active', () => {
+      const guardDetection = new TestGuardDetection(handler, config);
+      guardDetection.setGuardsInfo(
+        {
+          nonce: 'nonce',
+          lastUpdate: Date.now() - 50 * 1000,
+          peerId: 'peerId2',
+          publicKey: 'publicKey2',
+        },
+        2
+      );
+      expect(guardDetection.getIsGuardActive(2)).toEqual(true);
+    });
+  });
+
   describe('getActiveGuards', () => {
     /**
      * @target
@@ -630,6 +703,148 @@ describe('GuardDetection', () => {
       expect(guardDetection.getActiveGuards()).toEqual([
         { peerId: 'peerId2', publicKey: 'publicKey2' },
       ]);
+    });
+  });
+
+  describe('register', () => {
+    /**
+     * @target
+     * `register` Should throw error if the peerId is not valid
+     * @dependencies
+     * @scenario
+     * - call register with invalid peerId
+     * - Run test
+     * - check the returned value
+     * @expected
+     * - Should throw error
+     */
+    it('Should throw error if the publicly is not valid', () => {
+      const guardDetection = new TestGuardDetection(handler, config);
+      const result = guardDetection.register('peerId1', 'publicKey1');
+      expect(result).rejects.toThrowError('Guard not found');
+    });
+
+    /**
+     * @target
+     * `register` Should return Promise if case of adding new guard
+     * @dependencies
+     * @scenario
+     * - mock the guard info
+     * - call register with valid peerId
+     * - Run test
+     * - check the returned value
+     * @expected
+     * - Should return Promise
+     */
+    it('Should return Promise if case of adding new guard', () => {
+      const guardDetection = new TestGuardDetection(handler, config);
+      guardDetection.setGuardsInfo(
+        {
+          nonce: 'nonce',
+          lastUpdate: Date.now() - 60 * 1000,
+          peerId: 'peerId1',
+          publicKey: 'publicKey1',
+        },
+        1
+      );
+      const result = guardDetection.register('peerId1', 'publicKey1');
+      expect(result).toBeInstanceOf(Promise);
+    });
+
+    /**
+     * @target
+     * `register` Should send register message if it does not in the list
+     * @dependencies
+     * @scenario
+     * - mock the guard info
+     * - call register with valid peerId
+     * - Run test
+     * - check the returned value
+     * @expected
+     * - Should send register message
+     * - Should return Promise
+     */
+    it('Should send register message if it does not in the list', () => {
+      const guardDetection = new TestGuardDetection(handler, config);
+      guardDetection.setGuardsInfo(
+        {
+          nonce: 'nonce',
+          lastUpdate: Date.now() - 60 * 1000,
+          peerId: 'peerId1',
+          publicKey: 'publicKey1',
+        },
+        1
+      );
+
+      const spiedSendRegisterMessage = jest.spyOn(
+        Object.getPrototypeOf(guardDetection),
+        'sendRegisterMessage'
+      );
+      const result = guardDetection.register('peerId1', 'publicKey1');
+      expect(result).toBeInstanceOf(Promise);
+      expect(spiedSendRegisterMessage).toHaveBeenCalled();
+    });
+
+    /**
+     * @target
+     * `register` Should send heartbeat message if it is in the list but not active
+     * @dependencies
+     * @scenario
+     * - mock the guard info
+     * - call register with valid peerId
+     * - Run test
+     * - check the called function
+     * @expected
+     * - Should send heartbeat message
+     */
+    it('Should send heartbeat message if it is in the list but not active', async () => {
+      const guardDetection = new TestGuardDetection(handler, config);
+      guardDetection.setGuardsInfo(
+        {
+          nonce: 'nonce',
+          lastUpdate: Date.now() - 3 * 60 * 1000,
+          peerId: 'peerId1',
+          publicKey: 'publicKey1',
+          registered: true,
+        },
+        1
+      );
+
+      const spiedSendHeartbeatMessage = jest.spyOn(
+        Object.getPrototypeOf(guardDetection),
+        'sendHeartbeatMessage'
+      );
+      const result = guardDetection.register('peerId1', 'publicKey1');
+      expect(spiedSendHeartbeatMessage).toBeCalled();
+    });
+
+    /**
+     * @target
+     * `register` Should reject if the guard is in the list but peerId is not the same
+     * @dependencies
+     * @scenario
+     * - mock the guard info
+     * - call register with valid peerId
+     * - Run test
+     * - check the returned value
+     * @expected
+     * - Should reject with error
+     */
+    it('Should reject if the guard is in the list but peerId is not the same', async () => {
+      const guardDetection = new TestGuardDetection(handler, config);
+      guardDetection.setGuardsInfo(
+        {
+          nonce: 'nonce',
+          lastUpdate: Date.now() - 3 * 60 * 1000,
+          peerId: 'peerId1',
+          publicKey: 'publicKey1',
+          registered: true,
+        },
+        1
+      );
+
+      const result = guardDetection.register('peerId1', 'publicKey1');
+      expect(result).rejects.toThrowError('PeerId is not the same');
     });
   });
 
