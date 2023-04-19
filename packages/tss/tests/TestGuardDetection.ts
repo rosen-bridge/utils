@@ -48,6 +48,10 @@ class TestGuardDetection extends GuardDetection {
   getCheckTimestamp(timestamp: number) {
     return this.checkTimestamp(timestamp);
   }
+
+  getIsGuardActive(guardIndex: number) {
+    return this.isGuardActive(guardIndex);
+  }
   async runUpdateGuardsStatus() {
     await this.updateGuardsStatus();
   }

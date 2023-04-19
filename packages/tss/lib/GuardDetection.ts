@@ -24,6 +24,7 @@ class GuardDetection {
   protected handler: MessageHandler;
   protected readonly publicKey: string;
   protected guardsInfo: GuardInfo[] = [];
+  protected recognizedGuards: Promise<void>[] = [];
   protected readonly logger: AbstractLogger;
   protected readonly guardsRegisterTimeout: number;
   protected readonly guardsHeartbeatTimeout: number;
@@ -48,6 +49,7 @@ class GuardDetection {
         nonce: '',
         lastUpdate: 0,
         publicKey: config.guardsPublicKey[guardsCount],
+        recognitionPromise: undefined,
       });
   }
 
@@ -174,7 +176,8 @@ class GuardDetection {
       const receivedNonce = approvePayload.receivedNonce;
       const nonce = approvePayload.nonce;
       const index = this.publicKeyToIndex(sender);
-      if (this.guardsInfo[index].nonce === receivedNonce) {
+      const guard = this.guardsInfo[index];
+      if (guard.nonce === receivedNonce) {
         const currentTime = Date.now();
         if (
           currentTime - approvePayload.timestamp <
@@ -185,6 +188,10 @@ class GuardDetection {
           this.logger.debug(
             `Received approval message updating guard with index [${index}]`
           );
+          if (guard.recognitionPromise !== undefined) {
+            guard.recognitionPromise(true);
+            guard.recognitionPromise = undefined;
+          }
         }
         if (nonce) {
           const payload: ApprovePayload = {
@@ -320,6 +327,7 @@ class GuardDetection {
       nonce: nonce,
       timestamp: Date.now(),
     };
+    this.guardsInfo[guardIndex].nonce = nonce;
     const payloadString = JSON.stringify(payload);
     await this.handler.send({
       type: registerType,
@@ -342,6 +350,7 @@ class GuardDetection {
       nonce: nonce,
       timestamp: Date.now(),
     };
+    this.guardsInfo[guardIndex].nonce = nonce;
     const payloadString = JSON.stringify(payload);
     await this.handler.send({
       type: heartbeatType,
@@ -383,18 +392,61 @@ class GuardDetection {
   }
 
   /**
+   * Register new guard to the class
+   * @param peerId
+   * @param publicKey
+   */
+  public async register(peerId: string, publicKey: string): Promise<unknown> {
+    const guardIndex = this.publicKeyToIndex(publicKey);
+    if (guardIndex === -1) throw new Error('Guard not found');
+    const guard = this.guardsInfo[guardIndex];
+    if (!guard.registered) {
+      guard.registered = true;
+      const promise = new Promise((resolve, reject) => {
+        guard.recognitionPromise = resolve;
+      });
+      await this.sendRegisterMessage(guardIndex);
+      return promise;
+    } else {
+      if (!this.isGuardActive(guardIndex)) {
+        const promise = new Promise((resolve, reject) => {
+          guard.recognitionPromise = resolve;
+        });
+        await this.sendHeartbeatMessage(guardIndex);
+        return promise;
+      } else if (this.guardsInfo[guardIndex].peerId !== peerId) {
+        return Promise.reject(new Error('PeerId is not the same'));
+      } else {
+        return Promise.resolve(true);
+      }
+    }
+  }
+
+  /**
+   * Checks if guard is active or not by checking the last update time is
+   * less than `guardsRegisterTimeout`
+   * @param guardIndex
+   * @protected
+   */
+  protected isGuardActive(guardIndex: number): boolean {
+    const currentTime = Date.now();
+    return (
+      this.guardsInfo[guardIndex].peerId !== '' &&
+      currentTime - this.guardsInfo[guardIndex].lastUpdate <
+        this.guardsRegisterTimeout
+    );
+  }
+
+  /**
    * get active guards publicKey and peerId
    * @public
    * @returns { { peerId:string,publicKey:string }[] }
    */
   public getActiveGuards(): ActiveGuard[] {
-    const currentTime = Date.now();
     return this.guardsInfo
+      .map((guard, index) => ({ ...guard, index }))
       .filter((guard) => {
-        return (
-          guard.peerId !== '' &&
-          currentTime - guard.lastUpdate < this.guardsRegisterTimeout
-        );
+        return this.isGuardActive(guard.index);
       })
       .map((guard) => {
         return { peerId: guard.peerId, publicKey: guard.publicKey };
