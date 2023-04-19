@@ -408,14 +408,14 @@ class GuardDetection {
       await this.sendRegisterMessage(guardIndex);
       return promise;
     } else {
-      if (!this.isGuardActive(guardIndex)) {
+      if (this.guardsInfo[guardIndex].peerId !== peerId) {
+        return Promise.reject(new Error('PeerId is not the same'));
+      } else if (!this.isGuardActive(guardIndex)) {
         const promise = new Promise((resolve, reject) => {
           guard.recognitionPromise = resolve;
         });
         await this.sendHeartbeatMessage(guardIndex);
         return promise;
-      } else if (this.guardsInfo[guardIndex].peerId !== peerId) {
-        return Promise.reject(new Error('PeerId is not the same'));
       } else {
         return Promise.resolve(true);
       }
