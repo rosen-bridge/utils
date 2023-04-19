@@ -843,7 +843,7 @@ describe('GuardDetection', () => {
         1
       );
 
-      const result = guardDetection.register('peerId1', 'publicKey1');
+      const result = guardDetection.register('peerId2', 'publicKey1');
       expect(result).rejects.toThrowError('PeerId is not the same');
     });
   });
