@@ -736,7 +736,7 @@ describe('GuardDetection', () => {
      * @expected
      * - Should return Promise<true>
      */
-    it('Should return true in case if case of adding new valid guard', async () => {
+    it('Should return true in case of adding new valid guard', async () => {
       const guardDetection = new TestGuardDetection(handler, config);
       jest
         .spyOn(Object.getPrototypeOf(guardDetection), 'generateNonce')
@@ -751,6 +751,7 @@ describe('GuardDetection', () => {
         1
       );
       const result = guardDetection.register('peerId1', 'publicKey1');
+      const resultSecond = guardDetection.register('peerId1', 'publicKey1');
       const payload: ApprovePayload = {
         nonce: 'new nonce',
         receivedNonce: 'nonce',
@@ -762,6 +763,7 @@ describe('GuardDetection', () => {
         'peerId1'
       );
       expect(await result).toEqual(true);
+      expect(await resultSecond).toEqual(true);
     });
 
     /**
