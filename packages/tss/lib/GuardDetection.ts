@@ -187,10 +187,7 @@ class GuardDetection {
           this.logger.debug(
             `Received approval message updating guard with index [${index}]`
           );
-          if (
-            guard.recognitionPromises !== undefined &&
-            guard.recognitionPromises.length > 0
-          ) {
+          if (guard.recognitionPromises.length > 0) {
             guard.recognitionPromises.forEach((resolve) => resolve(true));
             guard.recognitionPromises = [];
           }
@@ -408,8 +405,6 @@ class GuardDetection {
     if (!guard.registered) {
       guard.registered = true;
       const promise: Promise<boolean> = new Promise((resolve, reject) => {
-        if (guard.recognitionPromises === undefined)
-          guard.recognitionPromises = [];
         guard.recognitionPromises.push(resolve);
       });
       await this.sendRegisterMessage(guardIndex);
@@ -419,8 +414,6 @@ class GuardDetection {
         return Promise.reject(new Error('PeerId is not the same'));
       } else if (!this.isGuardActive(guardIndex)) {
         const promise: Promise<boolean> = new Promise((resolve, reject) => {
-          if (guard.recognitionPromises === undefined)
-            guard.recognitionPromises = [];
           guard.recognitionPromises.push(resolve);
         });
         await this.sendHeartbeatMessage(guardIndex);
