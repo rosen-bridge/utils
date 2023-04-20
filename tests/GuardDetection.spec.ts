@@ -737,7 +737,7 @@ describe('GuardDetection', () => {
      * @expected
      * - Should return Promise<true>
      */
-    it('Should return true in case  if case of adding new valid guard', async () => {
+    it('Should return true in case if case of adding new valid guard', async () => {
       const guardDetection = new TestGuardDetection(handler, config);
       jest
         .spyOn(Object.getPrototypeOf(guardDetection), 'generateNonce')
