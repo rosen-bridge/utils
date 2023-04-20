@@ -68,7 +68,7 @@ interface GuardInfo {
   lastUpdate: number; // timestamp
   publicKey: string;
   registered?: true;
-  recognitionPromise?: (value: boolean) => void;
+  recognitionPromises?: ((value: boolean) => unknown)[];
 }
 
 interface GuardDetectionConfig {

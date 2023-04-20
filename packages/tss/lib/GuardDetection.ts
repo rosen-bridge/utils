@@ -49,7 +49,7 @@ class GuardDetection {
         nonce: '',
         lastUpdate: 0,
         publicKey: config.guardsPublicKey[guardsCount],
-        recognitionPromise: undefined,
+        recognitionPromises: undefined,
       });
   }
 
@@ -188,9 +188,12 @@ class GuardDetection {
           this.logger.debug(
             `Received approval message updating guard with index [${index}]`
           );
-          if (guard.recognitionPromise !== undefined) {
-            guard.recognitionPromise(true);
-            guard.recognitionPromise = undefined;
+          if (
+            guard.recognitionPromises !== undefined &&
+            guard.recognitionPromises.length > 0
+          ) {
+            guard.recognitionPromises.forEach((resolve) => resolve(true));
+            guard.recognitionPromises = undefined;
           }
         }
         if (nonce) {
@@ -396,14 +399,16 @@ class GuardDetection {
    * @param peerId
    * @param publicKey
    */
-  public async register(peerId: string, publicKey: string): Promise<unknown> {
+  public async register(peerId: string, publicKey: string): Promise<boolean> {
     const guardIndex = this.publicKeyToIndex(publicKey);
     if (guardIndex === -1) throw new Error('Guard not found');
     const guard = this.guardsInfo[guardIndex];
     if (!guard.registered) {
       guard.registered = true;
-      const promise = new Promise((resolve, reject) => {
-        guard.recognitionPromise = resolve;
+      const promise: Promise<boolean> = new Promise((resolve, reject) => {
+        if (guard.recognitionPromises === undefined)
+          guard.recognitionPromises = [];
+        guard.recognitionPromises.push(resolve);
       });
       await this.sendRegisterMessage(guardIndex);
       return promise;
@@ -411,8 +416,10 @@ class GuardDetection {
       if (this.guardsInfo[guardIndex].peerId !== peerId) {
         return Promise.reject(new Error('PeerId is not the same'));
       } else if (!this.isGuardActive(guardIndex)) {
-        const promise = new Promise((resolve, reject) => {
-          guard.recognitionPromise = resolve;
+        const promise: Promise<boolean> = new Promise((resolve, reject) => {
+          if (guard.recognitionPromises === undefined)
+            guard.recognitionPromises = [];
+          guard.recognitionPromises.push(resolve);
         });
         await this.sendHeartbeatMessage(guardIndex);
         return promise;
