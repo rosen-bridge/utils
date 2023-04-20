@@ -718,7 +718,7 @@ describe('GuardDetection', () => {
      * @expected
      * - Should throw error
      */
-    it('Should throw error if the publicly is not valid', () => {
+    it('Should throw error if the public key is not valid', () => {
       const guardDetection = new TestGuardDetection(handler, config);
       const result = guardDetection.register('peerId1', 'publicKey1');
       expect(result).rejects.toThrowError('Guard not found');
@@ -730,25 +730,39 @@ describe('GuardDetection', () => {
      * @dependencies
      * @scenario
      * - mock the guard info
+     * - mock generateNonce
      * - call register with valid peerId
      * - Run test
      * - check the returned value
      * @expected
-     * - Should return Promise
+     * - Should return Promise<true>
      */
-    it('Should return Promise if case of adding new guard', () => {
+    it('Should return true in case  if case of adding new valid guard', async () => {
       const guardDetection = new TestGuardDetection(handler, config);
+      jest
+        .spyOn(Object.getPrototypeOf(guardDetection), 'generateNonce')
+        .mockReturnValue('nonce');
       guardDetection.setGuardsInfo(
         {
           nonce: 'nonce',
-          lastUpdate: Date.now() - 60 * 1000,
+          lastUpdate: Date.now() - 50 * 1000,
           peerId: 'peerId1',
           publicKey: 'publicKey1',
         },
         1
       );
       const result = guardDetection.register('peerId1', 'publicKey1');
-      expect(result).toBeInstanceOf(Promise);
+      const payload: ApprovePayload = {
+        nonce: 'new nonce',
+        receivedNonce: 'nonce',
+        timestamp: Date.now(),
+      };
+      await guardDetection.getHandleApproveMessage(
+        payload,
+        'publicKey1',
+        'peerId1'
+      );
+      expect(await result).toEqual(true);
     });
 
     /**
