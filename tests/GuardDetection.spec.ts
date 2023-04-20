@@ -7,7 +7,6 @@ import {
 import { GuardDetection } from '../lib';
 import { config, guardsPublicKeys, handler } from './testUtils';
 import { TestGuardDetection } from './TestGuardDetection';
-import { describe } from 'node:test';
 
 describe('GuardDetection', () => {
   beforeEach(() => {
