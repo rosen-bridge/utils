@@ -24,7 +24,6 @@ class GuardDetection {
   protected handler: MessageHandler;
   protected readonly publicKey: string;
   protected guardsInfo: GuardInfo[] = [];
-  protected recognizedGuards: Promise<void>[] = [];
   protected readonly logger: AbstractLogger;
   protected readonly guardsRegisterTimeout: number;
   protected readonly guardsHeartbeatTimeout: number;
@@ -49,7 +48,7 @@ class GuardDetection {
         nonce: '',
         lastUpdate: 0,
         publicKey: config.guardsPublicKey[guardsCount],
-        recognitionPromises: undefined,
+        recognitionPromises: [],
       });
   }
 
@@ -57,25 +56,25 @@ class GuardDetection {
    * Initialize the guard detection
    * @returns
    */
-  public async init(): Promise<void> {
+  public init = async (): Promise<void> => {
     await this.updateGuardsStatus();
-  }
+  };
 
   /**
    * Generate a random nonce in base64 format
    * @param size - size of the nonce in bytes
    * @private
    */
-  private generateNonce(size = 32): string {
+  private generateNonce = (size = 32): string => {
     return crypto.randomBytes(size).toString('base64');
-  }
+  };
 
   /**
    * Check Message Sign and return true if the message is valid and false if not
    * @param parsedMessage - parsed message
-   * @private
+   * @protected
    */
-  protected checkMessageSign(parsedMessage: Message): boolean {
+  protected checkMessageSign = (parsedMessage: Message): boolean => {
     try {
       if (this.publicKeyToIndex(parsedMessage.pk) !== -1) {
         if (
@@ -99,25 +98,25 @@ class GuardDetection {
       }
     }
     return false;
-  }
+  };
 
   /**
    * Check if the timestamp is less than the timestampTolerance
    * @param timestamp - timestamp to check
    * @protected
    */
-  protected checkTimestamp(timestamp: number): boolean {
+  protected checkTimestamp = (timestamp: number): boolean => {
     return Date.now() - timestamp < this.messageValidDuration;
-  }
+  };
 
   /**
    * returns the index of the public key in the approvedPublicKeys array
    * @param publicKey - public key of the guard
    * @protected
    */
-  protected publicKeyToIndex(publicKey: string): number {
+  protected publicKeyToIndex = (publicKey: string): number => {
     return this.guardsInfo.findIndex((guard) => guard.publicKey === publicKey);
-  }
+  };
 
   /**
    * handle Register message from other node in the network and send approval
@@ -126,10 +125,10 @@ class GuardDetection {
    * @param sender - public key of sender
    * @protected
    */
-  protected async handleRegisterMessage(
+  protected handleRegisterMessage = async (
     registerPayload: RegisterPayload,
     sender: string
-  ): Promise<void> {
+  ): Promise<void> => {
     try {
       const receivedNonce = registerPayload.nonce;
       const nonce = this.generateNonce();
@@ -158,20 +157,20 @@ class GuardDetection {
         this.logger.warn(e.stack);
       }
     }
-  }
+  };
 
   /**
    * handle approval message from other node in the network
    * @param approvePayload - ApprovePayload
    * @param sender - public key of sender
    * @param senderPeerId - peerId of sender
-   * @private
+   * @protected
    */
-  protected async handleApproveMessage(
+  protected handleApproveMessage = async (
     approvePayload: ApprovePayload,
     sender: string,
     senderPeerId: string
-  ): Promise<void> {
+  ): Promise<void> => {
     try {
       const receivedNonce = approvePayload.receivedNonce;
       const nonce = approvePayload.nonce;
@@ -193,7 +192,7 @@ class GuardDetection {
             guard.recognitionPromises.length > 0
           ) {
             guard.recognitionPromises.forEach((resolve) => resolve(true));
-            guard.recognitionPromises = undefined;
+            guard.recognitionPromises = [];
           }
         }
         if (nonce) {
@@ -226,19 +225,19 @@ class GuardDetection {
         this.logger.warn(e.stack);
       }
     }
-  }
+  };
 
   /**
    * handle Heartbeat message from other node in the network and send approval message
    * to sender of heartbeat message
    * @param heartbeatPayload - HeartbeatPayload
    * @param sender - public key of sender
-   * @private
+   * @protected
    */
-  protected async handleHeartbeatMessage(
+  protected handleHeartbeatMessage = async (
     heartbeatPayload: HeartbeatPayload,
     sender: string
-  ): Promise<void> {
+  ): Promise<void> => {
     try {
       const nonce = heartbeatPayload.nonce;
       const payload: ApprovePayload = {
@@ -266,7 +265,7 @@ class GuardDetection {
         this.logger.warn(e.stack);
       }
     }
-  }
+  };
 
   /**
    * handle receive message from other node in the network
@@ -274,10 +273,10 @@ class GuardDetection {
    * @param senderPeerId - peer id of sender
    * @public
    */
-  public async handleReceiveMessage(
+  public handleReceiveMessage = async (
     message: string,
     senderPeerId: string
-  ): Promise<void> {
+  ): Promise<void> => {
     try {
       const parsedMessage: Message = JSON.parse(message);
       if (this.checkMessageSign(parsedMessage)) {
@@ -316,14 +315,14 @@ class GuardDetection {
         this.logger.warn(e.stack);
       }
     }
-  }
+  };
 
   /**
    * send register message to other node in the network
    * @param guardIndex - index of guard in guardsInfo array
    * @protected
    */
-  protected async sendRegisterMessage(guardIndex: number) {
+  protected sendRegisterMessage = async (guardIndex: number) => {
     this.logger.debug(`Sending register message to ${guardIndex} guard`);
     const nonce = this.generateNonce();
     const payload: RegisterPayload = {
@@ -339,14 +338,14 @@ class GuardDetection {
       receiver: this.guardsInfo[guardIndex].publicKey,
       pk: this.publicKey,
     });
-  }
+  };
 
   /**
    * send heartbeat message to other node in the network
    * @param guardIndex - index of guard in guardsInfo array
    * @protected
    */
-  protected async sendHeartbeatMessage(guardIndex: number) {
+  protected sendHeartbeatMessage = async (guardIndex: number) => {
     this.logger.debug(`Sending heartbeat message to ${guardIndex} guard`);
     const nonce = this.generateNonce();
     const payload: HeartbeatPayload = {
@@ -362,7 +361,7 @@ class GuardDetection {
       receiver: this.guardsInfo[guardIndex].publicKey,
       pk: this.publicKey,
     });
-  }
+  };
 
   /**
    * update guards status
@@ -372,7 +371,7 @@ class GuardDetection {
    * to the guard with a new nonce.
    * @protected
    */
-  protected async updateGuardsStatus() {
+  protected updateGuardsStatus = async () => {
     const currentTime = Date.now();
     try {
       for (let index = 0; index < this.guardsInfo.length; index++) {
@@ -392,14 +391,17 @@ class GuardDetection {
         this.logger.warn(e.stack);
       }
     }
-  }
+  };
 
   /**
    * Register new guard to the class
    * @param peerId
    * @param publicKey
    */
-  public async register(peerId: string, publicKey: string): Promise<boolean> {
+  public register = async (
+    peerId: string,
+    publicKey: string
+  ): Promise<boolean> => {
     const guardIndex = this.publicKeyToIndex(publicKey);
     if (guardIndex === -1) throw new Error('Guard not found');
     const guard = this.guardsInfo[guardIndex];
@@ -427,7 +429,7 @@ class GuardDetection {
         return Promise.resolve(true);
       }
     }
-  }
+  };
 
   /**
    * Checks if guard is active or not by checking the last update time is
@@ -435,21 +437,21 @@ class GuardDetection {
    * @param guardIndex
    * @protected
    */
-  protected isGuardActive(guardIndex: number): boolean {
+  protected isGuardActive = (guardIndex: number): boolean => {
     const currentTime = Date.now();
     return (
       this.guardsInfo[guardIndex].peerId !== '' &&
       currentTime - this.guardsInfo[guardIndex].lastUpdate <
         this.guardsRegisterTimeout
     );
-  }
+  };
 
   /**
    * get active guards publicKey and peerId
    * @public
    * @returns { { peerId:string,publicKey:string }[] }
    */
-  public getActiveGuards(): ActiveGuard[] {
+  public getActiveGuards = (): ActiveGuard[] => {
     return this.guardsInfo
       .map((guard, index) => ({ ...guard, index }))
       .filter((guard) => {
@@ -458,7 +460,7 @@ class GuardDetection {
       .map((guard) => {
         return { peerId: guard.peerId, publicKey: guard.publicKey };
       });
-  }
+  };
 }
 
 export { GuardDetection };
