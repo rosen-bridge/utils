@@ -756,7 +756,7 @@ describe('GuardDetection', () => {
      * - Run test
      * - check the returned value
      * @expected
-     * - Should return Promise<true>
+     * - Should return  two Promise<true>
      */
     it('Should return two promise that resolves true in case of adding same guard twice', async () => {
       const guardDetection = new TestGuardDetection(handler, config);
