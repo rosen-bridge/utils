@@ -746,7 +746,8 @@ describe('GuardDetection', () => {
 
     /**
      * @target
-     * `register` Should return Promise if case of adding new guard
+     * `register` Should return two promise that resolves true in case of
+     * adding same guard twice
      * @dependencies
      * @scenario
      * - mock the guard info
@@ -757,7 +758,7 @@ describe('GuardDetection', () => {
      * @expected
      * - Should return Promise<true>
      */
-    it('Should return true in case of adding new valid guard', async () => {
+    it('Should return two promise that resolves true in case of adding same guard twice', async () => {
       const guardDetection = new TestGuardDetection(handler, config);
       jest
         .spyOn(guardDetection as any, 'generateNonce')
