@@ -29,6 +29,7 @@ class GuardDetection {
   protected readonly guardsHeartbeatTimeout: number;
   protected readonly messageValidDuration: number;
   protected readonly guardsUpdateStatusInterval: number;
+
   constructor(handler: MessageHandler, config: GuardDetectionConfig) {
     this.handler = handler;
     this.logger = config.logger || new DummyLogger();
@@ -403,21 +404,40 @@ class GuardDetection {
     if (guardIndex === -1) throw new Error('Guard not found');
     const guard = this.guardsInfo[guardIndex];
     if (!guard.registered) {
-      guard.registered = true;
-      const promise: Promise<boolean> = new Promise((resolve, reject) => {
-        guard.recognitionPromises.push(resolve);
-      });
-      await this.sendRegisterMessage(guardIndex);
-      return promise;
+      try {
+        const promise: Promise<boolean> = new Promise((resolve, reject) => {
+          guard.recognitionPromises.push(resolve);
+        });
+        await this.sendRegisterMessage(guardIndex);
+        guard.registered = true;
+        return promise;
+      } catch (e) {
+        guard.registered = undefined;
+        this.logger.warn(`An Error occurred while registering guard: ${e}`);
+        if (e instanceof Error && e.stack) {
+          this.logger.warn(e.stack);
+        }
+        return Promise.reject(new Error('Error while registering guard'));
+      }
     } else {
       if (this.guardsInfo[guardIndex].peerId !== peerId) {
         return Promise.reject(new Error('PeerId is not the same'));
       } else if (!this.isGuardActive(guardIndex)) {
-        const promise: Promise<boolean> = new Promise((resolve, reject) => {
-          guard.recognitionPromises.push(resolve);
-        });
-        await this.sendHeartbeatMessage(guardIndex);
-        return promise;
+        try {
+          const promise: Promise<boolean> = new Promise((resolve, reject) => {
+            guard.recognitionPromises.push(resolve);
+          });
+          await this.sendHeartbeatMessage(guardIndex);
+          return promise;
+        } catch (e) {
+          this.logger.warn(
+            `An Error occurred while registering registered guard: ${e}`
+          );
+          if (e instanceof Error && e.stack) {
+            this.logger.warn(e.stack);
+          }
+          return Promise.reject(new Error('Error while registering guard'));
+        }
       } else {
         return Promise.resolve(true);
       }
@@ -442,7 +462,7 @@ class GuardDetection {
   /**
    * get active guards publicKey and peerId
    * @public
-   * @returns { { peerId:string,publicKey:string }[] }
+   * @returns { peerId:string, publicKey:string }[]
    */
   public getActiveGuards = (): ActiveGuard[] => {
     return this.guardsInfo

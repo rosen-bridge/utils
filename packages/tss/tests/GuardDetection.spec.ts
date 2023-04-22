@@ -7,6 +7,7 @@ import {
 import { GuardDetection } from '../lib';
 import { config, guardsPublicKeys, handler } from './testUtils';
 import { TestGuardDetection } from './TestGuardDetection';
+import { registerTimeout } from '../lib/constants/constants';
 
 describe('GuardDetection', () => {
   beforeEach(() => {
@@ -639,7 +640,7 @@ describe('GuardDetection', () => {
       guardDetection.setGuardsInfo(
         {
           nonce: 'nonce',
-          lastUpdate: Date.now() - 3 * 60 * 1000,
+          lastUpdate: Date.now() - registerTimeout * 2,
           peerId: 'peerId1',
           publicKey: 'publicKey1',
           recognitionPromises: [],
@@ -703,7 +704,7 @@ describe('GuardDetection', () => {
       guardDetection.setGuardsInfo(
         {
           nonce: 'nonce',
-          lastUpdate: Date.now() - 3 * 60 * 1000,
+          lastUpdate: Date.now() - registerTimeout * 2,
           peerId: 'peerId1',
           publicKey: 'publicKey1',
           recognitionPromises: [],
@@ -732,8 +733,7 @@ describe('GuardDetection', () => {
      * `register` Should throw error if the peerId is not valid
      * @dependencies
      * @scenario
-     * - call register with invalid peerId
-     * - Run test
+     * - Run test (call register with invalid peerId)
      * - check the returned value
      * @expected
      * - Should throw error
@@ -753,6 +753,7 @@ describe('GuardDetection', () => {
      * - mock the guard info
      * - mock generateNonce
      * - call register with valid peerId
+     * - Mock approve message received from guard with peerId1
      * - Run test
      * - check the returned value
      * @expected
@@ -798,11 +799,12 @@ describe('GuardDetection', () => {
      * - call register with valid peerId
      * - Run test
      * - check the returned value
+     * - check the called function
      * @expected
      * - Should send register message
      * - Should return Promise
      */
-    it('Should send register message if it does not in the list', () => {
+    it('Should send register message if the guard is not in the list', () => {
       const guardDetection = new TestGuardDetection(handler, config);
       guardDetection.setGuardsInfo(
         {
@@ -841,7 +843,7 @@ describe('GuardDetection', () => {
       guardDetection.setGuardsInfo(
         {
           nonce: 'nonce',
-          lastUpdate: Date.now() - 3 * 60 * 1000,
+          lastUpdate: Date.now() - registerTimeout * 2,
           peerId: 'peerId1',
           publicKey: 'publicKey1',
           registered: true,
@@ -875,7 +877,7 @@ describe('GuardDetection', () => {
       guardDetection.setGuardsInfo(
         {
           nonce: 'nonce',
-          lastUpdate: Date.now() - 3 * 60 * 1000,
+          lastUpdate: Date.now() - registerTimeout * 2,
           peerId: 'peerId1',
           publicKey: 'publicKey1',
           registered: true,
@@ -1001,7 +1003,7 @@ describe('GuardDetection', () => {
       guardDetection.setGuardsInfo(
         {
           nonce: 'nonce',
-          lastUpdate: Date.now() - 3 * 60 * 1000,
+          lastUpdate: Date.now() - registerTimeout * 2,
           peerId: 'peerId1',
           publicKey: guardsPublicKeys[2],
           recognitionPromises: [],
