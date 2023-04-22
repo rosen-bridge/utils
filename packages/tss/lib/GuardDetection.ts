@@ -401,7 +401,12 @@ class GuardDetection {
     publicKey: string
   ): Promise<boolean> => {
     const guardIndex = this.publicKeyToIndex(publicKey);
-    if (guardIndex === -1) throw new Error('Guard not found');
+    if (guardIndex === -1) {
+      this.logger.warn(
+        `Registering guard with unknown public key: ${publicKey}`
+      );
+      throw new Error('Guard not found');
+    }
     const guard = this.guardsInfo[guardIndex];
     if (!guard.registered) {
       try {
@@ -410,6 +415,7 @@ class GuardDetection {
         });
         await this.sendRegisterMessage(guardIndex);
         guard.registered = true;
+        this.logger.debug(`Guard ${guardIndex} registered`);
         return promise;
       } catch (e) {
         guard.registered = undefined;
