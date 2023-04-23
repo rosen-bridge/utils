@@ -12,7 +12,7 @@ import { Consts } from './consts';
 export class BridgeMinimumFee {
   protected readonly explorer: ExplorerApi;
   protected readonly feeConfigTokenId: string;
-  readonly ratioDivisor: bigint = 100000n;
+  readonly ratioDivisor: bigint = 1000000000000n;
   readonly feeRatioDivisor: bigint = 10000n;
 
   /**
