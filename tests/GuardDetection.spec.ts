@@ -792,7 +792,7 @@ describe('GuardDetection', () => {
 
     /**
      * @target
-     * `register` Should send register message if it does not in the list
+     * `register` Should send register message if the guard is not in the list
      * @dependencies
      * @scenario
      * - mock the guard info
@@ -828,18 +828,25 @@ describe('GuardDetection', () => {
 
     /**
      * @target
-     * `register` Should send heartbeat message if it is in the list but not active
+     * `register` Should send heartbeat message if the guard is in the list but not active
      * @dependencies
      * @scenario
+     * - mock generateNonce
      * - mock the guard info
      * - call register with valid peerId
+     * - Mock approve message received from guard with peerId1
      * - Run test
      * - check the called function
+     * - check the returned value
      * @expected
      * - Should send heartbeat message
+     * - Should return Promise that resolves true
      */
-    it('Should send heartbeat message if it is in the list but not active', async () => {
+    it('Should send heartbeat message if the guard is in the list but not active', async () => {
       const guardDetection = new TestGuardDetection(handler, config);
+      jest
+        .spyOn(guardDetection as any, 'generateNonce')
+        .mockReturnValue('nonce');
       guardDetection.setGuardsInfo(
         {
           nonce: 'nonce',
@@ -857,7 +864,18 @@ describe('GuardDetection', () => {
         'sendHeartbeatMessage'
       );
       const result = guardDetection.register('peerId1', 'publicKey1');
+      const payload: ApprovePayload = {
+        nonce: 'new nonce',
+        receivedNonce: 'nonce',
+        timestamp: Date.now(),
+      };
+      await guardDetection.getHandleApproveMessage(
+        payload,
+        'publicKey1',
+        'peerId1'
+      );
       expect(spiedSendHeartbeatMessage).toBeCalled();
+      expect(await result).toEqual(true);
     });
 
     /**

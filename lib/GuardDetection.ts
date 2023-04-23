@@ -402,9 +402,6 @@ class GuardDetection {
   ): Promise<boolean> => {
     const guardIndex = this.publicKeyToIndex(publicKey);
     if (guardIndex === -1) {
-      this.logger.warn(
-        `Registering guard with unknown public key: ${publicKey}`
-      );
       throw new Error('Guard not found');
     }
     const guard = this.guardsInfo[guardIndex];
@@ -468,7 +465,7 @@ class GuardDetection {
   /**
    * get active guards publicKey and peerId
    * @public
-   * @returns { peerId:string, publicKey:string }[]
+   * @returns array of guards publicKey and peerIds
    */
   public getActiveGuards = (): ActiveGuard[] => {
     return this.guardsInfo
