@@ -1,4 +1,4 @@
-import { RosenTokens } from './types';
+import { RosenChainToken, RosenTokens } from './types';
 
 /**
  * TokenMap class searches for different assets properties in different chains
@@ -70,12 +70,12 @@ export class TokenMap {
    *  example: "cardano"
    */
   getID = (
-    token: { [key: string]: { [key: string]: string } },
+    token: { [key: string]: RosenChainToken },
     chain: string
   ): string => {
     if (Object.hasOwnProperty.call(this.tokensConfig.idKeys, chain)) {
       const idKey = this.tokensConfig.idKeys[chain];
-      return token[chain][idKey];
+      return token[chain][idKey] as string;
     } else {
       throw new Error(
         `idKey of the ${chain} chain is missed in the config file`
