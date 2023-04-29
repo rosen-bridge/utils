@@ -4,7 +4,7 @@ export type RosenTokens = {
 };
 
 export type RosenChainToken = {
-  [key: string]: unknown;
+  [key: string]: any;
   metaData: ChainTokenMetadata;
 };
 
