@@ -22,20 +22,35 @@ class HealthCheck {
     this.params = [];
   }
 
+  /**
+   * register new parameter on healthCheck
+   * @param param
+   */
   register = (param: AbstractHealthCheckParam) => {
     this.params.push(param);
   };
 
+  /**
+   * unregister param from healthCheck
+   * @param paramId
+   */
   unregister = (paramId: string) => {
     this.params = this.params.filter((param) => param.getId() !== paramId);
   };
 
+  /**
+   * check all params health status
+   */
   update = async () => {
     for (const param of this.params) {
       await param.update();
     }
   };
 
+  /**
+   * check health status for one param
+   * @param paramId
+   */
   refresh = async (paramId: string) => {
     for (const param of this.params.filter(
       (item) => item.getId() === paramId
@@ -44,6 +59,9 @@ class HealthCheck {
     }
   };
 
+  /**
+   * get overall health status for system
+   */
   getOverallHealthStatus = async (): Promise<OverallHealthStatus> => {
     let description: string | undefined = undefined;
     for (const param of this.params) {
@@ -65,6 +83,10 @@ class HealthCheck {
     };
   };
 
+  /**
+   * check health status for on param
+   * @param paramId
+   */
   getHealthStatusOneParam = async (
     paramId: string
   ): Promise<HealthStatus | undefined> => {
@@ -81,6 +103,9 @@ class HealthCheck {
     return undefined;
   };
 
+  /**
+   * get detailed health status for system
+   */
   getHealthStatus = async (): Promise<Array<HealthStatus>> => {
     const res: Array<HealthStatus> = [];
     for (const param of this.params) {
