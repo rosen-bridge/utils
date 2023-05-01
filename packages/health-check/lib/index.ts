@@ -1,2 +1,2 @@
-export * from './health-check';
-export * from './params/abstract-health-check-param';
+export * from './HealthCheck';
+export * from './params/AbstractHealthCheckParam';

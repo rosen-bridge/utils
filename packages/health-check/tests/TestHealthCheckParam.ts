@@ -1,12 +1,11 @@
-import { AbstractHealthCheckParam, HealthStatusChoice } from '../lib';
+import { AbstractHealthCheckParam, HealthStatusLevel } from '../lib';
 
 export class TestHealthCheckParam extends AbstractHealthCheckParam {
   protected id: string;
   protected description: string | undefined;
-  protected status: HealthStatusChoice;
-  public callCount = 0;
-  public lastCallDate: Date | undefined;
-  constructor(id: string, status: HealthStatusChoice, description?: string) {
+  protected status: HealthStatusLevel;
+  public callsCount = 0;
+  constructor(id: string, status: HealthStatusLevel, description?: string) {
     super();
     this.id = id;
     this.status = status;
@@ -16,7 +15,7 @@ export class TestHealthCheckParam extends AbstractHealthCheckParam {
     return Promise.resolve(this.description);
   };
 
-  getHealthStatus = (): Promise<HealthStatusChoice> => {
+  getHealthStatus = (): Promise<HealthStatusLevel> => {
     return Promise.resolve(this.status);
   };
 
@@ -25,11 +24,10 @@ export class TestHealthCheckParam extends AbstractHealthCheckParam {
   };
 
   update = (): unknown => {
-    this.callCount += 1;
-    this.lastCallDate = new Date();
+    this.callsCount += 1;
     return undefined;
   };
-  getLastCalledTime = () => {
+  getLastUpdatedTime = () => {
     return Promise.resolve(new Date());
   };
 }

@@ -1,22 +1,22 @@
-import { HealthStatusChoice } from '../lib';
+import { HealthStatusLevel } from '../lib';
 import { TestHealthCheckParam } from './TestHealthCheckParam';
 import { TestHealthCheck } from './TestHealthCheck';
 
 describe('HealthCheck', () => {
   describe('register', () => {
     /**
-     * @target: HealthCheck.register should register new param
-     * @dependencies:
-     * @scenario:
+     * @target HealthCheck.register should register new param
+     * @dependencies
+     * @scenario
      * - create new instance of HealthCheck
      * - register a custom param on it
-     * @expected:
+     * @expected
      * - params length of class must be 1
      * - param first element must be created param
      */
     it('should register new param', () => {
       const healthCheck = new TestHealthCheck();
-      const param = new TestHealthCheckParam('', HealthStatusChoice.HEALTHY);
+      const param = new TestHealthCheckParam('', HealthStatusLevel.HEALTHY);
       healthCheck.register(param);
       expect(healthCheck.getParams().length).toEqual(1);
       expect(healthCheck.getParams()[0]).toBe(param);
@@ -25,27 +25,21 @@ describe('HealthCheck', () => {
 
   describe('unregister', () => {
     /**
-     * @target: HealthCheck.unregister should unregister an already registered param
-     * @dependencies:
-     * @scenario:
+     * @target HealthCheck.unregister should unregister an already registered param
+     * @dependencies
+     * @scenario
      * - create new instance of HealthCheck
      * - create two params
      * - register params on healthCheck
      * - unregister second param id from healthCheck
-     * @expected:
+     * @expected
      * - param length of class must be 1
      * - first element in params must be same as first param
      */
     it('should unregister an already registered param', () => {
       const healthCheck = new TestHealthCheck();
-      const param1 = new TestHealthCheckParam(
-        'id1',
-        HealthStatusChoice.HEALTHY
-      );
-      const param2 = new TestHealthCheckParam(
-        'id2',
-        HealthStatusChoice.HEALTHY
-      );
+      const param1 = new TestHealthCheckParam('id1', HealthStatusLevel.HEALTHY);
+      const param2 = new TestHealthCheckParam('id2', HealthStatusLevel.HEALTHY);
       healthCheck.register(param1);
       healthCheck.register(param2);
       healthCheck.unregister('id2');
@@ -54,27 +48,21 @@ describe('HealthCheck', () => {
     });
 
     /**
-     * @target: HealthCheck.unregister should do nothing if no param with expected id registered
-     * @dependencies:
-     * @scenario:
+     * @target HealthCheck.unregister should do nothing if no param with expected ids registered
+     * @dependencies
+     * @scenario
      * - create new instance of HealthCheck
      * - create two params
      * - register params on healthCheck
      * - unregister an invalid id from healthCheck
-     * @expected:
+     * @expected
      * - params list length must be 2
      * - both params in list must be registered params
      */
     it('should do nothing if no param with expected id registered', () => {
       const healthCheck = new TestHealthCheck();
-      const param1 = new TestHealthCheckParam(
-        'id1',
-        HealthStatusChoice.HEALTHY
-      );
-      const param2 = new TestHealthCheckParam(
-        'id2',
-        HealthStatusChoice.HEALTHY
-      );
+      const param1 = new TestHealthCheckParam('id1', HealthStatusLevel.HEALTHY);
+      const param2 = new TestHealthCheckParam('id2', HealthStatusLevel.HEALTHY);
       healthCheck.register(param1);
       healthCheck.register(param2);
       healthCheck.unregister('id3');
@@ -86,158 +74,134 @@ describe('HealthCheck', () => {
 
   describe('update', () => {
     /**
-     * @target: HealthCheck.update should update all params update function
-     * @dependencies:
-     * @scenario:
+     * @target HealthCheck.update should update all params update function
+     * @dependencies
+     * @scenario
      * - create new instance of HealthCheck
      * - create two params
      * - register params on healthCheck
      * - call update
-     * @expected:
+     * @expected
      * - update of each param must be called
      */
     it('should update all params update function', async () => {
       const healthCheck = new TestHealthCheck();
-      const param1 = new TestHealthCheckParam(
-        'id1',
-        HealthStatusChoice.HEALTHY
-      );
-      const param2 = new TestHealthCheckParam(
-        'id2',
-        HealthStatusChoice.HEALTHY
-      );
+      const param1 = new TestHealthCheckParam('id1', HealthStatusLevel.HEALTHY);
+      const param2 = new TestHealthCheckParam('id2', HealthStatusLevel.HEALTHY);
       healthCheck.register(param1);
       healthCheck.register(param2);
       await healthCheck.update();
-      expect(param1.callCount).toEqual(1);
-      expect(param2.callCount).toEqual(1);
+      expect(param1.callsCount).toEqual(1);
+      expect(param2.callsCount).toEqual(1);
     });
   });
 
-  describe('refresh', () => {
+  describe('updateParam', () => {
     /**
-     * @target: HealthCheck.refresh should update param with expected id when calling refresh
-     * @dependencies:
-     * @scenario:
+     * @target HealthCheck.updateParam should update param with expected id when calling refresh
+     * @dependencies
+     * @scenario
      * - create new instance of HealthCheck
      * - create two params
      * - register params on healthCheck
      * - call refresh with param1 id
-     * @expected:
+     * @expected
      * - param1 update function must be called
      * - param2 update must no be called
      */
     it('should update param with expected id when calling refresh', async () => {
       const healthCheck = new TestHealthCheck();
-      const param1 = new TestHealthCheckParam(
-        'id1',
-        HealthStatusChoice.HEALTHY
-      );
-      const param2 = new TestHealthCheckParam(
-        'id2',
-        HealthStatusChoice.HEALTHY
-      );
+      const param1 = new TestHealthCheckParam('id1', HealthStatusLevel.HEALTHY);
+      const param2 = new TestHealthCheckParam('id2', HealthStatusLevel.HEALTHY);
       healthCheck.register(param1);
       healthCheck.register(param2);
-      await healthCheck.refresh(param1.getId());
-      expect(param1.callCount).toEqual(1);
-      expect(param2.callCount).toEqual(0);
+      await healthCheck.updateParam(param1.getId());
+      expect(param1.callsCount).toEqual(1);
+      expect(param2.callsCount).toEqual(0);
     });
   });
 
   describe('getOverallHealthStatus', () => {
     /**
-     * @target: HealthCheck.getOverallHealthStatus should return HEALTHY when all params are in healthy status
-     * @dependencies:
-     * @scenario:
+     * @target HealthCheck.getOverallHealthStatus should return HEALTHY when all params are in healthy status
+     * @dependencies
+     * @scenario
      * - create new instance of HealthCheck
      * - create two params with HEALTHY status
      * - register params on healthCheck
      * - call getOverallHealthStatus
-     * @expected:
+     * @expected
      * - returned status must be healthy
      */
     it('should return HEALTHY when all params are in healthy status', async () => {
       const healthCheck = new TestHealthCheck();
-      const param1 = new TestHealthCheckParam(
-        'id1',
-        HealthStatusChoice.HEALTHY
-      );
-      const param2 = new TestHealthCheckParam(
-        'id2',
-        HealthStatusChoice.HEALTHY
-      );
+      const param1 = new TestHealthCheckParam('id1', HealthStatusLevel.HEALTHY);
+      const param2 = new TestHealthCheckParam('id2', HealthStatusLevel.HEALTHY);
       healthCheck.register(param1);
       healthCheck.register(param2);
       const result = await healthCheck.getOverallHealthStatus();
-      expect(result.status).toEqual(HealthStatusChoice.HEALTHY);
+      expect(result.status).toEqual(HealthStatusLevel.HEALTHY);
     });
 
     /**
-     * @target: HealthCheck.getOverallHealthStatus should return UNHEALTHY with first unhealthy param description when one or more UNHEALTHY param and no DEGRADED param available
-     * @dependencies:
-     * @scenario:
+     * @target HealthCheck.getOverallHealthStatus should return UNSTABLE with first unhealthy param description when one or more UNSTABLE param and no BROKEN param available
+     * @dependencies
+     * @scenario
      * - create new instance of HealthCheck
-     * - create two params with UNHEALTHY status and one param with HEALTHY status
+     * - create two params with UNSTABLE status and one param with HEALTHY status
      * - register params on healthCheck
      * - call getOverallHealthStatus
-     * @expected:
-     * - returned status must be UNHEALTHY with description of first UNHEALTHY param
+     * @expected
+     * - returned status must be UNSTABLE with description of first UNSTABLE param
      */
-    it('should return UNHEALTHY with first unhealthy param description when one or more UNHEALTHY param and no DEGRADED param available', async () => {
+    it('should return UNSTABLE with first unhealthy param description when one or more UNSTABLE param and no BROKEN param available', async () => {
       const healthCheck = new TestHealthCheck();
-      const param1 = new TestHealthCheckParam(
-        'id1',
-        HealthStatusChoice.HEALTHY
-      );
+      const param1 = new TestHealthCheckParam('id1', HealthStatusLevel.HEALTHY);
       const param2 = new TestHealthCheckParam(
         'id2',
-        HealthStatusChoice.UNHEALTHY,
+        HealthStatusLevel.UNSTABLE,
         'description 1'
       );
       const param3 = new TestHealthCheckParam(
         'id3',
-        HealthStatusChoice.UNHEALTHY,
+        HealthStatusLevel.UNSTABLE,
         'description 2'
       );
       healthCheck.register(param1);
       healthCheck.register(param2);
       healthCheck.register(param3);
       const result = await healthCheck.getOverallHealthStatus();
-      expect(result.status).toEqual(HealthStatusChoice.UNHEALTHY);
+      expect(result.status).toEqual(HealthStatusLevel.UNSTABLE);
       expect(result.description).toEqual('description 1');
     });
 
     /**
-     * @target: HealthCheck.getOverallHealthStatus should return DEGRADED with first DEGRADED param description when one or more DEGRADED param
-     * @dependencies:
-     * @scenario:
+     * @target HealthCheck.getOverallHealthStatus should return BROKEN with first BROKEN param description when one or more BROKEN param
+     * @dependencies
+     * @scenario
      * - create new instance of HealthCheck
-     * - create two params with DEGRADED status and one param with UNHEALTHY status and one param with HEALTHY status
+     * - create two params with BROKEN status, one param with UNSTABLE status and one param with HEALTHY status
      * - register params on healthCheck
      * - call getOverallHealthStatus
-     * @expected:
-     * - returned status must be DEGRADED with description of first DEGRADED param
+     * @expected
+     * - returned status must be BROKEN with description of first BROKEN param
      */
-    it('should return DEGRADED with first DEGRADED param description when one or more DEGRADED param', async () => {
+    it('should return BROKEN with first BROKEN param description when one or more BROKEN param', async () => {
       const healthCheck = new TestHealthCheck();
-      const param1 = new TestHealthCheckParam(
-        'id1',
-        HealthStatusChoice.HEALTHY
-      );
+      const param1 = new TestHealthCheckParam('id1', HealthStatusLevel.HEALTHY);
       const param2 = new TestHealthCheckParam(
         'id2',
-        HealthStatusChoice.UNHEALTHY,
+        HealthStatusLevel.UNSTABLE,
         'description 1'
       );
       const param3 = new TestHealthCheckParam(
         'id3',
-        HealthStatusChoice.DEGRADED,
+        HealthStatusLevel.BROKEN,
         'description 2'
       );
       const param4 = new TestHealthCheckParam(
         'id3',
-        HealthStatusChoice.DEGRADED,
+        HealthStatusLevel.BROKEN,
         'description 3'
       );
       healthCheck.register(param1);
@@ -245,109 +209,100 @@ describe('HealthCheck', () => {
       healthCheck.register(param3);
       healthCheck.register(param4);
       const result = await healthCheck.getOverallHealthStatus();
-      expect(result.status).toEqual(HealthStatusChoice.DEGRADED);
+      expect(result.status).toEqual(HealthStatusLevel.BROKEN);
       expect(result.description).toEqual('description 2');
     });
   });
 
-  describe('getHealthStatusOneParam', () => {
+  describe('getHealthStatusFor', () => {
     /**
-     * @target: HealthCheck.getHealthStatusOneParam should return detail status of selected param
-     * @dependencies:
-     * @scenario:
+     * @target HealthCheck.getHealthStatusFor should return detail status of selected param
+     * @dependencies
+     * @scenario
      * - create new instance of HealthCheck
-     * - create on params with DEGRADED status and one param with UNHEALTHY status and one param with HEALTHY status
+     * - create one param with BROKEN status, one param with UNSTABLE status and one param with HEALTHY status
      * - register params on healthCheck
      * - call getHealthStatusOneParam with HEALTHY status param
-     * @expected:
+     * @expected
      * - result must not be undefined
      * - returned status must be HEALTHY
      */
     it('should return detail status of selected param', async () => {
       const healthCheck = new TestHealthCheck();
-      const param1 = new TestHealthCheckParam(
-        'id1',
-        HealthStatusChoice.HEALTHY
-      );
+      const param1 = new TestHealthCheckParam('id1', HealthStatusLevel.HEALTHY);
       const param2 = new TestHealthCheckParam(
         'id2',
-        HealthStatusChoice.UNHEALTHY,
+        HealthStatusLevel.UNSTABLE,
         'description 2'
       );
       const param3 = new TestHealthCheckParam(
         'id3',
-        HealthStatusChoice.DEGRADED,
+        HealthStatusLevel.BROKEN,
         'description 3'
       );
       healthCheck.register(param3);
       healthCheck.register(param2);
       healthCheck.register(param1);
-      const result = await healthCheck.getHealthStatusOneParam('id1');
+      const result = await healthCheck.getHealthStatusFor('id1');
       if (result !== undefined) {
-        expect(result.status).toEqual(HealthStatusChoice.HEALTHY);
+        expect(result.status).toEqual(HealthStatusLevel.HEALTHY);
       }
       expect(result).toBeDefined();
     });
 
     /**
-     * @target: HealthCheck.getHealthStatusOneParam should return undefined when param is not registered
-     * @dependencies:
-     * @scenario:
+     * @target HealthCheck.getHealthStatusFor should return undefined when param is not registered
+     * @dependencies
+     * @scenario
      * - create new instance of HealthCheck
-     * - create on params with UNHEALTHY status and one param with HEALTHY status
+     * - create one param with UNSTABLE status and one param with HEALTHY status
      * - register params on healthCheck
-     * - call getHealthStatusOneParam with random id(not registered
-     * @expected:
+     * - call getHealthStatusOneParam with random id (not registered)
+     * @expected
      * - result must be undefined
      */
     it('should return undefined when param is not registered', async () => {
       const healthCheck = new TestHealthCheck();
-      const param1 = new TestHealthCheckParam(
-        'id1',
-        HealthStatusChoice.HEALTHY
-      );
+      const param1 = new TestHealthCheckParam('id1', HealthStatusLevel.HEALTHY);
       const param2 = new TestHealthCheckParam(
         'id2',
-        HealthStatusChoice.UNHEALTHY,
+        HealthStatusLevel.UNSTABLE,
         'description 2'
       );
       healthCheck.register(param1);
       healthCheck.register(param2);
-      const result = await healthCheck.getHealthStatusOneParam('id3');
+      const result = await healthCheck.getHealthStatusFor('id3');
       expect(result).toBeUndefined();
     });
   });
 
   describe('getHealthStatus', () => {
     /**
-     * @target: HealthCheck.getHealthStatus
-     * @dependencies:
-     * @scenario:
+     * @target HealthCheck.getHealthStatus
+     * @dependencies
+     * @scenario
      * - create new instance of HealthCheck
-     * - create on params with DEGRADED status and one param with UNHEALTHY status and one param with HEALTHY status
+     * - create one param with BROKEN status, one param with UNSTABLE status and one param with HEALTHY status
      * - register params on healthCheck
      * - call getHealthStatus
-     * @expected:
+     * @expected
      * - result list must be 3
      * - for each registered param:
      * --- one result must be in output list
      * --- selected result must have same status as param status
      * --- selected result must have same description as param description
      */
-    it('should return a list contain all parameters health status with description', async () => {
+    it('should return a list contain all params health status with description', async () => {
       const healthCheck = new TestHealthCheck();
-      const param1 = new TestHealthCheckParam(
-        'id1',
-        HealthStatusChoice.HEALTHY
-      );
+      const param1 = new TestHealthCheckParam('id1', HealthStatusLevel.HEALTHY);
       const param2 = new TestHealthCheckParam(
         'id2',
-        HealthStatusChoice.UNHEALTHY,
+        HealthStatusLevel.UNSTABLE,
         'description 2'
       );
       const param3 = new TestHealthCheckParam(
         'id3',
-        HealthStatusChoice.DEGRADED,
+        HealthStatusLevel.BROKEN,
         'description 3'
       );
       healthCheck.register(param1);

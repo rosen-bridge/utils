@@ -7,7 +7,7 @@
 
 ## Introduction
 
-`@rosen-bridge/health-check` TypeScript library for checking healthy status for rosen services
+`@rosen-bridge/health-check` TypeScript library for checking healthy status of rosen services
 
 ## Installation
 

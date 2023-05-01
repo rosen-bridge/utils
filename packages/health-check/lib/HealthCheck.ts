@@ -1,29 +1,25 @@
 import {
   AbstractHealthCheckParam,
-  HealthStatusChoice,
-} from './params/abstract-health-check-param';
+  HealthStatusLevel,
+} from './params/AbstractHealthCheckParam';
 
 interface HealthStatus {
   id: string;
-  status: HealthStatusChoice;
+  status: HealthStatusLevel;
   description?: string;
   lastCheck?: Date;
 }
 
 interface OverallHealthStatus {
-  status: HealthStatusChoice;
+  status: HealthStatusLevel;
   description?: string;
 }
 
 class HealthCheck {
-  protected params: Array<AbstractHealthCheckParam>;
-
-  constructor() {
-    this.params = [];
-  }
+  protected params: Array<AbstractHealthCheckParam> = [];
 
   /**
-   * register new parameter on healthCheck
+   * register new param on healthCheck
    * @param param
    */
   register = (param: AbstractHealthCheckParam) => {
@@ -42,16 +38,14 @@ class HealthCheck {
    * check all params health status
    */
   update = async () => {
-    for (const param of this.params) {
-      await param.update();
-    }
+    return Promise.all(this.params.map((item) => item.update()));
   };
 
   /**
    * check health status for one param
    * @param paramId
    */
-  refresh = async (paramId: string) => {
+  updateParam = async (paramId: string) => {
     for (const param of this.params.filter(
       (item) => item.getId() === paramId
     )) {
@@ -67,18 +61,18 @@ class HealthCheck {
     for (const param of this.params) {
       const status = await param.getHealthStatus();
 
-      if (status === HealthStatusChoice.DEGRADED) {
+      if (status === HealthStatusLevel.BROKEN) {
         return { status: status, description: await param.getDescription() };
       }
-      if (status !== HealthStatusChoice.HEALTHY && description === undefined) {
+      if (status !== HealthStatusLevel.HEALTHY && description === undefined) {
         description = await param.getDescription();
       }
     }
     return {
       status:
         description === undefined
-          ? HealthStatusChoice.HEALTHY
-          : HealthStatusChoice.UNHEALTHY,
+          ? HealthStatusLevel.HEALTHY
+          : HealthStatusLevel.UNSTABLE,
       description,
     };
   };
@@ -87,7 +81,7 @@ class HealthCheck {
    * check health status for on param
    * @param paramId
    */
-  getHealthStatusOneParam = async (
+  getHealthStatusFor = async (
     paramId: string
   ): Promise<HealthStatus | undefined> => {
     const params = this.params.filter((param) => param.getId() === paramId);
@@ -97,7 +91,7 @@ class HealthCheck {
         id: param.getId(),
         status: await param.getHealthStatus(),
         description: await param.getDescription(),
-        lastCheck: await param.getLastCalledTime(),
+        lastCheck: await param.getLastUpdatedTime(),
       };
     }
     return undefined;
@@ -111,10 +105,10 @@ class HealthCheck {
     for (const param of this.params) {
       const status = await param.getHealthStatus();
       const description =
-        status === HealthStatusChoice.HEALTHY
+        status === HealthStatusLevel.HEALTHY
           ? undefined
           : await param.getDescription();
-      const lastCheck = await param.getLastCalledTime();
+      const lastCheck = await param.getLastUpdatedTime();
       res.push({ status, description, lastCheck, id: param.getId() });
     }
     return res;
