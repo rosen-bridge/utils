@@ -288,9 +288,9 @@ describe('HealthCheck', () => {
      * @expected
      * - result list must be 3
      * - for each registered param:
-     * --- one result must be in output list
-     * --- selected result must have same status as param status
-     * --- selected result must have same description as param description
+     *   - one result must be in output list
+     *   - selected result must have same status as param status
+     *   - selected result must have same description as param description
      */
     it('should return a list contain all params health status with description', async () => {
       const healthCheck = new TestHealthCheck();
