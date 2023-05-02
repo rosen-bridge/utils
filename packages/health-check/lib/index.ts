@@ -1,4 +1,4 @@
 export * from './HealthCheck';
 export * from './params/AbstractHealthCheckParam';
-export * from './params/ErgoAssetHealthCheck';
-export * from './params/CardanoAssetHealthCheck';
+export * from './params/assetHealthCheck/ErgoAssetHealthCheck';
+export * from './params/assetHealthCheck/CardanoAssetHealthCheck';

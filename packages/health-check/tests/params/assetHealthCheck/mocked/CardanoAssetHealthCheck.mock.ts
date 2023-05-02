@@ -1,5 +1,10 @@
 import cardanoKoiosClientFactory from '@rosen-clients/cardano-koios';
+import { CardanoAssetHealthCheckParam } from '../../../../lib/params/assetHealthCheck/CardanoAssetHealthCheck';
 
+/**
+ * mocks koios api token amount
+ * @param amount token amount
+ */
 const mockKoiosAssetQuantity = (amount: bigint) => {
   jest.mocked(cardanoKoiosClientFactory).mockReturnValue({
     address: {
@@ -17,4 +22,13 @@ const mockKoiosAssetQuantity = (amount: bigint) => {
   } as any);
 };
 
-export { mockKoiosAssetQuantity };
+class TestCardanoAssetHealthCheck extends CardanoAssetHealthCheckParam {
+  /**
+   * @returns protected token amount
+   */
+  getTokenAmount = () => {
+    return this.tokenAmount;
+  };
+}
+
+export { mockKoiosAssetQuantity, TestCardanoAssetHealthCheck };

@@ -1,4 +1,4 @@
-import { HealthStatusLevel } from '../../lib';
+import { HealthStatusLevel } from '../../../lib';
 import { TestAssetHealthCheckParam } from './mocked/AbstractAssetHealthCheck.moc';
 
 describe('AbstractAssetHealthCheckParam', () => {
@@ -27,7 +27,7 @@ describe('AbstractAssetHealthCheckParam', () => {
      * - The status should be HEALTHY
      */
     it('should return the healthy status when token amount is more than warning threshold', async () => {
-      assetHealthCheckParam.tokenAmount = 1200n;
+      assetHealthCheckParam.setTokenAmount(1200n);
       const status = await assetHealthCheckParam.getHealthStatus();
       expect(status).toBe(HealthStatusLevel.HEALTHY);
     });
@@ -42,7 +42,7 @@ describe('AbstractAssetHealthCheckParam', () => {
      * - The status should be UNSTABLE
      */
     it('should return the unstable status when token amount is less than warning threshold', async () => {
-      assetHealthCheckParam.tokenAmount = 90n;
+      assetHealthCheckParam.setTokenAmount(90n);
       const status = await assetHealthCheckParam.getHealthStatus();
       expect(status).toBe(HealthStatusLevel.UNSTABLE);
     });
@@ -57,7 +57,7 @@ describe('AbstractAssetHealthCheckParam', () => {
      * - The status should be BROKEN
      */
     it('should return the broken status when token amount is less than critical threshold', async () => {
-      assetHealthCheckParam.tokenAmount = 9n;
+      assetHealthCheckParam.setTokenAmount(9n);
       const status = await assetHealthCheckParam.getHealthStatus();
       expect(status).toBe(HealthStatusLevel.BROKEN);
     });

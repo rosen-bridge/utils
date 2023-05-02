@@ -1,18 +1,16 @@
 import {
   AbstractHealthCheckParam,
   HealthStatusLevel,
-} from './AbstractHealthCheckParam';
+} from '../AbstractHealthCheckParam';
 
 abstract class AbstractAssetHealthCheckParam extends AbstractHealthCheckParam {
-  assetName: string;
-  assetId: string;
-  address: string;
-  tokenAmount: bigint;
-  warnThreshold: bigint;
-  criticalThreshold: bigint;
-  updateTimeStamp: Date;
-  warnMessage: string;
-  stopMessage: string;
+  protected assetName: string;
+  protected assetId: string;
+  protected address: string;
+  protected tokenAmount: bigint;
+  protected warnThreshold: bigint;
+  protected criticalThreshold: bigint;
+  protected updateTimeStamp: Date;
 
   constructor(
     assetId: string,

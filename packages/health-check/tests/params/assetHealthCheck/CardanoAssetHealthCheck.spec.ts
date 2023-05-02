@@ -1,5 +1,7 @@
-import { CardanoAssetHealthCheckParam } from '../../lib/params/CardanoAssetHealthCheck';
-import { mockKoiosAssetQuantity } from './mocked/CardanoAssetHealthCheck.mock';
+import {
+  TestCardanoAssetHealthCheck,
+  mockKoiosAssetQuantity,
+} from './mocked/CardanoAssetHealthCheck.mock';
 
 jest.mock('@rosen-clients/cardano-koios');
 
@@ -18,7 +20,7 @@ describe('CardanoAssetHealthCheck', () => {
      */
     it('Should update the token amount using koios api', async () => {
       mockKoiosAssetQuantity(1200n);
-      const assetHealthCheckParam = new CardanoAssetHealthCheckParam(
+      const assetHealthCheckParam = new TestCardanoAssetHealthCheck(
         'assetId',
         'assetName',
         'address',
@@ -28,7 +30,7 @@ describe('CardanoAssetHealthCheck', () => {
       );
       await assetHealthCheckParam.update();
 
-      expect(assetHealthCheckParam.tokenAmount).toBe(1200n);
+      expect(assetHealthCheckParam.getTokenAmount()).toBe(1200n);
     });
   });
 });
