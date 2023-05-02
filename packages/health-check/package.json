@@ -1,0 +1,40 @@
+{
+  "name": "@rosen-bridge/health-check",
+  "version": "0.1.0",
+  "description": "Typescript library to check healthy status of rosen services",
+  "main": "dist/lib/index.js",
+  "types": "dist/lib/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "prettify": "prettier --write . --ignore-path .gitignore",
+    "lint": "eslint --fix . && npm run prettify",
+    "build": "tsc --build tsconfig.build.json",
+    "type-check": "tsc --noEmit",
+    "test": "jest",
+    "coverage": "jest --coverage",
+    "release": "npm run test && npm run build"
+  },
+  "files": [
+    "dist"
+  ],
+  "author": "Esmaeil Mohammadi",
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "@types/jest": "^29.5.1",
+    "@types/node": "^18.16.3",
+    "@typescript-eslint/eslint-plugin": "^5.59.1",
+    "@typescript-eslint/parser": "^5.59.1",
+    "eslint": "^8.39.0",
+    "eslint-config-prettier": "^8.8.0",
+    "jest": "^29.5.0",
+    "prettier": "^2.8.8",
+    "typescript": "^5.0.4"
+  },
+  "directories": {
+    "lib": "lib",
+    "test": "tests"
+  },
+  "keywords": [
+    "rosen"
+  ]
+}
