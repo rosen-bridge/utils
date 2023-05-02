@@ -22,7 +22,7 @@ class HealthCheck {
    * register new param on healthCheck
    * @param param
    */
-  register = (param: AbstractHealthCheckParam) => {
+  register = (param: AbstractHealthCheckParam): void => {
     this.params.push(param);
   };
 
@@ -30,15 +30,15 @@ class HealthCheck {
    * unregister param from healthCheck
    * @param paramId
    */
-  unregister = (paramId: string) => {
+  unregister = (paramId: string): void => {
     this.params = this.params.filter((param) => param.getId() !== paramId);
   };
 
   /**
    * check all params health status
    */
-  update = async () => {
-    return Promise.all(this.params.map((item) => item.update()));
+  update = async (): Promise<void> => {
+    await Promise.all(this.params.map((item) => item.update()));
   };
 
   /**
