@@ -12,7 +12,7 @@ interface HealthStatus {
 
 interface OverallHealthStatus {
   status: HealthStatusLevel;
-  description?: string;
+  descriptions: Array<string>;
 }
 
 class HealthCheck {
@@ -45,7 +45,7 @@ class HealthCheck {
    * check health status for one param
    * @param paramId
    */
-  updateParam = async (paramId: string) => {
+  updateParam = async (paramId: string): Promise<void> => {
     for (const param of this.params.filter(
       (item) => item.getId() === paramId
     )) {
@@ -57,23 +57,23 @@ class HealthCheck {
    * get overall health status for system
    */
   getOverallHealthStatus = async (): Promise<OverallHealthStatus> => {
-    let description: string | undefined = undefined;
-    for (const param of this.params) {
-      const status = await param.getHealthStatus();
-
-      if (status === HealthStatusLevel.BROKEN) {
-        return { status: status, description: await param.getDescription() };
+    let status = HealthStatusLevel.HEALTHY;
+    let descriptions: Array<string> = [];
+    (await this.getHealthStatus()).map((item) => {
+      if (item.status === status) {
+        descriptions.push(item.description || '');
+      } else if (
+        item.status === HealthStatusLevel.BROKEN ||
+        (item.status === HealthStatusLevel.UNSTABLE &&
+          status !== HealthStatusLevel.BROKEN)
+      ) {
+        descriptions = [item.description || ''];
+        status = item.status;
       }
-      if (status !== HealthStatusLevel.HEALTHY && description === undefined) {
-        description = await param.getDescription();
-      }
-    }
+    });
     return {
-      status:
-        description === undefined
-          ? HealthStatusLevel.HEALTHY
-          : HealthStatusLevel.UNSTABLE,
-      description,
+      status,
+      descriptions: descriptions.filter((item) => item !== ''),
     };
   };
 

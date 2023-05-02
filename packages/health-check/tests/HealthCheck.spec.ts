@@ -74,7 +74,7 @@ describe('HealthCheck', () => {
 
   describe('update', () => {
     /**
-     * @target HealthCheck.update should update all params update function
+     * @target HealthCheck.update should call all params update function
      * @dependencies
      * @scenario
      * - create new instance of HealthCheck
@@ -84,7 +84,7 @@ describe('HealthCheck', () => {
      * @expected
      * - update of each param must be called
      */
-    it('should update all params update function', async () => {
+    it('should call all params update function', async () => {
       const healthCheck = new TestHealthCheck();
       const param1 = new TestHealthCheckParam('id1', HealthStatusLevel.HEALTHY);
       const param2 = new TestHealthCheckParam('id2', HealthStatusLevel.HEALTHY);
@@ -98,7 +98,7 @@ describe('HealthCheck', () => {
 
   describe('updateParam', () => {
     /**
-     * @target HealthCheck.updateParam should update param with expected id when calling refresh
+     * @target HealthCheck.updateParam should update param with expected id
      * @dependencies
      * @scenario
      * - create new instance of HealthCheck
@@ -109,7 +109,7 @@ describe('HealthCheck', () => {
      * - param1 update function must be called
      * - param2 update must no be called
      */
-    it('should update param with expected id when calling refresh', async () => {
+    it('should update param with expected id', async () => {
       const healthCheck = new TestHealthCheck();
       const param1 = new TestHealthCheckParam('id1', HealthStatusLevel.HEALTHY);
       const param2 = new TestHealthCheckParam('id2', HealthStatusLevel.HEALTHY);
@@ -152,7 +152,7 @@ describe('HealthCheck', () => {
      * - register params on healthCheck
      * - call getOverallHealthStatus
      * @expected
-     * - returned status must be UNSTABLE with description of first UNSTABLE param
+     * - returned status must be UNSTABLE with description equals to ['description 1', 'description 2']
      */
     it('should return UNSTABLE with first unhealthy param description when one or more UNSTABLE param and no BROKEN param available', async () => {
       const healthCheck = new TestHealthCheck();
@@ -172,7 +172,7 @@ describe('HealthCheck', () => {
       healthCheck.register(param3);
       const result = await healthCheck.getOverallHealthStatus();
       expect(result.status).toEqual(HealthStatusLevel.UNSTABLE);
-      expect(result.description).toEqual('description 1');
+      expect(result.descriptions).toEqual(['description 1', 'description 2']);
     });
 
     /**
@@ -184,7 +184,7 @@ describe('HealthCheck', () => {
      * - register params on healthCheck
      * - call getOverallHealthStatus
      * @expected
-     * - returned status must be BROKEN with description of first BROKEN param
+     * - returned status must be BROKEN with descriptions equals to ['description 2', 'description 3']
      */
     it('should return BROKEN with first BROKEN param description when one or more BROKEN param', async () => {
       const healthCheck = new TestHealthCheck();
@@ -210,7 +210,7 @@ describe('HealthCheck', () => {
       healthCheck.register(param4);
       const result = await healthCheck.getOverallHealthStatus();
       expect(result.status).toEqual(HealthStatusLevel.BROKEN);
-      expect(result.description).toEqual('description 2');
+      expect(result.descriptions).toEqual(['description 2', 'description 3']);
     });
   });
 
