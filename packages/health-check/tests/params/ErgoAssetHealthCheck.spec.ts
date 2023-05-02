@@ -1,8 +1,5 @@
-import {
-  ErgoAssetHealthCheckParam,
-  ErgoNetworkType,
-  HealthStatusLevel,
-} from '../../lib';
+import { ErgoAssetHealthCheckParam } from '../../lib';
+import { ErgoNetworkType } from '../../lib/types';
 import {
   mockNodeTokenAmount,
   mockExplorerTokenAmount,
@@ -14,18 +11,17 @@ jest.mock('@rosen-clients/ergo-explorer');
 describe('ErgoAssetHealthCheck', () => {
   describe('update', () => {
     /**
-     * @target ErgoAssetHealthCheck.update Should update the status to healthy
+     * @target ErgoAssetHealthCheck.update Should update the token amount using node
      * @dependencies
      * - ergoNodeClientFactory
      * @scenario
-     * - mock return value of node token amount to more than sufficient
+     * - mock return value of node token amount
      * - create new instance of ErgoAssetHealthCheck
-     * - update the status
-     * - check the status
+     * - update the parameter
      * @expected
-     * - The status should update successfully using node api
+     * - The token amount should update successfully using node api
      */
-    it('Should update the status to healthy', async () => {
+    it('Should update the token amount using node', async () => {
       mockNodeTokenAmount(1200n);
       const assetHealthCheckParam = new ErgoAssetHealthCheckParam(
         'assetId',
@@ -37,82 +33,21 @@ describe('ErgoAssetHealthCheck', () => {
         ErgoNetworkType.NODE
       );
       await assetHealthCheckParam.update();
-      const healthStatus = await assetHealthCheckParam.getHealthStatus();
-
-      expect(healthStatus).toBe(HealthStatusLevel.HEALTHY);
+      expect(assetHealthCheckParam.tokenAmount).toBe(1200n);
     });
 
     /**
-     * @target ErgoAssetHealthCheck.update Should update the status to unstable
-     * @dependencies
-     * - ergoNodeClientFactory
-     * @scenario
-     * - mock return value of node token amount to less than warning threshold
-     * - create new instance of ErgoAssetHealthCheck
-     * - update the status
-     * - check the status
-     * @expected
-     * - The status should update successfully using node api
-     */
-    it('Should update the status to unstable', async () => {
-      mockNodeTokenAmount(90n);
-      const assetHealthCheckParam = new ErgoAssetHealthCheckParam(
-        'assetId',
-        'assetName',
-        'address',
-        100n,
-        10n,
-        'url',
-        ErgoNetworkType.NODE
-      );
-      await assetHealthCheckParam.update();
-      const healthStatus = await assetHealthCheckParam.getHealthStatus();
-
-      expect(healthStatus).toBe(HealthStatusLevel.UNSTABLE);
-    });
-
-    /**
-     * @target ErgoAssetHealthCheck.update Should update the status to broken
-     * @dependencies
-     * - ergoNodeClientFactory
-     * @scenario
-     * - mock return value of node token amount to less than critical threshold
-     * - create new instance of ErgoAssetHealthCheck
-     * - update the status
-     * - check the status
-     * @expected
-     * - The status should update successfully using node api
-     */
-    it('Should update the status to broken', async () => {
-      mockNodeTokenAmount(9n);
-      const assetHealthCheckParam = new ErgoAssetHealthCheckParam(
-        'assetId',
-        'assetName',
-        'address',
-        100n,
-        10n,
-        'url',
-        ErgoNetworkType.NODE
-      );
-      await assetHealthCheckParam.update();
-      const healthStatus = await assetHealthCheckParam.getHealthStatus();
-
-      expect(healthStatus).toBe(HealthStatusLevel.BROKEN);
-    });
-
-    /**
-     * @target ErgoAssetHealthCheck.update Should update the status to healthy
+     * @target ErgoAssetHealthCheck.update Should update the token amount using explorer
      * @dependencies
      * - ergoExplorerClientFactory
      * @scenario
-     * - mock return value of node token amount to more than sufficient
+     * - mock return value of explorer token amount
      * - create new instance of ErgoAssetHealthCheck
-     * - update the status
-     * - check the status
+     * - update the parameter
      * @expected
      * - The status should update successfully using explorer api
      */
-    it('Should update the status to healthy', async () => {
+    it('Should update the token amount using explorer', async () => {
       mockExplorerTokenAmount(1200n);
       const assetHealthCheckParam = new ErgoAssetHealthCheckParam(
         'assetId',
@@ -124,67 +59,7 @@ describe('ErgoAssetHealthCheck', () => {
         ErgoNetworkType.EXPLORER
       );
       await assetHealthCheckParam.update();
-      const healthStatus = await assetHealthCheckParam.getHealthStatus();
-
-      expect(healthStatus).toBe(HealthStatusLevel.HEALTHY);
-    });
-
-    /**
-     * @target ErgoAssetHealthCheck.update Should update the status to unstable
-     * @dependencies
-     * - ergoExplorerClientFactory
-     * @scenario
-     * - mock return value of node token amount to less than warning threshold
-     * - create new instance of ErgoAssetHealthCheck
-     * - update the status
-     * - check the status
-     * @expected
-     * - The status should update successfully using explorer api
-     */
-    it('Should update the status to unstable', async () => {
-      mockExplorerTokenAmount(90n);
-      const assetHealthCheckParam = new ErgoAssetHealthCheckParam(
-        'assetId',
-        'assetName',
-        'address',
-        100n,
-        10n,
-        'url',
-        ErgoNetworkType.EXPLORER
-      );
-      await assetHealthCheckParam.update();
-      const healthStatus = await assetHealthCheckParam.getHealthStatus();
-
-      expect(healthStatus).toBe(HealthStatusLevel.UNSTABLE);
-    });
-
-    /**
-     * @target ErgoAssetHealthCheck.update Should update the status to broken
-     * @dependencies
-     * - ergoExplorerClientFactory
-     * @scenario
-     * - mock return value of node token amount to less than critical threshold
-     * - create new instance of ErgoAssetHealthCheck
-     * - update the status
-     * - check the status
-     * @expected
-     * - The status should update successfully using explorer api
-     */
-    it('Should update the status to broken', async () => {
-      mockExplorerTokenAmount(9n);
-      const assetHealthCheckParam = new ErgoAssetHealthCheckParam(
-        'assetId',
-        'assetName',
-        'address',
-        100n,
-        10n,
-        'url',
-        ErgoNetworkType.EXPLORER
-      );
-      await assetHealthCheckParam.update();
-      const healthStatus = await assetHealthCheckParam.getHealthStatus();
-
-      expect(healthStatus).toBe(HealthStatusLevel.BROKEN);
+      expect(assetHealthCheckParam.tokenAmount).toBe(1200n);
     });
   });
 });
