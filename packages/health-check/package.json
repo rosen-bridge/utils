@@ -36,5 +36,10 @@
   },
   "keywords": [
     "rosen"
-  ]
+  ],
+  "dependencies": {
+    "@rosen-clients/cardano-koios": "^0.2.0",
+    "@rosen-clients/ergo-explorer": "^0.2.0",
+    "@rosen-clients/ergo-node": "^0.2.0"
+  }
 }
