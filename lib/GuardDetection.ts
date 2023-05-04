@@ -191,6 +191,7 @@ class GuardDetection {
           if (guard.recognitionPromises.length > 0) {
             guard.recognitionPromises.forEach((resolve) => resolve(true));
             guard.recognitionPromises = [];
+            guard.registered = true;
           }
         }
         if (nonce) {
@@ -411,11 +412,9 @@ class GuardDetection {
           guard.recognitionPromises.push(resolve);
         });
         await this.sendRegisterMessage(guardIndex);
-        guard.registered = true;
         this.logger.debug(`Guard ${guardIndex} registered`);
         return promise;
       } catch (e) {
-        guard.registered = undefined;
         this.logger.warn(`An Error occurred while registering guard: ${e}`);
         if (e instanceof Error && e.stack) {
           this.logger.warn(e.stack);
