@@ -18,7 +18,7 @@ describe('AbstractAssetHealthCheckParam', () => {
 
   describe('getHealthStatus', () => {
     /**
-     * @target AbstractAssetHealthCheckParam.getHealthStatus Should return the healthy status
+     * @target AbstractAssetHealthCheckParam.getHealthStatus should return HEALTHY when token amount is more than warning threshold
      * @dependencies
      * @scenario
      * - mock token amount to more than warning threshold
@@ -26,14 +26,14 @@ describe('AbstractAssetHealthCheckParam', () => {
      * @expected
      * - The status should be HEALTHY
      */
-    it('should return the healthy status when token amount is more than warning threshold', async () => {
+    it('should return HEALTHY when token amount is more than warning threshold', async () => {
       assetHealthCheckParam.setTokenAmount(1200n);
       const status = await assetHealthCheckParam.getHealthStatus();
       expect(status).toBe(HealthStatusLevel.HEALTHY);
     });
 
     /**
-     * @target AbstractAssetHealthCheckParam.getHealthStatus Should return the unstable status
+     * @target AbstractAssetHealthCheckParam.getHealthStatus Should return UNSTABLE when token amount is less than warning threshold
      * @dependencies
      * @scenario
      * - mock token amount to less than warning threshold
@@ -41,14 +41,14 @@ describe('AbstractAssetHealthCheckParam', () => {
      * @expected
      * - The status should be UNSTABLE
      */
-    it('should return the unstable status when token amount is less than warning threshold', async () => {
+    it('should return UNSTABLE when token amount is less than warning threshold', async () => {
       assetHealthCheckParam.setTokenAmount(90n);
       const status = await assetHealthCheckParam.getHealthStatus();
       expect(status).toBe(HealthStatusLevel.UNSTABLE);
     });
 
     /**
-     * @target AbstractAssetHealthCheckParam.getHealthStatus Should return the broken status
+     * @target AbstractAssetHealthCheckParam.getHealthStatus Should return the should return BROKEN when token amount is less than critical threshold
      * @dependencies
      * @scenario
      * - mock token amount to less than critical threshold
@@ -56,7 +56,7 @@ describe('AbstractAssetHealthCheckParam', () => {
      * @expected
      * - The status should be BROKEN
      */
-    it('should return the broken status when token amount is less than critical threshold', async () => {
+    it('should return BROKEN when token amount is less than critical threshold', async () => {
       assetHealthCheckParam.setTokenAmount(9n);
       const status = await assetHealthCheckParam.getHealthStatus();
       expect(status).toBe(HealthStatusLevel.BROKEN);
