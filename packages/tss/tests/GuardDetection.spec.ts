@@ -7,6 +7,7 @@ import {
 import { GuardDetection } from '../lib';
 import { config, guardsPublicKeys, handler } from './testUtils';
 import { TestGuardDetection } from './TestGuardDetection';
+import { registerTimeout } from '../lib/constants/constants';
 
 describe('GuardDetection', () => {
   beforeEach(() => {
@@ -25,7 +26,7 @@ describe('GuardDetection', () => {
      */
     it('Should generate a random base64 encoded nonce with the default size 32', () => {
       const guardDetection = new GuardDetection(handler, config);
-      const guardDetectionProto = Object.getPrototypeOf(guardDetection);
+      const guardDetectionProto = guardDetection as any;
       const nonce = guardDetectionProto.generateNonce();
       const decodedNonce = Buffer.from(nonce, 'base64').toString('hex');
       expect(decodedNonce).toHaveLength(32 * 2);
@@ -43,7 +44,7 @@ describe('GuardDetection', () => {
      */
     it('Should generate a random base64 encoded nonce with the given size', () => {
       const guardDetection = new GuardDetection(handler, config);
-      const guardDetectionProto = Object.getPrototypeOf(guardDetection);
+      const guardDetectionProto = guardDetection as any;
       const nonce = guardDetectionProto.generateNonce(10);
       const decodedNonce = Buffer.from(nonce, 'base64').toString('hex');
       expect(decodedNonce).toHaveLength(10 * 2);
@@ -177,6 +178,7 @@ describe('GuardDetection', () => {
           nonce: 'nonce',
           lastUpdate: Date.now(),
           peerId: 'peerId',
+          recognitionPromises: [],
         },
         0
       );
@@ -187,6 +189,7 @@ describe('GuardDetection', () => {
           nonce: 'nonce',
           lastUpdate: Date.now(),
           peerId: 'peerId',
+          recognitionPromises: [],
         },
         1
       );
@@ -197,6 +200,7 @@ describe('GuardDetection', () => {
           nonce: 'nonce',
           lastUpdate: Date.now(),
           peerId: 'peerId',
+          recognitionPromises: [],
         },
         2
       );
@@ -242,7 +246,7 @@ describe('GuardDetection', () => {
       jest.spyOn(handler, 'send');
       const guardDetection = new TestGuardDetection(handler, config);
       jest
-        .spyOn(Object.getPrototypeOf(guardDetection), 'generateNonce')
+        .spyOn(guardDetection as any, 'generateNonce')
         .mockReturnValue('new nonce');
       const payload: RegisterPayload = {
         nonce: 'nonce',
@@ -293,6 +297,7 @@ describe('GuardDetection', () => {
           lastUpdate: lastUpdate,
           peerId: '',
           publicKey: guardsPublicKeys[1],
+          recognitionPromises: [],
         },
         0
       );
@@ -333,6 +338,7 @@ describe('GuardDetection', () => {
           lastUpdate: 0,
           peerId: '',
           publicKey: guardsPublicKeys[1],
+          recognitionPromises: [],
         },
         0
       );
@@ -418,7 +424,7 @@ describe('GuardDetection', () => {
     it('Should call the correct handler for the message register with correct signature', async () => {
       const guardDetection = new TestGuardDetection(handler, config);
       const spiedHandleRegister = jest.spyOn(
-        Object.getPrototypeOf(guardDetection),
+        guardDetection as any,
         'handleRegisterMessage'
       );
       const parsedMessage: Message = {
@@ -451,7 +457,7 @@ describe('GuardDetection', () => {
     it('Should call the correct handler for the message approval with correct signature', async () => {
       const guardDetection = new TestGuardDetection(handler, config);
       const spiedHandleApprove = jest.spyOn(
-        Object.getPrototypeOf(guardDetection),
+        guardDetection as any,
         'handleApproveMessage'
       );
       const parsedMessage: Message = {
@@ -488,7 +494,7 @@ describe('GuardDetection', () => {
     it('Should call the correct handler for the message heartbeat with correct signature', async () => {
       const guardDetection = new TestGuardDetection(handler, config);
       const spiedHandleHeartbeat = jest.spyOn(
-        Object.getPrototypeOf(guardDetection),
+        guardDetection as any,
         'handleHeartbeatMessage'
       );
       const parsedMessage: Message = {
@@ -519,15 +525,15 @@ describe('GuardDetection', () => {
     it('Should not call any handler if the signature is not correct', async () => {
       const guardDetection = new TestGuardDetection(handler, config);
       const spiedHandleHeartbeat = jest.spyOn(
-        Object.getPrototypeOf(guardDetection),
+        guardDetection as any,
         'handleHeartbeatMessage'
       );
       const spiedHandleApprove = jest.spyOn(
-        Object.getPrototypeOf(guardDetection),
+        guardDetection as any,
         'handleApproveMessage'
       );
       const spiedHandleRegister = jest.spyOn(
-        Object.getPrototypeOf(guardDetection),
+        guardDetection as any,
         'handleRegisterMessage'
       );
       const parsedMessage: Message = {
@@ -560,15 +566,15 @@ describe('GuardDetection', () => {
     it('Should not call any handler if timestamp is not valid', async () => {
       const guardDetection = new TestGuardDetection(handler, config);
       const spiedHandleHeartbeat = jest.spyOn(
-        Object.getPrototypeOf(guardDetection),
+        guardDetection as any,
         'handleHeartbeatMessage'
       );
       const spiedHandleApprove = jest.spyOn(
-        Object.getPrototypeOf(guardDetection),
+        guardDetection as any,
         'handleApproveMessage'
       );
       const spiedHandleRegister = jest.spyOn(
-        Object.getPrototypeOf(guardDetection),
+        guardDetection as any,
         'handleRegisterMessage'
       );
       const parsedMessage: Message = {
@@ -591,6 +597,86 @@ describe('GuardDetection', () => {
     });
   });
 
+  describe('isGuardActive', () => {
+    /**
+     * @target
+     * `isGuardActive` Should return false if the guard is not set
+     * @dependencies
+     * @scenario
+     * - mock the guard info
+     * - Run test
+     * - check the result
+     * @expected
+     * - the result should be false
+     */
+    it('Should return false if the guard is not set', () => {
+      const guardDetection = new TestGuardDetection(handler, config);
+      guardDetection.setGuardsInfo(
+        {
+          nonce: 'nonce',
+          lastUpdate: Date.now(),
+          peerId: '',
+          publicKey: '',
+          recognitionPromises: [],
+        },
+        0
+      );
+      expect(guardDetection.getIsGuardActive(0)).toEqual(false);
+    });
+
+    /**
+     * @target
+     * `isGuardActive` Should return false if the guard is not active
+     * @dependencies
+     * @scenario
+     * - mock the guard info
+     * - Run test
+     * - check the result
+     * @expected
+     * - the result should be false
+     */
+    it('Should return false if the guard is not active', () => {
+      const guardDetection = new TestGuardDetection(handler, config);
+      guardDetection.setGuardsInfo(
+        {
+          nonce: 'nonce',
+          lastUpdate: Date.now() - registerTimeout * 2,
+          peerId: 'peerId1',
+          publicKey: 'publicKey1',
+          recognitionPromises: [],
+        },
+        1
+      );
+      expect(guardDetection.getIsGuardActive(1)).toEqual(false);
+    });
+
+    /**
+     * @target
+     * `isGuardActive` Should return true if the guard is active
+     * @dependencies
+     * @scenario
+     * - mock the guard info
+     * - Run test
+     * - check the result
+     * @expected
+     * - the result should be true
+     */
+    it('Should return true if the guard is active', () => {
+      const guardDetection = new TestGuardDetection(handler, config);
+      guardDetection.setGuardsInfo(
+        {
+          nonce: 'nonce',
+          lastUpdate: Date.now() - 50 * 1000,
+          peerId: 'peerId2',
+          publicKey: 'publicKey2',
+          recognitionPromises: [],
+        },
+        2
+      );
+      expect(guardDetection.getIsGuardActive(2)).toEqual(true);
+    });
+  });
+
   describe('getActiveGuards', () => {
     /**
      * @target
@@ -606,15 +692,22 @@ describe('GuardDetection', () => {
     it('Should return the active guards', () => {
       const guardDetection = new TestGuardDetection(handler, config);
       guardDetection.setGuardsInfo(
-        { nonce: 'nonce', lastUpdate: Date.now(), peerId: '', publicKey: '' },
+        {
+          nonce: 'nonce',
+          lastUpdate: Date.now(),
+          peerId: '',
+          publicKey: '',
+          recognitionPromises: [],
+        },
         0
       );
       guardDetection.setGuardsInfo(
         {
           nonce: 'nonce',
-          lastUpdate: Date.now() - 3 * 60 * 1000,
+          lastUpdate: Date.now() - registerTimeout * 2,
           peerId: 'peerId1',
           publicKey: 'publicKey1',
+          recognitionPromises: [],
         },
         1
       );
@@ -624,12 +717,192 @@ describe('GuardDetection', () => {
           lastUpdate: Date.now() - 50 * 1000,
           peerId: 'peerId2',
           publicKey: 'publicKey2',
+          recognitionPromises: [],
         },
         2
       );
       expect(guardDetection.getActiveGuards()).toEqual([
         { peerId: 'peerId2', publicKey: 'publicKey2' },
       ]);
+    });
+  });
+
+  describe('register', () => {
+    /**
+     * @target
+     * `register` Should throw error if the peerId is not valid
+     * @dependencies
+     * @scenario
+     * - Run test (call register with invalid peerId)
+     * - check the returned value
+     * @expected
+     * - Should throw error
+     */
+    it('Should throw error if the public key is not valid', () => {
+      const guardDetection = new TestGuardDetection(handler, config);
+      const result = guardDetection.register('peerId1', 'publicKey1');
+      expect(result).rejects.toThrowError('Guard not found');
+    });
+
+    /**
+     * @target
+     * `register` Should return two promise that resolves true in case of
+     * adding same guard twice
+     * @dependencies
+     * @scenario
+     * - mock the guard info
+     * - mock generateNonce
+     * - call register with valid peerId
+     * - Mock approve message received from guard with peerId1
+     * - Run test
+     * - check the returned value
+     * @expected
+     * - Should return  two Promise<true>
+     */
+    it('Should return two promise that resolves true in case of adding same guard twice', async () => {
+      const guardDetection = new TestGuardDetection(handler, config);
+      jest
+        .spyOn(guardDetection as any, 'generateNonce')
+        .mockReturnValue('nonce');
+      guardDetection.setGuardsInfo(
+        {
+          nonce: 'nonce',
+          lastUpdate: Date.now() - 50 * 1000,
+          peerId: 'peerId1',
+          publicKey: 'publicKey1',
+          recognitionPromises: [],
+        },
+        1
+      );
+      const result = guardDetection.register('peerId1', 'publicKey1');
+      const resultSecond = guardDetection.register('peerId1', 'publicKey1');
+      const payload: ApprovePayload = {
+        nonce: 'new nonce',
+        receivedNonce: 'nonce',
+        timestamp: Date.now(),
+      };
+      await guardDetection.getHandleApproveMessage(
+        payload,
+        'publicKey1',
+        'peerId1'
+      );
+      expect(await result).toEqual(true);
+      expect(await resultSecond).toEqual(true);
+    });
+
+    /**
+     * @target
+     * `register` Should send register message if the guard is not in the list
+     * @dependencies
+     * @scenario
+     * - mock the guard info
+     * - call register with valid peerId
+     * - Run test
+     * - check the returned value
+     * - check the called function
+     * @expected
+     * - Should send register message
+     * - Should return Promise
+     */
+    it('Should send register message if the guard is not in the list', () => {
+      const guardDetection = new TestGuardDetection(handler, config);
+      guardDetection.setGuardsInfo(
+        {
+          nonce: '',
+          lastUpdate: 0,
+          peerId: '',
+          publicKey: 'publicKey1',
+          recognitionPromises: [],
+        },
+        1
+      );
+
+      const spiedSendRegisterMessage = jest.spyOn(
+        guardDetection as any,
+        'sendRegisterMessage'
+      );
+      const result = guardDetection.register('peerId1', 'publicKey1');
+      expect(result).toBeInstanceOf(Promise);
+      expect(spiedSendRegisterMessage).toHaveBeenCalled();
+    });
+
+    /**
+     * @target
+     * `register` Should send heartbeat message if the guard is in the list but not active
+     * @dependencies
+     * @scenario
+     * - mock generateNonce
+     * - mock the guard info
+     * - call register with valid peerId
+     * - Mock approve message received from guard with peerId1
+     * - Run test
+     * - check the called function
+     * - check the returned value
+     * @expected
+     * - Should send heartbeat message
+     * - Should return Promise that resolves true
+     */
+    it('Should send heartbeat message if the guard is in the list but not active', async () => {
+      const guardDetection = new TestGuardDetection(handler, config);
+      jest
+        .spyOn(guardDetection as any, 'generateNonce')
+        .mockReturnValue('nonce');
+      guardDetection.setGuardsInfo(
+        {
+          nonce: 'nonce',
+          lastUpdate: Date.now() - registerTimeout * 2,
+          peerId: 'peerId1',
+          publicKey: 'publicKey1',
+          recognitionPromises: [],
+        },
+        1
+      );
+
+      const spiedSendHeartbeatMessage = jest.spyOn(
+        guardDetection as any,
+        'sendHeartbeatMessage'
+      );
+      const result = guardDetection.register('peerId1', 'publicKey1');
+      const payload: ApprovePayload = {
+        nonce: 'new nonce',
+        receivedNonce: 'nonce',
+        timestamp: Date.now(),
+      };
+      await guardDetection.getHandleApproveMessage(
+        payload,
+        'publicKey1',
+        'peerId1'
+      );
+      expect(spiedSendHeartbeatMessage).toBeCalled();
+      expect(await result).toEqual(true);
+    });
+
+    /**
+     * @target
+     * `register` Should reject if the guard is in the list but peerId is not the same
+     * @dependencies
+     * @scenario
+     * - mock the guard info
+     * - call register with valid peerId
+     * - Run test
+     * - check the returned value
+     * @expected
+     * - Should reject with error
+     */
+    it('Should reject if the guard is in the list but peerId is not the same', async () => {
+      const guardDetection = new TestGuardDetection(handler, config);
+      guardDetection.setGuardsInfo(
+        {
+          nonce: 'nonce',
+          lastUpdate: Date.now() - registerTimeout * 2,
+          peerId: 'peerId1',
+          publicKey: 'publicKey1',
+          recognitionPromises: [],
+        },
+        1
+      );
+      const result = guardDetection.register('peerId2', 'publicKey1');
+      expect(result).rejects.toThrowError('PeerId is not the same');
     });
   });
 
@@ -649,7 +922,7 @@ describe('GuardDetection', () => {
     it('Should send register message to the guard', async () => {
       const guardDetection = new TestGuardDetection(handler, config);
       jest
-        .spyOn(Object.getPrototypeOf(guardDetection), 'generateNonce')
+        .spyOn(guardDetection as any, 'generateNonce')
         .mockReturnValue('new nonce');
       guardDetection.setGuardsInfo(
         {
@@ -657,6 +930,7 @@ describe('GuardDetection', () => {
           lastUpdate: Date.now(),
           peerId: 'peerId',
           publicKey: guardsPublicKeys[1],
+          recognitionPromises: [],
         },
         0
       );
@@ -689,7 +963,7 @@ describe('GuardDetection', () => {
     it('Should send heartbeat message to the guard', async () => {
       const guardDetection = new TestGuardDetection(handler, config);
       jest
-        .spyOn(Object.getPrototypeOf(guardDetection), 'generateNonce')
+        .spyOn(guardDetection as any, 'generateNonce')
         .mockReturnValue('new nonce');
       guardDetection.setGuardsInfo(
         {
@@ -697,6 +971,7 @@ describe('GuardDetection', () => {
           lastUpdate: Date.now(),
           peerId: 'peerId',
           publicKey: guardsPublicKeys[1],
+          recognitionPromises: [],
         },
         0
       );
@@ -729,7 +1004,7 @@ describe('GuardDetection', () => {
     it('Should send register message to guards that passed register timeout', async () => {
       const guardDetection = new TestGuardDetection(handler, config);
       jest
-        .spyOn(Object.getPrototypeOf(guardDetection), 'generateNonce')
+        .spyOn(guardDetection as any, 'generateNonce')
         .mockReturnValue('new nonce');
       guardDetection.setGuardsInfo(
         {
@@ -737,15 +1012,17 @@ describe('GuardDetection', () => {
           lastUpdate: Date.now(),
           peerId: 'peerId',
           publicKey: guardsPublicKeys[1],
+          recognitionPromises: [],
         },
         0
       );
       guardDetection.setGuardsInfo(
         {
           nonce: 'nonce',
-          lastUpdate: Date.now() - 3 * 60 * 1000,
+          lastUpdate: Date.now() - registerTimeout * 2,
           peerId: 'peerId1',
           publicKey: guardsPublicKeys[2],
+          recognitionPromises: [],
         },
         1
       );
@@ -755,6 +1032,7 @@ describe('GuardDetection', () => {
           lastUpdate: Date.now() - 55 * 1000,
           peerId: 'peerId2',
           publicKey: guardsPublicKeys[3],
+          recognitionPromises: [],
         },
         2
       );
@@ -786,7 +1064,7 @@ describe('GuardDetection', () => {
     it('Should send heartbeat message to guards that passed heartbeat timeout', async () => {
       const guardDetection = new TestGuardDetection(handler, config);
       jest
-        .spyOn(Object.getPrototypeOf(guardDetection), 'generateNonce')
+        .spyOn(guardDetection as any, 'generateNonce')
         .mockReturnValue('new nonce');
       guardDetection.setGuardsInfo(
         {
@@ -794,6 +1072,7 @@ describe('GuardDetection', () => {
           lastUpdate: Date.now(),
           peerId: 'peerId',
           publicKey: guardsPublicKeys[1],
+          recognitionPromises: [],
         },
         0
       );
@@ -803,6 +1082,7 @@ describe('GuardDetection', () => {
           lastUpdate: Date.now() - 61 * 1000,
           peerId: 'peerId1',
           publicKey: guardsPublicKeys[2],
+          recognitionPromises: [],
         },
         1
       );
@@ -812,6 +1092,7 @@ describe('GuardDetection', () => {
           lastUpdate: Date.now() - 55 * 1000,
           peerId: 'peerId2',
           publicKey: guardsPublicKeys[3],
+          recognitionPromises: [],
         },
         2
       );

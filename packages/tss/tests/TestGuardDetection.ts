@@ -10,55 +10,65 @@ import {
  * GuardDetection class for testing
  */
 class TestGuardDetection extends GuardDetection {
-  getCheckMessageSign(message: Message) {
+  getCheckMessageSign = (message: Message) => {
     return this.checkMessageSign(message);
-  }
-  getPublicKeyToIndex(publicKey: string) {
+  };
+  getPublicKeyToIndex = (publicKey: string) => {
     return this.publicKeyToIndex(publicKey);
-  }
+  };
 
-  async getHandleRegisterMessage(payload: RegisterPayload, sender: string) {
+  getHandleRegisterMessage = async (
+    payload: RegisterPayload,
+    sender: string
+  ) => {
     return await this.handleRegisterMessage(payload, sender);
-  }
+  };
 
-  async getHandleApproveMessage(
+  getHandleApproveMessage = async (
     payload: ApprovePayload,
     sender: string,
     senderPeerId: string
-  ) {
+  ) => {
     return await this.handleApproveMessage(payload, sender, senderPeerId);
-  }
+  };
 
-  async getHandleHeartbeatMessage(payload: HeartbeatPayload, sender: string) {
+  getHandleHeartbeatMessage = async (
+    payload: HeartbeatPayload,
+    sender: string
+  ) => {
     return await this.handleHeartbeatMessage(payload, sender);
-  }
+  };
 
-  async getHandleReceivedMessage(message: string, senderPeerId: string) {
+  getHandleReceivedMessage = async (message: string, senderPeerId: string) => {
     return await this.handleReceiveMessage(message, senderPeerId);
-  }
+  };
 
-  async getSendRegisterMessage(index: number) {
+  getSendRegisterMessage = async (index: number) => {
     return await this.sendRegisterMessage(index);
-  }
+  };
 
-  async getSendHeartbeatMessage(index: number) {
+  getSendHeartbeatMessage = async (index: number) => {
     return await this.sendHeartbeatMessage(index);
-  }
+  };
 
-  getCheckTimestamp(timestamp: number) {
+  getCheckTimestamp = (timestamp: number) => {
     return this.checkTimestamp(timestamp);
-  }
-  async runUpdateGuardsStatus() {
+  };
+
+  getIsGuardActive = (guardIndex: number) => {
+    return this.isGuardActive(guardIndex);
+  };
+  runUpdateGuardsStatus = async () => {
     await this.updateGuardsStatus();
-  }
+  };
 
-  setGuardsInfo(info: GuardInfo, index: number) {
+  setGuardsInfo = (info: GuardInfo, index: number) => {
     this.guardsInfo[index] = info;
-  }
+  };
 
-  getGuardInfo(index: number) {
+  getGuardInfo = (index: number) => {
     return this.guardsInfo[index];
-  }
+  };
 }
 
 export { TestGuardDetection };

@@ -61,12 +61,15 @@ interface HeartbeatPayload {
  * @param peerId - peer id of the guard
  * @param nonce - nonce of the guard
  * @param lastUpdate - last update of the guard (timestamp)
+ * @param publicKey - public key of the guard
+ * @param recognitionPromises - recognition promises of the guard
  **/
 interface GuardInfo {
   peerId: string;
   nonce: string;
   lastUpdate: number; // timestamp
   publicKey: string;
+  recognitionPromises: ((value: boolean) => unknown)[];
 }
 
 interface GuardDetectionConfig {
