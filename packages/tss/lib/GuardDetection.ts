@@ -191,7 +191,6 @@ class GuardDetection {
           if (guard.recognitionPromises.length > 0) {
             guard.recognitionPromises.forEach((resolve) => resolve(true));
             guard.recognitionPromises = [];
-            guard.registered = true;
           }
         }
         if (nonce) {
@@ -406,7 +405,7 @@ class GuardDetection {
       throw new Error('Guard not found');
     }
     const guard = this.guardsInfo[guardIndex];
-    if (!guard.registered) {
+    if (guard.peerId === '') {
       try {
         const promise: Promise<boolean> = new Promise((resolve, reject) => {
           guard.recognitionPromises.push(resolve);

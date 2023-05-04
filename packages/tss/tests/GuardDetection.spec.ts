@@ -808,9 +808,9 @@ describe('GuardDetection', () => {
       const guardDetection = new TestGuardDetection(handler, config);
       guardDetection.setGuardsInfo(
         {
-          nonce: 'nonce',
-          lastUpdate: Date.now() - 60 * 1000,
-          peerId: 'peerId1',
+          nonce: '',
+          lastUpdate: 0,
+          peerId: '',
           publicKey: 'publicKey1',
           recognitionPromises: [],
         },
@@ -853,7 +853,6 @@ describe('GuardDetection', () => {
           lastUpdate: Date.now() - registerTimeout * 2,
           peerId: 'peerId1',
           publicKey: 'publicKey1',
-          registered: true,
           recognitionPromises: [],
         },
         1
@@ -898,7 +897,6 @@ describe('GuardDetection', () => {
           lastUpdate: Date.now() - registerTimeout * 2,
           peerId: 'peerId1',
           publicKey: 'publicKey1',
-          registered: true,
           recognitionPromises: [],
         },
         1
