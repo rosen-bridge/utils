@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/health-check",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Typescript library to check healthy status of rosen services",
   "main": "dist/lib/index.js",
   "types": "dist/lib/index.d.ts",
@@ -36,5 +36,10 @@
   },
   "keywords": [
     "rosen"
-  ]
+  ],
+  "dependencies": {
+    "@rosen-clients/cardano-koios": "^0.2.0",
+    "@rosen-clients/ergo-explorer": "^0.2.0",
+    "@rosen-clients/ergo-node": "^0.3.1"
+  }
 }
