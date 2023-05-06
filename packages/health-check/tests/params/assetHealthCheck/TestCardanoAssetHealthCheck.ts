@@ -1,5 +1,5 @@
 import cardanoKoiosClientFactory from '@rosen-clients/cardano-koios';
-import { CardanoAssetHealthCheckParam } from '../../../../lib/params/assetHealthCheck/CardanoAssetHealthCheck';
+import { CardanoAssetHealthCheckParam } from '../../../lib/params/assetHealthCheck/CardanoAssetHealthCheck';
 
 /**
  * mocks koios api token amount

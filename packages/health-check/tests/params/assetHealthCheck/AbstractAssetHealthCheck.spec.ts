@@ -1,5 +1,5 @@
 import { HealthStatusLevel } from '../../../lib';
-import { TestAssetHealthCheckParam } from './mocked/AbstractAssetHealthCheck.moc';
+import { TestAssetHealthCheckParam } from './TestAssetHealthCheck';
 
 describe('AbstractAssetHealthCheckParam', () => {
   /**

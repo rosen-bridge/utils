@@ -1,3 +1,4 @@
+import { CARDANO_NATIVE_ASSET, ERGO_NATIVE_ASSET } from '../../constants';
 import {
   AbstractHealthCheckParam,
   HealthStatusLevel,
@@ -32,7 +33,9 @@ abstract class AbstractAssetHealthCheckParam extends AbstractHealthCheckParam {
    * @returns parameter id
    */
   getId = (): string => {
-    return `Asset ${this.assetName} (${this.assetId.slice(0, 6)}...) Check`;
+    if (this.assetId in [ERGO_NATIVE_ASSET, CARDANO_NATIVE_ASSET])
+      return `Native Asset ${this.assetName} Check`;
+    return `Asset ${this.assetName} [${this.assetId.slice(0, 6)}...] Check`;
   };
 
   /**
@@ -41,13 +44,13 @@ abstract class AbstractAssetHealthCheckParam extends AbstractHealthCheckParam {
    */
   getDescription = async (): Promise<string | undefined> => {
     if (this.tokenAmount < this.criticalThreshold)
-      return `Service stopped working due to insufficient asset ${this.assetName} balance 
-      (${this.tokenAmount} is less than required amount ${this.criticalThreshold}).
-      Please charge ${this.address} with token ${this.assetId}`;
+      return `Service stopped working due to insufficient asset '${this.assetName}' balance 
+      ([${this.tokenAmount}] is less than required amount [${this.criticalThreshold}]).
+      Please charge [${this.address}] with asset [${this.assetId}]`;
     else if (this.tokenAmount < this.warnThreshold)
-      return `Service is in unstable situation due to insufficient asset ${this.assetName} balance 
-      (${this.tokenAmount} is less than recommended amount ${this.warnThreshold}).
-      Please charge ${this.address} with token ${this.assetId}`;
+      return `Service is in unstable situation due to insufficient asset '${this.assetName}' balance 
+      ([${this.tokenAmount}] is less than recommended amount [${this.warnThreshold}]).
+      Please charge [${this.address}] with asset [${this.assetId}]`;
     return undefined;
   };
 

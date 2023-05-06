@@ -1,4 +1,4 @@
-import { AbstractAssetHealthCheckParam } from '../../../../lib/params/assetHealthCheck/AbstractAssetHealthCheck';
+import { AbstractAssetHealthCheckParam } from '../../../lib/params/assetHealthCheck/AbstractAssetHealthCheck';
 
 class TestAssetHealthCheckParam extends AbstractAssetHealthCheckParam {
   /**

@@ -1,9 +1,10 @@
 import {
   TestErgoExplorerAssetHealthCheck,
-  mockExplorerTokenAmount,
   TestErgoNodeAssetHealthCheck,
-  mockNodeTokenAmount,
-} from './mocked/ErgoAssetHealthCheck.mock';
+} from './TestErgoAssetHealthCheck';
+import ergoExplorerClientFactory from '@rosen-clients/ergo-explorer';
+import ergoNodeClientFactory from '@rosen-clients/ergo-node';
+import { ERGO_NATIVE_ASSET } from '../../../lib/constants';
 
 jest.mock('@rosen-clients/ergo-node');
 jest.mock('@rosen-clients/ergo-explorer');
@@ -19,10 +20,16 @@ describe('ErgoExplorerAssetHealthCheck', () => {
      * - create new instance of ErgoExplorerAssetHealthCheck
      * - update the parameter
      * @expected
-     * - The status should update successfully using explorer api
+     * - The token amount update successfully using explorer api
      */
     it('Should update the token amount using explorer', async () => {
-      mockExplorerTokenAmount(1200n);
+      jest.mocked(ergoExplorerClientFactory).mockReturnValue({
+        v1: {
+          getApiV1AddressesP1BalanceConfirmed: async () => ({
+            tokens: [{ tokenId: 'assetId', amount: 1200n }],
+          }),
+        },
+      } as any);
       const assetHealthCheckParam = new TestErgoExplorerAssetHealthCheck(
         'assetId',
         'assetName',
@@ -33,6 +40,37 @@ describe('ErgoExplorerAssetHealthCheck', () => {
       );
       await assetHealthCheckParam.update();
       expect(assetHealthCheckParam.getTokenAmount()).toBe(1200n);
+    });
+
+    /**
+     * @target ErgoExplorerAssetHealthCheck.update Should update the erg amount using explorer
+     * @dependencies
+     * - ergoExplorerClientFactory
+     * @scenario
+     * - mock return value of explorer erg balance
+     * - create new instance of ErgoExplorerAssetHealthCheck
+     * - update the parameter
+     * @expected
+     * - The erg amount should update successfully using explorer api
+     */
+    it('Should update the erg amount using explorer', async () => {
+      jest.mocked(ergoExplorerClientFactory).mockReturnValue({
+        v1: {
+          getApiV1AddressesP1BalanceConfirmed: async () => ({
+            nanoErgs: 120000n,
+          }),
+        },
+      } as any);
+      const assetHealthCheckParam = new TestErgoExplorerAssetHealthCheck(
+        ERGO_NATIVE_ASSET,
+        ERGO_NATIVE_ASSET,
+        'address',
+        100n,
+        10n,
+        'url'
+      );
+      await assetHealthCheckParam.update();
+      expect(assetHealthCheckParam.getTokenAmount()).toBe(120000n);
     });
   });
 });
@@ -51,7 +89,15 @@ describe('ErgoNodeAssetHealthCheck', () => {
      * - The token amount should update successfully using node api
      */
     it('Should update the token amount using node', async () => {
-      mockNodeTokenAmount(1200n);
+      jest.mocked(ergoNodeClientFactory).mockReturnValue({
+        blockchain: {
+          getAddressBalanceTotal: async () => ({
+            confirmed: {
+              tokens: [{ tokenId: 'assetId', amount: 1200n }],
+            },
+          }),
+        },
+      } as any);
       const assetHealthCheckParam = new TestErgoNodeAssetHealthCheck(
         'assetId',
         'assetName',
@@ -62,6 +108,39 @@ describe('ErgoNodeAssetHealthCheck', () => {
       );
       await assetHealthCheckParam.update();
       expect(assetHealthCheckParam.getTokenAmount()).toBe(1200n);
+    });
+
+    /**
+     * @target ErgoNodeAssetHealthCheck.update Should update the erg amount using node
+     * @dependencies
+     * - ergoNodeClientFactory
+     * @scenario
+     * - mock return value of node erg balance
+     * - create new instance of ErgoNodeAssetHealthCheck
+     * - update the parameter
+     * @expected
+     * - The erg amount should update successfully using node api
+     */
+    it('Should update the token amount using node', async () => {
+      jest.mocked(ergoNodeClientFactory).mockReturnValue({
+        blockchain: {
+          getAddressBalanceTotal: async () => ({
+            confirmed: {
+              nanoErgs: 120000n,
+            },
+          }),
+        },
+      } as any);
+      const assetHealthCheckParam = new TestErgoNodeAssetHealthCheck(
+        ERGO_NATIVE_ASSET,
+        ERGO_NATIVE_ASSET,
+        'address',
+        100n,
+        10n,
+        'url'
+      );
+      await assetHealthCheckParam.update();
+      expect(assetHealthCheckParam.getTokenAmount()).toBe(120000n);
     });
   });
 });
