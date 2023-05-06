@@ -12,24 +12,30 @@ jest.mock('@rosen-clients/ergo-explorer');
 describe('ErgoExplorerAssetHealthCheck', () => {
   describe('update', () => {
     /**
+     * Mock return value of explorer address total balance
+     */
+    beforeEach(() => {
+      jest.mocked(ergoExplorerClientFactory).mockReturnValue({
+        v1: {
+          getApiV1AddressesP1BalanceConfirmed: async () => ({
+            tokens: [{ tokenId: 'assetId', amount: 1200n }],
+            nanoErgs: 120000n,
+          }),
+        },
+      } as any);
+    });
+
+    /**
      * @target ErgoExplorerAssetHealthCheck.update Should update the token amount using explorer
      * @dependencies
      * - ergoExplorerClientFactory
      * @scenario
-     * - mock return value of explorer token amount
      * - create new instance of ErgoExplorerAssetHealthCheck
      * - update the parameter
      * @expected
      * - The token amount update successfully using explorer api
      */
     it('Should update the token amount using explorer', async () => {
-      jest.mocked(ergoExplorerClientFactory).mockReturnValue({
-        v1: {
-          getApiV1AddressesP1BalanceConfirmed: async () => ({
-            tokens: [{ tokenId: 'assetId', amount: 1200n }],
-          }),
-        },
-      } as any);
       const assetHealthCheckParam = new TestErgoExplorerAssetHealthCheck(
         'assetId',
         'assetName',
@@ -47,20 +53,12 @@ describe('ErgoExplorerAssetHealthCheck', () => {
      * @dependencies
      * - ergoExplorerClientFactory
      * @scenario
-     * - mock return value of explorer erg balance
      * - create new instance of ErgoExplorerAssetHealthCheck
      * - update the parameter
      * @expected
      * - The erg amount should update successfully using explorer api
      */
     it('Should update the erg amount using explorer', async () => {
-      jest.mocked(ergoExplorerClientFactory).mockReturnValue({
-        v1: {
-          getApiV1AddressesP1BalanceConfirmed: async () => ({
-            nanoErgs: 120000n,
-          }),
-        },
-      } as any);
       const assetHealthCheckParam = new TestErgoExplorerAssetHealthCheck(
         ERGO_NATIVE_ASSET,
         ERGO_NATIVE_ASSET,
@@ -78,26 +76,32 @@ describe('ErgoExplorerAssetHealthCheck', () => {
 describe('ErgoNodeAssetHealthCheck', () => {
   describe('update', () => {
     /**
+     * Mock return value of node address total balance
+     */
+    beforeEach(() => {
+      jest.mocked(ergoNodeClientFactory).mockReturnValue({
+        blockchain: {
+          getAddressBalanceTotal: async () => ({
+            confirmed: {
+              tokens: [{ tokenId: 'assetId', amount: 1200n }],
+              nanoErgs: 120000n,
+            },
+          }),
+        },
+      } as any);
+    });
+
+    /**
      * @target ErgoNodeAssetHealthCheck.update Should update the token amount using node
      * @dependencies
      * - ergoNodeClientFactory
      * @scenario
-     * - mock return value of node token amount
      * - create new instance of ErgoNodeAssetHealthCheck
      * - update the parameter
      * @expected
      * - The token amount should update successfully using node api
      */
     it('Should update the token amount using node', async () => {
-      jest.mocked(ergoNodeClientFactory).mockReturnValue({
-        blockchain: {
-          getAddressBalanceTotal: async () => ({
-            confirmed: {
-              tokens: [{ tokenId: 'assetId', amount: 1200n }],
-            },
-          }),
-        },
-      } as any);
       const assetHealthCheckParam = new TestErgoNodeAssetHealthCheck(
         'assetId',
         'assetName',
@@ -115,22 +119,12 @@ describe('ErgoNodeAssetHealthCheck', () => {
      * @dependencies
      * - ergoNodeClientFactory
      * @scenario
-     * - mock return value of node erg balance
      * - create new instance of ErgoNodeAssetHealthCheck
      * - update the parameter
      * @expected
      * - The erg amount should update successfully using node api
      */
-    it('Should update the token amount using node', async () => {
-      jest.mocked(ergoNodeClientFactory).mockReturnValue({
-        blockchain: {
-          getAddressBalanceTotal: async () => ({
-            confirmed: {
-              nanoErgs: 120000n,
-            },
-          }),
-        },
-      } as any);
+    it('Should update the erg amount using node', async () => {
       const assetHealthCheckParam = new TestErgoNodeAssetHealthCheck(
         ERGO_NATIVE_ASSET,
         ERGO_NATIVE_ASSET,
