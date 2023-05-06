@@ -58,6 +58,10 @@ class TestGuardDetection extends GuardDetection {
   getIsGuardActive = (guardIndex: number) => {
     return this.isGuardActive(guardIndex);
   };
+
+  getTimeRemindToSign = () => {
+    return this.timeRemindToSign();
+  };
   runUpdateGuardsStatus = async () => {
     await this.updateGuardsStatus();
   };

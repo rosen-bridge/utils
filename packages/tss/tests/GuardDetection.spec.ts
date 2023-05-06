@@ -8,6 +8,7 @@ import { GuardDetection } from '../lib';
 import { config, guardsPublicKeys, handler } from './testUtils';
 import { TestGuardDetection } from './TestGuardDetection';
 import { registerTimeout } from '../lib/constants/constants';
+import { describe } from 'node:test';
 
 describe('GuardDetection', () => {
   beforeEach(() => {
@@ -1107,5 +1108,34 @@ describe('GuardDetection', () => {
         })
       );
     });
+  });
+
+  describe('timeRemainedToSign', () => {
+    it("Should return isTimeToSign false if it's not guard turn to sign", () => {
+      const guardDetection = new TestGuardDetection(handler, config);
+      jest.useFakeTimers().setSystemTime(1000 * 60 * 5);
+      expect(guardDetection.getTimeRemindToSign().isTimeToSign).toBe(false);
+    });
+
+    it('Should return isTimeToSign true if it guard turn to sign and should return valid remaining time to sign', () => {
+      const guardDetection = new TestGuardDetection(handler, config);
+      jest.useFakeTimers().setSystemTime(1000 * 60 * 4 + 5 * 1000);
+      expect(guardDetection.getTimeRemindToSign().isTimeToSign).toBe(true);
+      expect(guardDetection.getTimeRemindToSign().timeRemained).toBe(55 * 1000);
+    });
+  });
+
+  describe('broadcastSign', () => {
+    const guardDetection = new TestGuardDetection(handler, config);
+    guardDetection.setGuardsInfo(
+      {
+        nonce: 'nonce',
+        lastUpdate: Date.now(),
+        peerId: 'peerId',
+        publicKey: guardsPublicKeys[1],
+        recognitionPromises: [],
+      },
+      0
+    );
   });
 });

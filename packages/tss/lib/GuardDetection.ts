@@ -501,14 +501,14 @@ class GuardDetection {
           timeToSign.isTimeToSign &&
           timeToSign.timeRemained > minimumTimeRemainedToSign
         ) {
-          this.brodcastSign(payload, data.signed);
+          this.broadcastSign(payload, data.signed);
           this.requestSignToTss(payload);
         }
       }
     }
   };
 
-  protected brodcastSign = async (
+  protected broadcastSign = async (
     payload: string,
     signs: Array<{ publicKey: string; sign: string }>
   ) => {
@@ -720,7 +720,7 @@ class GuardDetection {
     const currentTime = Date.now();
     const currentTimeMinute = Math.floor(currentTime / oneMinute);
     const reminder = currentTimeMinute % (this.guardsInfo.length + 1);
-    const timeRemained = currentTime - currentTimeMinute * oneMinute;
+    const timeRemained = (currentTimeMinute + 1) * oneMinute - currentTime;
     return {
       isTimeToSign: reminder === this.index,
       timeRemained: timeRemained,
