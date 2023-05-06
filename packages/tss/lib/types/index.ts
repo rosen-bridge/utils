@@ -3,7 +3,12 @@ import { AbstractLogger } from '@rosen-bridge/logger-interface';
 /**
  * MessageType type for communication between nodes in the network
  */
-type MessageType = 'register' | 'approval' | 'heartbeat';
+type MessageType =
+  | 'register'
+  | 'approval'
+  | 'heartbeat'
+  | 'sign'
+  | 'requestToSign';
 
 /**
  * Message interface for communication between nodes in the network
@@ -56,6 +61,18 @@ interface HeartbeatPayload {
   timestamp: number;
 }
 
+interface RequestToSignPayload {
+  timestamp: number;
+  payload: string;
+  activeGuards: ActiveGuard[];
+}
+
+interface SignPayload {
+  timestamp: number;
+  payload: string;
+  sign: string;
+}
+
 /**
  * GuardInfo interface for communication between nodes in the network
  * @param peerId - peer id of the guard
@@ -76,6 +93,8 @@ interface GuardDetectionConfig {
   logger?: AbstractLogger;
   guardsPublicKey: string[];
   publicKey: string;
+  index: number;
+  minimumSigner: number;
   guardsRegisterTimeout?: number;
   guardsHeartbeatTimeout?: number;
   messageValidDuration?: number;
@@ -93,6 +112,8 @@ export {
   RegisterPayload,
   ApprovePayload,
   HeartbeatPayload,
+  RequestToSignPayload,
+  SignPayload,
   GuardInfo,
   GuardDetectionConfig,
   MessageType,

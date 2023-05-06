@@ -8,6 +8,8 @@ import {
   Message,
   MessageHandler,
   RegisterPayload,
+  RequestToSignPayload,
+  SignPayload,
 } from './types';
 import { AbstractLogger, DummyLogger } from '@rosen-bridge/logger-interface';
 import {
@@ -18,20 +20,43 @@ import {
   registerTimeout,
   registerType,
   messageValidDuration,
+  signType,
+  approveMessageTimeout,
+  requestToSignType,
+  oneMinute,
+  minimumTimeRemainedToSign,
 } from './constants/constants';
 
 class GuardDetection {
   protected handler: MessageHandler;
   protected readonly publicKey: string;
+  protected readonly index: number;
   protected guardsInfo: GuardInfo[] = [];
   protected readonly logger: AbstractLogger;
   protected readonly guardsRegisterTimeout: number;
   protected readonly guardsHeartbeatTimeout: number;
   protected readonly messageValidDuration: number;
   protected readonly guardsUpdateStatusInterval: number;
+  protected readonly minimumSigner: number;
+  protected payloadsToSignQueue: Array<string> = [];
+  protected payloadToSignMap: Map<
+    string,
+    {
+      active: Array<string>;
+      signed: Array<{ publicKey: string; sign: string }>;
+    }
+  > = new Map<
+    string,
+    {
+      active: Array<string>;
+      signed: Array<{ publicKey: string; sign: string }>;
+    }
+  >();
 
   constructor(handler: MessageHandler, config: GuardDetectionConfig) {
     this.handler = handler;
+    this.index = config.index;
+    this.minimumSigner = config.minimumSigner;
     this.logger = config.logger || new DummyLogger();
     this.guardsRegisterTimeout =
       config.guardsRegisterTimeout || registerTimeout;
@@ -278,8 +303,14 @@ class GuardDetection {
     try {
       const parsedMessage: Message = JSON.parse(message);
       if (this.checkMessageSign(parsedMessage)) {
-        const payload: RegisterPayload | ApprovePayload | HeartbeatPayload =
-          JSON.parse(this.handler.decrypt(parsedMessage.payload));
+        const payload:
+          | RegisterPayload
+          | ApprovePayload
+          | HeartbeatPayload
+          | RequestToSignPayload
+          | SignPayload = JSON.parse(
+          this.handler.decrypt(parsedMessage.payload)
+        );
         if (!this.checkTimestamp(payload.timestamp)) {
           this.logger.warn(
             `Message from peer ${senderPeerId} timestamp is not valid`
@@ -302,6 +333,17 @@ class GuardDetection {
             return await this.handleHeartbeatMessage(
               payload as HeartbeatPayload,
               parsedMessage.pk
+            );
+          case requestToSignType:
+            return await this.handleRequestToSignMessage(
+              payload as RequestToSignPayload,
+              parsedMessage.pk
+            );
+          case signType:
+            return await this.handleSignMessage(
+              payload as SignPayload,
+              parsedMessage.pk,
+              senderPeerId
             );
         }
       }
@@ -361,6 +403,170 @@ class GuardDetection {
     });
   };
 
+  protected sendSignMessage = async (
+    guardIndex: number,
+    signPayload: { payload: string; sign: string }
+  ) => {
+    this.logger.debug(`Sending sign message to ${guardIndex} guard`);
+    const payload: SignPayload = {
+      timestamp: Date.now(),
+      payload: signPayload.payload,
+      sign: signPayload.sign,
+    };
+    const payloadString = JSON.stringify(payload);
+    await this.handler.send({
+      type: signType,
+      payload: this.handler.encrypt(payloadString),
+      signature: this.handler.sign(payloadString),
+      receiver: this.guardsInfo[guardIndex].publicKey,
+      pk: this.publicKey,
+    });
+  };
+
+  protected sendRequestToSignMessage = async (
+    guardIndex: number,
+    requestToSignPayload: { payload: string; activeGuards: Array<ActiveGuard> }
+  ) => {
+    this.logger.debug(`Sending request to sign message to ${guardIndex} guard`);
+    const payload: RequestToSignPayload = {
+      timestamp: Date.now(),
+      payload: requestToSignPayload.payload,
+      activeGuards: requestToSignPayload.activeGuards,
+    };
+    const payloadString = JSON.stringify(payload);
+    await this.handler.send({
+      type: requestToSignType,
+      payload: this.handler.encrypt(payloadString),
+      signature: this.handler.sign(payloadString),
+      receiver: this.guardsInfo[guardIndex].publicKey,
+      pk: this.publicKey,
+    });
+  };
+
+  protected isPayloadValidToSign(payload: string): boolean {
+    return true;
+  }
+
+  protected handleRequestToSignMessage = async (
+    message: RequestToSignPayload,
+    senderPK: string
+  ): Promise<void> => {
+    const peerIds = message.activeGuards.map((guard) => guard.peerId);
+    const senderActiveGuards = message.activeGuards.map(
+      (guard) => guard.publicKey
+    );
+    const payload = message.payload;
+    if (this.isPayloadValidToSign(payload)) {
+      const myActiveGuards = this.getActiveGuards();
+      const unCommonActiveGuards = myActiveGuards
+        .filter((guard) => {
+          !senderActiveGuards.includes(guard.publicKey);
+        })
+        .map((guard) => this.publicKeyToIndex(guard.publicKey));
+      const registerResult = await this.registerAndWaitForApprove(
+        unCommonActiveGuards,
+        peerIds
+      );
+      if (registerResult) {
+        const signedPayload = this.signTss(payload);
+        const signPayload = {
+          payload: payload,
+          sign: signedPayload,
+        };
+        await this.sendSignMessage(
+          this.publicKeyToIndex(senderPK),
+          signPayload
+        );
+      }
+    }
+  };
+
+  protected handleSignMessage = async (
+    message: SignPayload,
+    senderPk: string,
+    sender: string
+  ): Promise<void> => {
+    const payload = message.payload;
+    const sign = message.sign;
+    if (this.checkTssSign(payload, sign, senderPk)) {
+      this.logger.debug(`Sign message from ${sender} is valid`);
+      const data = this.payloadToSignMap.get(payload);
+      if (data) {
+        if (data.active.includes(senderPk)) {
+          data.signed.push({ publicKey: senderPk, sign: sign });
+        }
+        const timeToSign = this.timeRemindToSign();
+        if (
+          data.signed.length > this.minimumSigner &&
+          timeToSign.isTimeToSign &&
+          timeToSign.timeRemained > minimumTimeRemainedToSign
+        ) {
+          this.brodcastSign(payload, data.signed);
+          this.requestSignToTss(payload);
+        }
+      }
+    }
+  };
+
+  protected brodcastSign = async (
+    payload: string,
+    signs: Array<{ publicKey: string; sign: string }>
+  ) => {
+    signs.forEach((sign) => {
+      this.sendSignMessage(this.publicKeyToIndex(sign.publicKey), {
+        payload: payload,
+        sign: sign.sign,
+      });
+    });
+  };
+
+  protected requestSignToTss = async (payload: string) => {
+    return;
+  };
+
+  protected signTss = (payload: string) => {
+    return 'something';
+  };
+
+  protected checkTssSign = (
+    payload: string,
+    sign: string,
+    publicKey: string
+  ) => {
+    return true;
+  };
+  protected registerAndWaitForApprove = async (
+    guardsIndex: Array<number>,
+    peerIds: Array<string>
+  ) => {
+    const registerPromises: Array<Promise<boolean>> = [];
+    guardsIndex.forEach((value, index) => {
+      const guardInfo = this.guardsInfo[value];
+      registerPromises.push(this.register(peerIds[index], guardInfo.publicKey));
+    });
+    const timeToSign = this.timeRemindToSign();
+
+    const value = await Promise.all(
+      registerPromises.map((promise) => {
+        return Promise.race([
+          promise,
+          new Promise((resolve) => {
+            setTimeout(
+              resolve.bind(null, false),
+              timeToSign.isTimeToSign ? timeToSign.timeRemained : 0
+            );
+          }),
+        ]);
+      })
+    );
+    return !value.includes(false);
+  };
+
+  protected signRequest = (payload: string) => {
+    if (!this.payloadsToSignQueue.includes(payload))
+      this.payloadsToSignQueue.push(payload);
+  };
+
   /**
    * update guards status
    * if `guardHeartbeatTimeout` seconds passed by guard last update, a heartbeat should be sent
@@ -389,6 +595,7 @@ class GuardDetection {
         this.logger.warn(e.stack);
       }
     }
+    this.signProcedure();
   };
 
   /**
@@ -474,6 +681,50 @@ class GuardDetection {
       .map((guard) => {
         return { peerId: guard.peerId, publicKey: guard.publicKey };
       });
+  };
+
+  protected signProcedure = () => {
+    if (!this.timeRemindToSign().isTimeToSign) {
+      return;
+    }
+    const activeGuards = this.getActiveGuards();
+    if (this.payloadsToSignQueue.length === 0) {
+      return;
+    }
+    if (activeGuards.length < this.minimumSigner) {
+      return;
+    }
+    const sentPayloads: Array<number> = [];
+    for (let i = 0; i < this.payloadsToSignQueue.length; i++) {
+      try {
+        activeGuards.forEach((guard) => {
+          this.sendRequestToSignMessage(
+            this.publicKeyToIndex(guard.publicKey),
+            {
+              payload: this.payloadsToSignQueue[i],
+              activeGuards: activeGuards,
+            }
+          );
+        });
+        sentPayloads.push(i);
+      } catch (e) {
+        this.logger.warn(`An Error occurred while sending sign request: ${e}`);
+      }
+    }
+    this.payloadsToSignQueue = this.payloadsToSignQueue.filter(
+      (payload, index) => !sentPayloads.includes(index)
+    );
+  };
+
+  protected timeRemindToSign = () => {
+    const currentTime = Date.now();
+    const currentTimeMinute = Math.floor(currentTime / oneMinute);
+    const reminder = currentTimeMinute % (this.guardsInfo.length + 1);
+    const timeRemained = currentTime - currentTimeMinute * oneMinute;
+    return {
+      isTimeToSign: reminder === this.index,
+      timeRemained: timeRemained,
+    };
   };
 }
 

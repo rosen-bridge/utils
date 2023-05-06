@@ -46,6 +46,8 @@ const handler: MessageHandler = {
  * Mocked config for testing
  */
 const config: GuardDetectionConfig = {
+  index: 0,
+  minimumSigner: 7,
   guardsPublicKey: guardsPublicKeys.slice(1, 4),
   logger: new DummyLogger(),
   publicKey: guardsPublicKeys[0],
