@@ -1,9 +1,10 @@
-import { GuardDetection, Message } from '../lib';
+import { ActiveGuard, GuardDetection, Message } from '../lib';
 import {
   ApprovePayload,
   GuardInfo,
   HeartbeatPayload,
   RegisterPayload,
+  SignPayload,
 } from '../lib/types';
 
 /**
@@ -66,6 +67,57 @@ class TestGuardDetection extends GuardDetection {
     await this.updateGuardsStatus();
   };
 
+  getSendSignMessage = async (
+    index: number,
+    signPayload: { payload: string; sign: string }
+  ) => {
+    return await this.sendSignMessage(index, signPayload);
+  };
+
+  getBroadcastSign = async (
+    payload: string,
+    publicKeySigns: Array<{ publicKey: string; sign: string }>
+  ) => {
+    return await this.broadcastSign(payload, publicKeySigns);
+  };
+
+  getRegisterAndWaitForApprove = async (
+    guardsIndex: Array<number>,
+    peerIds: Array<string>
+  ) => {
+    return this.registerAndWaitForApprove(guardsIndex, peerIds);
+  };
+
+  getHandleSignMessage = async (
+    payload: SignPayload,
+    senderPk: string,
+    sender: string
+  ) => {
+    return this.handleSignMessage(payload, senderPk, sender);
+  };
+  getPayloadToSignMap = () => {
+    return this.payloadToSignMap;
+  };
+
+  setPayloadToSignMap = (
+    payload: string,
+    map: {
+      active: Array<string>;
+      signed: Array<{ publicKey: string; sign: string }>;
+    }
+  ) => {
+    this.payloadToSignMap.set(payload, map);
+  };
+
+  getSendRequestToSignMessage = async (
+    guardIndex: number,
+    requestToSignPayload: { payload: string; activeGuards: Array<ActiveGuard> }
+  ) => {
+    return await this.sendRequestToSignMessage(
+      guardIndex,
+      requestToSignPayload
+    );
+  };
   setGuardsInfo = (info: GuardInfo, index: number) => {
     this.guardsInfo[index] = info;
   };

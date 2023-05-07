@@ -3,6 +3,7 @@ import {
   HeartbeatPayload,
   Message,
   RegisterPayload,
+  SignPayload,
 } from '../lib/types';
 import { GuardDetection } from '../lib';
 import { config, guardsPublicKeys, handler } from './testUtils';
@@ -769,7 +770,7 @@ describe('GuardDetection', () => {
         {
           nonce: 'nonce',
           lastUpdate: Date.now() - 50 * 1000,
-          peerId: 'peerId1',
+          peerId: '',
           publicKey: 'publicKey1',
           recognitionPromises: [],
         },
@@ -1126,16 +1127,443 @@ describe('GuardDetection', () => {
   });
 
   describe('broadcastSign', () => {
-    const guardDetection = new TestGuardDetection(handler, config);
-    guardDetection.setGuardsInfo(
-      {
-        nonce: 'nonce',
-        lastUpdate: Date.now(),
-        peerId: 'peerId',
-        publicKey: guardsPublicKeys[1],
-        recognitionPromises: [],
-      },
-      0
+    it('Should send sign message to the list provided in input', async () => {
+      const guardDetection = new TestGuardDetection(handler, config);
+      guardDetection.setGuardsInfo(
+        {
+          nonce: 'nonce',
+          lastUpdate: Date.now(),
+          peerId: 'peerId',
+          publicKey: guardsPublicKeys[1],
+          recognitionPromises: [],
+        },
+        0
+      );
+      guardDetection.setGuardsInfo(
+        {
+          nonce: 'nonce2',
+          lastUpdate: Date.now(),
+          peerId: 'peerId2',
+          publicKey: guardsPublicKeys[2],
+          recognitionPromises: [],
+        },
+        1
+      );
+
+      const payload = 'payload';
+      await guardDetection.getBroadcastSign(payload, [
+        {
+          publicKey: guardsPublicKeys[1],
+          sign: 'sign0',
+        },
+        { publicKey: guardsPublicKeys[2], sign: 'sign1' },
+      ]);
+      expect(handler.send).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'sign',
+          pk: guardsPublicKeys[0],
+          payload: expect.stringContaining(
+            '{"payload":"payload","sign":"sign0","timestamp"'
+          ),
+          signature: 'signature',
+          receiver: guardsPublicKeys[1],
+        })
+      );
+      expect(handler.send).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'sign',
+          pk: guardsPublicKeys[0],
+          payload: expect.stringContaining(
+            '{"payload":"payload","sign":"sign1","timestamp"'
+          ),
+          signature: 'signature',
+          receiver: guardsPublicKeys[2],
+        })
+      );
+    });
+  });
+
+  describe('registerAndWaitForApprove', () => {
+    it('Should return true in case of it is guards turn and guards registered', async () => {
+      const guardDetection = new TestGuardDetection(handler, config);
+      jest.useFakeTimers().setSystemTime(1000 * 60 * 4 + 59 * 1000);
+      jest
+        .spyOn(guardDetection as any, 'generateNonce')
+        .mockReturnValue('nonce');
+      guardDetection.setGuardsInfo(
+        {
+          nonce: 'nonce',
+          lastUpdate: Date.now() - 50 * 1000,
+          peerId: '',
+          publicKey: guardsPublicKeys[1],
+          recognitionPromises: [],
+        },
+        0
+      );
+      guardDetection.setGuardsInfo(
+        {
+          nonce: 'nonce',
+          lastUpdate: Date.now() - 50 * 1000,
+          peerId: '',
+          publicKey: guardsPublicKeys[2],
+          recognitionPromises: [],
+        },
+        1
+      );
+      const result = guardDetection.getRegisterAndWaitForApprove(
+        [0, 1],
+        ['peerId0', 'peerId1']
+      );
+
+      const payload: ApprovePayload = {
+        nonce: 'new nonce',
+        receivedNonce: 'nonce',
+        timestamp: Date.now(),
+      };
+      await guardDetection.getHandleApproveMessage(
+        payload,
+        guardsPublicKeys[1],
+        'peerId0'
+      );
+      await guardDetection.getHandleApproveMessage(
+        payload,
+        guardsPublicKeys[2],
+        'peerId1'
+      );
+
+      expect(await result).toBe(true);
+    });
+
+    it('Should return false in case of it is guards turn and not all guards registered', async () => {
+      const guardDetection = new TestGuardDetection(handler, config);
+      jest.useFakeTimers().setSystemTime(1000 * 60 * 4 + 59 * 1000);
+      jest
+        .spyOn(guardDetection as any, 'generateNonce')
+        .mockReturnValue('nonce');
+      guardDetection.setGuardsInfo(
+        {
+          nonce: 'nonce',
+          lastUpdate: Date.now() - 50 * 1000,
+          peerId: '',
+          publicKey: guardsPublicKeys[1],
+          recognitionPromises: [],
+        },
+        0
+      );
+      guardDetection.setGuardsInfo(
+        {
+          nonce: 'nonce',
+          lastUpdate: Date.now() - 50 * 1000,
+          peerId: '',
+          publicKey: guardsPublicKeys[2],
+          recognitionPromises: [],
+        },
+        1
+      );
+      const result = guardDetection.getRegisterAndWaitForApprove(
+        [0, 1],
+        ['peerId0', 'peerId1']
+      );
+
+      const payload: ApprovePayload = {
+        nonce: 'new nonce',
+        receivedNonce: 'nonce',
+        timestamp: Date.now(),
+      };
+      await guardDetection.getHandleApproveMessage(
+        payload,
+        guardsPublicKeys[1],
+        'peerId0'
+      );
+      jest.runAllTimers();
+      expect(await result).toBe(false);
+    });
+
+    it('Should return false in case of it is not guard turn', async () => {
+      const guardDetection = new TestGuardDetection(handler, config);
+      jest.useFakeTimers().setSystemTime(1000 * 60 * 4 + 61 * 1000);
+      const result = guardDetection.getRegisterAndWaitForApprove(
+        [0, 1],
+        ['peerId0', 'peerId1']
+      );
+      expect(await result).toBe(false);
+    });
+  });
+
+  describe('handleSignMessage', () => {
+    it('Should check TSS Sign if true then add payload message to payloadToSignMap', async () => {
+      const guardDetection = new TestGuardDetection(handler, config);
+      jest.spyOn(guardDetection as any, 'checkTssSign').mockReturnValue(true);
+      const payload: SignPayload = {
+        payload: 'payload',
+        sign: 'sign',
+        timestamp: Date.now(),
+      };
+      guardDetection.setPayloadToSignMap('payload', {
+        active: ['publicKey1'],
+        signed: [],
+      });
+      await guardDetection.getHandleSignMessage(
+        payload,
+        'publicKey1',
+        'peerId1'
+      );
+      expect(guardDetection.getPayloadToSignMap().get('payload')).toEqual({
+        active: ['publicKey1'],
+        signed: [{ publicKey: 'publicKey1', sign: 'sign' }],
+      });
+    });
+
+    it('Should check TSS Sign if false should not save sign', async () => {
+      const guardDetection = new TestGuardDetection(handler, config);
+      jest.spyOn(guardDetection as any, 'checkTssSign').mockReturnValue(false);
+      const payload: SignPayload = {
+        payload: 'payload',
+        sign: 'sign',
+        timestamp: Date.now(),
+      };
+      guardDetection.setPayloadToSignMap('payload', {
+        active: ['publicKey1'],
+        signed: [],
+      });
+      await guardDetection.getHandleSignMessage(
+        payload,
+        'publicKey1',
+        'peerId1'
+      );
+      expect(guardDetection.getPayloadToSignMap().get('payload')).toEqual({
+        active: ['publicKey1'],
+        signed: [],
+      });
+    });
+
+    it(
+      'Should check TSS Sign if true and payload signed is more than equal to minimumSigner and if' +
+        ' it is guards turn and have time remain to Sign more than minimumTimeRemainedToSign should' +
+        ' broadcast sign message to active guards and should send to requestSignToTss',
+      async () => {
+        const guardDetection = new TestGuardDetection(handler, config);
+        jest.useFakeTimers().setSystemTime(1000 * 60 * 4 + 49 * 1000);
+        jest.spyOn(guardDetection as any, 'checkTssSign').mockReturnValue(true);
+        const spiedBroadcastSign = jest.spyOn(
+          guardDetection as any,
+          'broadcastSign'
+        );
+        const spiedRequestSignToTss = jest.spyOn(
+          guardDetection as any,
+          'requestSignToTss'
+        );
+        guardDetection.setGuardsInfo(
+          {
+            nonce: 'nonce',
+            lastUpdate: Date.now(),
+            peerId: 'peerId',
+            publicKey: guardsPublicKeys[1],
+            recognitionPromises: [],
+          },
+          0
+        );
+        guardDetection.setGuardsInfo(
+          {
+            nonce: 'nonce2',
+            lastUpdate: Date.now(),
+            peerId: 'peerId2',
+            publicKey: guardsPublicKeys[2],
+            recognitionPromises: [],
+          },
+          1
+        );
+        const payload: SignPayload = {
+          payload: 'payload',
+          sign: 'sign',
+          timestamp: Date.now(),
+        };
+        guardDetection.setPayloadToSignMap('payload', {
+          active: [guardsPublicKeys[1], guardsPublicKeys[2]],
+          signed: [{ publicKey: guardsPublicKeys[2], sign: 'sign2' }],
+        });
+        await guardDetection.getHandleSignMessage(
+          payload,
+          guardsPublicKeys[1],
+          'peerId'
+        );
+        expect(spiedBroadcastSign).toHaveBeenCalledWith('payload', [
+          { publicKey: guardsPublicKeys[2], sign: 'sign2' },
+          { publicKey: guardsPublicKeys[1], sign: 'sign' },
+        ]);
+        expect(spiedRequestSignToTss).toHaveBeenCalledWith('payload');
+      }
     );
+
+    it(
+      'Should check TSS Sign if true and payload signed is more than equal to minimumSigner and if' +
+        ' it is guards turn and have time remain to Sign less than minimumTimeRemainedToSign should' +
+        'not broadcast sign message to active guards and should not send to requestSignToTss',
+      async () => {
+        const guardDetection = new TestGuardDetection(handler, config);
+        jest.useFakeTimers().setSystemTime(1000 * 60 * 4 + 51 * 1000);
+        jest.spyOn(guardDetection as any, 'checkTssSign').mockReturnValue(true);
+        const spiedBroadcastSign = jest.spyOn(
+          guardDetection as any,
+          'broadcastSign'
+        );
+        const spiedRequestSignToTss = jest.spyOn(
+          guardDetection as any,
+          'requestSignToTss'
+        );
+        guardDetection.setGuardsInfo(
+          {
+            nonce: 'nonce',
+            lastUpdate: Date.now(),
+            peerId: 'peerId',
+            publicKey: guardsPublicKeys[1],
+            recognitionPromises: [],
+          },
+          0
+        );
+        guardDetection.setGuardsInfo(
+          {
+            nonce: 'nonce2',
+            lastUpdate: Date.now(),
+            peerId: 'peerId2',
+            publicKey: guardsPublicKeys[2],
+            recognitionPromises: [],
+          },
+          1
+        );
+        const payload: SignPayload = {
+          payload: 'payload',
+          sign: 'sign',
+          timestamp: Date.now(),
+        };
+        guardDetection.setPayloadToSignMap('payload', {
+          active: [guardsPublicKeys[1], guardsPublicKeys[2]],
+          signed: [{ publicKey: guardsPublicKeys[2], sign: 'sign2' }],
+        });
+        await guardDetection.getHandleSignMessage(
+          payload,
+          guardsPublicKeys[1],
+          'peerId'
+        );
+        expect(spiedBroadcastSign).not.toHaveBeenCalled();
+        expect(spiedRequestSignToTss).not.toHaveBeenCalled();
+      }
+    );
+
+    it(
+      'Should check TSS Sign if true and payload signed is not more than or equal to minimumSigner' +
+        ' should not broadcast sign message to active guards and should not send to requestSignToTss',
+      async () => {
+        const guardDetection = new TestGuardDetection(handler, config);
+        jest.useFakeTimers().setSystemTime(1000 * 60 * 4 + 49 * 1000);
+        jest.spyOn(guardDetection as any, 'checkTssSign').mockReturnValue(true);
+        const spiedBroadcastSign = jest.spyOn(
+          guardDetection as any,
+          'broadcastSign'
+        );
+        const spiedRequestSignToTss = jest.spyOn(
+          guardDetection as any,
+          'requestSignToTss'
+        );
+        guardDetection.setGuardsInfo(
+          {
+            nonce: 'nonce',
+            lastUpdate: Date.now(),
+            peerId: 'peerId',
+            publicKey: guardsPublicKeys[1],
+            recognitionPromises: [],
+          },
+          0
+        );
+        guardDetection.setGuardsInfo(
+          {
+            nonce: 'nonce2',
+            lastUpdate: Date.now(),
+            peerId: 'peerId2',
+            publicKey: guardsPublicKeys[2],
+            recognitionPromises: [],
+          },
+          1
+        );
+        const payload: SignPayload = {
+          payload: 'payload',
+          sign: 'sign',
+          timestamp: Date.now(),
+        };
+        guardDetection.setPayloadToSignMap('payload', {
+          active: [guardsPublicKeys[1], guardsPublicKeys[2]],
+          signed: [],
+        });
+        await guardDetection.getHandleSignMessage(
+          payload,
+          guardsPublicKeys[1],
+          'peerId'
+        );
+        expect(spiedBroadcastSign).not.toHaveBeenCalled();
+        expect(spiedRequestSignToTss).not.toHaveBeenCalled();
+      }
+    );
+  });
+
+  describe('sendSignMessage', () => {
+    it('Should send sign message to peerId', async () => {
+      const guardDetection = new TestGuardDetection(handler, config);
+      guardDetection.setGuardsInfo(
+        {
+          nonce: 'nonce',
+          lastUpdate: Date.now(),
+          peerId: 'peerId',
+          publicKey: guardsPublicKeys[1],
+          recognitionPromises: [],
+        },
+        0
+      );
+      await guardDetection.getSendSignMessage(0, {
+        payload: 'payload',
+        sign: 'sign',
+      });
+      expect(handler.send).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'sign',
+          pk: guardsPublicKeys[0],
+          payload: expect.stringContaining(
+            '{"payload":"payload","sign":"sign","timestamp"'
+          ),
+          signature: 'signature',
+          receiver: guardsPublicKeys[1],
+        })
+      );
+    });
+  });
+
+  describe('sendRequestToSignMessage', () => {
+    it('Should send request to sign message to peerId', async () => {
+      const guardDetection = new TestGuardDetection(handler, config);
+      guardDetection.setGuardsInfo(
+        {
+          nonce: 'nonce',
+          lastUpdate: Date.now(),
+          peerId: 'peerId',
+          publicKey: 'publicKey1',
+          recognitionPromises: [],
+        },
+        0
+      );
+      await guardDetection.getSendRequestToSignMessage(0, {
+        payload: 'payload',
+        activeGuards: [{ publicKey: 'publicKey1', peerId: 'peerId' }],
+      });
+      expect(handler.send).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'requestToSign',
+          pk: guardsPublicKeys[0],
+          payload: expect.stringContaining(
+            '{"payload":"payload","activeGuards":[{"publicKey":"publicKey1","peerId":"peerId"}],"timestamp"'
+          ),
+          signature: 'signature',
+          receiver: 'publicKey1',
+        })
+      );
+    });
   });
 });

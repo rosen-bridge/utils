@@ -409,9 +409,9 @@ class GuardDetection {
   ) => {
     this.logger.debug(`Sending sign message to ${guardIndex} guard`);
     const payload: SignPayload = {
-      timestamp: Date.now(),
       payload: signPayload.payload,
       sign: signPayload.sign,
+      timestamp: Date.now(),
     };
     const payloadString = JSON.stringify(payload);
     await this.handler.send({
@@ -429,9 +429,9 @@ class GuardDetection {
   ) => {
     this.logger.debug(`Sending request to sign message to ${guardIndex} guard`);
     const payload: RequestToSignPayload = {
-      timestamp: Date.now(),
       payload: requestToSignPayload.payload,
       activeGuards: requestToSignPayload.activeGuards,
+      timestamp: Date.now(),
     };
     const payloadString = JSON.stringify(payload);
     await this.handler.send({
@@ -494,10 +494,11 @@ class GuardDetection {
       if (data) {
         if (data.active.includes(senderPk)) {
           data.signed.push({ publicKey: senderPk, sign: sign });
+          this.payloadToSignMap.set(payload, data);
         }
         const timeToSign = this.timeRemindToSign();
         if (
-          data.signed.length > this.minimumSigner &&
+          data.signed.length >= this.minimumSigner &&
           timeToSign.isTimeToSign &&
           timeToSign.timeRemained > minimumTimeRemainedToSign
         ) {
@@ -510,12 +511,12 @@ class GuardDetection {
 
   protected broadcastSign = async (
     payload: string,
-    signs: Array<{ publicKey: string; sign: string }>
+    publicKeySigns: Array<{ publicKey: string; sign: string }>
   ) => {
-    signs.forEach((sign) => {
-      this.sendSignMessage(this.publicKeyToIndex(sign.publicKey), {
+    publicKeySigns.forEach((obj) => {
+      this.sendSignMessage(this.publicKeyToIndex(obj.publicKey), {
         payload: payload,
-        sign: sign.sign,
+        sign: obj.sign,
       });
     });
   };
@@ -539,26 +540,29 @@ class GuardDetection {
     guardsIndex: Array<number>,
     peerIds: Array<string>
   ) => {
+    const timeToSign = this.timeRemindToSign();
+    console.log(timeToSign);
+    if (!timeToSign.isTimeToSign) return false;
+
     const registerPromises: Array<Promise<boolean>> = [];
     guardsIndex.forEach((value, index) => {
       const guardInfo = this.guardsInfo[value];
       registerPromises.push(this.register(peerIds[index], guardInfo.publicKey));
     });
-    const timeToSign = this.timeRemindToSign();
 
-    const value = await Promise.all(
-      registerPromises.map((promise) => {
-        return Promise.race([
-          promise,
-          new Promise((resolve) => {
-            setTimeout(
-              resolve.bind(null, false),
-              timeToSign.isTimeToSign ? timeToSign.timeRemained : 0
-            );
-          }),
-        ]);
-      })
-    );
+    const delay = (millisecond: number): Promise<boolean> => {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(false);
+        }, millisecond);
+      });
+    };
+
+    const value = await Promise.race([
+      Promise.all(registerPromises),
+      Promise.all([delay(timeToSign.timeRemained)]),
+    ]);
+
     return !value.includes(false);
   };
 
