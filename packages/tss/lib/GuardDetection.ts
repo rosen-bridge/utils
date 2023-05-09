@@ -528,7 +528,7 @@ class GuardDetection {
   protected requestSignToTss = async (payload: string) => {
     return;
   };
-  blake2bHash = (message: string): Uint8Array => {
+  protected blake2bHash = (message: string): Uint8Array => {
     return blake2b(message, undefined, 32);
   };
   protected signTss = (payload: string) => {
