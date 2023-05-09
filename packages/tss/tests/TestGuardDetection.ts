@@ -4,6 +4,7 @@ import {
   GuardInfo,
   HeartbeatPayload,
   RegisterPayload,
+  RequestToSignPayload,
   SignPayload,
 } from '../lib/types';
 
@@ -107,6 +108,13 @@ class TestGuardDetection extends GuardDetection {
     }
   ) => {
     this.payloadToSignMap.set(payload, map);
+  };
+
+  getHandleRequestToSignMessage = async (
+    message: RequestToSignPayload,
+    senderPK: string
+  ) => {
+    return this.handleRequestToSignMessage(message, senderPK);
   };
 
   getSendRequestToSignMessage = async (

@@ -3,6 +3,7 @@ import {
   HeartbeatPayload,
   Message,
   RegisterPayload,
+  RequestToSignPayload,
   SignPayload,
 } from '../lib/types';
 import { GuardDetection } from '../lib';
@@ -1564,6 +1565,107 @@ describe('GuardDetection', () => {
           receiver: 'publicKey1',
         })
       );
+    });
+  });
+
+  describe('handleRequestToSignMessage', () => {
+    it('Should check if payload is valid and then send request to sign message to guards that are in active list', async () => {
+      const guardDetection = new TestGuardDetection(handler, config);
+      jest
+        .spyOn(guardDetection as any, 'isPayloadValidToSign')
+        .mockReturnValue(true);
+      jest
+        .spyOn(guardDetection as any, 'getActiveGuards')
+        .mockReturnValue([{ publicKey: 'publicKey1', peerId: 'peerId1' }]);
+      const spiedSendSignMessage = jest.spyOn(
+        guardDetection as any,
+        'sendSignMessage'
+      );
+      const message: RequestToSignPayload = {
+        payload: 'payload',
+        activeGuards: [{ publicKey: 'publicKey1', peerId: 'peerId1' }],
+        timestamp: Date.now(),
+      };
+      guardDetection.setGuardsInfo(
+        {
+          nonce: 'nonce2',
+          lastUpdate: Date.now(),
+          peerId: 'peerId2',
+          publicKey: 'publicKey2',
+          recognitionPromises: [],
+        },
+        1
+      );
+      await guardDetection.getHandleRequestToSignMessage(message, 'publicKey2');
+      expect(spiedSendSignMessage).toHaveBeenCalledTimes(1);
+    });
+
+    it('Should check if payload is not should not send anything', async () => {
+      const guardDetection = new TestGuardDetection(handler, config);
+      jest
+        .spyOn(guardDetection as any, 'isPayloadValidToSign')
+        .mockReturnValue(false);
+      jest
+        .spyOn(guardDetection as any, 'getActiveGuards')
+        .mockReturnValue([{ publicKey: 'publicKey1', peerId: 'peerId1' }]);
+      const spiedSendSignMessage = jest.spyOn(
+        guardDetection as any,
+        'sendSignMessage'
+      );
+      const message: RequestToSignPayload = {
+        payload: 'payload',
+        activeGuards: [{ publicKey: 'publicKey1', peerId: 'peerId1' }],
+        timestamp: Date.now(),
+      };
+      guardDetection.setGuardsInfo(
+        {
+          nonce: 'nonce2',
+          lastUpdate: Date.now(),
+          peerId: 'peerId2',
+          publicKey: 'publicKey2',
+          recognitionPromises: [],
+        },
+        1
+      );
+      await guardDetection.getHandleRequestToSignMessage(message, 'publicKey2');
+      expect(spiedSendSignMessage).toHaveBeenCalledTimes(0);
+    });
+
+    it('Should check if payload is valid and guard is not registered so should register guards first and then send sign message', async () => {
+      const guardDetection = new TestGuardDetection(handler, config);
+      jest
+        .spyOn(guardDetection as any, 'isPayloadValidToSign')
+        .mockReturnValue(true);
+      jest
+        .spyOn(guardDetection as any, 'getActiveGuards')
+        .mockReturnValue([{ publicKey: 'publicKey1', peerId: 'peerId1' }]);
+      const spiedSendSignMessage = jest.spyOn(
+        guardDetection as any,
+        'sendSignMessage'
+      );
+      const spiedRegisterAndWaitForApprove = jest.spyOn(
+        guardDetection as any,
+        'registerAndWaitForApprove'
+      );
+      spiedRegisterAndWaitForApprove.mockReturnValue(Promise.resolve(true));
+      const message: RequestToSignPayload = {
+        payload: 'payload',
+        activeGuards: [],
+        timestamp: Date.now(),
+      };
+      guardDetection.setGuardsInfo(
+        {
+          nonce: 'nonce2',
+          lastUpdate: Date.now(),
+          peerId: 'peerId2',
+          publicKey: 'publicKey2',
+          recognitionPromises: [],
+        },
+        1
+      );
+      await guardDetection.getHandleRequestToSignMessage(message, 'publicKey2');
+      expect(spiedRegisterAndWaitForApprove).toHaveBeenCalledTimes(1);
+      expect(spiedSendSignMessage).toHaveBeenCalledTimes(1);
     });
   });
 });
