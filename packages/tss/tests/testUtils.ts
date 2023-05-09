@@ -48,6 +48,7 @@ const handler: MessageHandler = {
 const config: GuardDetectionConfig = {
   index: 0,
   minimumSigner: 2,
+  privateKey: guardsPrivateKeys[0],
   guardsPublicKey: guardsPublicKeys.slice(1, 4),
   logger: new DummyLogger(),
   publicKey: guardsPublicKeys[0],

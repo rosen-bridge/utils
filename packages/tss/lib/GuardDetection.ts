@@ -26,10 +26,13 @@ import {
   oneMinute,
   minimumTimeRemainedToSign,
 } from './constants/constants';
+import { blake2b } from 'blakejs';
+import pkg from 'secp256k1';
 
 class GuardDetection {
   protected handler: MessageHandler;
   protected readonly publicKey: string;
+  protected readonly privateKey: string;
   protected readonly index: number;
   protected guardsInfo: GuardInfo[] = [];
   protected readonly logger: AbstractLogger;
@@ -67,6 +70,7 @@ class GuardDetection {
     this.guardsUpdateStatusInterval =
       config.guardsUpdateStatusInterval || guardsUpdateStatusInterval;
     this.publicKey = config.publicKey;
+    this.privateKey = config.privateKey;
     let guardsCount = config.guardsPublicKey.length;
     while (guardsCount--)
       this.guardsInfo.push({
@@ -524,9 +528,16 @@ class GuardDetection {
   protected requestSignToTss = async (payload: string) => {
     return;
   };
-
+  blake2bHash = (message: string): Uint8Array => {
+    return blake2b(message, undefined, 32);
+  };
   protected signTss = (payload: string) => {
-    return 'something';
+    const bytes = this.blake2bHash(payload);
+    const signed = pkg.ecdsaSign(
+      bytes,
+      Uint8Array.from(Buffer.from(this.privateKey, 'hex'))
+    );
+    return Buffer.from(signed.signature).toString('hex');
   };
 
   protected checkTssSign = (
@@ -534,14 +545,18 @@ class GuardDetection {
     sign: string,
     publicKey: string
   ) => {
-    return true;
+    const bytes = this.blake2bHash(payload);
+    return pkg.ecdsaVerify(
+      Uint8Array.from(Buffer.from(sign, 'hex')),
+      Uint8Array.from(bytes),
+      Uint8Array.from(Buffer.from(publicKey, 'hex'))
+    );
   };
   protected registerAndWaitForApprove = async (
     guardsIndex: Array<number>,
     peerIds: Array<string>
   ) => {
     const timeToSign = this.timeRemindToSign();
-    console.log(timeToSign);
     if (!timeToSign.isTimeToSign) return false;
 
     const registerPromises: Array<Promise<boolean>> = [];

@@ -7,10 +7,17 @@ import {
   SignPayload,
 } from '../lib/types';
 import { GuardDetection } from '../lib';
-import { config, guardsPublicKeys, handler } from './testUtils';
+import {
+  config,
+  guardsPrivateKeys,
+  guardsPublicKeys,
+  handler,
+} from './testUtils';
 import { TestGuardDetection } from './TestGuardDetection';
 import { registerTimeout } from '../lib/constants/constants';
 import { describe } from 'node:test';
+import pkg from 'secp256k1';
+import { blake2b } from 'blakejs';
 
 describe('GuardDetection', () => {
   beforeEach(() => {
@@ -1666,6 +1673,40 @@ describe('GuardDetection', () => {
       await guardDetection.getHandleRequestToSignMessage(message, 'publicKey2');
       expect(spiedRegisterAndWaitForApprove).toHaveBeenCalledTimes(1);
       expect(spiedSendSignMessage).toHaveBeenCalledTimes(1);
+    });
+
+    describe('signTss', () => {
+      it('Should sign message with ecdsa and return sign', () => {
+        const guardDetection = new TestGuardDetection(handler, config);
+        const payload = 'payload';
+        const bytes = blake2b(payload, undefined, 32);
+        const signed = pkg.ecdsaSign(
+          bytes,
+          Uint8Array.from(Buffer.from(guardsPrivateKeys[0], 'hex'))
+        );
+        const res = Buffer.from(signed.signature).toString('hex');
+        expect(guardDetection.getSignTss(payload)).toBe(res);
+      });
+    });
+
+    describe('checkTssSign', () => {
+      it('Should return true if sign is valid', () => {
+        const guardDetection = new TestGuardDetection(handler, config);
+        const payload = 'payload';
+        const sign = guardDetection.getSignTss(payload);
+        expect(
+          guardDetection.getCheckTssSign(payload, sign, guardsPublicKeys[0])
+        ).toBe(true);
+      });
+
+      it('Should return false if sign is invalid', () => {
+        const guardDetection = new TestGuardDetection(handler, config);
+        const payload = 'payload';
+        const sign = guardDetection.getSignTss(payload);
+        expect(
+          guardDetection.getCheckTssSign(payload, sign, guardsPublicKeys[1])
+        ).toBe(false);
+      });
     });
   });
 });

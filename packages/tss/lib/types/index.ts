@@ -93,6 +93,7 @@ interface GuardDetectionConfig {
   logger?: AbstractLogger;
   guardsPublicKey: string[];
   publicKey: string;
+  privateKey: string;
   index: number;
   minimumSigner: number;
   guardsRegisterTimeout?: number;
