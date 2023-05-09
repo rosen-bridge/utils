@@ -1070,4 +1070,311 @@ export default class CardanoTestData {
       amount: '10000000',
     },
   };
+
+  static rosenTransactions = {
+    validTokenLock: {
+      id: 'c5afb967619ee64e0d724a56d27670fee6fe698df1375692d9868cb9792467c8',
+      inputs: [
+        {
+          txId: 'faf9346ebeaf65c2720464eb9126e43dfd7b40742e337370b67b84ae0f03dc2b',
+          index: 0,
+          value: 3000000n,
+          assets: [
+            {
+              policy_id:
+                'a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235',
+              asset_name: '484f534b59',
+              quantity: '184272501',
+              fingerprint: 'asset17q7r59zlc3dgw0venc80pdv566q6yguw03f0d9',
+            },
+          ],
+        },
+      ],
+      outputs: [
+        {
+          address:
+            'addr1q9jperhqputlfnfqhteu6eu2xhjwxa9keph08vgrqjg357tthg3xm3n4r6pw85a5p6gdqv9v5zd6vmqdpxvl0jrql2aszjgvaj',
+          value: 1386445n,
+          assets: [],
+        },
+        {
+          address:
+            'addr_test1vze7yqqlg8cjlyhz7jzvsg0f3fhxpuu6m3llxrajfzqecggw704re',
+          value: 1344798n,
+          assets: [
+            {
+              policy_id:
+                'a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235',
+              asset_name: '484f534b59',
+              quantity: '184272501',
+              fingerprint: 'asset17q7r59zlc3dgw0venc80pdv566q6yguw03f0d9',
+            },
+          ],
+        },
+      ],
+      ttl: 0,
+      fee: 268757n,
+      metadata: {
+        '0': {
+          to: 'ergo',
+          bridgeFee: '165000000',
+          toAddress: '9g7mqqQAnUG4gWi6pFmic65ZfUrrWiVkMnbsg2hXUx6aVbBSTJ4',
+          networkFee: '175000',
+          fromAddress: [
+            'addr1q9jperhqputlfnfqhteu6eu2xhjwxa9keph08vgrqjg357tthg3xm3n4r6p',
+            'w85a5p6gdqv9v5zd6vmqdpxvl0jrql2aszjgvaj',
+          ],
+        },
+      },
+    },
+    validAdaLock: {
+      id: '9aafc88a1342be4899a4a44cc509a74df0aafa2bb5f04ae5ef425edde9a2617c',
+      inputs: [
+        {
+          txId: '2868e42d3c00095c658b7cfd26ef8f1079617861b8ad68c65b73beabfa4ec83c',
+          index: 0,
+          value: 10000000n,
+          assets: [],
+        },
+        {
+          txId: 'fc303c5c986ffa4293cb60449f5496faab012dc37160143d5aefab0690f3af6c',
+          index: 0,
+          value: 10000000n,
+          assets: [],
+        },
+      ],
+      outputs: [
+        {
+          address:
+            'addr1qyhuv6w60yf5twtv9dky7pgxkayxzcygkqfygje2kwqj5ung67rta7rlkn5g0a73c43efpcpznk9j8uhaukpdr9ye3xqk2kgam',
+          value: 9731595n,
+          assets: [],
+        },
+        {
+          address:
+            'addr_test1vze7yqqlg8cjlyhz7jzvsg0f3fhxpuu6m3llxrajfzqecggw704re',
+          value: 10000000n,
+          assets: [],
+        },
+      ],
+      ttl: 0,
+      fee: 268405n,
+      metadata: {
+        '0': {
+          to: 'ergo',
+          bridgeFee: '8500000',
+          toAddress: '9gh2VssYZWZNFwhbC4VhKytiGDbCdwqYfdorQ6US6Ftj3n74rTX',
+          networkFee: '9000',
+          fromAddress: [
+            'addr1qyhuv6w60yf5twtv9dky7pgxkayxzcygkqfygje2kwqj5ung67rta7rlkn5',
+            'g0a73c43efpcpznk9j8uhaukpdr9ye3xqk2kgam',
+          ],
+        },
+      },
+    },
+    noLock: {
+      id: 'abcfb5be7e0cbc1eda89924e31b917b984a8e1f747ee5973fc4d8bce2aeab83f',
+      inputs: [
+        {
+          txId: '83cf93edbc7dae819e36d3bc14868ac1b5f4ceb3faf318dc345dc5ad12d521f1',
+          index: 1,
+          value: 119172320n,
+          assets: [],
+        },
+        {
+          txId: '3bed024e5aa81e7d54df868428514103e5ba09ab39f01885cc5b4627a231772a',
+          index: 7,
+          value: 20571475n,
+          assets: [],
+        },
+      ],
+      outputs: [
+        {
+          address:
+            'addr1q88p92q453gnyhlp6rl6f0hhf9npg86u4df8jhwf3t9ekuky8am5m5jqgqg2ywlk8wqt87pe4jvyjwstxqner4ejtzyscyu347',
+          value: 2000000n,
+          assets: [],
+        },
+        {
+          address:
+            'addr1q88p92q453gnyhlp6rl6f0hhf9npg86u4df8jhwf3t9ekuky8am5m5jqgqg2ywlk8wqt87pe4jvyjwstxqner4ejtzyscyu347',
+          value: 17867518n,
+          assets: [],
+        },
+        {
+          address:
+            'addr1q8lgqva8uleq9f3wjsnggh42d6y8vm9rvah380wq3x9djqwhy3954pmhklwxjz05vsx0qt4yw4a9275eldyrkp0c0hlqgxc7du',
+          value: 119672320n,
+          assets: [],
+        },
+      ],
+      ttl: 91881329,
+      fee: 203957n,
+      metadata: {
+        '0': {
+          to: 'ergo',
+          bridgeFee: '8500000',
+          toAddress: '9gh2VssYZWZNFwhbC4VhKytiGDbCdwqYfdorQ6US6Ftj3n74rTX',
+          networkFee: '9000',
+          fromAddress: [
+            'addr1qyhuv6w60yf5twtv9dky7pgxkayxzcygkqfygje2kwqj5ung67rta7rlkn5',
+            'g0a73c43efpcpznk9j8uhaukpdr9ye3xqk2kgam',
+          ],
+        },
+      },
+    },
+    noZeroKeyMetadata: {
+      id: 'c5afb967619ee64e0d724a56d27670fee6fe698df1375692d9868cb9792467c8',
+      inputs: [
+        {
+          txId: 'faf9346ebeaf65c2720464eb9126e43dfd7b40742e337370b67b84ae0f03dc2b',
+          index: 0,
+          value: 3000000n,
+          assets: [
+            {
+              policy_id:
+                'a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235',
+              asset_name: '484f534b59',
+              quantity: '184272501',
+              fingerprint: 'asset17q7r59zlc3dgw0venc80pdv566q6yguw03f0d9',
+            },
+          ],
+        },
+      ],
+      outputs: [
+        {
+          address:
+            'addr1q9jperhqputlfnfqhteu6eu2xhjwxa9keph08vgrqjg357tthg3xm3n4r6pw85a5p6gdqv9v5zd6vmqdpxvl0jrql2aszjgvaj',
+          value: 1386445n,
+          assets: [],
+        },
+        {
+          address:
+            'addr_test1vze7yqqlg8cjlyhz7jzvsg0f3fhxpuu6m3llxrajfzqecggw704re',
+          value: 1344798n,
+          assets: [
+            {
+              policy_id:
+                'a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235',
+              asset_name: '484f534b59',
+              quantity: '184272501',
+              fingerprint: 'asset17q7r59zlc3dgw0venc80pdv566q6yguw03f0d9',
+            },
+          ],
+        },
+      ],
+      ttl: 0,
+      fee: 268757n,
+      metadata: {
+        '1': {
+          to: 'ergo',
+          bridgeFee: '165000000',
+          toAddress: '9g7mqqQAnUG4gWi6pFmic65ZfUrrWiVkMnbsg2hXUx6aVbBSTJ4',
+          networkFee: '175000',
+          fromAddress: [
+            'addr1q9jperhqputlfnfqhteu6eu2xhjwxa9keph08vgrqjg357tthg3xm3n4r6p',
+            'w85a5p6gdqv9v5zd6vmqdpxvl0jrql2aszjgvaj',
+          ],
+        },
+      },
+    },
+  };
+
+  static rosenRosenData = {
+    validTokenLock: {
+      toChain: 'ergo',
+      toAddress: '9g7mqqQAnUG4gWi6pFmic65ZfUrrWiVkMnbsg2hXUx6aVbBSTJ4',
+      bridgeFee: '165000000',
+      networkFee: '175000',
+      fromAddress:
+        'addr1q9jperhqputlfnfqhteu6eu2xhjwxa9keph08vgrqjg357tthg3xm3n4r6pw85a5p6gdqv9v5zd6vmqdpxvl0jrql2aszjgvaj',
+      sourceChainTokenId: 'asset17q7r59zlc3dgw0venc80pdv566q6yguw03f0d9',
+      amount: '184272501',
+      targetChainTokenId:
+        'b37bfa41c2d9e61b4e478ddfc459a03d25b658a2305ffb428fbc47ad6abbeeaa',
+      sourceTxId:
+        'c5afb967619ee64e0d724a56d27670fee6fe698df1375692d9868cb9792467c8',
+    },
+    validADALock: {
+      toChain: 'ergo',
+      toAddress: '9gh2VssYZWZNFwhbC4VhKytiGDbCdwqYfdorQ6US6Ftj3n74rTX',
+      bridgeFee: '8500000',
+      networkFee: '9000',
+      fromAddress:
+        'addr1qyhuv6w60yf5twtv9dky7pgxkayxzcygkqfygje2kwqj5ung67rta7rlkn5g0a73c43efpcpznk9j8uhaukpdr9ye3xqk2kgam',
+      sourceChainTokenId: 'lovelace',
+      amount: '10000000',
+      targetChainTokenId:
+        'f6a69529b12a7e2326acffee8383e0c44408f87a872886fadf410fe8498006d3',
+      sourceTxId:
+        '9aafc88a1342be4899a4a44cc509a74df0aafa2bb5f04ae5ef425edde9a2617c',
+    },
+  };
+
+  static rosenUTXOs = {
+    tokenLocked: {
+      address:
+        'addr_test1vze7yqqlg8cjlyhz7jzvsg0f3fhxpuu6m3llxrajfzqecggw704re',
+      value: 1344798n,
+      assets: [
+        {
+          policy_id: 'a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235',
+          asset_name: '484f534b59',
+          quantity: '184272501',
+          fingerprint: 'asset17q7r59zlc3dgw0venc80pdv566q6yguw03f0d9',
+        },
+      ],
+    },
+    adaLocked: {
+      address:
+        'addr_test1vze7yqqlg8cjlyhz7jzvsg0f3fhxpuu6m3llxrajfzqecggw704re',
+      value: 10000000n,
+      assets: [],
+    },
+    secondAssetLocked: {
+      address:
+        'addr_test1vze7yqqlg8cjlyhz7jzvsg0f3fhxpuu6m3llxrajfzqecggw704re',
+      value: 1344798n,
+      assets: [
+        {
+          policy_id: 'a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235',
+          asset_name: '484f534b50',
+          quantity: '184272501',
+          fingerprint: 'asset17q7r59zlc3dgw0venc80pdv566q6yguw03f0d9',
+        },
+        {
+          policy_id: 'a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235',
+          asset_name: '484f534b59',
+          quantity: '184272501',
+          fingerprint: 'asset17q7r59zlc3dgw0venc80pdv566q6yguw03f0d9',
+        },
+      ],
+    },
+    wrongTokenLocked: {
+      address:
+        'addr_test1vze7yqqlg8cjlyhz7jzvsg0f3fhxpuu6m3llxrajfzqecggw704re',
+      value: 10000000n,
+      assets: [
+        {
+          policy_id: 'a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235',
+          asset_name: '484f534b50',
+          quantity: '184272501',
+          fingerprint: 'asset17q7r59zlc3dgw0venc80pdv566q6yguw03f0d9',
+        },
+      ],
+    },
+  };
+
+  static rosenAssetTransformations = {
+    tokenLocked: {
+      from: 'asset17q7r59zlc3dgw0venc80pdv566q6yguw03f0d9',
+      to: 'b37bfa41c2d9e61b4e478ddfc459a03d25b658a2305ffb428fbc47ad6abbeeaa',
+      amount: '184272501',
+    },
+    adaLocked: {
+      from: 'lovelace',
+      to: 'f6a69529b12a7e2326acffee8383e0c44408f87a872886fadf410fe8498006d3',
+      amount: '10000000',
+    },
+  };
 }
