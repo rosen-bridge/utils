@@ -1114,8 +1114,8 @@ export default class CardanoTestData {
       ],
       ttl: 0,
       fee: 268757n,
-      metadata: [
-        {
+      metadata: {
+        '0': {
           to: 'ergo',
           bridgeFee: '165000000',
           toAddress: '9g7mqqQAnUG4gWi6pFmic65ZfUrrWiVkMnbsg2hXUx6aVbBSTJ4',
@@ -1125,7 +1125,7 @@ export default class CardanoTestData {
             'w85a5p6gdqv9v5zd6vmqdpxvl0jrql2aszjgvaj',
           ],
         },
-      ],
+      },
     },
     validAdaLock: {
       id: '9aafc88a1342be4899a4a44cc509a74df0aafa2bb5f04ae5ef425edde9a2617c',
@@ -1159,8 +1159,8 @@ export default class CardanoTestData {
       ],
       ttl: 0,
       fee: 268405n,
-      metadata: [
-        {
+      metadata: {
+        '0': {
           to: 'ergo',
           bridgeFee: '8500000',
           toAddress: '9gh2VssYZWZNFwhbC4VhKytiGDbCdwqYfdorQ6US6Ftj3n74rTX',
@@ -1170,7 +1170,7 @@ export default class CardanoTestData {
             'g0a73c43efpcpznk9j8uhaukpdr9ye3xqk2kgam',
           ],
         },
-      ],
+      },
     },
     noLock: {
       id: 'abcfb5be7e0cbc1eda89924e31b917b984a8e1f747ee5973fc4d8bce2aeab83f',
@@ -1210,8 +1210,8 @@ export default class CardanoTestData {
       ],
       ttl: 91881329,
       fee: 203957n,
-      metadata: [
-        {
+      metadata: {
+        '0': {
           to: 'ergo',
           bridgeFee: '8500000',
           toAddress: '9gh2VssYZWZNFwhbC4VhKytiGDbCdwqYfdorQ6US6Ftj3n74rTX',
@@ -1221,7 +1221,62 @@ export default class CardanoTestData {
             'g0a73c43efpcpznk9j8uhaukpdr9ye3xqk2kgam',
           ],
         },
+      },
+    },
+    noZeroKeyMetadata: {
+      id: 'c5afb967619ee64e0d724a56d27670fee6fe698df1375692d9868cb9792467c8',
+      inputs: [
+        {
+          txId: 'faf9346ebeaf65c2720464eb9126e43dfd7b40742e337370b67b84ae0f03dc2b',
+          index: 0,
+          value: 3000000n,
+          assets: [
+            {
+              policy_id:
+                'a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235',
+              asset_name: '484f534b59',
+              quantity: '184272501',
+              fingerprint: 'asset17q7r59zlc3dgw0venc80pdv566q6yguw03f0d9',
+            },
+          ],
+        },
       ],
+      outputs: [
+        {
+          address:
+            'addr1q9jperhqputlfnfqhteu6eu2xhjwxa9keph08vgrqjg357tthg3xm3n4r6pw85a5p6gdqv9v5zd6vmqdpxvl0jrql2aszjgvaj',
+          value: 1386445n,
+          assets: [],
+        },
+        {
+          address:
+            'addr_test1vze7yqqlg8cjlyhz7jzvsg0f3fhxpuu6m3llxrajfzqecggw704re',
+          value: 1344798n,
+          assets: [
+            {
+              policy_id:
+                'a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235',
+              asset_name: '484f534b59',
+              quantity: '184272501',
+              fingerprint: 'asset17q7r59zlc3dgw0venc80pdv566q6yguw03f0d9',
+            },
+          ],
+        },
+      ],
+      ttl: 0,
+      fee: 268757n,
+      metadata: {
+        '1': {
+          to: 'ergo',
+          bridgeFee: '165000000',
+          toAddress: '9g7mqqQAnUG4gWi6pFmic65ZfUrrWiVkMnbsg2hXUx6aVbBSTJ4',
+          networkFee: '175000',
+          fromAddress: [
+            'addr1q9jperhqputlfnfqhteu6eu2xhjwxa9keph08vgrqjg357tthg3xm3n4r6p',
+            'w85a5p6gdqv9v5zd6vmqdpxvl0jrql2aszjgvaj',
+          ],
+        },
+      },
     },
   };
 
