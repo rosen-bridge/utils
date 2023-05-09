@@ -23,7 +23,7 @@ export class CardanoRosenExtractor extends AbstractRosenDataExtractor<string> {
         `Failed to parse transaction json to CardanoTx format while extracting rosen data: ${e}`
       );
     }
-    const rosenMetadata = transaction.metadata['0'];
+    const rosenMetadata = transaction.metadata?.['0'];
     if (
       rosenMetadata &&
       'to' in rosenMetadata &&
