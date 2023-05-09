@@ -20,7 +20,7 @@ export class CardanoRosenExtractor extends AbstractRosenDataExtractor<string> {
       transaction = JSONBigInt.parse(serializedTransaction);
     } catch (e) {
       this.logger.debug(
-        `An error occurred while parse Cardano rosen data from serializedTransaction: ${e}`
+        `An error occurred while parsing Cardano rosen data from serializedTransaction: ${e}`
       );
       if (e instanceof Error && e.stack) {
         this.logger.debug(e.stack);
