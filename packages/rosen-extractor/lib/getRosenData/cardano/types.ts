@@ -85,7 +85,7 @@ interface CardanoTx {
   outputs: CardanoBoxCandidate[];
   ttl: number;
   fee: bigint;
-  metadata: JSON[];
+  metadata: Record<string, any>[];
 }
 
 export {
