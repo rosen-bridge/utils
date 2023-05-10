@@ -134,7 +134,7 @@ class TestGuardDetection extends GuardDetection {
     return this.guardsInfo[index];
   };
   getSignTss = (payload: string) => {
-    return this.signTss(payload);
+    return this.signTSS(payload);
   };
 
   getCheckTssSign = (payload: string, sign: string, publicKey: string) => {

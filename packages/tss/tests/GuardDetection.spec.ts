@@ -12,6 +12,7 @@ import {
   guardsPrivateKeys,
   guardsPublicKeys,
   handler,
+  tssHandler,
 } from './testUtils';
 import { TestGuardDetection } from './TestGuardDetection';
 import { registerTimeout } from '../lib/constants/constants';
@@ -35,7 +36,7 @@ describe('GuardDetection', () => {
      * - the length of the nonce should be 32 byte after base64 decoding
      */
     it('Should generate a random base64 encoded nonce with the default size 32', () => {
-      const guardDetection = new GuardDetection(handler, config);
+      const guardDetection = new GuardDetection(handler, config, tssHandler);
       const guardDetectionProto = guardDetection as any;
       const nonce = guardDetectionProto.generateNonce();
       const decodedNonce = Buffer.from(nonce, 'base64').toString('hex');
@@ -53,7 +54,7 @@ describe('GuardDetection', () => {
      * - the length of the nonce should be 10 byte after base64 decoding
      */
     it('Should generate a random base64 encoded nonce with the given size', () => {
-      const guardDetection = new GuardDetection(handler, config);
+      const guardDetection = new GuardDetection(handler, config, tssHandler);
       const guardDetectionProto = guardDetection as any;
       const nonce = guardDetectionProto.generateNonce(10);
       const decodedNonce = Buffer.from(nonce, 'base64').toString('hex');
@@ -74,7 +75,11 @@ describe('GuardDetection', () => {
      * - the return value should be true
      */
     it('Should return true if public key of sender be in the valid public keys and message signature should be true', () => {
-      const guardDetection = new TestGuardDetection(handler, config);
+      const guardDetection = new TestGuardDetection(
+        handler,
+        config,
+        tssHandler
+      );
       const parsedMessage: Message = {
         type: 'approval',
         pk: guardsPublicKeys[1],
@@ -97,7 +102,11 @@ describe('GuardDetection', () => {
      * - the return value should be false
      */
     it('Should return false if the message is not have valid signature', () => {
-      const guardDetection = new TestGuardDetection(handler, config);
+      const guardDetection = new TestGuardDetection(
+        handler,
+        config,
+        tssHandler
+      );
       const parsedMessage: Message = {
         type: 'approval',
         pk: guardsPublicKeys[1],
@@ -120,7 +129,11 @@ describe('GuardDetection', () => {
      * - the return value should be false
      */
     it('Should return false if the message have not a valid public key', () => {
-      const guardDetection = new TestGuardDetection(handler, config);
+      const guardDetection = new TestGuardDetection(
+        handler,
+        config,
+        tssHandler
+      );
       const parsedMessage: Message = {
         type: 'approval',
         pk: 'not valid public key',
@@ -145,7 +158,11 @@ describe('GuardDetection', () => {
      * - the return value should be true
      */
     it('Should return true if the timestamp is less than timestampTolerance', () => {
-      const guardDetection = new TestGuardDetection(handler, config);
+      const guardDetection = new TestGuardDetection(
+        handler,
+        config,
+        tssHandler
+      );
       const isValid = guardDetection.getCheckTimestamp(Date.now());
       expect(isValid).toEqual(true);
     });
@@ -161,7 +178,11 @@ describe('GuardDetection', () => {
      * - the return value should be false
      */
     it('Should return false if the timestamp is not less than timestampTolerance', () => {
-      const guardDetection = new TestGuardDetection(handler, config);
+      const guardDetection = new TestGuardDetection(
+        handler,
+        config,
+        tssHandler
+      );
       const isValid = guardDetection.getCheckTimestamp(
         Date.now() - 2 * 60 * 1000
       );
@@ -181,7 +202,11 @@ describe('GuardDetection', () => {
      * - the return value should be the index of the public key
      */
     it('Should return the index of the public key', () => {
-      const guardDetection = new TestGuardDetection(handler, config);
+      const guardDetection = new TestGuardDetection(
+        handler,
+        config,
+        tssHandler
+      );
       guardDetection.setGuardsInfo(
         {
           publicKey: guardsPublicKeys[1],
@@ -230,7 +255,11 @@ describe('GuardDetection', () => {
      * - the return value should be -1
      */
     it('Should return -1 if the public key is not in the list', () => {
-      const guardDetection = new TestGuardDetection(handler, config);
+      const guardDetection = new TestGuardDetection(
+        handler,
+        config,
+        tssHandler
+      );
       const index = guardDetection.getPublicKeyToIndex('publicKey');
       expect(index).toEqual(-1);
     });
@@ -254,7 +283,11 @@ describe('GuardDetection', () => {
      */
     it('Should send an approval message with the new nonce and the received nonce', async () => {
       jest.spyOn(handler, 'send');
-      const guardDetection = new TestGuardDetection(handler, config);
+      const guardDetection = new TestGuardDetection(
+        handler,
+        config,
+        tssHandler
+      );
       jest
         .spyOn(guardDetection as any, 'generateNonce')
         .mockReturnValue('new nonce');
@@ -299,7 +332,11 @@ describe('GuardDetection', () => {
      */
     it('Should save peerId in case of received nonce is equal to sender nonce and lastUpdate is less than guardsHeartbeatTimeout', async () => {
       jest.spyOn(handler, 'send');
-      const guardDetection = new TestGuardDetection(handler, config);
+      const guardDetection = new TestGuardDetection(
+        handler,
+        config,
+        tssHandler
+      );
       const lastUpdate = Date.now() - 20 * 1000;
       guardDetection.setGuardsInfo(
         {
@@ -341,7 +378,11 @@ describe('GuardDetection', () => {
      * - the sent message should be an approve message with the new nonce and the received nonce
      */
     it('Should send approval message if nonce is set in the payload and received nonce is equal to sender nonce', async () => {
-      const guardDetection = new TestGuardDetection(handler, config);
+      const guardDetection = new TestGuardDetection(
+        handler,
+        config,
+        tssHandler
+      );
       guardDetection.setGuardsInfo(
         {
           nonce: 'nonce',
@@ -394,7 +435,11 @@ describe('GuardDetection', () => {
      */
     it('Should send approval message just with the received nonce', async () => {
       jest.spyOn(handler, 'send');
-      const guardDetection = new TestGuardDetection(handler, config);
+      const guardDetection = new TestGuardDetection(
+        handler,
+        config,
+        tssHandler
+      );
       const payload: HeartbeatPayload = {
         nonce: 'nonce',
         timestamp: Date.now(),
@@ -432,7 +477,11 @@ describe('GuardDetection', () => {
      * - the called handler should be `handleRegisterMessage`
      */
     it('Should call the correct handler for the message register with correct signature', async () => {
-      const guardDetection = new TestGuardDetection(handler, config);
+      const guardDetection = new TestGuardDetection(
+        handler,
+        config,
+        tssHandler
+      );
       const spiedHandleRegister = jest.spyOn(
         guardDetection as any,
         'handleRegisterMessage'
@@ -465,7 +514,11 @@ describe('GuardDetection', () => {
      * - the called handler should be `handleApproveMessage`
      */
     it('Should call the correct handler for the message approval with correct signature', async () => {
-      const guardDetection = new TestGuardDetection(handler, config);
+      const guardDetection = new TestGuardDetection(
+        handler,
+        config,
+        tssHandler
+      );
       const spiedHandleApprove = jest.spyOn(
         guardDetection as any,
         'handleApproveMessage'
@@ -502,7 +555,11 @@ describe('GuardDetection', () => {
      * - the called handler should be `handleHeartbeatMessage`
      */
     it('Should call the correct handler for the message heartbeat with correct signature', async () => {
-      const guardDetection = new TestGuardDetection(handler, config);
+      const guardDetection = new TestGuardDetection(
+        handler,
+        config,
+        tssHandler
+      );
       const spiedHandleHeartbeat = jest.spyOn(
         guardDetection as any,
         'handleHeartbeatMessage'
@@ -533,7 +590,11 @@ describe('GuardDetection', () => {
      * - no handler should be called
      */
     it('Should not call any handler if the signature is not correct', async () => {
-      const guardDetection = new TestGuardDetection(handler, config);
+      const guardDetection = new TestGuardDetection(
+        handler,
+        config,
+        tssHandler
+      );
       const spiedHandleHeartbeat = jest.spyOn(
         guardDetection as any,
         'handleHeartbeatMessage'
@@ -574,7 +635,11 @@ describe('GuardDetection', () => {
      * - no handler should be called
      */
     it('Should not call any handler if timestamp is not valid', async () => {
-      const guardDetection = new TestGuardDetection(handler, config);
+      const guardDetection = new TestGuardDetection(
+        handler,
+        config,
+        tssHandler
+      );
       const spiedHandleHeartbeat = jest.spyOn(
         guardDetection as any,
         'handleHeartbeatMessage'
@@ -620,7 +685,11 @@ describe('GuardDetection', () => {
      * - the result should be false
      */
     it('Should return false if the guard is not set', () => {
-      const guardDetection = new TestGuardDetection(handler, config);
+      const guardDetection = new TestGuardDetection(
+        handler,
+        config,
+        tssHandler
+      );
       guardDetection.setGuardsInfo(
         {
           nonce: 'nonce',
@@ -646,7 +715,11 @@ describe('GuardDetection', () => {
      * - the result should be false
      */
     it('Should return false if the guard is not active', () => {
-      const guardDetection = new TestGuardDetection(handler, config);
+      const guardDetection = new TestGuardDetection(
+        handler,
+        config,
+        tssHandler
+      );
       guardDetection.setGuardsInfo(
         {
           nonce: 'nonce',
@@ -672,7 +745,11 @@ describe('GuardDetection', () => {
      * - the result should be true
      */
     it('Should return true if the guard is active', () => {
-      const guardDetection = new TestGuardDetection(handler, config);
+      const guardDetection = new TestGuardDetection(
+        handler,
+        config,
+        tssHandler
+      );
       guardDetection.setGuardsInfo(
         {
           nonce: 'nonce',
@@ -700,7 +777,11 @@ describe('GuardDetection', () => {
      * - the returned value should be the active guards peerId
      */
     it('Should return the active guards', () => {
-      const guardDetection = new TestGuardDetection(handler, config);
+      const guardDetection = new TestGuardDetection(
+        handler,
+        config,
+        tssHandler
+      );
       guardDetection.setGuardsInfo(
         {
           nonce: 'nonce',
@@ -749,7 +830,11 @@ describe('GuardDetection', () => {
      * - Should throw error
      */
     it('Should throw error if the public key is not valid', () => {
-      const guardDetection = new TestGuardDetection(handler, config);
+      const guardDetection = new TestGuardDetection(
+        handler,
+        config,
+        tssHandler
+      );
       const result = guardDetection.register('peerId1', 'publicKey1');
       expect(result).rejects.toThrowError('Guard not found');
     });
@@ -770,7 +855,11 @@ describe('GuardDetection', () => {
      * - Should return  two Promise<true>
      */
     it('Should return two promise that resolves true in case of adding same guard twice', async () => {
-      const guardDetection = new TestGuardDetection(handler, config);
+      const guardDetection = new TestGuardDetection(
+        handler,
+        config,
+        tssHandler
+      );
       jest
         .spyOn(guardDetection as any, 'generateNonce')
         .mockReturnValue('nonce');
@@ -815,7 +904,11 @@ describe('GuardDetection', () => {
      * - Should return Promise
      */
     it('Should send register message if the guard is not in the list', () => {
-      const guardDetection = new TestGuardDetection(handler, config);
+      const guardDetection = new TestGuardDetection(
+        handler,
+        config,
+        tssHandler
+      );
       guardDetection.setGuardsInfo(
         {
           nonce: '',
@@ -853,7 +946,11 @@ describe('GuardDetection', () => {
      * - Should return Promise that resolves true
      */
     it('Should send heartbeat message if the guard is in the list but not active', async () => {
-      const guardDetection = new TestGuardDetection(handler, config);
+      const guardDetection = new TestGuardDetection(
+        handler,
+        config,
+        tssHandler
+      );
       jest
         .spyOn(guardDetection as any, 'generateNonce')
         .mockReturnValue('nonce');
@@ -900,7 +997,11 @@ describe('GuardDetection', () => {
      * - Should reject with error
      */
     it('Should reject if the guard is in the list but peerId is not the same', async () => {
-      const guardDetection = new TestGuardDetection(handler, config);
+      const guardDetection = new TestGuardDetection(
+        handler,
+        config,
+        tssHandler
+      );
       guardDetection.setGuardsInfo(
         {
           nonce: 'nonce',
@@ -930,7 +1031,11 @@ describe('GuardDetection', () => {
      * - the sent message should be the register message with the correct payload
      */
     it('Should send register message to the guard', async () => {
-      const guardDetection = new TestGuardDetection(handler, config);
+      const guardDetection = new TestGuardDetection(
+        handler,
+        config,
+        tssHandler
+      );
       jest
         .spyOn(guardDetection as any, 'generateNonce')
         .mockReturnValue('new nonce');
@@ -971,7 +1076,11 @@ describe('GuardDetection', () => {
      * - the sent message should be the heartbeat message with the correct payload
      */
     it('Should send heartbeat message to the guard', async () => {
-      const guardDetection = new TestGuardDetection(handler, config);
+      const guardDetection = new TestGuardDetection(
+        handler,
+        config,
+        tssHandler
+      );
       jest
         .spyOn(guardDetection as any, 'generateNonce')
         .mockReturnValue('new nonce');
@@ -1012,7 +1121,11 @@ describe('GuardDetection', () => {
      * - the send handler should be called with the correct message
      */
     it('Should send register message to guards that passed register timeout', async () => {
-      const guardDetection = new TestGuardDetection(handler, config);
+      const guardDetection = new TestGuardDetection(
+        handler,
+        config,
+        tssHandler
+      );
       jest
         .spyOn(guardDetection as any, 'generateNonce')
         .mockReturnValue('new nonce');
@@ -1072,7 +1185,11 @@ describe('GuardDetection', () => {
      * - the send handler should be called with the correct message
      */
     it('Should send heartbeat message to guards that passed heartbeat timeout', async () => {
-      const guardDetection = new TestGuardDetection(handler, config);
+      const guardDetection = new TestGuardDetection(
+        handler,
+        config,
+        tssHandler
+      );
       jest
         .spyOn(guardDetection as any, 'generateNonce')
         .mockReturnValue('new nonce');
@@ -1121,13 +1238,21 @@ describe('GuardDetection', () => {
 
   describe('timeRemainedToSign', () => {
     it("Should return isTimeToSign false if it's not guard turn to sign", () => {
-      const guardDetection = new TestGuardDetection(handler, config);
+      const guardDetection = new TestGuardDetection(
+        handler,
+        config,
+        tssHandler
+      );
       jest.useFakeTimers().setSystemTime(1000 * 60 * 5);
       expect(guardDetection.getTimeRemindToSign().isTimeToSign).toBe(false);
     });
 
     it('Should return isTimeToSign true if it guard turn to sign and should return valid remaining time to sign', () => {
-      const guardDetection = new TestGuardDetection(handler, config);
+      const guardDetection = new TestGuardDetection(
+        handler,
+        config,
+        tssHandler
+      );
       jest.useFakeTimers().setSystemTime(1000 * 60 * 4 + 5 * 1000);
       expect(guardDetection.getTimeRemindToSign().isTimeToSign).toBe(true);
       expect(guardDetection.getTimeRemindToSign().timeRemained).toBe(55 * 1000);
@@ -1136,7 +1261,11 @@ describe('GuardDetection', () => {
 
   describe('broadcastSign', () => {
     it('Should send sign message to the list provided in input', async () => {
-      const guardDetection = new TestGuardDetection(handler, config);
+      const guardDetection = new TestGuardDetection(
+        handler,
+        config,
+        tssHandler
+      );
       guardDetection.setGuardsInfo(
         {
           nonce: 'nonce',
@@ -1193,7 +1322,11 @@ describe('GuardDetection', () => {
 
   describe('registerAndWaitForApprove', () => {
     it('Should return true in case of it is guards turn and guards registered', async () => {
-      const guardDetection = new TestGuardDetection(handler, config);
+      const guardDetection = new TestGuardDetection(
+        handler,
+        config,
+        tssHandler
+      );
       jest.useFakeTimers().setSystemTime(1000 * 60 * 4 + 59 * 1000);
       jest
         .spyOn(guardDetection as any, 'generateNonce')
@@ -1243,7 +1376,11 @@ describe('GuardDetection', () => {
     });
 
     it('Should return false in case of it is guards turn and not all guards registered', async () => {
-      const guardDetection = new TestGuardDetection(handler, config);
+      const guardDetection = new TestGuardDetection(
+        handler,
+        config,
+        tssHandler
+      );
       jest.useFakeTimers().setSystemTime(1000 * 60 * 4 + 59 * 1000);
       jest
         .spyOn(guardDetection as any, 'generateNonce')
@@ -1288,7 +1425,11 @@ describe('GuardDetection', () => {
     });
 
     it('Should return false in case of it is not guard turn', async () => {
-      const guardDetection = new TestGuardDetection(handler, config);
+      const guardDetection = new TestGuardDetection(
+        handler,
+        config,
+        tssHandler
+      );
       jest.useFakeTimers().setSystemTime(1000 * 60 * 4 + 61 * 1000);
       const result = guardDetection.getRegisterAndWaitForApprove(
         [0, 1],
@@ -1300,7 +1441,11 @@ describe('GuardDetection', () => {
 
   describe('handleSignMessage', () => {
     it('Should check TSS Sign if true then add payload message to payloadToSignMap', async () => {
-      const guardDetection = new TestGuardDetection(handler, config);
+      const guardDetection = new TestGuardDetection(
+        handler,
+        config,
+        tssHandler
+      );
       jest.spyOn(guardDetection as any, 'checkTssSign').mockReturnValue(true);
       const payload: SignPayload = {
         payload: 'payload',
@@ -1323,7 +1468,11 @@ describe('GuardDetection', () => {
     });
 
     it('Should check TSS Sign if false should not save sign', async () => {
-      const guardDetection = new TestGuardDetection(handler, config);
+      const guardDetection = new TestGuardDetection(
+        handler,
+        config,
+        tssHandler
+      );
       jest.spyOn(guardDetection as any, 'checkTssSign').mockReturnValue(false);
       const payload: SignPayload = {
         payload: 'payload',
@@ -1350,7 +1499,11 @@ describe('GuardDetection', () => {
         ' it is guards turn and have time remain to Sign more than minimumTimeRemainedToSign should' +
         ' broadcast sign message to active guards and should send to requestSignToTss',
       async () => {
-        const guardDetection = new TestGuardDetection(handler, config);
+        const guardDetection = new TestGuardDetection(
+          handler,
+          config,
+          tssHandler
+        );
         jest.useFakeTimers().setSystemTime(1000 * 60 * 4 + 49 * 1000);
         jest.spyOn(guardDetection as any, 'checkTssSign').mockReturnValue(true);
         const spiedBroadcastSign = jest.spyOn(
@@ -1408,7 +1561,11 @@ describe('GuardDetection', () => {
         ' it is guards turn and have time remain to Sign less than minimumTimeRemainedToSign should' +
         'not broadcast sign message to active guards and should not send to requestSignToTss',
       async () => {
-        const guardDetection = new TestGuardDetection(handler, config);
+        const guardDetection = new TestGuardDetection(
+          handler,
+          config,
+          tssHandler
+        );
         jest.useFakeTimers().setSystemTime(1000 * 60 * 4 + 51 * 1000);
         jest.spyOn(guardDetection as any, 'checkTssSign').mockReturnValue(true);
         const spiedBroadcastSign = jest.spyOn(
@@ -1462,7 +1619,11 @@ describe('GuardDetection', () => {
       'Should check TSS Sign if true and payload signed is not more than or equal to minimumSigner' +
         ' should not broadcast sign message to active guards and should not send to requestSignToTss',
       async () => {
-        const guardDetection = new TestGuardDetection(handler, config);
+        const guardDetection = new TestGuardDetection(
+          handler,
+          config,
+          tssHandler
+        );
         jest.useFakeTimers().setSystemTime(1000 * 60 * 4 + 49 * 1000);
         jest.spyOn(guardDetection as any, 'checkTssSign').mockReturnValue(true);
         const spiedBroadcastSign = jest.spyOn(
@@ -1515,7 +1676,11 @@ describe('GuardDetection', () => {
 
   describe('sendSignMessage', () => {
     it('Should send sign message to peerId', async () => {
-      const guardDetection = new TestGuardDetection(handler, config);
+      const guardDetection = new TestGuardDetection(
+        handler,
+        config,
+        tssHandler
+      );
       guardDetection.setGuardsInfo(
         {
           nonce: 'nonce',
@@ -1546,7 +1711,11 @@ describe('GuardDetection', () => {
 
   describe('sendRequestToSignMessage', () => {
     it('Should send request to sign message to peerId', async () => {
-      const guardDetection = new TestGuardDetection(handler, config);
+      const guardDetection = new TestGuardDetection(
+        handler,
+        config,
+        tssHandler
+      );
       guardDetection.setGuardsInfo(
         {
           nonce: 'nonce',
@@ -1577,7 +1746,11 @@ describe('GuardDetection', () => {
 
   describe('handleRequestToSignMessage', () => {
     it('Should check if payload is valid and then send request to sign message to guards that are in active list', async () => {
-      const guardDetection = new TestGuardDetection(handler, config);
+      const guardDetection = new TestGuardDetection(
+        handler,
+        config,
+        tssHandler
+      );
       jest
         .spyOn(guardDetection as any, 'isPayloadValidToSign')
         .mockReturnValue(true);
@@ -1608,7 +1781,11 @@ describe('GuardDetection', () => {
     });
 
     it('Should check if payload is not should not send anything', async () => {
-      const guardDetection = new TestGuardDetection(handler, config);
+      const guardDetection = new TestGuardDetection(
+        handler,
+        config,
+        tssHandler
+      );
       jest
         .spyOn(guardDetection as any, 'isPayloadValidToSign')
         .mockReturnValue(false);
@@ -1639,7 +1816,11 @@ describe('GuardDetection', () => {
     });
 
     it('Should check if payload is valid and guard is not registered so should register guards first and then send sign message', async () => {
-      const guardDetection = new TestGuardDetection(handler, config);
+      const guardDetection = new TestGuardDetection(
+        handler,
+        config,
+        tssHandler
+      );
       jest
         .spyOn(guardDetection as any, 'isPayloadValidToSign')
         .mockReturnValue(true);
@@ -1673,40 +1854,6 @@ describe('GuardDetection', () => {
       await guardDetection.getHandleRequestToSignMessage(message, 'publicKey2');
       expect(spiedRegisterAndWaitForApprove).toHaveBeenCalledTimes(1);
       expect(spiedSendSignMessage).toHaveBeenCalledTimes(1);
-    });
-
-    describe('signTss', () => {
-      it('Should sign message with ecdsa and return sign', () => {
-        const guardDetection = new TestGuardDetection(handler, config);
-        const payload = 'payload';
-        const bytes = blake2b(payload, undefined, 32);
-        const signed = pkg.ecdsaSign(
-          bytes,
-          Uint8Array.from(Buffer.from(guardsPrivateKeys[0], 'hex'))
-        );
-        const res = Buffer.from(signed.signature).toString('hex');
-        expect(guardDetection.getSignTss(payload)).toBe(res);
-      });
-    });
-
-    describe('checkTssSign', () => {
-      it('Should return true if sign is valid', () => {
-        const guardDetection = new TestGuardDetection(handler, config);
-        const payload = 'payload';
-        const sign = guardDetection.getSignTss(payload);
-        expect(
-          guardDetection.getCheckTssSign(payload, sign, guardsPublicKeys[0])
-        ).toBe(true);
-      });
-
-      it('Should return false if sign is invalid', () => {
-        const guardDetection = new TestGuardDetection(handler, config);
-        const payload = 'payload';
-        const sign = guardDetection.getSignTss(payload);
-        expect(
-          guardDetection.getCheckTssSign(payload, sign, guardsPublicKeys[1])
-        ).toBe(false);
-      });
     });
   });
 });

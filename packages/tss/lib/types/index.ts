@@ -46,6 +46,11 @@ interface MessageHandler {
   send(message: Message): Promise<void>;
 }
 
+interface TSSHandler {
+  sign(message: string): string;
+  verify(message: string, signature: string, publicKey: string): boolean;
+}
+
 interface RegisterPayload {
   nonce: string;
   timestamp: number;
@@ -115,6 +120,7 @@ export {
   HeartbeatPayload,
   RequestToSignPayload,
   SignPayload,
+  TSSHandler,
   GuardInfo,
   GuardDetectionConfig,
   MessageType,

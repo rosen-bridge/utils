@@ -2,6 +2,7 @@ import { GuardDetectionConfig, MessageHandler } from '../lib';
 import crypto from 'crypto';
 import pkg from 'secp256k1';
 import { DummyLogger } from '@rosen-bridge/logger-interface';
+import { TSSHandler } from '../lib/types';
 
 /**
  * Generate 4 random private keys
@@ -54,4 +55,13 @@ const config: GuardDetectionConfig = {
   publicKey: guardsPublicKeys[0],
 };
 
-export { handler, config, guardsPrivateKeys, guardsPublicKeys };
+const tssHandler: TSSHandler = {
+  sign: () => {
+    return 'signature';
+  },
+  verify: () => {
+    return true;
+  },
+};
+
+export { handler, config, guardsPrivateKeys, guardsPublicKeys, tssHandler };

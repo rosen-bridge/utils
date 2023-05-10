@@ -10,6 +10,7 @@ import {
   RegisterPayload,
   RequestToSignPayload,
   SignPayload,
+  TSSHandler,
 } from './types';
 import { AbstractLogger, DummyLogger } from '@rosen-bridge/logger-interface';
 import {
@@ -26,8 +27,6 @@ import {
   oneMinute,
   minimumTimeRemainedToSign,
 } from './constants/constants';
-import { blake2b } from 'blakejs';
-import pkg from 'secp256k1';
 
 class GuardDetection {
   protected handler: MessageHandler;
@@ -55,9 +54,20 @@ class GuardDetection {
       signed: Array<{ publicKey: string; sign: string }>;
     }
   >();
-
-  constructor(handler: MessageHandler, config: GuardDetectionConfig) {
+  protected readonly signTSS: (payload: string) => string;
+  protected readonly checkTssSign: (
+    payload: string,
+    sign: string,
+    publicKey: string
+  ) => boolean;
+  constructor(
+    handler: MessageHandler,
+    config: GuardDetectionConfig,
+    TSSHandler: TSSHandler
+  ) {
     this.handler = handler;
+    this.signTSS = TSSHandler.sign;
+    this.checkTssSign = TSSHandler.verify;
     this.index = config.index;
     this.minimumSigner = config.minimumSigner;
     this.logger = config.logger || new DummyLogger();
@@ -472,7 +482,7 @@ class GuardDetection {
         peerIds
       );
       if (registerResult) {
-        const signedPayload = this.signTss(payload);
+        const signedPayload = this.signTSS(payload);
         const signPayload = {
           payload: payload,
           sign: signedPayload,
@@ -528,30 +538,7 @@ class GuardDetection {
   protected requestSignToTss = async (payload: string) => {
     return;
   };
-  protected blake2bHash = (message: string): Uint8Array => {
-    return blake2b(message, undefined, 32);
-  };
-  protected signTss = (payload: string) => {
-    const bytes = this.blake2bHash(payload);
-    const signed = pkg.ecdsaSign(
-      bytes,
-      Uint8Array.from(Buffer.from(this.privateKey, 'hex'))
-    );
-    return Buffer.from(signed.signature).toString('hex');
-  };
 
-  protected checkTssSign = (
-    payload: string,
-    sign: string,
-    publicKey: string
-  ) => {
-    const bytes = this.blake2bHash(payload);
-    return pkg.ecdsaVerify(
-      Uint8Array.from(Buffer.from(sign, 'hex')),
-      Uint8Array.from(bytes),
-      Uint8Array.from(Buffer.from(publicKey, 'hex'))
-    );
-  };
   protected registerAndWaitForApprove = async (
     guardsIndex: Array<number>,
     peerIds: Array<string>
