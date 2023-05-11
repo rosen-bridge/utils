@@ -54,12 +54,12 @@ class GuardDetection {
       signed: Array<{ publicKey: string; sign: string }>;
     }
   >();
-  protected readonly signTSS: (payload: string) => string;
+  protected readonly signTSS: (payload: string) => Promise<string>;
   protected readonly checkTssSign: (
     payload: string,
     sign: string,
     publicKey: string
-  ) => boolean;
+  ) => Promise<boolean>;
   constructor(
     handler: MessageHandler,
     config: GuardDetectionConfig,
@@ -482,7 +482,7 @@ class GuardDetection {
         peerIds
       );
       if (registerResult) {
-        const signedPayload = this.signTSS(payload);
+        const signedPayload = await this.signTSS(payload);
         const signPayload = {
           payload: payload,
           sign: signedPayload,
@@ -502,7 +502,7 @@ class GuardDetection {
   ): Promise<void> => {
     const payload = message.payload;
     const sign = message.sign;
-    if (this.checkTssSign(payload, sign, senderPk)) {
+    if (await this.checkTssSign(payload, sign, senderPk)) {
       this.logger.debug(`Sign message from ${sender} is valid`);
       const data = this.payloadToSignMap.get(payload);
       if (data) {

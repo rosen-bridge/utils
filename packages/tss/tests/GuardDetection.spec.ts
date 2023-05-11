@@ -17,8 +17,6 @@ import {
 import { TestGuardDetection } from './TestGuardDetection';
 import { registerTimeout } from '../lib/constants/constants';
 import { describe } from 'node:test';
-import pkg from 'secp256k1';
-import { blake2b } from 'blakejs';
 
 describe('GuardDetection', () => {
   beforeEach(() => {

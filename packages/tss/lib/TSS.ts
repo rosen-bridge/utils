@@ -1,4 +1,3 @@
-import { GuardDetection } from './GuardDetection';
 import * as ed from '@noble/ed25519';
 import { TSSHandler } from './types';
 
@@ -6,32 +5,25 @@ class TSS {
   // protected guardDetection:GuardDetection;
   protected privateKey: string;
   constructor() {
-    this.privateKey = 'someprivateKey';
+    this.privateKey = '';
     const tssHandler: TSSHandler = {
       sign: this.signTss,
       verify: this.checkTssSign,
     };
     // this.guardDetection();
   }
-  protected signTss = (payload: string) => {
-    return Buffer.from(
-      ed.sign(
-        Uint8Array.from(Buffer.from(payload, 'hex')),
-        Uint8Array.from(Buffer.from(this.privateKey, 'hex'))
-      )
-    ).toString('hex');
+  protected signTss = async (payload: string) => {
+    return Buffer.from(await ed.signAsync(payload, this.privateKey)).toString(
+      'hex'
+    );
   };
 
-  protected checkTssSign = (
+  protected checkTssSign = async (
     payload: string,
     sign: string,
     publicKey: string
   ) => {
-    return ed.verify(
-      Uint8Array.from(Buffer.from(sign, 'hex')),
-      Uint8Array.from(Buffer.from(payload, 'hex')),
-      Uint8Array.from(Buffer.from(publicKey, 'hex'))
-    );
+    return await ed.verifyAsync(sign, payload, publicKey);
   };
 }
 

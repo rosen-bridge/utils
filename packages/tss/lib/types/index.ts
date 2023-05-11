@@ -47,8 +47,12 @@ interface MessageHandler {
 }
 
 interface TSSHandler {
-  sign(message: string): string;
-  verify(message: string, signature: string, publicKey: string): boolean;
+  sign(message: string): Promise<string>;
+  verify(
+    message: string,
+    signature: string,
+    publicKey: string
+  ): Promise<boolean>;
 }
 
 interface RegisterPayload {

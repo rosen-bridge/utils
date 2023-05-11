@@ -57,10 +57,10 @@ const config: GuardDetectionConfig = {
 
 const tssHandler: TSSHandler = {
   sign: () => {
-    return 'signature';
+    return Promise.resolve('signature');
   },
   verify: () => {
-    return true;
+    return Promise.resolve(true);
   },
 };
 

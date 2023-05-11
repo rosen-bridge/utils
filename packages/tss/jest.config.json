@@ -3,5 +3,7 @@
   "testEnvironment": "node",
   "preset": "ts-jest/presets/js-with-babel",
   "coverageReporters": ["lcov", "cobertura", "text", "text-summary"],
-  "transform": {}
+  "transformIgnorePatterns": [
+    "node_modules/(?!((@rosen-bridge|@noble)/*|lodash-es)/)"
+  ]
 }
