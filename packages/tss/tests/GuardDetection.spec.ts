@@ -16,7 +16,6 @@ import {
 } from './testUtils';
 import { TestGuardDetection } from './TestGuardDetection';
 import { registerTimeout } from '../lib/constants/constants';
-import { describe } from 'node:test';
 
 describe('GuardDetection', () => {
   beforeEach(() => {

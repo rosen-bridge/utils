@@ -1,4 +1,3 @@
-import { describe } from 'node:test';
 import { TestTSS } from './TestTSS';
 import * as ed from '@noble/ed25519';
 describe('TSS', () => {
