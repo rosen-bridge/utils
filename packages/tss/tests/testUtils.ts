@@ -64,4 +64,17 @@ const tssHandler: TSSHandler = {
   },
 };
 
-export { handler, config, guardsPrivateKeys, guardsPublicKeys, tssHandler };
+const randomPrivateKey1 =
+  '6e329bc3f47698036365e09441b4b59e71903eb471b7f0b6b2f31b1da44ec096';
+const randomPrivateKey2 =
+  '4aa6485a116b1c9e4b48cf2366f2c0142cd71ea72c3799152de1ef9d7e96ec93';
+
+export {
+  handler,
+  config,
+  guardsPrivateKeys,
+  guardsPublicKeys,
+  tssHandler,
+  randomPrivateKey2,
+  randomPrivateKey1,
+};
