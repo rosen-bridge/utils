@@ -17,6 +17,7 @@ describe('ExplorerPermitAssetHealthCheckParam', () => {
      * - The permit count should update successfully using explorer api
      */
     it('Should update the permit count using explorer', async () => {
+      // mock return value of explorer permit address boxes
       jest.mocked(ergoExplorerClientFactory).mockReturnValue({
         v1: {
           getApiV1BoxesUnspentByaddressP1: async () => {
@@ -67,6 +68,16 @@ describe('ExplorerPermitAssetHealthCheckParam', () => {
                     },
                   },
                 },
+                {
+                  assets: [
+                    {
+                      tokenId:
+                        '383d70ab083cc23336a46370fe730b2c51db0e831586b6d545202cbc33938ee1',
+                      amount: 10n,
+                    },
+                  ],
+                  additionalRegisters: {},
+                },
               ],
               total: 3,
             };
@@ -74,6 +85,7 @@ describe('ExplorerPermitAssetHealthCheckParam', () => {
         },
       } as any);
 
+      // create new instance of ErgoExplorerAssetHealthCheck
       const assetHealthCheckParam = new TestExplorerPermitHealthCheck(
         '383d70ab083cc23336a46370fe730b2c51db0e831586b6d545202cbc33938ee1',
         'permitAddress',
@@ -82,6 +94,8 @@ describe('ExplorerPermitAssetHealthCheckParam', () => {
         10n,
         'url'
       );
+
+      // update the parameter
       await assetHealthCheckParam.update();
       expect(assetHealthCheckParam.getRWTCount()).toBe(22n);
     });

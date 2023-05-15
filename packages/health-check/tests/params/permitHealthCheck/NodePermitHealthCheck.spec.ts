@@ -17,6 +17,7 @@ describe('NodePermitAssetHealthCheckParam', () => {
      * - The permit count should update successfully using node api
      */
     it('Should update the permit count using node', async () => {
+      // mock the return value of node permit address boxes
       let firstOut = true;
       jest.mocked(ergoNodeClientFactory).mockReturnValue({
         blockchain: {
@@ -63,12 +64,23 @@ describe('NodePermitAssetHealthCheckParam', () => {
                     R5: '0e0100',
                   },
                 },
+                {
+                  assets: [
+                    {
+                      tokenId:
+                        '383d70ab083cc23336a46370fe730b2c51db0e831586b6d545202cbc33938ee1',
+                      amount: 10n,
+                    },
+                  ],
+                  additionalRegisters: {},
+                },
               ];
             } else return [];
           },
         },
       } as any);
 
+      // create new instance of ErgoNodeAssetHealthCheck
       const assetHealthCheckParam = new TestNodePermitHealthCheck(
         '383d70ab083cc23336a46370fe730b2c51db0e831586b6d545202cbc33938ee1',
         'permitAddress',
@@ -77,6 +89,8 @@ describe('NodePermitAssetHealthCheckParam', () => {
         10n,
         'url'
       );
+
+      // update the parameter
       await assetHealthCheckParam.update();
       expect(assetHealthCheckParam.getRWTCount()).toBe(22n);
     });

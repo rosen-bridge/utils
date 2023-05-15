@@ -24,7 +24,7 @@ describe('AbstractPermitHealthCheckParam', () => {
      * - mock permit count to more than warning threshold
      * - get health status
      * @expected
-     * - The status should be HEALTHY
+     * - The status should be HEALTHY when permit count is more than warning threshold
      */
     it('should return the healthy status when permit count is more than warning threshold', async () => {
       permitHealthCheckParam.setRWTAmount(1200n);
@@ -39,7 +39,7 @@ describe('AbstractPermitHealthCheckParam', () => {
      * - mock permit count to less than warning threshold
      * - get health status
      * @expected
-     * - The status should be UNSTABLE
+     * - The status should be UNSTABLE when permit count is less than warning threshold
      */
     it('should return the unstable status when permit count is less than warning threshold', async () => {
       permitHealthCheckParam.setRWTAmount(90n);
@@ -54,7 +54,7 @@ describe('AbstractPermitHealthCheckParam', () => {
      * - mock permit count to less than critical threshold
      * - get health status
      * @expected
-     * - The status should be BROKEN
+     * - The status should be BROKEN when permit count is less than critical threshold'
      */
     it('should return the broken status when permit count is less than critical threshold', async () => {
       permitHealthCheckParam.setRWTAmount(9n);
