@@ -15,6 +15,13 @@ class LogLevelHealthCheck extends AbstractHealthCheckParam {
   protected readonly timeWindow: number;
   protected lastUpdate: Date;
 
+  /**
+   * wrapping a log function.
+   * if logging level is as what we expected store logging time
+   * then call old logging function
+   * @param level: selected logs level
+   * @param oldFn: old logging function
+   */
   protected wrapLoggingFn = (
     level: Level,
     oldFn: (message: string) => unknown
@@ -29,6 +36,10 @@ class LogLevelHealthCheck extends AbstractHealthCheckParam {
     };
   };
 
+  /**
+   * wrap all logging functions in a logger
+   * @param logger
+   */
   protected wrapLogger = (logger: AbstractLogger) => {
     logger.debug = this.wrapLoggingFn('debug', logger.debug);
     logger.info = this.wrapLoggingFn('info', logger.info);
@@ -52,12 +63,18 @@ class LogLevelHealthCheck extends AbstractHealthCheckParam {
     this.wrapLogger(logger);
   }
 
+  /**
+   * update parameter and remove old logging times
+   */
   update = () => {
     this.lastUpdate = new Date();
     const firstTime = Date.now() - this.timeWindow;
     this.times = this.times.filter((item) => item > firstTime);
   };
 
+  /**
+   * get logging description. if status is not HEALTHY return last occured error
+   */
   getDescription = () => {
     if (this.times.length > this.maxAllowedCount) {
       return Promise.resolve(
@@ -67,6 +84,11 @@ class LogLevelHealthCheck extends AbstractHealthCheckParam {
     return Promise.resolve('');
   };
 
+  /**
+   * get current health status.
+   * if logs in time window more than expected count return selected unhealthy status
+   * otherwise return HEALTHY
+   */
   getHealthStatus = () => {
     if (this.times.length > this.maxAllowedCount) {
       return Promise.resolve(this.unHealthyStatus);
@@ -74,10 +96,16 @@ class LogLevelHealthCheck extends AbstractHealthCheckParam {
     return Promise.resolve(HealthStatusLevel.HEALTHY);
   };
 
+  /**
+   * get logger health param id
+   */
   getId = () => {
     return `${this.level} logs`;
   };
 
+  /**
+   * get last updated time
+   */
   getLastUpdatedTime = () => {
     return Promise.resolve(this.lastUpdate);
   };

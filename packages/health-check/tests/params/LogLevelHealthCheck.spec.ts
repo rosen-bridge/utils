@@ -73,7 +73,7 @@ describe('LogLevelHealthCheck', () => {
      * - times length must be 0
      * - last log message must be empty
      */
-    it('should add time for expected logging level', () => {
+    it('should not add time for other logging level', () => {
       logger.debug('Test error 1');
       logger.info('Test error 2');
       logger.warn('Test error 3');
