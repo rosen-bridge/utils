@@ -4,15 +4,22 @@ import {
 } from './AbstractHealthCheckParam';
 import { AbstractLogger } from '@rosen-bridge/logger-interface';
 
-type Level = 'error' | 'warning' | 'info' | 'debug';
+type LogLevel = keyof AbstractLogger;
 
 class LogLevelHealthCheck extends AbstractHealthCheckParam {
+  // list of occurrence of logs
   protected times: Array<number>;
+  // last occurred log
   protected lastMessage: string;
-  protected readonly level: Level;
-  protected readonly unHealthyStatus: HealthStatusLevel;
+  // expected log level
+  protected readonly level: LogLevel;
+  // unhealthy status
+  protected readonly unhealthyStatus: HealthStatusLevel;
+  // maximum allowed log in selected level. if more logs occurred status become unhealthy
   protected readonly maxAllowedCount: number;
+  // time window for occurrence of logs
   protected readonly timeWindow: number;
+  // last update time
   protected lastUpdate: Date;
 
   /**
@@ -23,7 +30,7 @@ class LogLevelHealthCheck extends AbstractHealthCheckParam {
    * @param oldFn: old logging function
    */
   protected wrapLoggingFn = (
-    level: Level,
+    level: LogLevel,
     oldFn: (message: string) => unknown
   ) => {
     return (message: string) => {
@@ -43,21 +50,21 @@ class LogLevelHealthCheck extends AbstractHealthCheckParam {
   protected wrapLogger = (logger: AbstractLogger) => {
     logger.debug = this.wrapLoggingFn('debug', logger.debug);
     logger.info = this.wrapLoggingFn('info', logger.info);
-    logger.warn = this.wrapLoggingFn('warning', logger.warn);
+    logger.warn = this.wrapLoggingFn('warn', logger.warn);
     logger.error = this.wrapLoggingFn('error', logger.error);
   };
 
   constructor(
     logger: AbstractLogger,
-    unHealthyStatus: HealthStatusLevel,
+    unhealthyStatus: HealthStatusLevel,
     maxAllowedLog: number,
     durationMiliSeconds: number,
-    level: Level
+    level: LogLevel
   ) {
     super();
     this.times = [];
     this.level = level;
-    this.unHealthyStatus = unHealthyStatus;
+    this.unhealthyStatus = unhealthyStatus;
     this.maxAllowedCount = maxAllowedLog;
     this.timeWindow = durationMiliSeconds;
     this.wrapLogger(logger);
@@ -75,13 +82,11 @@ class LogLevelHealthCheck extends AbstractHealthCheckParam {
   /**
    * get logging description. if status is not HEALTHY return last occured error
    */
-  getDescription = () => {
+  getDescription = async () => {
     if (this.times.length > this.maxAllowedCount) {
-      return Promise.resolve(
-        `There are ${this.times.length} ${this.level} log(s). Last one is "${this.lastMessage}"`
-      );
+      return `There are ${this.times.length} ${this.level} log(s). Last one is "${this.lastMessage}"`;
     }
-    return Promise.resolve('');
+    return '';
   };
 
   /**
@@ -89,11 +94,11 @@ class LogLevelHealthCheck extends AbstractHealthCheckParam {
    * if logs in time window more than expected count return selected unhealthy status
    * otherwise return HEALTHY
    */
-  getHealthStatus = () => {
+  getHealthStatus = async () => {
     if (this.times.length > this.maxAllowedCount) {
-      return Promise.resolve(this.unHealthyStatus);
+      return this.unhealthyStatus;
     }
-    return Promise.resolve(HealthStatusLevel.HEALTHY);
+    return HealthStatusLevel.HEALTHY;
   };
 
   /**

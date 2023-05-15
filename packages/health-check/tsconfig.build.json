@@ -1,5 +1,5 @@
 {
   "extends": "./tsconfig.json",
   "exclude": ["tests"],
-  "references": [{ "path": "../tokens" }, { "path": "../logger-interface" }]
+  "references": [{ "path": "../logger-interface" }]
 }

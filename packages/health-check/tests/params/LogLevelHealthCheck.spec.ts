@@ -19,12 +19,12 @@ describe('LogLevelHealthCheck', () => {
 
   describe('constructor', () => {
     /**
-     * @target constructor should wrap all logger functions
+     * @target LogLevelHealthCheck.constructor should wrap all logger functions
      * @dependency
      * @scenario
      * - create new instance of logger and logLevelHealthCheck
      * @expected
-     * - all functions must be hanged
+     * - all functions must be wrapped
      */
     it('should wrap all logger functions', () => {
       const originalDebug = logger.debug;
@@ -47,7 +47,7 @@ describe('LogLevelHealthCheck', () => {
     });
 
     /**
-     * @target should add time for expected logging level
+     * @target LogLevelHealthCheck should add time for expected logging level
      * @dependency
      * @scenario
      * - log error three times
@@ -65,7 +65,7 @@ describe('LogLevelHealthCheck', () => {
     });
 
     /**
-     * @target should not add time for other logging level
+     * @target LogLevelHealthCheck should not add time for other logging level
      * @dependency
      * @scenario
      * - log info, debug and warning
@@ -85,7 +85,7 @@ describe('LogLevelHealthCheck', () => {
 
   describe('update', () => {
     /**
-     * @target should update lastUpdatedTime
+     * @target LogLevelHealthCheck.update should update lastUpdatedTime
      * @dependency
      * @scenario
      * - call update function
@@ -105,7 +105,7 @@ describe('LogLevelHealthCheck', () => {
     });
 
     /**
-     * @target should remove old times
+     * @target LogLevelHealthCheck.update should remove old times
      * @dependency
      * @scenario
      * - mock Date.now
@@ -141,7 +141,7 @@ describe('LogLevelHealthCheck', () => {
 
   describe('getDescription', () => {
     /**
-     * @target should return last logged error as description
+     * @target LogLevelHealthCheck.getDescription should return last logged error as description
      * @dependency
      * @scenario
      * - log error messages 4 times
@@ -162,7 +162,7 @@ describe('LogLevelHealthCheck', () => {
     });
 
     /**
-     * @target should return empty when times length is shorter than expected
+     * @target LogLevelHealthCheck.getDescription should return empty when times length is shorter than expected
      * @dependency
      * @scenario
      * - log error messages 2 times
@@ -181,7 +181,7 @@ describe('LogLevelHealthCheck', () => {
 
   describe('getHealthStatus', () => {
     /**
-     * @target should return UNSTABLE status when more than threshold error logs
+     * @target LogLevelHealthCheck.getHealthStatus should return provided level status when more than threshold error logs
      * @dependency
      * @scenario
      * - log error messages 4 times
@@ -189,7 +189,7 @@ describe('LogLevelHealthCheck', () => {
      * @expected
      * - return UNSTABLE
      */
-    it('should return UNSTABLE status when more than threshold error logs', async () => {
+    it('should return provided level status when more than threshold error logs', async () => {
       logger.error('Test error 1');
       logger.error('Test error 2');
       logger.error('Test error 3');
@@ -200,7 +200,7 @@ describe('LogLevelHealthCheck', () => {
     });
 
     /**
-     * @target should return HEALTHY status when error logs count less than threshold
+     * @target LogLevelHealthCheck.getHealthStatus should return HEALTHY status when error logs count less than threshold
      * @dependency
      * @scenario
      * - log error messages 2 times
