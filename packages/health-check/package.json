@@ -38,6 +38,7 @@
     "rosen"
   ],
   "dependencies": {
+    "@rosen-bridge/logger-interface": "^0.1.0",
     "@rosen-clients/cardano-koios": "^0.2.0",
     "@rosen-clients/ergo-explorer": "^0.2.0",
     "@rosen-clients/ergo-node": "^0.3.1"
