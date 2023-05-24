@@ -167,6 +167,31 @@ describe('CardanoRosenExtractor', () => {
       // check returned value
       expect(result).toBeUndefined();
     });
+
+    /**
+     * @target: CardanoRosenExtractor.get should return undefined when transaction does not have metadata
+     * @dependencies:
+     * @scenario:
+     * - mock a transaction with no metadata
+     * - run the test
+     * - check returned value
+     * @expected:
+     * - extractor should return undefined
+     */
+    it('should return undefined when transaction does not have metadata', () => {
+      // mock a transaction with no metadata
+      const validTokenLockTx = CardanoTestData.rosenTransactions.noMetadata;
+
+      // run the test
+      const extractor = new CardanoRosenExtractor(
+        CardanoTestData.lockAddress,
+        TestUtils.tokens
+      );
+      const result = extractor.get(JSONBigInt.stringify(validTokenLockTx));
+
+      // check returned value
+      expect(result).toBeUndefined();
+    });
   });
 
   describe('getAssetTransformation', () => {
