@@ -1,5 +1,4 @@
-import ExplorerApi from '../lib/network/ExplorerApi';
-import { BridgeMinimumFee } from '../lib/bridgeMinimumFee/BridgeMinimumFee';
+import { BridgeMinimumFee } from '../lib';
 
 export class TestBridgeMinimumFee extends BridgeMinimumFee {
   /**
@@ -12,9 +11,9 @@ export class TestBridgeMinimumFee extends BridgeMinimumFee {
   }
 
   /**
-   * returns ExplorerApi
+   * returns explorer client
    */
-  getExplorer = (): ExplorerApi => {
-    return this.explorer;
+  getExplorer = () => {
+    return this.explorerClient;
   };
 }

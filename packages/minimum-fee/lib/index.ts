@@ -1,2 +1,2 @@
-export { BridgeMinimumFee } from './bridgeMinimumFee/BridgeMinimumFee';
-export { FeeConfig, Fee } from './bridgeMinimumFee/types';
+export { BridgeMinimumFee } from './BridgeMinimumFee';
+export { FeeConfig, Fee } from './types';
