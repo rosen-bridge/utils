@@ -24,7 +24,6 @@
   "license": "GPL-3.0",
   "dependencies": {
     "@rosen-clients/ergo-explorer": "^1.0.0",
-    "axios": "^0.27.2",
     "ergo-lib-wasm-nodejs": "^0.24.0-alpha-1f24f53",
     "json-bigint": "^1.0.0"
   },
