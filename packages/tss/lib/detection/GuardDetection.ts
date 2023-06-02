@@ -8,7 +8,7 @@ import {
   Message,
   MessageHandler,
   RegisterPayload,
-} from './types';
+} from '../types/detection';
 import { AbstractLogger, DummyLogger } from '@rosen-bridge/logger-interface';
 import {
   approveType,
@@ -18,7 +18,7 @@ import {
   registerTimeout,
   registerType,
   messageValidDuration,
-} from './constants/constants';
+} from '../const/const';
 
 class GuardDetection {
   protected handler: MessageHandler;

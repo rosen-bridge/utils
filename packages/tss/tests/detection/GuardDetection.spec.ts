@@ -3,11 +3,11 @@ import {
   HeartbeatPayload,
   Message,
   RegisterPayload,
-} from '../lib/types';
-import { GuardDetection } from '../lib';
-import { config, guardsPublicKeys, handler } from './testUtils';
+} from '../../lib/types/detection';
+import { GuardDetection } from '../../lib';
+import { config, guardsPublicKeys, handler } from '../testUtils';
 import { TestGuardDetection } from './TestGuardDetection';
-import { registerTimeout } from '../lib/constants/constants';
+import { registerTimeout } from '../../lib/const/const';
 
 describe('GuardDetection', () => {
   beforeEach(() => {
