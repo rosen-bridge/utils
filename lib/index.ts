@@ -1,8 +1,8 @@
-export { GuardDetection } from './GuardDetection';
+export { GuardDetection } from './detection/GuardDetection';
 
 export {
   GuardDetectionConfig,
   Message,
   MessageHandler,
   ActiveGuard,
-} from './types';
+} from './types/detection';

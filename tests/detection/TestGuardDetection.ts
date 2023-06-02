@@ -1,10 +1,10 @@
-import { GuardDetection, Message } from '../lib';
+import { GuardDetection, Message } from '../../lib';
 import {
   ApprovePayload,
   GuardInfo,
   HeartbeatPayload,
   RegisterPayload,
-} from '../lib/types';
+} from '../../lib/types/detection';
 
 /**
  * GuardDetection class for testing
