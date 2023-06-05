@@ -59,6 +59,34 @@ interface JsonObject {
 }
 type MetadataObject = JsonObject | ListObject | NativeValue;
 
+interface CardanoAsset {
+  policy_id: string;
+  asset_name: string;
+  quantity: string;
+  fingerprint: string;
+}
+
+interface CardanoUtxo {
+  txId: string;
+  index: number;
+  value: bigint;
+  assets: Array<CardanoAsset>;
+}
+
+interface CardanoBoxCandidate {
+  address: string;
+  value: bigint;
+  assets: Array<CardanoAsset>;
+}
+
+interface CardanoTx {
+  id: string;
+  inputs: CardanoUtxo[];
+  outputs: CardanoBoxCandidate[];
+  fee: bigint;
+  metadata?: Record<string, Record<string, any>>;
+}
+
 export {
   Utxo,
   KoiosTransaction,
@@ -70,4 +98,6 @@ export {
   JsonObject,
   ListObject,
   NativeValue,
+  CardanoTx,
+  CardanoBoxCandidate,
 };
