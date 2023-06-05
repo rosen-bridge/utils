@@ -24,15 +24,13 @@ class ExplorerPermitHealthCheckParam extends AbstractPermitHealthCheckParam {
    */
   update = async () => {
     let RWTCount = 0n;
-    let total = 1n,
+    let total,
       offset = 0n;
-    while (offset < total) {
+    do {
       const boxes = await this.explorerApi.v1.getApiV1BoxesUnspentByaddressP1(
         this.permitAddress,
         { offset: offset, limit: this.API_REQUEST_LIMIT }
       );
-      total = boxes.total ?? 0n;
-      offset += this.API_REQUEST_LIMIT;
 
       boxes.items?.forEach((box) => {
         const R4 = (box as any).additionalRegisters['R4'];
@@ -40,7 +38,7 @@ class ExplorerPermitHealthCheckParam extends AbstractPermitHealthCheckParam {
           R4 &&
           Buffer.from(
             wasm.Constant.decode_from_base16(R4.serializedValue).to_js()[0]
-          ).toString('hex') == this.WID
+          ).toString('hex') === this.WID
         ) {
           RWTCount +=
             (box as unknown as OutputInfo).assets?.find(
@@ -48,7 +46,10 @@ class ExplorerPermitHealthCheckParam extends AbstractPermitHealthCheckParam {
             )?.amount ?? 0n;
         }
       });
-    }
+
+      total = boxes.total ?? 0n;
+      offset += this.API_REQUEST_LIMIT;
+    } while (offset < total);
     this.RWTCount = RWTCount;
     this.updateTimeStamp = new Date();
   };
