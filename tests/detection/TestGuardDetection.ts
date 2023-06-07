@@ -1,7 +1,6 @@
-import { GuardDetection, Message } from '../../lib';
+import { GuardDetection } from '../../lib';
 import {
   ApprovePayload,
-  GuardInfo,
   HeartbeatPayload,
   RegisterPayload,
 } from '../../lib/types/detection';
@@ -10,65 +9,28 @@ import {
  * GuardDetection class for testing
  */
 class TestGuardDetection extends GuardDetection {
-  getCheckMessageSign = (message: Message) => {
-    return this.checkMessageSign(message);
-  };
-  getPublicKeyToIndex = (publicKey: string) => {
-    return this.publicKeyToIndex(publicKey);
-  };
+  getInfo = () => this.guardsInfo;
 
-  getHandleRegisterMessage = async (
-    payload: RegisterPayload,
-    sender: string
-  ) => {
-    return await this.handleRegisterMessage(payload, sender);
-  };
-
-  getHandleApproveMessage = async (
+  mockedHandleApprove = (
     payload: ApprovePayload,
     sender: string,
-    senderPeerId: string
-  ) => {
-    return await this.handleApproveMessage(payload, sender, senderPeerId);
-  };
-
-  getHandleHeartbeatMessage = async (
+    guardIndex: number
+  ) => this.handleApproveMessage(payload, sender, guardIndex);
+  mockedHandleRegister = (
+    payload: RegisterPayload,
+    sender: string,
+    guardIndex: number
+  ) => this.handleRegisterMessage(payload, sender, guardIndex);
+  mockedHandleHeartbeat = (
     payload: HeartbeatPayload,
-    sender: string
-  ) => {
-    return await this.handleHeartbeatMessage(payload, sender);
-  };
+    sender: string,
+    guardIndex: number
+  ) => this.handleHeartbeatMessage(payload, sender, guardIndex);
 
-  getHandleReceivedMessage = async (message: string, senderPeerId: string) => {
-    return await this.handleReceiveMessage(message, senderPeerId);
-  };
+  mockAddNonce = (index?: number) => this.addNonce(index);
+  mockClearNonce = () => this.clearNonce();
 
-  getSendRegisterMessage = async (index: number) => {
-    return await this.sendRegisterMessage(index);
-  };
-
-  getSendHeartbeatMessage = async (index: number) => {
-    return await this.sendHeartbeatMessage(index);
-  };
-
-  getCheckTimestamp = (timestamp: number) => {
-    return this.checkTimestamp(timestamp);
-  };
-
-  getIsGuardActive = (guardIndex: number) => {
-    return this.isGuardActive(guardIndex);
-  };
-  runUpdateGuardsStatus = async () => {
-    await this.updateGuardsStatus();
-  };
-
-  setGuardsInfo = (info: GuardInfo, index: number) => {
-    this.guardsInfo[index] = info;
-  };
-
-  getGuardInfo = (index: number) => {
-    return this.guardsInfo[index];
-  };
+  getMessageValidDuration = () => this.messageValidDuration;
 }
 
 export { TestGuardDetection };

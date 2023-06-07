@@ -1,8 +1,8 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "dist",
+    "outDir": "../tss-old/dist",
     "rootDir": "./"
   },
-  "include": ["tests", "lib"]
+  "include": ["../tss-old/tests", "lib"]
 }
