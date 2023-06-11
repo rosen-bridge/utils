@@ -16,7 +16,7 @@ describe('AbstractWidHealthCheckParam', () => {
 
   describe('getHealthStatus', () => {
     /**
-     * @target AbstractWidHealthCheckParam.getHealthStatus Should return the healthy status
+     * @target AbstractWidHealthCheckParam.getHealthStatus Should return the healthy status when wid exists
      * @dependencies
      * @scenario
      * - mock widExists to true
@@ -31,7 +31,7 @@ describe('AbstractWidHealthCheckParam', () => {
     });
 
     /**
-     * @target AbstractWidHealthCheckParam.getHealthStatus Should return the broken status
+     * @target AbstractWidHealthCheckParam.getHealthStatus Should return the broken status when wid doesn't exist
      * @dependencies
      * @scenario
      * - mock widExists to false
