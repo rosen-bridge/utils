@@ -86,7 +86,7 @@ class LogLevelHealthCheck extends AbstractHealthCheckParam {
     if (this.times.length > this.maxAllowedCount) {
       return `There are ${this.times.length} ${this.level} log(s). Last one is "${this.lastMessage}"`;
     }
-    return '';
+    return undefined;
   };
 
   /**
