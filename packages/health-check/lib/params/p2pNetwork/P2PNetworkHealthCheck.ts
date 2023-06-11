@@ -11,10 +11,10 @@ export interface P2PNetworkHealthCheckOptions {
 }
 
 export class P2PNetworkHealthCheck extends AbstractHealthCheckParam {
-  private defectConfirmationTimeWindowMs!: number; // time window (in ms) after which a defect is confirmed and status is updated
-  private connectedGuardsHealthyPercentThreshold!: number; // minimum percent of connected guards for a healthy status
-  private getConnectedGuardsPercent!: () => number; // a callback used to get current connected guards percent
-  private getIsAtLeastOneRelayConnected: () => boolean; // a callback used to get current relay connection status
+  private readonly defectConfirmationTimeWindowMs!: number; // time window (in ms) after which a defect is confirmed and status is updated
+  private readonly connectedGuardsHealthyPercentThreshold!: number; // minimum percent of connected guards for a healthy status
+  private readonly getConnectedGuardsPercent!: () => number; // a callback used to get current connected guards percent
+  private readonly getIsAtLeastOneRelayConnected: () => boolean; // a callback used to get current relay connection status
 
   private status = HealthStatusLevel.HEALTHY; // current health status
 
