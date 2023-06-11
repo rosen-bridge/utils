@@ -1,5 +1,5 @@
 import { DummyLogger } from '@rosen-bridge/logger-interface';
-import { HealthStatusLevel } from '../../lib';
+import { HealthStatusLevel } from '../../../lib';
 import TestLogLevelHealthCheck from './TestLogLevelHealthCheck';
 
 describe('LogLevelHealthCheck', () => {

@@ -1,7 +1,7 @@
 import {
   AbstractHealthCheckParam,
   HealthStatusLevel,
-} from './AbstractHealthCheckParam';
+} from '../AbstractHealthCheckParam';
 import { AbstractLogger } from '@rosen-bridge/logger-interface';
 
 type LogLevel = keyof AbstractLogger;
