@@ -1,5 +1,5 @@
 import { DummyLogger } from '@rosen-bridge/logger-interface';
-import { HealthStatusLevel } from '../../lib';
+import { HealthStatusLevel } from '../../../lib';
 import TestLogLevelHealthCheck from './TestLogLevelHealthCheck';
 
 describe('LogLevelHealthCheck', () => {
@@ -162,20 +162,20 @@ describe('LogLevelHealthCheck', () => {
     });
 
     /**
-     * @target LogLevelHealthCheck.getDescription should return empty when times length is shorter than expected
+     * @target LogLevelHealthCheck.getDescription should return `undefined` when times length is shorter than expected
      * @dependency
      * @scenario
      * - log error messages 2 times
      * - call getDescription function
      * @expected
-     * - return empty string
+     * - return `undefined`
      */
-    it('should return empty when times length is shorter than expected', async () => {
+    it('should return `undefined` when times length is shorter than expected', async () => {
       logger.error('Test error 1');
       logger.error('Test error 2');
 
       const description = await logLevelHealthCheck.getDescription();
-      expect(description).toEqual('');
+      expect(description).toBeUndefined();
     });
   });
 

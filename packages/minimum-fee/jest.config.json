@@ -2,6 +2,6 @@
   "verbose": true,
   "testEnvironment": "node",
   "preset": "ts-jest/presets/js-with-babel",
-  "transformIgnorePatterns": ["node_modules/"],
+  "transformIgnorePatterns": ["node_modules/(?!(@rosen-clients/*)/)"],
   "coverageReporters": ["lcov", "cobertura", "text", "text-summary"]
 }

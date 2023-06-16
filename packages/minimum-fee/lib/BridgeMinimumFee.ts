@@ -1,16 +1,13 @@
-import ExplorerApi from '../network/ExplorerApi';
-import { ChainFee, Fee, FeeConfig } from './types';
-import { ConfigBox } from '../network/types';
+import { ChainFee, Fee, FeeConfig, ConfigBox } from './types';
 import { ErgoBox } from 'ergo-lib-wasm-nodejs';
-import {
-  JsonBI,
-  extractConfigRegisters,
-  isConfigDefined,
-} from '../network/parser';
-import { Consts } from './consts';
+import { JsonBI, extractConfigRegisters, isConfigDefined } from './parser';
+import { API_PAGE_LIMIT, Consts } from './consts';
+import ergoExplorerClientFactory from '@rosen-clients/ergo-explorer';
 
 export class BridgeMinimumFee {
-  protected readonly explorer: ExplorerApi;
+  protected readonly explorerClient: ReturnType<
+    typeof ergoExplorerClientFactory
+  >;
   protected readonly feeConfigTokenId: string;
   readonly ratioDivisor: bigint = 1000000000000n;
   readonly feeRatioDivisor: bigint = 10000n;
@@ -21,7 +18,7 @@ export class BridgeMinimumFee {
    * @param feeConfigTokenId the token id which all minimum fee config boxes contain
    */
   constructor(explorerBaseUrl: string, feeConfigTokenId: string) {
-    this.explorer = new ExplorerApi(explorerBaseUrl);
+    this.explorerClient = ergoExplorerClientFactory(explorerBaseUrl);
     this.feeConfigTokenId = feeConfigTokenId;
   }
 
@@ -43,9 +40,15 @@ export class BridgeMinimumFee {
       };
       for (;;) {
         const boxes = (
-          await this.explorer.searchBoxByTokenId(this.feeConfigTokenId, page++)
+          await this.explorerClient.v1.getApiV1BoxesUnspentBytokenidP1(
+            this.feeConfigTokenId,
+            {
+              offset: page++,
+              limit: API_PAGE_LIMIT,
+            }
+          )
         ).items;
-        if (boxes.length === 0) break;
+        if (!boxes?.length) break;
         for (let i = 0; i < boxes.length; i++) {
           const ergoBox = ErgoBox.from_json(JsonBI.stringify(boxes[i]));
           if (
