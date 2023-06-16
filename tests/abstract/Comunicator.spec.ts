@@ -1,4 +1,4 @@
-import { EdDSA } from '../../lib/enc/EdDSA';
+import { EdDSA } from '../../lib';
 import { TestCommunicator } from './TestCommunicator';
 
 describe('Communicator', () => {
@@ -19,6 +19,24 @@ describe('Communicator', () => {
     communicator = new TestCommunicator(guardSigners[1], mockSubmit, guardPks);
   });
 
+  describe('getDate', () => {
+    /**
+     * @target Communicator.sendMessage should return current timestamp rounded to seconds
+     * @dependency
+     * @scenario:
+     * - mock Date.now to return 1685683305125
+     * - call getDate
+     * @expected:
+     * - must return 1685683305
+     */
+    it('should return current timestamp rounded to seconds', () => {
+      const currentTime = 1685683305;
+      jest.spyOn(Date, 'now').mockReturnValue(currentTime * 1000 + 125);
+      const res = communicator.mockedGetDate();
+      expect(res).toEqual(currentTime);
+    });
+  });
+
   describe('sendMessage', () => {
     /**
      * @target Communicator.sendMessage should call submit message
@@ -31,12 +49,12 @@ describe('Communicator', () => {
      * - first argument must be as a json contain expected values
      */
     it('should call submit message', async () => {
-      const currentTime = 1685683141097;
+      const currentTime = 1685683141;
       const publicKey = await guardSigners[1].getPk();
       const sign = await guardSigners[1].sign(
         `${JSON.stringify(payload)}${currentTime}${publicKey}`
       );
-      jest.spyOn(Date, 'now').mockReturnValue(currentTime);
+      jest.spyOn(Date, 'now').mockReturnValue(currentTime * 1000);
       await communicator.testSendMessage('msg', payload, []);
       const expected = {
         type: 'msg',
@@ -64,12 +82,12 @@ describe('Communicator', () => {
      * - message type and payload pass to processMessage
      */
     it('should pass arguments to process message function when sign is valid', async () => {
-      const currentTime = 1685683141098;
+      const currentTime = 1685683142;
       const publicKey = await guardSigners[2].getPk();
       const sign = await guardSigners[2].sign(
         `${JSON.stringify(payload)}${currentTime}${publicKey}`
       );
-      jest.spyOn(Date, 'now').mockReturnValue(currentTime);
+      jest.spyOn(Date, 'now').mockReturnValue(currentTime * 1000);
       const message = {
         type: 'message',
         payload: payload,
@@ -83,8 +101,10 @@ describe('Communicator', () => {
       expect(communicator.processMessage).toHaveBeenCalledWith(
         'message',
         payload,
+        sign,
         2,
-        'guardIndex2'
+        'guardIndex2',
+        currentTime
       );
     });
 
@@ -98,12 +118,12 @@ describe('Communicator', () => {
      * - processMessage must not call
      */
     it('should not call processMessage when signature is not valid', async () => {
-      const currentTime = 1685683141099;
+      const currentTime = 1685683143;
       const publicKey = await guardSigners[2].getPk();
       const sign = await guardSigners[2].sign(
         `${JSON.stringify(payload)}${currentTime}${publicKey}`
       );
-      jest.spyOn(Date, 'now').mockReturnValue(currentTime);
+      jest.spyOn(Date, 'now').mockReturnValue(currentTime * 1000);
       const message = {
         type: 'message',
         payload: payload,
@@ -126,12 +146,12 @@ describe('Communicator', () => {
      * - processMessage must not call
      */
     it('should not call processMessage when signature is not valid', async () => {
-      const currentTime = 1685683141100;
+      const currentTime = 1685683144;
       const publicKey = await guardSigners[2].getPk();
       const sign = await guardSigners[2].sign(
         `${JSON.stringify(payload)}${currentTime}${publicKey}`
       );
-      jest.spyOn(Date, 'now').mockReturnValue(currentTime);
+      jest.spyOn(Date, 'now').mockReturnValue(currentTime * 1000);
       const message = {
         type: 'message',
         payload: payload,
@@ -155,12 +175,12 @@ describe('Communicator', () => {
      * - processMessage must not call
      */
     it('should not call processMessage when signature is not valid', async () => {
-      const currentTime = 1685683141101;
+      const currentTime = 1685683145;
       const publicKey = await guardSigners[2].getPk();
       const sign = await guardSigners[2].sign(
         `${JSON.stringify(payload)}${currentTime - 60001}${publicKey}`
       );
-      jest.spyOn(Date, 'now').mockReturnValue(currentTime);
+      jest.spyOn(Date, 'now').mockReturnValue(currentTime * 1000);
       const message = {
         type: 'message',
         payload: payload,

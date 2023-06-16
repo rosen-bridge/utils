@@ -14,6 +14,8 @@ export abstract class Communicator {
   protected index = -1;
   protected messageValidDuration: number;
 
+  protected getDate = () => Math.floor(Date.now() / 1000);
+
   protected constructor(
     logger: AbstractLogger,
     signer: EncryptionHandler,
@@ -25,10 +27,9 @@ export abstract class Communicator {
     this.signer = signer;
     this.guardPks = guardPks;
     this.submitMessage = submitMessage;
-    this.messageValidDuration =
-      (messageValidDurationSeconds
-        ? messageValidDurationSeconds
-        : guardMessageValidTimeoutDefault) * 1000;
+    this.messageValidDuration = messageValidDurationSeconds
+      ? messageValidDurationSeconds
+      : guardMessageValidTimeoutDefault;
   }
 
   protected getIndex = async () => {
@@ -39,16 +40,30 @@ export abstract class Communicator {
     return this.index;
   };
 
+  static generatePayloadToSign = (
+    payload: any,
+    timestamp: number,
+    publicKey: string
+  ) => {
+    return `${JSON.stringify(payload)}${timestamp}${publicKey}`;
+  };
+
+  signPayload = async (payload: any, timestamp: number) => {
+    const publicKey = await this.signer.getPk();
+    return await this.signer.sign(
+      Communicator.generatePayloadToSign(payload, timestamp, publicKey)
+    );
+  };
+
   protected sendMessage = async (
     messageType: string,
     payload: any,
-    peers: Array<string>
+    peers: Array<string>,
+    timestamp?: number
   ) => {
-    const timestamp = Date.now();
+    timestamp = timestamp ? timestamp : this.getDate();
     const publicKey = await this.signer.getPk();
-    const payloadSign = await this.signer.sign(
-      `${JSON.stringify(payload)}${timestamp}${publicKey}`
-    );
+    const payloadSign = await this.signPayload(payload, timestamp);
     const message: CommunicationMessage = {
       type: messageType,
       payload: payload,
@@ -63,8 +78,10 @@ export abstract class Communicator {
   abstract processMessage: (
     type: string,
     payload: unknown,
+    signature: string,
     senderIndex: number,
-    peerId: string
+    peerId: string,
+    timestamp: number
   ) => unknown;
 
   handleMessage = async (message: string, peerId: string) => {
@@ -72,7 +89,7 @@ export abstract class Communicator {
       message
     ) as CommunicationMessage;
     const guardPk = this.guardPks[msg.index];
-    if (Date.now() - this.messageValidDuration > msg.timestamp) {
+    if (this.getDate() - this.messageValidDuration > msg.timestamp) {
       this.logger.warn('Invalid message. message timed out');
       this.logger.debug(message);
       return;
@@ -86,7 +103,11 @@ export abstract class Communicator {
     }
     if (
       !(await this.signer.verify(
-        `${JSON.stringify(msg.payload)}${msg.timestamp}${msg.publicKey}`,
+        Communicator.generatePayloadToSign(
+          msg.payload,
+          msg.timestamp,
+          msg.publicKey
+        ),
         msg.sign,
         guardPk
       ))
@@ -95,6 +116,13 @@ export abstract class Communicator {
       this.logger.debug(message);
       return;
     }
-    await this.processMessage(msg.type, msg.payload, msg.index, peerId);
+    await this.processMessage(
+      msg.type,
+      msg.payload,
+      msg.sign,
+      msg.index,
+      peerId,
+      msg.timestamp
+    );
   };
 }

@@ -1,28 +1,31 @@
-import { Communicator } from '../abstract/Comunicator';
-import { randomBytes } from 'crypto';
+import { Communicator } from '../abstract';
 import { DummyLogger } from '@rosen-bridge/logger-interface';
 import {
-  ApprovePayload,
+  DetectionApprovePayload,
   GuardDetectionConfig,
   GuardInfo,
-  HeartbeatPayload,
-  MessageType,
+  DetectionHeartbeatPayload,
+  DetectionMessageType,
   Nonce,
-  RegisterPayload,
+  DetectionRegisterPayload,
 } from '../types/detection';
 import {
   guardHeartbeatTimeoutDefault,
   guardActiveTimeoutDefault,
+} from '../const/const';
+import {
   approveMessage,
   heartbeatMessage,
   registerMessage,
-} from '../const/const';
+} from '../const/detection';
 import { ActiveGuard } from '../types/abstract';
 
 export class GuardDetection extends Communicator {
   protected guardsInfo: Array<GuardInfo> = [];
   protected readonly activeTimeout: number;
+  protected readonly needGuardThreshold: number;
   protected readonly heartbeatTimeout: number;
+  protected readonly getPeerId: () => Promise<string>;
 
   constructor(config: GuardDetectionConfig) {
     super(
@@ -32,10 +35,11 @@ export class GuardDetection extends Communicator {
       config.guardsPublicKey,
       config.messageValidDurationSeconds
     );
+    this.needGuardThreshold = config.needGuardThreshold;
     this.activeTimeout =
-      (config.activeTimeoutSeconds || guardActiveTimeoutDefault) * 1000;
+      config.activeTimeoutSeconds || guardActiveTimeoutDefault;
     this.heartbeatTimeout =
-      (config.heartbeatTimeoutSeconds || guardHeartbeatTimeoutDefault) * 1000;
+      config.heartbeatTimeoutSeconds || guardHeartbeatTimeoutDefault;
     this.guardsInfo = config.guardsPublicKey.map((item) => ({
       peerId: '',
       nonce: [],
@@ -43,6 +47,7 @@ export class GuardDetection extends Communicator {
       publicKey: item,
       callback: [],
     }));
+    this.getPeerId = config.getPeerId;
   }
 
   protected addNonce = (index?: number) => {
@@ -58,7 +63,7 @@ export class GuardDetection extends Communicator {
   };
 
   protected clearNonce = () => {
-    const cleanupTime = Date.now() - this.messageValidDuration;
+    const cleanupTime = this.getDate() - this.messageValidDuration;
     this.guardsInfo.forEach((info) => {
       const index = info.nonce.findIndex(
         (nonce) => nonce.timestamp > cleanupTime
@@ -72,9 +77,18 @@ export class GuardDetection extends Communicator {
    * @returns
    */
   init = async (): Promise<void> => {
-    const nonce = this.addNonce();
-    await this.sendMessage(registerMessage, { nonce }, []);
-    this.clearNonce();
+    if (
+      this.guardsInfo.filter(
+        (item) =>
+          (item.peerId === '' ||
+            item.lastUpdate < this.getDate() - this.activeTimeout) &&
+          item.nonce.length === 0
+      ).length > 0
+    ) {
+      const nonce = this.addNonce();
+      await this.sendMessage(registerMessage, { nonce }, []);
+      this.clearNonce();
+    }
   };
 
   /**
@@ -82,24 +96,29 @@ export class GuardDetection extends Communicator {
    * if more than half of guards are inactive send register message
    */
   update = async (): Promise<void> => {
-    if (this.activeGuards().length < this.guardsInfo.length / 2) {
+    this.clearNonce();
+    if ((await this.activeGuards()).length < this.needGuardThreshold) {
       await this.init();
     } else {
-      const timedOutInfo = this.guardsInfo.filter(
-        (item) =>
+      const timedOutIndexes = this.guardsInfo
+        .map((item, index) =>
           item.peerId !== '' &&
-          item.lastUpdate < Date.now() - this.heartbeatTimeout
-      );
-      for (const item of timedOutInfo) {
-        const nonce = new Nonce();
+          item.lastUpdate < this.getDate() - this.heartbeatTimeout &&
+          item.nonce.length == 0
+            ? index
+            : -1
+        )
+        .filter((item) => item !== -1);
+      for (const index of timedOutIndexes) {
+        const nonce = this.addNonce(index);
         await this.sendMessage(
           heartbeatMessage,
-          { nonce: nonce, timestamp: Date.now() },
-          [item.peerId]
+          {
+            nonce: nonce,
+          },
+          [this.guardsInfo[index].peerId]
         );
-        item.nonce.push(nonce);
       }
-      this.clearNonce();
     }
   };
 
@@ -108,33 +127,37 @@ export class GuardDetection extends Communicator {
    * @public
    * @param type
    * @param payload
+   * @param sign
    * @param senderIndex
    * @param peerId
+   * @param timestamp
    */
   processMessage = async (
     type: string,
     payload: unknown,
+    sign: string,
     senderIndex: number,
-    peerId: string
+    peerId: string,
+    timestamp: number
   ): Promise<void> => {
-    switch (type as MessageType) {
+    switch (type as DetectionMessageType) {
       case approveMessage:
         await this.handleApproveMessage(
-          payload as ApprovePayload,
+          payload as DetectionApprovePayload,
           peerId,
           senderIndex
         );
         return;
       case heartbeatMessage:
         await this.handleHeartbeatMessage(
-          payload as HeartbeatPayload,
+          payload as DetectionHeartbeatPayload,
           peerId,
           senderIndex
         );
         return;
       case registerMessage:
         await this.handleRegisterMessage(
-          payload as RegisterPayload,
+          payload as DetectionRegisterPayload,
           peerId,
           senderIndex
         );
@@ -151,7 +174,7 @@ export class GuardDetection extends Communicator {
    * @protected
    */
   protected handleRegisterMessage = async (
-    registerPayload: RegisterPayload,
+    registerPayload: DetectionRegisterPayload,
     sender: string,
     guardIndex: number
   ): Promise<void> => {
@@ -187,7 +210,7 @@ export class GuardDetection extends Communicator {
    * @protected
    */
   protected handleApproveMessage = async (
-    approvePayload: ApprovePayload,
+    approvePayload: DetectionApprovePayload,
     sender: string,
     guardIndex: number
   ): Promise<void> => {
@@ -200,12 +223,12 @@ export class GuardDetection extends Communicator {
         guard.nonce.filter((nonce) => nonce.bytes === receivedNonce).length > 0
       ) {
         guard.peerId = sender;
-        guard.lastUpdate = Date.now();
+        guard.lastUpdate = this.getDate();
         guard.callback.forEach((resolve) => resolve(true));
         guard.callback = [];
         guard.nonce.splice(0, guard.nonce.length);
         if (nonce) {
-          const payload: ApprovePayload = {
+          const payload: DetectionApprovePayload = {
             receivedNonce: nonce,
           };
           await this.sendMessage(approveMessage, payload, [sender]);
@@ -237,13 +260,13 @@ export class GuardDetection extends Communicator {
    * @protected
    */
   protected handleHeartbeatMessage = async (
-    heartbeatPayload: HeartbeatPayload,
+    heartbeatPayload: DetectionHeartbeatPayload,
     sender: string,
     guardIndex: number
   ): Promise<void> => {
     try {
       const nonce = heartbeatPayload.nonce;
-      const payload: ApprovePayload = {
+      const payload: DetectionApprovePayload = {
         receivedNonce: nonce,
       };
       await this.sendMessage(approveMessage, payload, [sender]);
@@ -267,7 +290,7 @@ export class GuardDetection extends Communicator {
    * @protected
    */
   protected isGuardActive = (guardIndex: number) => {
-    const currentTime = Date.now();
+    const currentTime = this.getDate();
     return (
       this.guardsInfo[guardIndex].peerId !== '' &&
       currentTime - this.guardsInfo[guardIndex].lastUpdate < this.activeTimeout
@@ -279,13 +302,20 @@ export class GuardDetection extends Communicator {
    * @public
    * @returns array of guards publicKey and peerIds
    */
-  activeGuards = (): Array<ActiveGuard> => {
-    return this.guardsInfo
-      .filter((item, index) => this.isGuardActive(index))
-      .map((item) => ({
-        peerId: item.peerId,
-        publicKey: item.publicKey,
-      }));
+  activeGuards = async (): Promise<Array<ActiveGuard>> => {
+    const myActiveGuard: ActiveGuard = {
+      publicKey: await this.signer.getPk(),
+      peerId: await this.getPeerId(),
+    };
+    return [
+      ...this.guardsInfo
+        .filter((item, index) => this.isGuardActive(index))
+        .map((item) => ({
+          peerId: item.peerId,
+          publicKey: item.publicKey,
+        })),
+      myActiveGuard,
+    ].sort((item1, item2) => item1.publicKey.localeCompare(item2.publicKey));
   };
 
   /**

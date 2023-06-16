@@ -1,8 +1,8 @@
 import { GuardDetection } from '../../lib';
 import {
-  ApprovePayload,
-  HeartbeatPayload,
-  RegisterPayload,
+  DetectionApprovePayload,
+  DetectionHeartbeatPayload,
+  DetectionRegisterPayload,
 } from '../../lib/types/detection';
 
 /**
@@ -12,17 +12,17 @@ class TestGuardDetection extends GuardDetection {
   getInfo = () => this.guardsInfo;
 
   mockedHandleApprove = (
-    payload: ApprovePayload,
+    payload: DetectionApprovePayload,
     sender: string,
     guardIndex: number
   ) => this.handleApproveMessage(payload, sender, guardIndex);
   mockedHandleRegister = (
-    payload: RegisterPayload,
+    payload: DetectionRegisterPayload,
     sender: string,
     guardIndex: number
   ) => this.handleRegisterMessage(payload, sender, guardIndex);
   mockedHandleHeartbeat = (
-    payload: HeartbeatPayload,
+    payload: DetectionHeartbeatPayload,
     sender: string,
     guardIndex: number
   ) => this.handleHeartbeatMessage(payload, sender, guardIndex);
