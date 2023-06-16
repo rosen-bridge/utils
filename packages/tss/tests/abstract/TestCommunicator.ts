@@ -1,4 +1,4 @@
-import { Communicator } from '../../lib/abstract/Comunicator';
+import { Communicator } from '../../lib/abstract/Communicator';
 import { EncryptionHandler } from '../../lib/abstract/EncryptionHandler';
 import { DummyLogger } from '@rosen-bridge/logger-interface';
 
@@ -20,4 +20,6 @@ export class TestCommunicator extends Communicator {
   };
 
   processMessage = jest.fn();
+
+  mockedGetDate = () => this.getDate();
 }

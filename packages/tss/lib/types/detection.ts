@@ -1,5 +1,5 @@
 import { AbstractLogger } from '@rosen-bridge/logger-interface';
-import { EncryptionHandler } from '../abstract/EncryptionHandler';
+import { EncryptionHandler } from '../abstract';
 import { randomBytes } from '@noble/hashes/utils';
 
 export interface GuardDetectionConfig {
@@ -10,6 +10,8 @@ export interface GuardDetectionConfig {
   activeTimeoutSeconds?: number;
   heartbeatTimeoutSeconds?: number;
   messageValidDurationSeconds?: number;
+  needGuardThreshold: number;
+  getPeerId: () => Promise<string>;
 }
 
 export interface GuardInfo {
@@ -26,20 +28,20 @@ export class Nonce {
 
   constructor() {
     this.bytes = Buffer.from(randomBytes(32)).toString('hex');
-    this.timestamp = Date.now();
+    this.timestamp = Date.now() / 1000;
   }
 }
 
-export interface RegisterPayload {
+export interface DetectionRegisterPayload {
   nonce: string;
 }
 
-export interface ApprovePayload {
+export interface DetectionApprovePayload {
   nonce?: string;
   receivedNonce: string;
 }
-export interface HeartbeatPayload {
+export interface DetectionHeartbeatPayload {
   nonce: string;
 }
 
-export type MessageType = 'register' | 'approval' | 'heartbeat';
+export type DetectionMessageType = 'register' | 'approval' | 'heartbeat';

@@ -1,12 +1,12 @@
 import { TestGuardDetection } from './TestGuardDetection';
-import { EdDSA } from '../../lib/enc/EdDSA';
+import { EdDSA } from '../../lib';
 import {
   approveMessage,
-  guardMessageValidTimeoutDefault,
   heartbeatMessage,
   registerMessage,
-} from '../../lib/const/const';
+} from '../../lib/const/detection';
 import { Nonce } from '../../lib/types/detection';
+import { generateSigners } from '../utils';
 
 describe('GuardDetection', () => {
   let detection: TestGuardDetection;
@@ -14,19 +14,16 @@ describe('GuardDetection', () => {
   let guardSigners: Array<EdDSA>;
 
   beforeEach(async () => {
-    guardSigners = [];
-    const guardPks: Array<string> = [];
-    for (let index = 0; index < 10; index++) {
-      const sk = new EdDSA(await EdDSA.randomKey());
-      guardSigners.push(sk);
-      guardPks.push(await sk.getPk());
-    }
+    const signers = await generateSigners();
+    guardSigners = signers.guardSigners;
     jest.resetAllMocks();
     mockSubmit = jest.fn();
     detection = new TestGuardDetection({
       submit: mockSubmit,
       signer: guardSigners[0],
-      guardsPublicKey: guardPks,
+      guardsPublicKey: signers.guardPks,
+      needGuardThreshold: 7,
+      getPeerId: () => Promise.resolve('myPeerId'),
     });
   });
 
@@ -49,11 +46,28 @@ describe('GuardDetection', () => {
       const msg = JSON.parse(mockSubmit.mock.calls[0][0]);
       expect(msg.type).toEqual(registerMessage);
     });
+    /**
+     * @target GuardDetection.init should call not sendMessage with broadcast message when all guards have inactive guards have nonce
+     * @dependency
+     * @scenario
+     * - mock submit function for GuardDetection
+     * - call init
+     * @expect
+     * - must call submitFn once
+     * - second argument of called submitFn must be an empty list
+     * - first argument must be a json contain `type=registerMessage`
+     */
+    it('should call not sendMessage with broadcast message when all guards have inactive guards have nonce', async () => {
+      const info = detection.getInfo();
+      info.forEach((item) => item.nonce.push(new Nonce()));
+      await detection.init();
+      expect(mockSubmit).toHaveBeenCalledTimes(0);
+    });
   });
 
   describe('update', () => {
     /**
-     * @target GuardDetection.update should call init when active guards contain less than half of guards
+     * @target GuardDetection.update should call init when active guards contain less than threshold
      * @dependency
      * @scenario
      * - mock GuardDetection.init
@@ -61,12 +75,14 @@ describe('GuardDetection', () => {
      * @expected
      * - GuardDetection.init must not call
      */
-    it('should call init when active guards contain less than half of guards', async () => {
+    it('should call init when active guards contain less than threshold', async () => {
       detection.init = jest.fn();
+      const currentTime = 1685683141;
+      jest.spyOn(Date, 'now').mockReturnValue(currentTime * 1000);
       const info = detection.getInfo();
-      info.forEach((item) => {
-        item.lastUpdate = 0;
-        item.peerId = '';
+      info.forEach((item, index) => {
+        item.lastUpdate = index < 5 ? currentTime : 0;
+        item.peerId = index < 5 ? `peerId-${index}` : '';
       });
       await detection.update();
       expect(detection.init).toHaveBeenCalledTimes(1);
@@ -84,12 +100,12 @@ describe('GuardDetection', () => {
      */
     it('should do nothing when all guards are active', async () => {
       const info = detection.getInfo();
-      const currentTime = 1685683141197;
+      const currentTime = 1685683141;
       info.forEach((item, index) => {
         item.lastUpdate = currentTime;
         item.peerId = `peerId-${index}`;
       });
-      jest.spyOn(Date, 'now').mockReturnValue(currentTime);
+      jest.spyOn(Date, 'now').mockReturnValue(currentTime * 1000);
       await detection.update();
       expect(mockSubmit).toHaveBeenCalledTimes(0);
     });
@@ -108,13 +124,13 @@ describe('GuardDetection', () => {
      */
     it('should call submitMessage for each timed out guard', async () => {
       const info = detection.getInfo();
-      const currentTime = 1685683141198;
+      const currentTime = 1685683141;
       info.forEach((item, index) => {
         item.lastUpdate = currentTime;
         item.peerId = `peerId-${index}`;
       });
-      info[2].lastUpdate = currentTime - 2 * 60 * 1000; // 2 minutes
-      jest.spyOn(Date, 'now').mockReturnValue(currentTime);
+      info[2].lastUpdate = currentTime - 2 * 60; // 2 minutes
+      jest.spyOn(Date, 'now').mockReturnValue(currentTime * 1000);
       await detection.update();
       expect(mockSubmit).toHaveBeenCalledTimes(1);
       expect(mockSubmit).toHaveBeenCalledWith(expect.any(String), [`peerId-2`]);
@@ -136,7 +152,7 @@ describe('GuardDetection', () => {
      */
     it('should call handleRegisterMessage when message type is registerMessage', async () => {
       const mockedFn = ((detection as any).handleRegisterMessage = jest.fn());
-      await detection.processMessage(registerMessage, {}, 1, 'peerId');
+      await detection.processMessage(registerMessage, {}, '', 1, 'peerId', 0);
       expect(mockedFn).toHaveBeenCalledTimes(1);
       expect(mockedFn).toHaveBeenCalledWith({}, 'peerId', 1);
     });
@@ -153,7 +169,7 @@ describe('GuardDetection', () => {
      */
     it('should call handleHeartbeatMessage when message type is heartbeatMessage', async () => {
       const mockedFn = ((detection as any).handleHeartbeatMessage = jest.fn());
-      await detection.processMessage(heartbeatMessage, {}, 1, 'peerId');
+      await detection.processMessage(heartbeatMessage, {}, '', 1, 'peerId', 0);
       expect(mockedFn).toHaveBeenCalledTimes(1);
       expect(mockedFn).toHaveBeenCalledWith({}, 'peerId', 1);
     });
@@ -170,7 +186,7 @@ describe('GuardDetection', () => {
      */
     it('should call handleApproveMessage when message type is approveMessage', async () => {
       const mockedFn = ((detection as any).handleApproveMessage = jest.fn());
-      await detection.processMessage(approveMessage, {}, 1, 'peerId');
+      await detection.processMessage(approveMessage, {}, '', 1, 'peerId', 0);
       expect(mockedFn).toHaveBeenCalledTimes(1);
       expect(mockedFn).toHaveBeenCalledWith({}, 'peerId', 1);
     });
@@ -189,18 +205,19 @@ describe('GuardDetection', () => {
      */
     it('should return list of valid guards', async () => {
       const info = detection.getInfo();
-      const currentTime = 1685683141207;
-      jest.spyOn(Date, 'now').mockReturnValue(currentTime);
+      const currentTime = 1685683141;
+      jest.spyOn(Date, 'now').mockReturnValue(currentTime * 1000);
       info.forEach((item, index) => {
-        if (index % 2 == 0) {
+        if (index % 2 == 0 && index !== 0) {
+          // exclude my index
           item.lastUpdate = currentTime;
           item.peerId = `peerId-${index}`;
         }
       });
-      const guards = detection.activeGuards();
+      const guards = await detection.activeGuards();
       expect(guards.length).toEqual(5);
       expect(guards.map((item) => item.peerId).sort()).toEqual([
-        'peerId-0',
+        'myPeerId',
         'peerId-2',
         'peerId-4',
         'peerId-6',
@@ -221,14 +238,17 @@ describe('GuardDetection', () => {
      */
     it('should not return timed out guard', async () => {
       const info = detection.getInfo();
-      const currentTime = 1685683141207;
-      jest.spyOn(Date, 'now').mockReturnValue(currentTime);
+      const currentTime = 1685683141;
+      jest.spyOn(Date, 'now').mockReturnValue(currentTime * 1000);
+      const myPk = await guardSigners[0].getPk();
       info.forEach((item, index) => {
-        item.lastUpdate = currentTime;
-        item.peerId = `peerId-${index}`;
+        if (item.publicKey !== myPk) {
+          item.lastUpdate = currentTime;
+          item.peerId = `peerId-${index}`;
+        }
       });
-      info[3].lastUpdate = currentTime - 2 * 60 * 1000;
-      const guards = detection.activeGuards();
+      info[3].lastUpdate = currentTime - 2 * 60;
+      const guards = await detection.activeGuards();
       expect(guards.length).toEqual(9);
       expect(guards.map((item) => item.peerId).indexOf('peerId-3')).toEqual(-1);
     });
@@ -246,8 +266,8 @@ describe('GuardDetection', () => {
      * - callback must call with (false and any string)
      */
     it('should call callback with false if public key is invalid', async () => {
-      const currentTime = 1685683141218;
-      jest.spyOn(Date, 'now').mockReturnValue(currentTime);
+      const currentTime = 1685683141;
+      jest.spyOn(Date, 'now').mockReturnValue(currentTime * 1000);
       const callback = jest.fn();
       await detection.register('peerId-1', 'invalid public key', callback);
       expect(callback).toHaveBeenCalledTimes(1);
@@ -265,8 +285,8 @@ describe('GuardDetection', () => {
      * - callback must call with (false and any string)
      */
     it('should call callback with false if the guard is in the list but peerId is not the same', async () => {
-      const currentTime = 1685683141218;
-      jest.spyOn(Date, 'now').mockReturnValue(currentTime);
+      const currentTime = 1685683141;
+      jest.spyOn(Date, 'now').mockReturnValue(currentTime * 1000);
       const info = detection.getInfo();
       info[1].peerId = 'newPeerId-1';
       info[1].lastUpdate = currentTime;
@@ -291,8 +311,8 @@ describe('GuardDetection', () => {
      * - callback must call with (true)
      */
     it('should call callback with true if the guard is in the list and peerId is valid', async () => {
-      const currentTime = 1685683141218;
-      jest.spyOn(Date, 'now').mockReturnValue(currentTime);
+      const currentTime = 1685683141;
+      jest.spyOn(Date, 'now').mockReturnValue(currentTime * 1000);
       const info = detection.getInfo();
       info[1].peerId = 'peerId-1';
       info[1].lastUpdate = currentTime;
@@ -376,8 +396,8 @@ describe('GuardDetection', () => {
      * - submitMsg must not call
      */
     it('should update guard state if nonce is valid', async () => {
-      const currentTime = 1685683141398;
-      jest.spyOn(Date, 'now').mockReturnValue(currentTime);
+      const currentTime = 1685683141;
+      jest.spyOn(Date, 'now').mockReturnValue(currentTime * 1000);
       const info = detection.getInfo();
       const guard = info[2];
       guard.nonce = [new Nonce()];
@@ -405,8 +425,8 @@ describe('GuardDetection', () => {
      * - callback list must be empty list
      */
     it('should update guard state if nonce is valid', async () => {
-      const currentTime = 1685683144398;
-      jest.spyOn(Date, 'now').mockReturnValue(currentTime);
+      const currentTime = 1685683144;
+      jest.spyOn(Date, 'now').mockReturnValue(currentTime * 1000);
       const info = detection.getInfo();
       const guard = info[4];
       const fn1 = jest.fn(),
@@ -454,8 +474,8 @@ describe('GuardDetection', () => {
     });
 
     it('should do nothing when nonce is invalid', async () => {
-      const currentTime = 1685683142345;
-      jest.spyOn(Date, 'now').mockReturnValue(currentTime);
+      const currentTime = 1685683142;
+      jest.spyOn(Date, 'now').mockReturnValue(currentTime * 1000);
       const info = detection.getInfo();
       const guard = info[3];
       guard.nonce = [new Nonce()];
@@ -565,8 +585,8 @@ describe('GuardDetection', () => {
      * - all guards info nonce list must have length of 1
      */
     it('should remove all old nonce in list', () => {
-      const currentTime = 1685683147597;
-      jest.spyOn(Date, 'now').mockReturnValue(currentTime);
+      const currentTime = 1685683147;
+      jest.spyOn(Date, 'now').mockReturnValue(currentTime * 1000);
       const infos = detection.getInfo();
       infos.forEach((info) => {
         const oldNonce1 = new Nonce();
