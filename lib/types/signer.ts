@@ -11,6 +11,7 @@ export interface SignerConfig {
   messageValidDuration?: number;
   timeoutSeconds?: number;
   tssSignUrl: string;
+  callbackUrl: string;
   detection: GuardDetection;
   turnDurationSeconds?: number;
   turnNoWorkSeconds?: number;

@@ -19,9 +19,11 @@ import { requestMessage, approveMessage, startMessage } from '../const/signer';
 import { ActiveGuard } from '../types/abstract';
 import { DummyLogger } from '@rosen-bridge/logger-interface';
 import { Mutex } from 'await-semaphore';
+import axios from 'axios';
 
-export class Signer extends Communicator {
+export class TssSigner extends Communicator {
   private readonly tssSignUrl: string;
+  private readonly callbackUrl: string;
   private readonly threshold: number;
   private readonly turnDuration: number;
   private readonly turnNoWork: number;
@@ -43,6 +45,7 @@ export class Signer extends Communicator {
       config.messageValidDuration
     );
     this.tssSignUrl = config.tssSignUrl;
+    this.callbackUrl = config.callbackUrl;
     this.detection = config.detection;
     this.turnDuration = config.turnDurationSeconds
       ? config.turnDurationSeconds
@@ -87,12 +90,6 @@ export class Signer extends Communicator {
     const timestamp = this.getDate();
     const round = Math.floor(timestamp / this.turnDuration);
     if (round !== this.lastUpdateRound) {
-      console.log(
-        'try processing signs',
-        await this.getIndex(),
-        this.getGuardTurn(),
-        this.signs
-      );
       this.lastUpdateRound = round;
       for (const sign of this.signs) {
         const payload: SignRequestPayload = {
@@ -123,6 +120,12 @@ export class Signer extends Communicator {
   getGuardTurn = () => {
     const currentTime = this.getDate();
     return Math.floor(currentTime / this.turnDuration) % this.guardPks.length;
+  };
+
+  protected isNoWorkTime = () => {
+    const currentTime = this.getDate();
+    const round = Math.floor(currentTime / this.turnDuration);
+    return (round + 1) * this.turnDuration - currentTime <= this.turnNoWork;
   };
 
   sign = async (
@@ -323,7 +326,8 @@ export class Signer extends Communicator {
       return;
     }
     const myPk = await this.signer.getPk();
-    if (sign.request) {
+
+    if (sign.request && !this.isNoWorkTime()) {
       sign.signs[guardIndex] = signature;
       if (sign.signs.filter((item) => item !== '').length >= this.threshold) {
         const payload: SignStartPayload = {
@@ -339,12 +343,12 @@ export class Signer extends Communicator {
             .map((item) => item.peerId),
           sign.request.timestamp
         );
-        this.startSign(sign.msg, sign.request.guards);
+        await this.startSign(sign.msg, sign.request.guards);
       }
     }
   };
 
-  protected handleStartMessage = (
+  protected handleStartMessage = async (
     payload: SignStartPayload,
     timestamp: number,
     guardIndex: number,
@@ -368,27 +372,58 @@ export class Signer extends Communicator {
       guards: payload.guards,
       initGuardIndex: guardIndex,
     };
-    const validSigns = payload.signs.filter(
-      (item, index) =>
-        item !== '' &&
-        this.signer.verify(
-          Signer.generatePayloadToSign(
-            payloadToSign,
-            timestamp,
-            this.guardPks[index]
-          ),
-          item,
-          this.guardPks[index]
+    const myPk = await this.signer.getPk();
+    if (payload.guards.filter((item) => item.publicKey === myPk).length == 0) {
+      this.logger.warn(
+        `Got a request to sign message from ${sender} but I'm not involved`
+      );
+      return;
+    }
+    const validSigns = (
+      await Promise.all(
+        payload.signs.map(
+          async (item, index) =>
+            item !== '' &&
+            payload.guards.filter(
+              (item) => item.publicKey === this.guardPks[index]
+            ) &&
+            (await this.signer.verify(
+              TssSigner.generatePayloadToSign(
+                payloadToSign,
+                timestamp,
+                this.guardPks[index]
+              ),
+              item,
+              this.guardPks[index]
+            ))
         )
-    );
+      )
+    ).filter((item) => item);
     if (validSigns.length >= this.threshold) {
-      this.startSign(payload.msg, payload.guards);
+      await this.startSign(payload.msg, payload.guards);
     }
   };
 
   startSign = (message: string, guards: Array<ActiveGuard>) => {
-    console.log('start signing ', message, guards);
+    return axios
+      .post(this.tssSignUrl, {
+        peers: guards.map((item) => ({
+          shareId: item.publicKey,
+          p2pId: item.peerId,
+        })),
+        message: message,
+        crypto: 'eddsa', // TODO must fix it
+        callBackUrl: this.callbackUrl,
+      })
+      .catch((err) => {
+        const sign = this.getSign(message);
+        if (sign && sign.callback) {
+          sign.callback(false, err);
+        }
+      });
   };
 
-  // TODO: must handle callback url for signer
+  handleSignData = () => {
+    console.log('sign data arrived');
+  };
 }

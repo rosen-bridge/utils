@@ -5,7 +5,7 @@ import {
   heartbeatMessage,
   registerMessage,
 } from '../../lib/const/detection';
-import { Nonce } from '../../lib/types/detection';
+import { Nonce } from '../../lib';
 import { generateSigners } from '../utils';
 
 describe('GuardDetection', () => {
