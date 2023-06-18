@@ -3,7 +3,7 @@
   "testEnvironment": "node",
   "preset": "ts-jest/presets/js-with-babel",
   "transformIgnorePatterns": [
-    "node_modules/(?!((@rosen-clients/*)|(@rosen-bridge/logger-interface)|(lodash-es)/))"
+    "node_modules/(?!((@rosen-clients/*)|(@rosen-bridge/logger-interface)|(@rosen-bridge/scanner)|(lodash-es)/))"
   ],
   "coverageReporters": ["lcov", "cobertura", "text", "text-summary"]
 }
