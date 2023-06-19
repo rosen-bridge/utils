@@ -6,7 +6,7 @@ import {
 
 class ErgoNodeSyncHealthCheckParam extends AbstractHealthCheckParam {
   protected maxHeightDifference: number; // maximum difference between header height and full height
-  protected maxBlockTime: number; // maximum time to see  a new block in minutes
+  protected maxBlockTimeInMinute: number; // maximum time to see  a new block in minutes
   protected minPeerCount: number; // minimum recommended peers
   protected maxPeerHeightDifference: number; // maximum difference between peers and our node
   protected updateTimeStamp: Date;
@@ -25,7 +25,7 @@ class ErgoNodeSyncHealthCheckParam extends AbstractHealthCheckParam {
   ) {
     super();
     this.maxHeightDifference = maxHeightDifference;
-    this.maxBlockTime = maxBlockTime;
+    this.maxBlockTimeInMinute = maxBlockTime;
     this.minPeerCount = minPeerCount;
     this.maxPeerHeightDifference = minPeerHeightDiff;
     this.nodeApi = ergoNodeClientFactory(nodeUrl);
@@ -56,7 +56,7 @@ class ErgoNodeSyncHealthCheckParam extends AbstractHealthCheckParam {
         notification +
         `[${this.nodeHeightDifference}] block headers are scanned but the full blocks are not scanned yet.\n`;
     }
-    if (this.nodeLastBlockTime > this.maxBlockTime) {
+    if (this.nodeLastBlockTime > this.maxBlockTimeInMinute) {
       let time;
       if (this.nodeLastBlockTime >= 60) {
         time = `[${Math.floor(this.nodeLastBlockTime / 60)} hour and [${
@@ -90,7 +90,7 @@ class ErgoNodeSyncHealthCheckParam extends AbstractHealthCheckParam {
     this.nodeLastBlockTime =
       (Date.now() -
         Number((await this.nodeApi.blocks.getLastHeaders(1n))[0].timestamp)) /
-      60000;
+      60000; // Convert millisecond to minute
     this.nodePeerCount = (await this.nodeApi.peers.getConnectedPeers()).length;
     const maxPeerHeight = (await this.nodeApi.peers.getPeersSyncInfo()).reduce(
       (max, info) => {
@@ -117,7 +117,7 @@ class ErgoNodeSyncHealthCheckParam extends AbstractHealthCheckParam {
   getHealthStatus = async (): Promise<HealthStatusLevel> => {
     const nodeCondition =
       Number(this.nodeHeightDifference > this.maxHeightDifference) +
-      Number(this.nodeLastBlockTime > this.maxBlockTime) +
+      Number(this.nodeLastBlockTime > this.maxBlockTimeInMinute) +
       Number(this.nodePeerCount < this.minPeerCount) +
       Number(this.nodePeerHeightDifference > this.maxPeerHeightDifference);
     if (nodeCondition >= 3) return HealthStatusLevel.BROKEN;
