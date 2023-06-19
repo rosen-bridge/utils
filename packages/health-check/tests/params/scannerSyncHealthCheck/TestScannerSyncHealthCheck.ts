@@ -4,7 +4,9 @@ class TestScannerHealthCheckParam extends AbstractScannerSyncHealthCheckParam {
   /**
    * mocked update method
    */
-  update: () => undefined;
+  getLastAvailableBlock = async () => {
+    return 1115;
+  };
 
   /**
    * set mocked difference
@@ -12,6 +14,13 @@ class TestScannerHealthCheckParam extends AbstractScannerSyncHealthCheckParam {
    */
   setDifference = (difference: number) => {
     this.difference = difference;
+  };
+
+  /**
+   * @returns protected height difference
+   */
+  getDifference = () => {
+    return this.difference;
   };
 }
 

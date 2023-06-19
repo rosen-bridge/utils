@@ -1,23 +1,28 @@
-import { TestCardanoScannerHealthCheck } from './TestCardanoScannerSyncHealthCheck';
 import cardanoKoiosClientFactory from '@rosen-clients/cardano-koios';
 import { createDataSource } from './Utils';
+import {
+  CardanoKoiosScannerHealthCheck,
+  CardanoOgmiosScannerHealthCheck,
+} from '../../../lib';
+import { createStateQueryClient } from '@cardano-ogmios/client';
 
+jest.mock('@cardano-ogmios/client');
 jest.mock('@rosen-clients/cardano-koios');
 
-describe('CardanoScannerHealthCheck', () => {
-  describe('update', () => {
+describe('CardanoKoiosScannerHealthCheck', () => {
+  describe('getLastAvailableBlock', () => {
     /**
-     * @target CardanoScannerHealthCheck.update Should update the token amount
+     * @target CardanoKoiosScannerHealthCheck.update Should return the last available block in network
      * @dependencies
      * - cardanoKoiosClientFactory
      * @scenario
      * - mock return value of koios last block info
-     * - create new instance of CardanoScannerHealthCheck
+     * - create new instance of CardanoKoiosScannerHealthCheck
      * - update the parameter
      * @expected
-     * - The token amount should update successfully
+     * - The block height should be correct
      */
-    it('Should update the token amount', async () => {
+    it('Should return the last available block in network', async () => {
       jest.mocked(cardanoKoiosClientFactory).mockReturnValue({
         network: {
           getTip: async () => [
@@ -29,15 +34,50 @@ describe('CardanoScannerHealthCheck', () => {
       } as any);
 
       const dataSource = await createDataSource();
-      const scannerHealthCheckParam = new TestCardanoScannerHealthCheck(
+      const scannerHealthCheckParam = new CardanoKoiosScannerHealthCheck(
         dataSource,
         'scannerName',
         100,
         10,
         'url'
       );
-      await scannerHealthCheckParam.update();
-      expect(scannerHealthCheckParam.getDifference()).toBe(4);
+      const height = await scannerHealthCheckParam.getLastAvailableBlock();
+      expect(height).toBe(1115);
+    });
+  });
+});
+
+describe('CardanoOgmiosScannerHealthCheck', () => {
+  describe('getLastAvailableBlock', () => {
+    /**
+     * @target CardanoOgmiosScannerHealthCheck.update Should return the last available block in network
+     * @dependencies
+     * - cardanoKoiosClientFactory
+     * @scenario
+     * - mock return value of ogmios api
+     * - create new instance of CardanoOgmiosScannerHealthCheck
+     * - update the parameter
+     * @expected
+     * - The block height should be correct
+     */
+    it('Should return the last available block in network', async () => {
+      jest.mocked(createStateQueryClient).mockImplementation(async () => {
+        return {
+          blockHeight: async () => 1115,
+        } as any;
+      });
+
+      const dataSource = await createDataSource();
+      const scannerHealthCheckParam = new CardanoOgmiosScannerHealthCheck(
+        dataSource,
+        'scannerName',
+        100,
+        10,
+        'url',
+        123
+      );
+      const height = await scannerHealthCheckParam.getLastAvailableBlock();
+      expect(height).toBe(1115);
     });
   });
 });

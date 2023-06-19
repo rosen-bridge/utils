@@ -41,13 +41,13 @@ abstract class AbstractScannerSyncHealthCheckParam extends AbstractHealthCheckPa
   getDescription = async (): Promise<string | undefined> => {
     if (this.difference >= this.criticalDifference)
       return (
-        `Service has stopped working the [${this.scannerName}] scanner is out of sync.` +
-        `Please check the scanner status, [${this.difference}] blocks are created but not scanned`
+        `Service has stopped working the [${this.scannerName}] scanner is out of sync.\n` +
+        `Please check the scanner status, [${this.difference}] blocks are created but not scanned.\n`
       );
     else if (this.difference >= this.warnDifference)
       return (
-        `Service may stop working soon. [${this.scannerName}] scanner is out of sync.` +
-        `Please check the scanner status, [${this.difference}] blocks are created but not scanned`
+        `Service may stop working soon. [${this.scannerName}] scanner is out of sync.\n` +
+        `Please check the scanner status, [${this.difference}] blocks are created but not scanned.\n`
       );
     return undefined;
   };
@@ -73,12 +73,22 @@ abstract class AbstractScannerSyncHealthCheckParam extends AbstractHealthCheckPa
   /**
    * Updates the health status and the update timestamp
    */
-  abstract update: () => unknown;
+  update = async () => {
+    const lastSavedBlockHeight = await this.getLastSavedBlockHeight();
+    const networkHeight = await this.getLastAvailableBlock();
+    this.difference = Number(networkHeight) - lastSavedBlockHeight;
+    this.updateTimeStamp = new Date();
+  };
+
+  /**
+   * Returns last available block in the network
+   */
+  abstract getLastAvailableBlock: () => Promise<number>;
 
   /**
    * @returns last saved block using the specified scanner
    */
-  getLastSavedBlockHeight = async (): Promise<number> => {
+  private getLastSavedBlockHeight = async (): Promise<number> => {
     const lastBlock = await this.blockRepository.find({
       where: { status: PROCEED, scanner: this.scannerName },
       order: { height: 'DESC' },

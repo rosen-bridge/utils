@@ -18,13 +18,10 @@ class ErgoNodeScannerHealthCheck extends AbstractScannerSyncHealthCheckParam {
   }
 
   /**
-   * Updates the height difference and the update timestamp
+   * @returns last available block in network
    */
-  update = async () => {
-    const lastSavedBlockHeight = await this.getLastSavedBlockHeight();
-    const networkHeight = (await this.nodeApi.info.getNodeInfo()).fullHeight;
-    this.difference = Number(networkHeight) - lastSavedBlockHeight;
-    this.updateTimeStamp = new Date();
+  getLastAvailableBlock = async () => {
+    return Number((await this.nodeApi.info.getNodeInfo()).fullHeight);
   };
 }
 
@@ -43,14 +40,10 @@ class ErgoExplorerScannerHealthCheck extends AbstractScannerSyncHealthCheckParam
   }
 
   /**
-   * Updates the height difference and the update timestamp
+   * @returns last available block in network
    */
-  update = async () => {
-    const lastSavedBlockHeight = await this.getLastSavedBlockHeight();
-    const networkHeight = (await this.explorerApi.v1.getApiV1Networkstate())
-      .height;
-    this.difference = Number(networkHeight) - lastSavedBlockHeight;
-    this.updateTimeStamp = new Date();
+  getLastAvailableBlock = async () => {
+    return Number((await this.explorerApi.v1.getApiV1Networkstate()).height);
   };
 }
 

@@ -1,8 +1,12 @@
 import { AbstractScannerSyncHealthCheckParam } from './AbstractScannerSyncHealthCheck';
 import { DataSource } from 'typeorm';
 import cardanoKoiosClientFactory from '@rosen-clients/cardano-koios';
-
-class CardanoScannerHealthCheck extends AbstractScannerSyncHealthCheckParam {
+import {
+  createInteractionContext,
+  InteractionContext,
+  createStateQueryClient,
+} from '@cardano-ogmios/client';
+class CardanoKoiosScannerHealthCheck extends AbstractScannerSyncHealthCheckParam {
   private koiosApi;
 
   constructor(
@@ -17,14 +21,44 @@ class CardanoScannerHealthCheck extends AbstractScannerSyncHealthCheckParam {
   }
 
   /**
-   * Updates the height difference and the update timestamp
+   * @returns last available block in network
    */
-  update = async () => {
-    const lastSavedBlockHeight = await this.getLastSavedBlockHeight();
-    const networkHeight = (await this.koiosApi.network.getTip())[0].block_no;
-    this.difference = Number(networkHeight) - lastSavedBlockHeight;
-    this.updateTimeStamp = new Date();
+  getLastAvailableBlock = async () => {
+    return Number((await this.koiosApi.network.getTip())[0].block_no);
   };
 }
 
-export { CardanoScannerHealthCheck };
+class CardanoOgmiosScannerHealthCheck extends AbstractScannerSyncHealthCheckParam {
+  private ogmiosPort: number;
+  private ogmiosHost: string;
+
+  constructor(
+    dataSource: DataSource,
+    scannerName: string,
+    warnDifference: number,
+    criticalDifference: number,
+    ogmiosHost: string,
+    ogmiosPort: number
+  ) {
+    super(dataSource, scannerName, warnDifference, criticalDifference);
+    this.ogmiosHost = ogmiosHost;
+    this.ogmiosPort = ogmiosPort;
+  }
+
+  /**
+   * @returns last available block in network
+   */
+  getLastAvailableBlock = async () => {
+    const context: InteractionContext = await createInteractionContext(
+      (err) => console.error(err),
+      () => undefined,
+      { connection: { port: this.ogmiosPort, host: this.ogmiosHost } }
+    );
+    const ogmiosClient = await createStateQueryClient(context);
+    const height = await ogmiosClient.blockHeight();
+    if (height == 'origin') return 0;
+    else return height;
+  };
+}
+
+export { CardanoKoiosScannerHealthCheck, CardanoOgmiosScannerHealthCheck };
