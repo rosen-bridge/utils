@@ -10,3 +10,4 @@ export * from './params/widHealthCheck/ExplorerWidHealthCheck';
 export * from './params/widHealthCheck/NodeWidHealthCheck';
 export * from './params/scannerSyncHealthCheck/CardanoScannerSyncHealthCheck';
 export * from './params/scannerSyncHealthCheck/ErgoScannerSyncHealthCheck';
+export * from './params/nodeSyncHealthCheck/ErgoNodeSyncHealthCheck';
