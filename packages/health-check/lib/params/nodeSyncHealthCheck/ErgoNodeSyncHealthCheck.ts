@@ -85,8 +85,14 @@ class ErgoNodeSyncHealthCheckParam extends AbstractHealthCheckParam {
    */
   update = async () => {
     const nodeInfo = await this.nodeApi.info.getNodeInfo();
-    this.nodeHeightDifference =
-      Number(nodeInfo.headersHeight! - nodeInfo.fullHeight!) ?? 0n;
+    if (!nodeInfo.headersHeight || !nodeInfo.fullHeight) {
+      throw new Error(
+        "Node info api response format is not correct, header height or full height doesn't exist"
+      );
+    }
+    this.nodeHeightDifference = Number(
+      nodeInfo.headersHeight - nodeInfo.fullHeight
+    );
     this.nodeLastBlockTime =
       (Date.now() -
         Number((await this.nodeApi.blocks.getLastHeaders(1n))[0].timestamp)) /
@@ -98,8 +104,8 @@ class ErgoNodeSyncHealthCheckParam extends AbstractHealthCheckParam {
       },
       0
     );
-    this.nodePeerHeightDifference =
-      maxPeerHeight - Number(nodeInfo.fullHeight!);
+    this.nodePeerHeightDifference = maxPeerHeight - Number(nodeInfo.fullHeight);
+    this.updateTimeStamp = new Date();
   };
 
   /**

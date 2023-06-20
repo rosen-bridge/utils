@@ -39,7 +39,7 @@ describe('ErgoNodeSyncHealthCheckParam', () => {
       nodeSyncHealthCheckParam.setNodePeerCount(21);
       nodeSyncHealthCheckParam.setNodePeerHeightDifference(25);
       const status = await nodeSyncHealthCheckParam.getHealthStatus();
-      expect(status).toBe(HealthStatusLevel.HEALTHY);
+      expect(status).toEqual(HealthStatusLevel.HEALTHY);
     });
 
     /**
@@ -60,7 +60,7 @@ describe('ErgoNodeSyncHealthCheckParam', () => {
       nodeSyncHealthCheckParam.setNodePeerCount(10);
       nodeSyncHealthCheckParam.setNodePeerHeightDifference(25);
       const status = await nodeSyncHealthCheckParam.getHealthStatus();
-      expect(status).toBe(HealthStatusLevel.UNSTABLE);
+      expect(status).toEqual(HealthStatusLevel.UNSTABLE);
     });
 
     /**
@@ -75,19 +75,19 @@ describe('ErgoNodeSyncHealthCheckParam', () => {
      * @expected
      * - The status should be BROKEN
      */
-    it('should return BROKEN when token amount is less than critical threshold', async () => {
+    it('should return BROKEN when at least three conditions is true', async () => {
       nodeSyncHealthCheckParam.setNodeHeightDifference(900);
       nodeSyncHealthCheckParam.setNodeLastBlockTime(12);
       nodeSyncHealthCheckParam.setNodePeerCount(10);
       nodeSyncHealthCheckParam.setNodePeerHeightDifference(25);
       const status = await nodeSyncHealthCheckParam.getHealthStatus();
-      expect(status).toBe(HealthStatusLevel.BROKEN);
+      expect(status).toEqual(HealthStatusLevel.BROKEN);
     });
   });
 
   describe('update', () => {
     /**
-     * @target ErgoNodeSyncHealthCheckParam.getHealthStatus Should update all parameters correctly
+     * @target ErgoNodeSyncHealthCheckParam.update Should update all parameters correctly
      * @dependencies
      * @scenario
      * - mock node info api
@@ -142,10 +142,10 @@ describe('ErgoNodeSyncHealthCheckParam', () => {
         'url'
       );
       await nodeSyncHealthCheck.update();
-      expect(nodeSyncHealthCheck.getHeightDifference()).toBe(45);
-      expect(nodeSyncHealthCheck.getLastBlockTime()).toBe(100);
-      expect(nodeSyncHealthCheck.getPeerCount()).toBe(2);
-      expect(nodeSyncHealthCheck.getPeerDifference()).toBe(55);
+      expect(nodeSyncHealthCheck.getHeightDifference()).toEqual(45);
+      expect(nodeSyncHealthCheck.getLastBlockTime()).toEqual(100);
+      expect(nodeSyncHealthCheck.getPeerCount()).toEqual(2);
+      expect(nodeSyncHealthCheck.getPeerDifference()).toEqual(55);
     });
   });
 });
