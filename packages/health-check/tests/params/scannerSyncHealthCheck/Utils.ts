@@ -4,6 +4,9 @@ import {
   migrations as scannerMigrations,
 } from '@rosen-bridge/scanner';
 
+/**
+ * Creates a test datasource
+ */
 const createDataSource = async () => {
   const dataSource = new DataSource({
     type: 'sqlite',

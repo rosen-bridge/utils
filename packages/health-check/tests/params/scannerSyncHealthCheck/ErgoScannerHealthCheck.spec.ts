@@ -9,10 +9,10 @@ import {
 jest.mock('@rosen-clients/ergo-node');
 jest.mock('@rosen-clients/ergo-explorer');
 
-describe('ErgoExplorerScannerHealthCheck', () => {
-  describe('update', () => {
+describe('ErgoScannerHealthCheck', () => {
+  describe('ErgoExplorerScannerHealthCheck.getLastAvailableBlock', () => {
     /**
-     * @target ErgoExplorerScannerHealthCheck.update Should return the last available block in network
+     * @target ErgoExplorerScannerHealthCheck.getLastAvailableBlock Should return the last available block in network
      * @dependencies
      * - ergoExplorerClientFactory
      * @scenario
@@ -40,15 +40,13 @@ describe('ErgoExplorerScannerHealthCheck', () => {
         'url'
       );
       const height = await scannerHealthCheckParam.getLastAvailableBlock();
-      expect(height).toBe(1115);
+      expect(height).toEqual(1115);
     });
   });
-});
 
-describe('ErgoNodeScannerHealthCheck', () => {
-  describe('update', () => {
+  describe('ErgoNodeScannerHealthCheck.getLastAvailableBlock', () => {
     /**
-     * @target ErgoNodeScannerHealthCheck.update Should return the last available block in network
+     * @target ErgoNodeScannerHealthCheck.getLastAvailableBlock Should return the last available block in network
      * @dependencies
      * - ergoNodeClientFactory
      * @scenario
@@ -76,7 +74,7 @@ describe('ErgoNodeScannerHealthCheck', () => {
         'url'
       );
       const height = await scannerHealthCheckParam.getLastAvailableBlock();
-      expect(height).toBe(1115);
+      expect(height).toEqual(1115);
     });
   });
 });

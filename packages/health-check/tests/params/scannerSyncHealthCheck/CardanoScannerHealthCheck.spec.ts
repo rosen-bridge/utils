@@ -9,8 +9,8 @@ import { createStateQueryClient } from '@cardano-ogmios/client';
 jest.mock('@cardano-ogmios/client');
 jest.mock('@rosen-clients/cardano-koios');
 
-describe('CardanoKoiosScannerHealthCheck', () => {
-  describe('getLastAvailableBlock', () => {
+describe('CardanoScannerHealthCheck', () => {
+  describe('CardanoKoiosScannerHealthCheck.getLastAvailableBlock', () => {
     /**
      * @target CardanoKoiosScannerHealthCheck.update Should return the last available block in network
      * @dependencies
@@ -42,13 +42,11 @@ describe('CardanoKoiosScannerHealthCheck', () => {
         'url'
       );
       const height = await scannerHealthCheckParam.getLastAvailableBlock();
-      expect(height).toBe(1115);
+      expect(height).toEqual(1115);
     });
   });
-});
 
-describe('CardanoOgmiosScannerHealthCheck', () => {
-  describe('getLastAvailableBlock', () => {
+  describe('CardanoOgmiosScannerHealthCheck.getLastAvailableBlock', () => {
     /**
      * @target CardanoOgmiosScannerHealthCheck.update Should return the last available block in network
      * @dependencies
@@ -77,7 +75,7 @@ describe('CardanoOgmiosScannerHealthCheck', () => {
         123
       );
       const height = await scannerHealthCheckParam.getLastAvailableBlock();
-      expect(height).toBe(1115);
+      expect(height).toEqual(1115);
     });
   });
 });

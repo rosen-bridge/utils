@@ -39,16 +39,13 @@ abstract class AbstractScannerSyncHealthCheckParam extends AbstractHealthCheckPa
    * @returns parameter health description
    */
   getDescription = async (): Promise<string | undefined> => {
+    const baseMessage =
+      ` [${this.scannerName}] scanner is out of sync.\n` +
+      `Please check the scanner status, [${this.difference}] blocks are created but not scanned.\n`;
     if (this.difference >= this.criticalDifference)
-      return (
-        `Service has stopped working the [${this.scannerName}] scanner is out of sync.\n` +
-        `Please check the scanner status, [${this.difference}] blocks are created but not scanned.\n`
-      );
+      return `Service has stopped working.` + baseMessage;
     else if (this.difference >= this.warnDifference)
-      return (
-        `Service may stop working soon. [${this.scannerName}] scanner is out of sync.\n` +
-        `Please check the scanner status, [${this.difference}] blocks are created but not scanned.\n`
-      );
+      return `Service may stop working soon.` + baseMessage;
     return undefined;
   };
 

@@ -33,7 +33,7 @@ describe('AbstractScannerHealthCheckParam', () => {
     it('should return HEALTHY when difference is less than warning threshold', async () => {
       scannerHealthCheckParam.setDifference(2);
       const status = await scannerHealthCheckParam.getHealthStatus();
-      expect(status).toBe(HealthStatusLevel.HEALTHY);
+      expect(status).toEqual(HealthStatusLevel.HEALTHY);
     });
 
     /**
@@ -48,7 +48,7 @@ describe('AbstractScannerHealthCheckParam', () => {
     it('should return UNSTABLE when difference is more than warning threshold and less than critical threshold', async () => {
       scannerHealthCheckParam.setDifference(20);
       const status = await scannerHealthCheckParam.getHealthStatus();
-      expect(status).toBe(HealthStatusLevel.UNSTABLE);
+      expect(status).toEqual(HealthStatusLevel.UNSTABLE);
     });
 
     /**
@@ -63,7 +63,7 @@ describe('AbstractScannerHealthCheckParam', () => {
     it('should return BROKEN when difference is more than critical threshold', async () => {
       scannerHealthCheckParam.setDifference(200);
       const status = await scannerHealthCheckParam.getHealthStatus();
-      expect(status).toBe(HealthStatusLevel.BROKEN);
+      expect(status).toEqual(HealthStatusLevel.BROKEN);
     });
   });
 
@@ -89,7 +89,7 @@ describe('AbstractScannerHealthCheckParam', () => {
       ergoBlockEntity.timestamp = 12345;
       await dataSource.getRepository(BlockEntity).insert([ergoBlockEntity]);
       await scannerHealthCheckParam.update();
-      expect(scannerHealthCheckParam.getDifference()).toBe(4);
+      expect(scannerHealthCheckParam.getDifference()).toEqual(4);
     });
   });
 });
