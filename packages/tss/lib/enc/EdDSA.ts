@@ -13,18 +13,34 @@ class EdDSA extends EncryptionHandler {
     this.key = Uint8Array.from(Buffer.from(key, 'hex'));
   }
 
+  /**
+   * get public key
+   */
   getPk = async () => {
     return Buffer.from(await ed.getPublicKey(this.key)).toString('hex');
   };
 
+  /**
+   * generate a random secret key
+   */
   static randomKey = async (): Promise<string> => {
     return randomBytes(32).toString('hex');
   };
 
+  /**
+   * sign message
+   * @param message
+   */
   sign = async (message: string): Promise<string> => {
     return Buffer.from(ed.sign(Buffer.from(message), this.key)).toString('hex');
   };
 
+  /**
+   * verify message signature
+   * @param message
+   * @param signature
+   * @param signerPublicKey
+   */
   verify = async (
     message: string,
     signature: string,
@@ -35,6 +51,10 @@ class EdDSA extends EncryptionHandler {
     const publicKey = Buffer.from(signerPublicKey, 'hex');
     return ed.verify(sign, msg, publicKey);
   };
+
+  /**
+   * get current algorithm
+   */
   getCrypto = () => 'eddsa';
 }
 

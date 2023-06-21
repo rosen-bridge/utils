@@ -14,6 +14,9 @@ export abstract class Communicator {
   protected index = -1;
   protected messageValidDuration: number;
 
+  /**
+   * get current timestamp in seconds
+   */
   protected getDate = () => Math.floor(Date.now() / 1000);
 
   protected constructor(
@@ -32,6 +35,9 @@ export abstract class Communicator {
       : guardMessageValidTimeoutDefault;
   }
 
+  /**
+   * get my index
+   */
   protected getIndex = async () => {
     if (this.index === -1) {
       const pk = await this.signer.getPk();
@@ -40,6 +46,12 @@ export abstract class Communicator {
     return this.index;
   };
 
+  /**
+   * convert payload to signing data for communication
+   * @param payload
+   * @param timestamp
+   * @param publicKey
+   */
   static generatePayloadToSign = (
     payload: any,
     timestamp: number,
@@ -48,6 +60,11 @@ export abstract class Communicator {
     return `${JSON.stringify(payload)}${timestamp}${publicKey}`;
   };
 
+  /**
+   * sign a payload before submit
+   * @param payload
+   * @param timestamp
+   */
   signPayload = async (payload: any, timestamp: number) => {
     const publicKey = await this.signer.getPk();
     return await this.signer.sign(
@@ -55,6 +72,14 @@ export abstract class Communicator {
     );
   };
 
+  /**
+   * send a message to other instances.
+   * first sign payload and timestamp and send it
+   * @param messageType
+   * @param payload
+   * @param peers
+   * @param timestamp
+   */
   protected sendMessage = async (
     messageType: string,
     payload: any,
@@ -75,6 +100,9 @@ export abstract class Communicator {
     this.submitMessage(JSON.stringify(message), peers);
   };
 
+  /**
+   * child classes must implement this function to handle new incoming messages
+   */
   abstract processMessage: (
     type: string,
     payload: unknown,
@@ -84,6 +112,12 @@ export abstract class Communicator {
     timestamp: number
   ) => unknown;
 
+  /**
+   * handle new message.
+   * verify sender index, message sign and valid interval for message
+   * @param message
+   * @param peerId
+   */
   handleMessage = async (message: string, peerId: string) => {
     const msg: CommunicationMessage = JSON.parse(
       message
@@ -116,6 +150,7 @@ export abstract class Communicator {
       this.logger.debug(message);
       return;
     }
+    this.logger.info('new message arrived');
     await this.processMessage(
       msg.type,
       msg.payload,

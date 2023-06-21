@@ -67,6 +67,9 @@ export class TssSigner extends Communicator {
     this.signAccessMutex = new Mutex();
   }
 
+  /**
+   * cleanup all timed out signatures
+   */
   protected cleanup = async () => {
     const timeout = this.getDate() - this.timeout;
     const turn = this.getGuardTurn();
@@ -80,6 +83,12 @@ export class TssSigner extends Communicator {
     releasePending();
   };
 
+  /**
+   * update signing process for all signatures.
+   * check if this guards turn
+   * and founded guards are enough
+   * run start message for all signs
+   */
   update = async () => {
     await this.cleanup();
     if ((await this.getIndex()) !== this.getGuardTurn()) {
@@ -120,17 +129,29 @@ export class TssSigner extends Communicator {
     }
   };
 
+  /**
+   * check if this guard turn
+   */
   getGuardTurn = () => {
     const currentTime = this.getDate();
     return Math.floor(currentTime / this.turnDuration) % this.guardPks.length;
   };
 
+  /**
+   * check if we are in last seconds of round or not
+   */
   protected isNoWorkTime = () => {
     const currentTime = this.getDate();
     const round = Math.floor(currentTime / this.turnDuration);
     return (round + 1) * this.turnDuration - currentTime <= this.turnNoWork;
   };
 
+  /**
+   * add new sign to queue
+   * if other guards proceed this sign we also process it
+   * @param msg
+   * @param callback
+   */
   sign = async (
     msg: string,
     callback: (status: boolean, message?: string, args?: string) => unknown
@@ -158,6 +179,10 @@ export class TssSigner extends Communicator {
     }
   };
 
+  /**
+   * sign message and return promise
+   * @param message
+   */
   signPromised = (message: string): Promise<string> => {
     return new Promise<string>((resolve, reject) => {
       this.sign(message, (status: boolean, message?: string, args?: string) => {
