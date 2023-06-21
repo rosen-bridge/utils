@@ -1,4 +1,4 @@
-import { EncryptionHandler } from '../abstract/EncryptionHandler';
+import { EncryptionHandler } from '../abstract';
 import { blake2b } from 'blakejs';
 import pkg from 'secp256k1';
 
@@ -30,6 +30,8 @@ class ECDSA extends EncryptionHandler {
     const publicKey = Buffer.from(signerPublicKey, 'hex');
     return pkg.ecdsaVerify(sign, msg, publicKey);
   };
+
+  getCrypto = () => 'ecdsa';
 }
 
 export { ECDSA };

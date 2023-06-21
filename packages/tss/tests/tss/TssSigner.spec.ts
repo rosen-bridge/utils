@@ -37,6 +37,7 @@ describe('Signer', () => {
       guardsPk: signers.guardPks,
       tssSignUrl: '',
       getPeerId: () => Promise.resolve('myPeerId'),
+      shares: signers.guardPks,
     });
   });
 
@@ -58,6 +59,7 @@ describe('Signer', () => {
         signs: [],
         addedTime: Math.floor(currentTime / 1000) - 5 * 60 - 1,
         callback: () => null,
+        posted: false,
       });
       await (signer as any).cleanup();
       expect(signer.getSigns().length).toEqual(0);
@@ -78,6 +80,7 @@ describe('Signer', () => {
       signs.push({
         msg: 'random msg',
         signs: [],
+        posted: false,
         addedTime: Math.floor(currentTime / 1000) - 5 * 60 + 1,
         callback: () => null,
       });
@@ -135,6 +138,7 @@ describe('Signer', () => {
   describe('update', () => {
     beforeEach(() => {
       signer.getSigns().push({
+        posted: false,
         msg: 'random message',
         callback: jest.fn(),
         signs: [],
@@ -479,6 +483,7 @@ describe('Signer', () => {
         signs: [],
         addedTime: currentTime,
         callback: jest.fn(),
+        posted: false,
       });
     });
     /**
@@ -525,7 +530,7 @@ describe('Signer', () => {
      * @scenario
      * - mock a list of active guards
      * - add a sign to signs list of signer
-     * - call handleRequestMessage with invalid guard index tuen
+     * - call handleRequestMessage with invalid guard index turn
      * @expected
      * - mockSubmit must not call
      */
@@ -720,6 +725,7 @@ describe('Signer', () => {
         signs: [],
         addedTime: currentTime,
         callback: jest.fn,
+        posted: false,
       });
       const sign = signer.mockedGetSign('msg1');
       expect(sign).toBeDefined();
@@ -742,6 +748,7 @@ describe('Signer', () => {
         signs: [],
         addedTime: currentTime,
         callback: jest.fn,
+        posted: false,
       });
       const sign = signer.mockedGetSign('msg2');
       expect(sign).toBeUndefined();
@@ -813,6 +820,7 @@ describe('Signer', () => {
           guards: activeGuards,
           timestamp,
         },
+        posted: false,
       });
     });
 
@@ -1004,6 +1012,7 @@ describe('Signer', () => {
         signs: [],
         addedTime: timestamp,
         callback: jest.fn(),
+        posted: false,
       });
       activeGuards = await Promise.all(
         guardSigners.map(async (item, index) => ({
@@ -1051,7 +1060,7 @@ describe('Signer', () => {
      * @scenario
      * - add sign instance to list
      * - mock startSign
-     * - mock verify method of eddsa signer to return false once
+     * - mock verify method of EdDSA signer to return false once
      * - call handleStartMessage
      * @expected
      * - mockedStartSign must not call
@@ -1082,7 +1091,7 @@ describe('Signer', () => {
      * @scenario
      * - add sign instance to list
      * - mock startSign
-     * - mock verify method of eddsa signer to return false once
+     * - mock verify method of EdDSA signer to return false once
      * - call handleStartMessage with guard index 5
      * @expected
      * - mockedStartSign must not call
@@ -1109,7 +1118,7 @@ describe('Signer', () => {
      * @scenario
      * - add sign instance to list
      * - mock startSign
-     * - mock verify method of eddsa signer to return false once
+     * - mock verify method of EdDSA signer to return false once
      * - remove guard index 0 from active guards
      * - call handleStartMessage
      * @expected

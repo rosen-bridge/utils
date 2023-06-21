@@ -17,17 +17,12 @@ export interface SignerConfig {
   turnNoWorkSeconds?: number;
   threshold: number;
   getPeerId: () => Promise<string>;
-}
-
-export interface Signature {
-  signature: string;
-  r: string;
-  z: string;
+  shares: Array<string>;
 }
 
 export interface Sign {
   msg: string;
-  callback: (status: boolean, message?: string, args?: Signature) => unknown;
+  callback: (status: boolean, message?: string, signature?: string) => unknown;
   request?: {
     guards: Array<ActiveGuard>;
     index: number;
@@ -35,6 +30,7 @@ export interface Sign {
   };
   signs: Array<string>;
   addedTime: number;
+  posted: boolean;
 }
 
 export interface PendingSign {
@@ -62,3 +58,8 @@ export interface SignStartPayload {
 }
 
 export type SignMessageType = 'request' | 'approve' | 'start';
+
+export enum StatusEnum {
+  Success = 'success',
+  Failed = 'failed',
+}

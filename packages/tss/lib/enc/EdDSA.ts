@@ -1,4 +1,4 @@
-import { EncryptionHandler } from '../abstract/EncryptionHandler';
+import { EncryptionHandler } from '../abstract';
 import * as ed from '@noble/ed25519';
 import { blake2b } from '@noble/hashes/blake2b';
 import { randomBytes } from 'crypto';
@@ -34,8 +34,8 @@ class EdDSA extends EncryptionHandler {
     const sign = Buffer.from(signature, 'hex');
     const publicKey = Buffer.from(signerPublicKey, 'hex');
     return ed.verify(sign, msg, publicKey);
-    // return ed.verify(msg, sign, publicKey);
   };
+  getCrypto = () => 'eddsa';
 }
 
 export { EdDSA };
