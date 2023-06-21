@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/health-check",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Typescript library to check healthy status of rosen services",
   "main": "dist/lib/index.js",
   "types": "dist/lib/index.d.ts",
@@ -12,7 +12,7 @@
     "type-check": "tsc --noEmit",
     "test": "jest",
     "coverage": "jest --coverage",
-    "release": "npm run test && npm run build"
+    "release": "npm run test && npm run build && npm publish --access public"
   },
   "files": [
     "dist"
@@ -38,9 +38,12 @@
     "rosen"
   ],
   "dependencies": {
+    "@cardano-ogmios/client": "^5.6.0",
     "@rosen-bridge/logger-interface": "^0.1.0",
+    "@rosen-bridge/scanner": "^1.0.4",
     "@rosen-clients/cardano-koios": "^0.2.0",
     "@rosen-clients/ergo-explorer": "^0.2.0",
-    "@rosen-clients/ergo-node": "^0.3.1"
+    "@rosen-clients/ergo-node": "^0.3.1",
+    "lodash": "^4.17.21"
   }
 }
