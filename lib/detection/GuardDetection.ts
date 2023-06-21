@@ -50,6 +50,10 @@ export class GuardDetection extends Communicator {
     this.getPeerId = config.getPeerId;
   }
 
+  /**
+   * add new random nonce to guards info and return it
+   * @param index if undefined add one nonce to all guards otherwise add to selected guard
+   */
   protected addNonce = (index?: number) => {
     this.clearNonce();
     const nonce = new Nonce();
@@ -62,6 +66,9 @@ export class GuardDetection extends Communicator {
     return nonce.bytes;
   };
 
+  /**
+   * clear all timed out nonce
+   */
   protected clearNonce = () => {
     const cleanupTime = this.getDate() - this.messageValidDuration;
     this.guardsInfo.forEach((info) => {

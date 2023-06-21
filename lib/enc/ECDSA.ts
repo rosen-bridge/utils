@@ -10,16 +10,29 @@ class ECDSA extends EncryptionHandler {
     this.key = Uint8Array.from(Buffer.from(key, 'hex'));
   }
 
+  /**
+   * get public key
+   */
   getPk = async () => {
     return Buffer.from(pkg.publicKeyCreate(this.key, true)).toString('hex');
   };
 
+  /**
+   * sign message
+   * @param message
+   */
   sign = async (message: string): Promise<string> => {
     const bytes = blake2b(message, undefined, 32);
     const signed = pkg.ecdsaSign(bytes, this.key);
     return Buffer.from(signed.signature).toString('hex');
   };
 
+  /**
+   * verify message signature
+   * @param message
+   * @param signature
+   * @param signerPublicKey
+   */
   verify = async (
     message: string,
     signature: string,
@@ -31,6 +44,9 @@ class ECDSA extends EncryptionHandler {
     return pkg.ecdsaVerify(sign, msg, publicKey);
   };
 
+  /**
+   * get crypto algorithm
+   */
   getCrypto = () => 'ecdsa';
 }
 
