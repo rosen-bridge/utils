@@ -1,11 +1,13 @@
 export abstract class EncryptionHandler {
-  sign: (message: string) => Promise<string>;
+  abstract sign: (message: string) => Promise<string>;
 
-  verify: (
+  abstract verify: (
     message: string,
     signature: string,
     signerPublicKey: string
   ) => Promise<boolean>;
 
-  getPk: () => Promise<string>;
+  abstract getCrypto: () => string;
+
+  abstract getPk: () => Promise<string>;
 }
