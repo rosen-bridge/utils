@@ -47,13 +47,13 @@ abstract class AbstractAssetHealthCheckParam extends AbstractHealthCheckParam {
       return (
         `Service stopped working due to insufficient asset '${this.assetName}' balance` +
         ` ([${this.tokenAmount}] is less than required amount [${this.criticalThreshold}]).\n` +
-        `Please charge [${this.address}] with asset [${this.assetId}]\n`
+        `Please charge [${this.address}] with asset [${this.assetId}]`
       );
     else if (this.tokenAmount < this.warnThreshold)
       return (
         `Service is in unstable situation due to insufficient asset '${this.assetName}' balance` +
         ` ([${this.tokenAmount}] is less than recommended amount [${this.warnThreshold}]).\n` +
-        `Please charge [${this.address}] with asset [${this.assetId}]\n`
+        `Please charge [${this.address}] with asset [${this.assetId}]`
       );
     return undefined;
   };

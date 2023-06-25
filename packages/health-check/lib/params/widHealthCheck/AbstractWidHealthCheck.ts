@@ -33,7 +33,7 @@ abstract class AbstractWidHealthCheckParam extends AbstractHealthCheckParam {
     if (!this.widExists)
       return (
         `Service has stopped working since there is no available WID for this address [${this.address}].\n` +
-        `You should lock RSN to get permit and WID`
+        `You should lock RSN to get permit and WID.`
       );
     return undefined;
   };
