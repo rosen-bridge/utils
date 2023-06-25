@@ -8,7 +8,7 @@
   },
   "scripts": {
     "lint": "npm run lint --workspaces",
-    "test": "npm run test --workspaces",
+    "test": "npm run test --workspaces -- --runInBand",
     "coverage": "npm run coverage --workspaces",
     "build": "npm run build --workspaces",
     "type-check": "npm run type-check --workspaces",
