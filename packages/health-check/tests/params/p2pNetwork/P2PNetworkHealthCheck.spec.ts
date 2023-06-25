@@ -7,9 +7,9 @@ import {
 jest.useFakeTimers();
 
 const TIME_WINDOW = 10000;
-const GUARDS_THRESHOLD = 70;
-const GUARDS_HEALTHY_COUNT = GUARDS_THRESHOLD + 10;
-const GUARDS_BROKEN_COUNT = GUARDS_THRESHOLD - 10;
+const GUARDS_THRESHOLD = 7;
+const GUARDS_HEALTHY_COUNT = GUARDS_THRESHOLD + 1;
+const GUARDS_BROKEN_COUNT = GUARDS_THRESHOLD - 1;
 
 /**
  * run a p2p network health check with healthy status
