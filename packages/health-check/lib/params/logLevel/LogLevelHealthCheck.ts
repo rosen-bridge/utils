@@ -58,7 +58,7 @@ class LogLevelHealthCheck extends AbstractHealthCheckParam {
     logger: AbstractLogger,
     unhealthyStatus: HealthStatusLevel,
     maxAllowedLog: number,
-    durationMiliSeconds: number,
+    durationSeconds: number,
     level: LogLevel
   ) {
     super();
@@ -66,7 +66,7 @@ class LogLevelHealthCheck extends AbstractHealthCheckParam {
     this.level = level;
     this.unhealthyStatus = unhealthyStatus;
     this.maxAllowedCount = maxAllowedLog;
-    this.timeWindow = durationMiliSeconds;
+    this.timeWindow = durationSeconds;
     this.wrapLogger(logger);
   }
 

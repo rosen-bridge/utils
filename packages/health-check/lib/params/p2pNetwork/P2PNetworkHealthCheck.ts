@@ -4,35 +4,34 @@ import {
 } from '../AbstractHealthCheckParam';
 
 export interface P2PNetworkHealthCheckOptions {
-  defectConfirmationTimeWindowMs: number;
-  connectedGuardsHealthyPercentThreshold: number;
-  getConnectedGuardsPercent: () => number;
+  defectConfirmationTimeWindow: number;
+  connectedGuardsHealthyThreshold: number;
+  getConnectedGuards: () => number;
   getIsAtLeastOneRelayConnected: () => boolean;
 }
 
 export class P2PNetworkHealthCheck extends AbstractHealthCheckParam {
-  private readonly defectConfirmationTimeWindowMs!: number; // time window (in ms) after which a defect is confirmed and status is updated
-  private readonly connectedGuardsHealthyPercentThreshold!: number; // minimum percent of connected guards for a healthy status
-  private readonly getConnectedGuardsPercent!: () => number; // a callback used to get current connected guards percent
+  private readonly defectConfirmationTimeWindow!: number; // time window (in seconds) after which a defect is confirmed and status is updated
+  private readonly connectedGuardsHealthyThreshold!: number; // minimum of connected guards for a healthy status
+  private readonly getConnectedGuards!: () => number; // a callback used to get current connected guards
   private readonly getIsAtLeastOneRelayConnected: () => boolean; // a callback used to get current relay connection status
 
   private status = HealthStatusLevel.HEALTHY; // current health status
 
   private lastUpdatedTime: Date | undefined; // the last time `update` was called
-  private lastDefectTimestamp: number | undefined; // the last time a defect (relay disconnection or insufficient connected guards percent) was detected
+  private lastDefectTimestamp: number | undefined; // the last time a defect (relay disconnection or insufficient connected guards) was detected
 
   constructor({
-    defectConfirmationTimeWindowMs: brokenTimeWindow,
-    connectedGuardsHealthyPercentThreshold,
-    getConnectedGuardsPercent,
+    defectConfirmationTimeWindow,
+    connectedGuardsHealthyThreshold,
+    getConnectedGuards,
     getIsAtLeastOneRelayConnected,
   }: P2PNetworkHealthCheckOptions) {
     super();
 
-    this.defectConfirmationTimeWindowMs = brokenTimeWindow;
-    this.connectedGuardsHealthyPercentThreshold =
-      connectedGuardsHealthyPercentThreshold;
-    this.getConnectedGuardsPercent = getConnectedGuardsPercent;
+    this.defectConfirmationTimeWindow = defectConfirmationTimeWindow;
+    this.connectedGuardsHealthyThreshold = connectedGuardsHealthyThreshold;
+    this.getConnectedGuards = getConnectedGuards;
     this.getIsAtLeastOneRelayConnected = getIsAtLeastOneRelayConnected;
   }
 
@@ -50,11 +49,11 @@ export class P2PNetworkHealthCheck extends AbstractHealthCheckParam {
     const nowTimestamp = now.getTime();
     this.lastUpdatedTime = now;
 
-    const connectedGuardsPercent = this.getConnectedGuardsPercent();
+    const connectedGuardsPercent = this.getConnectedGuards();
     const isAtLeastOneRelayConnected = this.getIsAtLeastOneRelayConnected();
 
     const guardsPercentCheckPassed =
-      connectedGuardsPercent >= this.connectedGuardsHealthyPercentThreshold;
+      connectedGuardsPercent >= this.connectedGuardsHealthyThreshold;
     const relayConnectionCheckPassed = isAtLeastOneRelayConnected;
 
     // if everything is ok, reset all state to normal and return
@@ -73,7 +72,7 @@ export class P2PNetworkHealthCheck extends AbstractHealthCheckParam {
     // if there is some defect within defect confirmation time window, do nothing
     if (
       nowTimestamp <
-      this.lastDefectTimestamp + this.defectConfirmationTimeWindowMs
+      this.lastDefectTimestamp + this.defectConfirmationTimeWindow
     ) {
       return;
     }
@@ -101,8 +100,8 @@ export class P2PNetworkHealthCheck extends AbstractHealthCheckParam {
       return 'No relay is connected';
     }
 
-    return `${this.getConnectedGuardsPercent()} percent of guards are connected which is below or equal to ${
-      this.connectedGuardsHealthyPercentThreshold
+    return `${this.getConnectedGuards()} of guards are connected which is below or equal to ${
+      this.connectedGuardsHealthyThreshold
     } threshold`;
   };
 

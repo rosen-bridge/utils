@@ -41,11 +41,15 @@ abstract class AbstractPermitHealthCheckParam extends AbstractHealthCheckParam {
    */
   getDescription = async (): Promise<string | undefined> => {
     if (this.RWTCount <= this.criticalThreshold)
-      return `Service has stopped working due insufficient available permits [${this.RWTCount}].
-          Permits should be more than [${this.criticalThreshold}] to work properly, please lock more RSN to get more permits`;
+      return (
+        `Service has stopped working due insufficient available permits [${this.RWTCount}].\n` +
+        `Permits should be more than [${this.criticalThreshold}] to work properly, please lock more RSN to get more permits.\n`
+      );
     else if (this.RWTCount <= this.warnThreshold)
-      return `Service may stop working soon. Available permits [${this.RWTCount}] are less than 
-          the recommended amount [${this.warnThreshold}]. Please lock more RSN to get more permits`;
+      return (
+        `Service may stop working soon. Available permits [${this.RWTCount}] are less than ` +
+        `the recommended amount [${this.warnThreshold}]. Please lock more RSN to get more permits.\n`
+      );
     return undefined;
   };
 

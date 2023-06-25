@@ -8,8 +8,8 @@ jest.useFakeTimers();
 
 const TIME_WINDOW = 10000;
 const GUARDS_THRESHOLD = 70;
-const GUARDS_HEALTHY_PERCENT = GUARDS_THRESHOLD + 10;
-const GUARDS_BROKEN_PERCENT = GUARDS_THRESHOLD - 10;
+const GUARDS_HEALTHY_COUNT = GUARDS_THRESHOLD + 10;
+const GUARDS_BROKEN_COUNT = GUARDS_THRESHOLD - 10;
 
 /**
  * run a p2p network health check with healthy status
@@ -18,9 +18,9 @@ const GUARDS_BROKEN_PERCENT = GUARDS_THRESHOLD - 10;
  */
 const runHealthyFixture = (config?: Partial<P2PNetworkHealthCheckOptions>) => {
   return new P2PNetworkHealthCheck({
-    defectConfirmationTimeWindowMs: TIME_WINDOW,
-    connectedGuardsHealthyPercentThreshold: GUARDS_THRESHOLD,
-    getConnectedGuardsPercent: () => GUARDS_HEALTHY_PERCENT,
+    defectConfirmationTimeWindow: TIME_WINDOW,
+    connectedGuardsHealthyThreshold: GUARDS_THRESHOLD,
+    getConnectedGuards: () => GUARDS_HEALTHY_COUNT,
     getIsAtLeastOneRelayConnected: () => true,
     ...config,
   });
@@ -28,17 +28,17 @@ const runHealthyFixture = (config?: Partial<P2PNetworkHealthCheckOptions>) => {
 
 /**
  * run a p2p network health check and make it broken as a result of low
- * connected guards percent
- * @param getConnectedGuardsPercent mock function to use as
- * `getConnectedGuardsPercent`
+ * connected guards count
+ * @param getConnectedGuards mock function to use as
+ * `getConnectedGuards`
  * @returns the health check instance
  */
-const runGuardsDefectFixture = (getConnectedGuardsPercent = jest.fn()) => {
+const runGuardsDefectFixture = (getConnectedGuards = jest.fn()) => {
   const healthCheck = runHealthyFixture({
-    getConnectedGuardsPercent,
+    getConnectedGuards,
   });
 
-  getConnectedGuardsPercent.mockReturnValue(GUARDS_BROKEN_PERCENT);
+  getConnectedGuards.mockReturnValue(GUARDS_BROKEN_COUNT);
   healthCheck.update();
   jest.advanceTimersByTime(TIME_WINDOW + 1);
   healthCheck.update();
@@ -111,16 +111,16 @@ describe('P2PNetworkHealthCheck', () => {
      * @dependencies
      * @scenario
      * - run a guards defect fixture, making health check status broken
-     * - mock `getConnectedGuardsPercent` to return a healthy percent
+     * - mock `getConnectedGuards` to return a healthy count
      * - update health check
      * @expected
      * - health check status should equal healthy
      */
     it('should reset to healthy state if both checks pass', async () => {
-      const getConnectedGuardsPercent = jest.fn();
-      const healthCheck = runGuardsDefectFixture(getConnectedGuardsPercent);
+      const getConnectedGuards = jest.fn();
+      const healthCheck = runGuardsDefectFixture(getConnectedGuards);
 
-      getConnectedGuardsPercent.mockReturnValue(GUARDS_HEALTHY_PERCENT);
+      getConnectedGuards.mockReturnValue(GUARDS_HEALTHY_COUNT);
       healthCheck.update();
 
       expect(await healthCheck.getHealthStatus()).toEqual(
@@ -134,7 +134,7 @@ describe('P2PNetworkHealthCheck', () => {
      * @dependencies
      * @scenario
      * - run a healthy fixture
-     * - mock `getConnectedGuardsPercent` to return a broken percent
+     * - mock `getConnectedGuards` to return a broken count
      * - update health check
      * - wait equal to half of time window
      * - update health check again
@@ -142,12 +142,12 @@ describe('P2PNetworkHealthCheck', () => {
      * - health check status should remain healthy
      */
     it('should not change status to broken within time window', async () => {
-      const getConnectedGuardsPercent = jest.fn();
+      const getConnectedGuards = jest.fn();
       const healthCheck = runHealthyFixture({
-        getConnectedGuardsPercent,
+        getConnectedGuards,
       });
 
-      getConnectedGuardsPercent.mockReturnValue(GUARDS_BROKEN_PERCENT);
+      getConnectedGuards.mockReturnValue(GUARDS_BROKEN_COUNT);
       healthCheck.update();
       jest.advanceTimersByTime(TIME_WINDOW / 2);
       healthCheck.update();
@@ -238,7 +238,7 @@ describe('P2PNetworkHealthCheck', () => {
       const healthCheck = runGuardsDefectFixture();
 
       expect(await healthCheck.getDescription()).toEqual(
-        `${GUARDS_BROKEN_PERCENT} percent of guards are connected which is below or equal to ${GUARDS_THRESHOLD} threshold`
+        `${GUARDS_BROKEN_COUNT} of guards are connected which is below or equal to ${GUARDS_THRESHOLD} threshold`
       );
     });
   });
