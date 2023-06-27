@@ -71,6 +71,7 @@ export class TssSigner extends Communicator {
    * cleanup all timed out signatures
    */
   protected cleanup = async () => {
+    this.logger.debug('try cleaning timed out signs');
     const timeout = this.getDate() - this.timeout;
     const turn = this.getGuardTurn();
     const releaseSign = await this.signAccessMutex.acquire();
@@ -102,8 +103,10 @@ export class TssSigner extends Communicator {
     const round = Math.floor(timestamp / this.turnDuration);
     if (round !== this.lastUpdateRound) {
       this.lastUpdateRound = round;
+      this.logger.debug('processing signs to start');
       for (const sign of this.signs) {
         if (sign.posted) continue;
+        this.logger.debug(`new sign found with ${sign.msg}`);
         const payload: SignRequestPayload = {
           msg: sign.msg,
           guards: activeGuards,
@@ -160,6 +163,7 @@ export class TssSigner extends Communicator {
       throw Error('already signing this message');
     }
     const release = await this.signAccessMutex.acquire();
+    this.logger.info(`adding new message ${msg} to signing queue`);
     this.signs.push({
       msg,
       callback,
@@ -168,8 +172,12 @@ export class TssSigner extends Communicator {
       posted: false,
     });
     release();
+
     const pending = this.getPendingSign(msg);
     if (pending) {
+      this.logger.info(
+        `processing pending request for ${msg} from other guards`
+      );
       await this.handleRequestMessage(
         { msg: msg, guards: pending.guards },
         pending.sender,
@@ -270,6 +278,9 @@ export class TssSigner extends Communicator {
     const sign = this.getSign(payload.msg);
     if (sign) {
       const unknown = await this.getUnknownGuards(payload.guards);
+      this.logger.debug(
+        `unknown guards found in signing request ${JSON.stringify(unknown)}`
+      );
       if (sendRegister) {
         for (const guard of unknown) {
           await this.detection.register(
@@ -294,6 +305,9 @@ export class TssSigner extends Communicator {
         }
       }
       if (unknown.length === 0) {
+        this.logger.info(
+          `signing request for message ${sign.msg} approved. sending approval message`
+        );
         const responsePayload: SignApprovePayload = {
           msg: payload.msg,
           guards: payload.guards,
@@ -307,6 +321,9 @@ export class TssSigner extends Communicator {
         );
       }
     } else {
+      this.logger.info(
+        `new signing message arrived ${payload.msg} but not in signing queue yet. store it for future use`
+      );
       const pending = this.getPendingSign(payload.msg);
       const release = await this.pendingAccessMutex.acquire();
       if (pending) {
@@ -440,21 +457,26 @@ export class TssSigner extends Communicator {
 
   startSign = (message: string, guards: Array<ActiveGuard>) => {
     return this.signAccessMutex.acquire().then((release) => {
+      console.log('start signing');
       const sign = this.getSign(message);
       if (sign) {
+        console.log('signing json found');
         sign.posted = true;
+        const data = {
+          peers: guards.map((item) => ({
+            shareId: this.shares[this.guardPks.indexOf(item.publicKey)],
+            p2pId: item.peerId,
+          })),
+          message: message,
+          crypto: this.signer.getCrypto(),
+          callBackUrl: this.callbackUrl,
+        };
         return axios
-          .post(this.tssSignUrl, {
-            peers: guards.map((item) => ({
-              shareId: this.shares[this.guardPks.indexOf(item.publicKey)],
-              p2pId: item.peerId,
-            })),
-            message: message,
-            crypto: this.signer.getCrypto(),
-            callBackUrl: this.callbackUrl,
-          })
-          .then(() => release())
+          .post(this.tssSignUrl, data)
+          .then((res) => release())
           .catch((err) => {
+            this.logger.warn('Can not communicate with tss backend');
+            this.logger.debug(err.stack);
             if (sign.callback) {
               this.signAccessMutex.acquire().then((release) => {
                 sign.callback(false, err.status_code);
@@ -469,7 +491,12 @@ export class TssSigner extends Communicator {
     });
   };
 
-  handleSignData = (status: StatusEnum, message: string, signature: string) => {
+  handleSignData = (
+    status: StatusEnum,
+    message: string,
+    signature?: string,
+    error?: string
+  ) => {
     const sign = this.getSign(message, true);
     if (sign === undefined || !sign.posted) {
       throw Error('Invalid message');
@@ -481,7 +508,7 @@ export class TssSigner extends Communicator {
         throw Error('signature is required when sign is successfully');
       }
     } else {
-      sign.callback(false, message);
+      sign.callback(false, error);
     }
     this.signAccessMutex.acquire().then((release) => {
       this.signs = this.signs.filter((item) => item.msg !== message);
