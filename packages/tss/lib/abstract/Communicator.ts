@@ -86,6 +86,11 @@ export abstract class Communicator {
     peers: Array<string>,
     timestamp?: number
   ) => {
+    this.logger.debug(
+      `sending new message of type ${messageType} with payload ${JSON.stringify(
+        payload
+      )} to ${JSON.stringify(peers)}`
+    );
     timestamp = timestamp ? timestamp : this.getDate();
     const publicKey = await this.signer.getPk();
     const payloadSign = await this.signPayload(payload, timestamp);
@@ -119,6 +124,7 @@ export abstract class Communicator {
    * @param peerId
    */
   handleMessage = async (message: string, peerId: string) => {
+    this.logger.info('new message arrived');
     const msg: CommunicationMessage = JSON.parse(
       message
     ) as CommunicationMessage;
@@ -159,5 +165,9 @@ export abstract class Communicator {
       peerId,
       msg.timestamp
     );
+  };
+
+  changePks = (newPks: Array<string>) => {
+    this.guardPks = [...newPks];
   };
 }
