@@ -383,4 +383,20 @@ export class GuardDetection extends Communicator {
       }).then(() => null);
     });
   };
+
+  /**
+   * Update guards pk to new set
+   * @param newPks
+   */
+  changePks = async (newPks: Array<string>) => {
+    await super.changePks(newPks);
+    this.guardsInfo = newPks.map((item) => ({
+      peerId: '',
+      nonce: [],
+      lastUpdate: 0,
+      publicKey: item,
+      callback: [],
+    }));
+    await this.update();
+  };
 }
