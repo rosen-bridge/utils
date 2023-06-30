@@ -73,7 +73,7 @@ describe('GuardDetection', () => {
      * - mock GuardDetection.init
      * - call update
      * @expected
-     * - GuardDetection.init must not call
+     * - GuardDetection.init must call
      */
     it('should call init when active guards contain less than threshold', async () => {
       detection.init = jest.fn();
@@ -473,6 +473,19 @@ describe('GuardDetection', () => {
       expect(msg.payload).toEqual({ receivedNonce: 'new nonce' });
     });
 
+    /**
+     * @target GuardDetection.handleApproveMessage should do nothing when nonce is invalid
+     * @dependency
+     * @scenario
+     * - mock date.now
+     * - add a nonce for specific guard
+     * - call handleApproveMessage
+     * @expected
+     * - submit must not call
+     * - selected guard nonce list size must be 1
+     * - selected guard must not have peerId
+     * - selected guard last update must not change
+     */
     it('should do nothing when nonce is invalid', async () => {
       const currentTime = 1685683142;
       jest.spyOn(Date, 'now').mockReturnValue(currentTime * 1000);

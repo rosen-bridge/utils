@@ -132,7 +132,7 @@ export class GuardDetection extends Communicator {
   /**
    * handle receive message according to message type
    * @public
-   * @param type
+   * @param messageType
    * @param payload
    * @param sign
    * @param senderIndex
@@ -140,14 +140,14 @@ export class GuardDetection extends Communicator {
    * @param timestamp
    */
   processMessage = async (
-    type: string,
+    messageType: string,
     payload: unknown,
     sign: string,
     senderIndex: number,
     peerId: string,
     timestamp: number
   ): Promise<void> => {
-    switch (type as DetectionMessageType) {
+    switch (messageType as DetectionMessageType) {
       case approveMessage:
         await this.handleApproveMessage(
           payload as DetectionApprovePayload,
