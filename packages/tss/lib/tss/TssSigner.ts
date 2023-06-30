@@ -200,15 +200,24 @@ export class TssSigner extends Communicator {
     });
   };
 
+  /**
+   * process new message
+   * @param messageType
+   * @param payload
+   * @param sign
+   * @param senderIndex
+   * @param peerId
+   * @param timestamp
+   */
   processMessage = (
-    type: string,
+    messageType: string,
     payload: unknown,
     sign: string,
     senderIndex: number,
     peerId: string,
     timestamp: number
   ) => {
-    switch (type as SignMessageType) {
+    switch (messageType as SignMessageType) {
       case requestMessage:
         return this.handleRequestMessage(
           payload as SignRequestPayload,
@@ -231,9 +240,13 @@ export class TssSigner extends Communicator {
           peerId
         );
     }
-    this.logger.warn(`invalid message type ${type} arrived`);
+    this.logger.warn(`invalid message type ${messageType} arrived`);
   };
 
+  /**
+   * get a list of guards and return unknown guards info from selected list
+   * @param guards
+   */
   protected getUnknownGuards = async (guards: Array<ActiveGuard>) => {
     const myActiveGuards = await this.detection.activeGuards();
     return guards.filter((guard) => {
@@ -244,6 +257,11 @@ export class TssSigner extends Communicator {
     });
   };
 
+  /**
+   * get a list of guards and return a list of invalid guards
+   * one guard is invalid if p2pId of detected guard differ from selected guard in list
+   * @param guards
+   */
   protected getInvalidGuards = async (guards: Array<ActiveGuard>) => {
     const myActiveGuards = await this.detection.activeGuards();
     return guards.filter((guard) => {
@@ -256,6 +274,15 @@ export class TssSigner extends Communicator {
     });
   };
 
+  /**
+   * handle sign request message. verify guard turn and message
+   * then return approve message
+   * @param payload
+   * @param sender
+   * @param guardIndex
+   * @param timestamp
+   * @param sendRegister
+   */
   protected handleRequestMessage = async (
     payload: SignRequestPayload,
     sender: string,
@@ -344,6 +371,12 @@ export class TssSigner extends Communicator {
     }
   };
 
+  /**
+   * find a signing message in sign queue.
+   * @param msg
+   * @param searchPosted: if true search all element.
+   *    otherwise only search in element which does not post to tss backend
+   */
   protected getSign = (msg: string, searchPosted = false) => {
     const filtered = this.signs.filter((item) => item.msg === msg);
     if (filtered.length === 0) {
@@ -355,6 +388,10 @@ export class TssSigner extends Communicator {
     return undefined;
   };
 
+  /**
+   * get a message in list of pending signature.
+   * @param msg
+   */
   protected getPendingSign = (msg: string) => {
     const filtered = this.pendingSigns.filter((item) => item.msg === msg);
     if (filtered.length === 0) {
@@ -363,6 +400,15 @@ export class TssSigner extends Communicator {
     return filtered[0];
   };
 
+  /**
+   * handle signing approve message.
+   * collect signatures and if required count of signatures are arrived start signing process
+   * ignore signing process if in NoWorkTime
+   * @param payload
+   * @param sender
+   * @param guardIndex
+   * @param signature
+   */
   protected handleApproveMessage = async (
     payload: SignApprovePayload,
     sender: string,
@@ -399,6 +445,14 @@ export class TssSigner extends Communicator {
     }
   };
 
+  /**
+   * handle start sign message.
+   * process all signatures in message and if all verified start signing process with selected list of guards
+   * @param payload
+   * @param timestamp
+   * @param guardIndex
+   * @param sender
+   */
   protected handleStartMessage = async (
     payload: SignStartPayload,
     timestamp: number,
@@ -455,12 +509,15 @@ export class TssSigner extends Communicator {
     }
   };
 
+  /**
+   * start signing process for specific message
+   * @param message
+   * @param guards
+   */
   startSign = (message: string, guards: Array<ActiveGuard>) => {
     return this.signAccessMutex.acquire().then((release) => {
-      console.log('start signing');
       const sign = this.getSign(message);
       if (sign) {
-        console.log('signing json found');
         sign.posted = true;
         const data = {
           peers: guards.map((item) => ({
@@ -491,6 +548,13 @@ export class TssSigner extends Communicator {
     });
   };
 
+  /**
+   * handle signing data callback for a message and process callback function
+   * @param status
+   * @param message
+   * @param signature
+   * @param error
+   */
   handleSignData = (
     status: StatusEnum,
     message: string,

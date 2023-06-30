@@ -706,6 +706,57 @@ describe('Signer', () => {
         },
       ]);
     });
+
+    /**
+     * @target GuardDetection.handleRequestMessage should update pending sign request and do nothing
+     * @dependency
+     * @scenario
+     * - mock a list of active guards
+     * - mock register of detection
+     * - add selected message to pending list
+     * - add a sign to signs list of signer
+     * - call handleRequestMessage with new msg
+     * @expected
+     * - mockSubmit must not call
+     * - mockedRegister must not call
+     * - pendingSign must be updated with new data
+     */
+    it('should update pending sign request and do nothing', async () => {
+      const mockedRegister = jest
+        .spyOn(detection, 'register')
+        .mockResolvedValue();
+      const payload = {
+        msg: 'test message new',
+        guards: activeGuards,
+      };
+      const pendings = signer.getPendingSigns();
+      pendings.push({
+        msg: 'test message new',
+        guards: [],
+        index: 0,
+        timestamp: 0,
+        sender: 'sender old',
+      });
+      await signer.mockedHandleRequestMessage(
+        payload,
+        'sender',
+        6,
+        timestamp,
+        false
+      );
+      expect(mockedRegister).toHaveBeenCalledTimes(0);
+      expect(mockSubmit).toHaveBeenCalledTimes(0);
+      const pending = signer.getPendingSigns();
+      expect(pending).toEqual([
+        {
+          guards: activeGuards,
+          index: 6,
+          msg: 'test message new',
+          sender: 'sender',
+          timestamp,
+        },
+      ]);
+    });
   });
 
   describe('getSign', () => {
@@ -1168,8 +1219,4 @@ describe('Signer', () => {
       expect(mockedStartSign).toHaveBeenCalledTimes(0);
     });
   });
-
-  // describe('startSign', () => {
-  //   /* empty function */
-  // });
 });
