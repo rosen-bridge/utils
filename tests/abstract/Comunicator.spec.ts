@@ -22,11 +22,11 @@ describe('Communicator', () => {
   describe('getDate', () => {
     /**
      * @target Communicator.sendMessage should return current timestamp rounded to seconds
-     * @dependency
-     * @scenario:
+     * @dependencies
+     * @scenario
      * - mock Date.now to return 1685683305125
      * - call getDate
-     * @expected:
+     * @expected
      * - must return 1685683305
      */
     it('should return current timestamp rounded to seconds', () => {
@@ -40,11 +40,11 @@ describe('Communicator', () => {
   describe('sendMessage', () => {
     /**
      * @target Communicator.sendMessage should call submit message
-     * @dependency
-     * @scenario:
+     * @dependencies
+     * @scenario
      * - mock submitMessage function
      * - call with specified argument
-     * @expected:
+     * @expected
      * - mocked function must call once
      * - first argument must be as a json contain expected values
      */
@@ -73,7 +73,7 @@ describe('Communicator', () => {
   describe('handleMessage', () => {
     /**
      * @target Communicator.handleMessage should pass arguments to process message function when sign is valid
-     * @dependency
+     * @dependencies
      * @scenario
      * - generate a message signed with second guard sk
      * - pass to handleMessage
@@ -110,7 +110,7 @@ describe('Communicator', () => {
 
     /**
      * @target Communicator.handleMessage should not call processMessage when signature is not valid
-     * @dependency
+     * @dependencies
      * @scenario
      * - generate a message signed with second guard sk with index 3 (invalid sign)
      * - pass to handleMessage
@@ -138,14 +138,14 @@ describe('Communicator', () => {
 
     /**
      * @target Communicator.handleMessage should not call processMessage when signer public key differ from index
-     * @dependency
+     * @dependencies
      * @scenario
      * - generate a message signed with second guard sk with index 3 and public key of second guard
      * - pass to handleMessage
      * @expect
      * - processMessage must not call
      */
-    it('should not call processMessage when signature is not valid', async () => {
+    it('should not call processMessage when signer public key differ from index', async () => {
       const currentTime = 1685683144;
       const publicKey = await guardSigners[2].getPk();
       const sign = await guardSigners[2].sign(
@@ -166,7 +166,7 @@ describe('Communicator', () => {
 
     /**
      * @target Communicator.handleMessage should not call processMessage when message timed out
-     * @dependency
+     * @dependencies
      * @scenario
      * - mock Date.now() to return 1685683141101
      * - generate a valid message with timestamp equals to 60001 milliseconds before
@@ -174,7 +174,7 @@ describe('Communicator', () => {
      * @expect
      * - processMessage must not call
      */
-    it('should not call processMessage when signature is not valid', async () => {
+    it('should not call processMessage when message timed out', async () => {
       const currentTime = 1685683145;
       const publicKey = await guardSigners[2].getPk();
       const sign = await guardSigners[2].sign(
