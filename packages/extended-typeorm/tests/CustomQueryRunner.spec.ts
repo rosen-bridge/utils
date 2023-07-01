@@ -9,7 +9,7 @@ describe('CustomQueryRunner', () => {
      * - create a datasource
      * - create a query runner and connect to it
      * - call commitTransaction on it
-     * @expected:
+     * @expected
      * - throw an error
      */
     it('should throw Error when no transaction started', async () => {
@@ -28,7 +28,7 @@ describe('CustomQueryRunner', () => {
      * - create a datasource
      * - create a query runner and connect to it
      * - call rollbackTransaction on it
-     * @expected:
+     * @expected
      * - throw an error
      */
     it('should throw Error when no transaction started', async () => {

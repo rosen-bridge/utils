@@ -106,7 +106,7 @@ export class TssSigner extends Communicator {
       this.logger.debug('processing signs to start');
       for (const sign of this.signs) {
         if (sign.posted) continue;
-        this.logger.debug(`new sign found with ${sign.msg}`);
+        this.logger.debug(`new sign found with [${sign.msg}]`);
         const payload: SignRequestPayload = {
           msg: sign.msg,
           guards: activeGuards,
@@ -163,7 +163,7 @@ export class TssSigner extends Communicator {
       throw Error('already signing this message');
     }
     const release = await this.signAccessMutex.acquire();
-    this.logger.info(`adding new message ${msg} to signing queue`);
+    this.logger.info(`adding new message [${msg}] to signing queue`);
     this.signs.push({
       msg,
       callback,
@@ -176,7 +176,7 @@ export class TssSigner extends Communicator {
     const pending = this.getPendingSign(msg);
     if (pending) {
       this.logger.info(
-        `processing pending request for ${msg} from other guards`
+        `processing pending request for [${msg}] from other guards`
       );
       await this.handleRequestMessage(
         { msg: msg, guards: pending.guards },
@@ -240,7 +240,7 @@ export class TssSigner extends Communicator {
           peerId
         );
     }
-    this.logger.warn(`invalid message type ${messageType} arrived`);
+    this.logger.warn(`invalid message type [${messageType}] arrived`);
   };
 
   /**
@@ -293,13 +293,13 @@ export class TssSigner extends Communicator {
     if (this.getGuardTurn() !== guardIndex) {
       if (sendRegister)
         this.logger.warn(
-          `Got a request to sign message from ${sender} but Its not its turn`
+          `Got a request to sign message from [${sender}] but its not his turn`
         );
       return;
     }
     if ((await this.getInvalidGuards(payload.guards)).length > 0) {
       if (sendRegister)
-        this.logger.warn(`Invalid guard set passed to sign from ${sender}`);
+        this.logger.warn(`Invalid guard set passed to sign from [${sender}]`);
       return;
     }
     const sign = this.getSign(payload.msg);
@@ -324,7 +324,7 @@ export class TssSigner extends Communicator {
                 );
               } else {
                 this.logger.warn(
-                  `Can not register guard ${guard.publicKey} with peer Id ${guard.peerId}: ${message}`
+                  `Can not register guard [${guard.publicKey}] with peer Id [${guard.peerId}]: ${message}`
                 );
               }
             }
@@ -333,7 +333,7 @@ export class TssSigner extends Communicator {
       }
       if (unknown.length === 0) {
         this.logger.info(
-          `signing request for message ${sign.msg} approved. sending approval message`
+          `signing request for message [${sign.msg}] approved. sending approval message`
         );
         const responsePayload: SignApprovePayload = {
           msg: payload.msg,
@@ -349,7 +349,7 @@ export class TssSigner extends Communicator {
       }
     } else {
       this.logger.info(
-        `new signing message arrived ${payload.msg} but not in signing queue yet. store it for future use`
+        `new signing message arrived [${payload.msg}] but not in signing queue yet. store it for future use`
       );
       const pending = this.getPendingSign(payload.msg);
       const release = await this.pendingAccessMutex.acquire();
@@ -418,7 +418,7 @@ export class TssSigner extends Communicator {
     const sign = this.getSign(payload.msg);
     if (!sign) {
       this.logger.warn(
-        `approve message arrived but signing message not found ${payload.msg}`
+        `approve message arrived but signing message not found [${payload.msg}]`
       );
       return;
     }
@@ -462,13 +462,13 @@ export class TssSigner extends Communicator {
     const sign = this.getSign(payload.msg);
     if (!sign) {
       this.logger.warn(
-        `start sign message arrived but signing message not found ${payload.msg}`
+        `start sign message arrived but signing message not found [${payload.msg}]`
       );
       return;
     }
     if (this.getGuardTurn() !== guardIndex) {
       this.logger.warn(
-        `Got a request to sign message from ${sender} but Its not its turn`
+        `Got a request to sign message from [${sender}] but its not his turn`
       );
       return;
     }
@@ -480,7 +480,7 @@ export class TssSigner extends Communicator {
     const myPk = await this.signer.getPk();
     if (payload.guards.filter((item) => item.publicKey === myPk).length == 0) {
       this.logger.warn(
-        `Got a request to sign message from ${sender} but I'm not involved`
+        `Got a request to sign message from [${sender}] but I'm not involved`
       );
       return;
     }
@@ -574,7 +574,7 @@ export class TssSigner extends Communicator {
     } else {
       sign.callback(false, error);
     }
-    this.signAccessMutex.acquire().then((release) => {
+    return this.signAccessMutex.acquire().then((release) => {
       this.signs = this.signs.filter((item) => item.msg !== message);
       release();
     });

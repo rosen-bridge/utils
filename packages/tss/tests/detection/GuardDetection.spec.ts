@@ -6,7 +6,7 @@ import {
   registerMessage,
 } from '../../lib/const/detection';
 import { Nonce } from '../../lib';
-import { generateSigners } from '../utils';
+import { generateSigners } from '../testUtils';
 
 describe('GuardDetection', () => {
   let detection: TestGuardDetection;
@@ -30,7 +30,7 @@ describe('GuardDetection', () => {
   describe('init', () => {
     /**
      * @target GuardDetection.init should call sendMessage with broadcast message of type register
-     * @dependency
+     * @dependencies
      * @scenario
      * - mock submit function for GuardDetection
      * - call init
@@ -48,7 +48,7 @@ describe('GuardDetection', () => {
     });
     /**
      * @target GuardDetection.init should call not sendMessage with broadcast message when all guards have inactive guards have nonce
-     * @dependency
+     * @dependencies
      * @scenario
      * - mock submit function for GuardDetection
      * - call init
@@ -68,7 +68,7 @@ describe('GuardDetection', () => {
   describe('update', () => {
     /**
      * @target GuardDetection.update should call init when active guards contain less than threshold
-     * @dependency
+     * @dependencies
      * @scenario
      * - mock GuardDetection.init
      * - call update
@@ -90,7 +90,7 @@ describe('GuardDetection', () => {
 
     /**
      * @target GuardDetection.update should do nothing when all guards are active
-     * @dependency
+     * @dependencies
      * @scenario
      * - update detection.info and set for all peerId and current time
      * - mock Date.now to return expected timestamp
@@ -112,7 +112,7 @@ describe('GuardDetection', () => {
 
     /**
      * @target GuardDetection.update should call submitMessage for each timed out guard
-     * @dependency
+     * @dependencies
      * @scenario
      * - update detection.info and set for all peerId and current time
      * - set time of current time - 2 minutes for one of guards
@@ -143,7 +143,7 @@ describe('GuardDetection', () => {
     /**
      * @target GuardDetection.processMessage should call handleRegisterMessage
      * when message type is registerMessage
-     * @dependency
+     * @dependencies
      * @scenario
      * - mock handleRegisterMessage
      * - call processMessage
@@ -160,7 +160,7 @@ describe('GuardDetection', () => {
     /**
      * @target GuardDetection.processMessage should call handleHeartbeatMessage
      * when message type is heartbeatMessage
-     * @dependency
+     * @dependencies
      * @scenario
      * - mock handleHeartbeatMessage
      * - call processMessage
@@ -177,7 +177,7 @@ describe('GuardDetection', () => {
     /**
      * @target GuardDetection.processMessage should call handleApproveMessage
      * when message type is approveMessage
-     * @dependency
+     * @dependencies
      * @scenario
      * - mock handleApproveMessage
      * - call processMessage
@@ -195,7 +195,7 @@ describe('GuardDetection', () => {
   describe('activeGuards', () => {
     /**
      * @target GuardDetection.activeGuards should return list of valid guards
-     * @dependency
+     * @dependencies
      * @scenario
      * - change info list of detection and set current time for even guards
      * - get list of active guards
@@ -227,7 +227,7 @@ describe('GuardDetection', () => {
 
     /**
      * @target GuardDetection.activeGuards should not return timed out guard
-     * @dependency
+     * @dependencies
      * @scenario
      * - change info list of detection and set current time and peerId for all guards
      * - set last update time for one guard ( index 3 ) to 2 minutes before
@@ -352,7 +352,7 @@ describe('GuardDetection', () => {
   describe('handleRegisterMessage', () => {
     /**
      * @target GuardDetection.handleRegisterMessage should call submitMsg
-     * @dependency
+     * @dependencies
      * @scenario
      * - mock addNonce of guardDetection to return expected nonce
      * - call handleRegisterMessage
@@ -384,7 +384,7 @@ describe('GuardDetection', () => {
   describe('handleApproveMessage', () => {
     /**
      * @target GuardDetection.handleApproveMessage should update guard state if nonce is valid
-     * @dependency
+     * @dependencies
      * @scenario
      * - mock Date.now to return expected time
      * - add nonce to one of guards nonce list
@@ -414,7 +414,7 @@ describe('GuardDetection', () => {
 
     /**
      * @target GuardDetection.handleApproveMessage should call all callbacks with true
-     * @dependency
+     * @dependencies
      * @scenario
      * - mock Date.now to return expected time
      * - add nonce to one of guards nonce list
@@ -447,7 +447,7 @@ describe('GuardDetection', () => {
 
     /**
      * @target GuardDetection.handleApproveMessage should call submitMsg when nonce set in payload
-     * @dependency
+     * @dependencies
      * @scenario
      * - add nonce to one of guards nonce list
      * - call handleApproveMessage
@@ -475,7 +475,7 @@ describe('GuardDetection', () => {
 
     /**
      * @target GuardDetection.handleApproveMessage should do nothing when nonce is invalid
-     * @dependency
+     * @dependencies
      * @scenario
      * - mock date.now
      * - add a nonce for specific guard
@@ -507,7 +507,7 @@ describe('GuardDetection', () => {
   describe('handleHeartbeatMessage', () => {
     /**
      * @target GuardDetection.handleHeartbeatMessage should call send message with received nonce
-     * @dependency
+     * @dependencies
      * @scenario
      * - call handleHeartbeatMessage with 'random nonce' in payload
      * @expect
@@ -533,7 +533,7 @@ describe('GuardDetection', () => {
   describe('addNonce', () => {
     /**
      * @target GuardDetection.addNonce should call clearNonce
-     * @dependency
+     * @dependencies
      * @scenario
      * - mock clearNonce
      * - call addNonce
@@ -550,7 +550,7 @@ describe('GuardDetection', () => {
 
     /**
      * @target GuardDetection.addNonce should add nonce to entered guard index only
-     * @dependency
+     * @dependencies
      * @scenario
      * - call addNonce with index 3 twice
      * @expect
@@ -567,7 +567,7 @@ describe('GuardDetection', () => {
 
     /**
      * @target GuardDetection.addNonce should add nonce to all guards when no index entered
-     * @dependency
+     * @dependencies
      * @scenario
      * - call addNonce twice
      * @expect
@@ -587,7 +587,7 @@ describe('GuardDetection', () => {
   describe('clearNonce', () => {
     /**
      * @target GuardDetection.clearNonce should remove all old nonce in list
-     * @dependency
+     * @dependencies
      * @scenario
      * - mock Date.now
      * - add two nonce in each of guards info list

@@ -156,7 +156,7 @@ export abstract class Communicator {
       this.logger.debug(message);
       return;
     }
-    this.logger.info('new message arrived');
+    this.logger.debug('new message arrived');
     await this.processMessage(
       msg.type,
       msg.payload,

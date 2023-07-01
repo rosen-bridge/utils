@@ -1,9 +1,9 @@
-import { ActiveGuard, EdDSA, GuardDetection } from '../../lib';
+import { ActiveGuard, EdDSA, GuardDetection, StatusEnum } from '../../lib';
 import { TestTssSigner } from './TestTssSigner';
-import { generateSigners } from '../utils';
+import { generateSigners } from '../testUtils';
 import {
-  requestMessage,
   approveMessage,
+  requestMessage,
   startMessage,
 } from '../../lib/const/signer';
 
@@ -44,7 +44,7 @@ describe('Signer', () => {
   describe('cleanup', () => {
     /**
      * @target TssSigner.cleanup should remove timed out signs
-     * @dependency
+     * @dependencies
      * @scenario
      * - mock `Date.now` to return 1686286005068 ( a random timestamp )
      * - add one sign for 5 minute + 1 seconds before
@@ -67,7 +67,7 @@ describe('Signer', () => {
 
     /**
      * @target TssSigner.cleanup should not remove non-timed out signs
-     * @dependency
+     * @dependencies
      * @scenario
      * - mock `Date.now` to return 1686286005068 ( a random timestamp )
      * - add one sign for 5 minute - 1 seconds before
@@ -90,7 +90,7 @@ describe('Signer', () => {
 
     /**
      * @target TssSigner.cleanup should remove pending item which not in guards turn
-     * @dependency
+     * @dependencies
      * @scenario
      * - mock `Date.now` to return 1686286005068 ( a random timestamp )
      * - add one pending sign for guard index 4 (current guard turn is 5)
@@ -113,7 +113,7 @@ describe('Signer', () => {
 
     /**
      * @target TssSigner.cleanup should not remove pending item which in guards turn
-     * @dependency
+     * @dependencies
      * @scenario
      * - mock `Date.now` to return 1686286005068 ( a random timestamp )
      * - add one pending sign for guard index 5 (current guard turn)
@@ -147,7 +147,7 @@ describe('Signer', () => {
     });
     /**
      * @target TssSigner.update should call cleanup
-     * @dependency
+     * @dependencies
      * @scenario
      * - mock cleanup
      * - mock `Date.now` to return 1686286005068 ( a random timestamp )
@@ -164,7 +164,7 @@ describe('Signer', () => {
 
     /**
      * @target TssSigner.update should not call sendMessage when it's not guard turn
-     * @dependency
+     * @dependencies
      * @scenario
      * - mock activeGuards to return a list of 7 active guard
      * - mock `Date.now` to return 1686286005068 ( a random timestamp )
@@ -186,7 +186,7 @@ describe('Signer', () => {
 
     /**
      * @target TssSigner.update should not call sendMessage when active guards list length lower than threshold
-     * @dependency
+     * @dependencies
      * @scenario
      * - mock activeGuards to return a list of 6 active guard
      * - mock `Date.now` to return 1686285600 ( a random timestamp when its this guard turn)
@@ -209,7 +209,7 @@ describe('Signer', () => {
 
     /**
      * @target TssSigner.update should call once sendMessage when more than one time called
-     * @dependency
+     * @dependencies
      * @scenario
      * - mock activeGuards to return a list of 7 active guard
      * - mock `Date.now` to return 1686285600 ( a random timestamp when its this guard turn)
@@ -233,7 +233,7 @@ describe('Signer', () => {
 
     /**
      * @target TssSigner.update should update sings array
-     * @dependency
+     * @dependencies
      * @scenario
      * - mock activeGuards to return a list of 7 active guard
      * - mock `Date.now` to return 1686285600 ( a random timestamp when its this guard turn)
@@ -262,7 +262,7 @@ describe('Signer', () => {
   describe('getGuardTurn', () => {
     /**
      * @target TssSigner.getGuardTurn should return guard index turn
-     * @dependency
+     * @dependencies
      * @scenario
      * - mock `Date.now` to return 1686286005068 ( a random timestamp )
      * @expected
@@ -276,7 +276,7 @@ describe('Signer', () => {
   describe('isNoWorkTime', () => {
     /**
      * @target TssSigner.isNoWorkTime should return false when remain more than NoWork seconds
-     * @dependency
+     * @dependencies
      * @scenario
      * - mock `Date.now` to return 1686285606068 (beginning of turn)
      * - call isNoWorkTime
@@ -291,7 +291,7 @@ describe('Signer', () => {
 
     /**
      * @target TssSigner.isNoWorkTime should return false when remain more than NoWork seconds
-     * @dependency
+     * @dependencies
      * @scenario
      * - mock `Date.now` to return 1686285651068 (9 seconds to end of turn noWorkTurn is 10)
      * - call isNoWorkTime
@@ -308,7 +308,7 @@ describe('Signer', () => {
   describe('sign', () => {
     /**
      * @target TssSigner.sign should add new sign to list
-     * @dependency
+     * @dependencies
      * @scenario
      * - call sign
      * @expected
@@ -323,7 +323,7 @@ describe('Signer', () => {
 
     /**
      * @target TssSigner.sign should call handleRequestMessage if msg in pending state
-     * @dependency
+     * @dependencies
      * @scenario
      * - call sign
      * @expected
@@ -359,7 +359,7 @@ describe('Signer', () => {
     /**
      * @target TssSigner.processMessage should call handleRequestMessage
      * when message type is requestMessage
-     * @dependency
+     * @dependencies
      * @scenario
      * - mock handleRequestMessage
      * - call processMessage
@@ -376,7 +376,7 @@ describe('Signer', () => {
     /**
      * @target TssSigner.processMessage should call handleApproveMessage
      * when message type is approveMessage
-     * @dependency
+     * @dependencies
      * @scenario
      * - mock handleApproveMessage
      * - call processMessage
@@ -400,7 +400,7 @@ describe('Signer', () => {
     /**
      * @target GuardDetection.processMessage should call handleStartMessage
      * when message type is startMessage
-     * @dependency
+     * @dependencies
      * @scenario
      * - mock handleApproveMessage
      * - call processMessage
@@ -418,7 +418,7 @@ describe('Signer', () => {
   describe('getUnknownGuards', () => {
     /**
      * @target GuardDetection.getUnknownGuards should return list of unknown guards
-     * @dependency
+     * @dependencies
      * @scenario
      * - mock detection to return known list of guards
      * - call getUnknownGuards with one unknown guard
@@ -445,7 +445,7 @@ describe('Signer', () => {
   describe('getInvalidGuards', () => {
     /**
      * @target GuardDetection.getInvalidGuards should return list of invalid guards
-     * @dependency
+     * @dependencies
      * @scenario
      * - mock detection to return known list of guards
      * - call getInvalidGuards with one guard with different peerId
@@ -488,7 +488,7 @@ describe('Signer', () => {
     });
     /**
      * @target GuardDetection.handleRequestMessage should send approve message when all conditions are OK
-     * @dependency
+     * @dependencies
      * @scenario
      * - mock a list of active guards
      * - add a sign to signs list of signer
@@ -526,7 +526,7 @@ describe('Signer', () => {
 
     /**
      * @target GuardDetection.handleRequestMessage should not send any message when it's not guard turn
-     * @dependency
+     * @dependencies
      * @scenario
      * - mock a list of active guards
      * - add a sign to signs list of signer
@@ -550,7 +550,7 @@ describe('Signer', () => {
 
     /**
      * @target GuardDetection.handleRequestMessage should not send any message when at least one of guards are invalid
-     * @dependency
+     * @dependencies
      * @scenario
      * - mock a list of active guards
      * - add a sign to signs list of signer
@@ -577,7 +577,7 @@ describe('Signer', () => {
 
     /**
      * @target GuardDetection.handleRequestMessage should store request and send register to unknown guard
-     * @dependency
+     * @dependencies
      * @scenario
      * - mock a list of active guards
      * - mock register of detection
@@ -633,7 +633,7 @@ describe('Signer', () => {
 
     /**
      * @target GuardDetection.handleRequestMessage should do nothing when unknown guard exists and sendRegister is false
-     * @dependency
+     * @dependencies
      * @scenario
      * - mock a list of active guards
      * - mock register of detection
@@ -667,7 +667,7 @@ describe('Signer', () => {
 
     /**
      * @target GuardDetection.handleRequestMessage should add pendingSign when sign does not exist and do nothing
-     * @dependency
+     * @dependencies
      * @scenario
      * - mock a list of active guards
      * - mock register of detection
@@ -709,7 +709,7 @@ describe('Signer', () => {
 
     /**
      * @target GuardDetection.handleRequestMessage should update pending sign request and do nothing
-     * @dependency
+     * @dependencies
      * @scenario
      * - mock a list of active guards
      * - mock register of detection
@@ -762,7 +762,7 @@ describe('Signer', () => {
   describe('getSign', () => {
     /**
      * @target GuardDetection.getSign should return sign instance from list
-     * @dependency
+     * @dependencies
      * @scenario
      * - mock signs array to contain one element with `msg1` as msg
      * - call getSign
@@ -785,7 +785,7 @@ describe('Signer', () => {
 
     /**
      * @target GuardDetection.getSign should return undefined when sign not exists
-     * @dependency
+     * @dependencies
      * @scenario
      * - mock signs array to contain one element with `msg1` as msg
      * - call getSign with `msg2`
@@ -809,7 +809,7 @@ describe('Signer', () => {
   describe('getPendingSign', () => {
     /**
      * @target GuardDetection.getPendingSign should return pendingSign instance from list
-     * @dependency
+     * @dependencies
      * @scenario
      * - mock pendingSigns array to contain one element with `msg1` as msg
      * - call getPendingSign
@@ -832,7 +832,7 @@ describe('Signer', () => {
 
     /**
      * @target GuardDetection.getPendingSign should return undefined when pendingSign not exists
-     * @dependency
+     * @dependencies
      * @scenario
      * - mock pendingSign array to contain one element with `msg1` as msg
      * - call getPendingSign with `msg2`
@@ -878,7 +878,7 @@ describe('Signer', () => {
     /**
      * @target GuardDetection.handleApproveMessage should add guard sign to sign object
      * when all conditions are met and signs are not enough
-     * @dependency
+     * @dependencies
      * @scenario
      * - add sign instance to list with valid request and empty list of signs
      * - call handleApproveMessage
@@ -909,7 +909,7 @@ describe('Signer', () => {
     /**
      * @target GuardDetection.handleApproveMessage should call start sign
      * and send sign message when signature are enough
-     * @dependency
+     * @dependencies
      * @scenario
      * - add sign instance to list with valid request and empty list of 6 signatures
      * - mock startSign method
@@ -967,7 +967,7 @@ describe('Signer', () => {
 
     /**
      * @target GuardDetection.handleApproveMessage should do nothing when sign is invalid
-     * @dependency
+     * @dependencies
      * @scenario
      * - add sign instance to list with valid request
      * - call handleApproveMessage with invalid message
@@ -995,7 +995,7 @@ describe('Signer', () => {
 
     /**
      * @target GuardDetection.handleApproveMessage should do nothing when sign have no request
-     * @dependency
+     * @dependencies
      * @scenario
      * - add sign instance to list without request
      * - call handleApproveMessage
@@ -1025,7 +1025,7 @@ describe('Signer', () => {
 
     /**
      * @target GuardDetection.handleApproveMessage should do nothing in noWork time
-     * @dependency
+     * @dependencies
      * @scenario
      * - add sign instance to list
      * - mock isNoWorkTime to return true
@@ -1076,7 +1076,7 @@ describe('Signer', () => {
 
     /**
      * @target GuardDetection.handleStartMessage should call start sign when all conditions are met
-     * @dependency
+     * @dependencies
      * @scenario
      * - add sign instance to list
      * - mock startSign
@@ -1107,7 +1107,7 @@ describe('Signer', () => {
 
     /**
      * @target GuardDetection.handleStartMessage should not call start sign when at least on signatures are invalid
-     * @dependency
+     * @dependencies
      * @scenario
      * - add sign instance to list
      * - mock startSign
@@ -1138,7 +1138,7 @@ describe('Signer', () => {
 
     /**
      * @target GuardDetection.handleStartMessage should not call start sign when not guard turn
-     * @dependency
+     * @dependencies
      * @scenario
      * - add sign instance to list
      * - mock startSign
@@ -1165,7 +1165,7 @@ describe('Signer', () => {
 
     /**
      * @target GuardDetection.handleStartMessage should not call start sign when selected guard not involved
-     * @dependency
+     * @dependencies
      * @scenario
      * - add sign instance to list
      * - mock startSign
@@ -1194,7 +1194,7 @@ describe('Signer', () => {
 
     /**
      * @target GuardDetection.handleStartMessage should not call start sign when message is invalid
-     * @dependency
+     * @dependencies
      * @scenario
      * - add sign instance to list
      * - mock startSign
@@ -1217,6 +1217,114 @@ describe('Signer', () => {
         'peerId-5'
       );
       expect(mockedStartSign).toHaveBeenCalledTimes(0);
+    });
+  });
+
+  describe('handleSignData', () => {
+    const callback = jest.fn();
+    beforeEach(() => {
+      const signs = signer.getSigns();
+      signs.push({
+        msg: 'valid signing data',
+        callback: callback,
+        signs: [],
+        addedTime: 0,
+        posted: true,
+      });
+    });
+
+    /**
+     * @target GuardDetection.handleSignData should throw error when sign does not exist
+     * @dependencies
+     * @scenario
+     * - add sign instance to list
+     * - call handleSignData with invalid message to sign
+     * @expected
+     * - throw exception
+     */
+    it('should throw error when sign does not exist', () => {
+      expect(() =>
+        signer.handleSignData(
+          StatusEnum.Success,
+          'invalid signing data',
+          'signature'
+        )
+      ).toThrow();
+    });
+
+    /**
+     * @target GuardDetection.handleSignData should throw error when status is success and no signature passed
+     * @dependencies
+     * @scenario
+     * - add sign instance to list
+     * - call handleSignData with valid message without signature
+     * @expected
+     * - throw exception
+     */
+    it('should throw error when status is success and no signature passed', () => {
+      expect(() =>
+        signer.handleSignData(StatusEnum.Success, 'valid signing data')
+      ).toThrow();
+    });
+
+    /**
+     * @target GuardDetection.handleSignData should call callback function with success status and signature
+     * @dependencies
+     * @scenario
+     * - add sign instance to list
+     * - call handleSignData
+     * @expected
+     * - callback function called once
+     * - callback function called with true and undefined as message and signature
+     */
+    it('should call callback function with success status and signature', () => {
+      signer.handleSignData(
+        StatusEnum.Success,
+        'valid signing data',
+        'signature'
+      );
+      expect(callback).toHaveBeenCalledTimes(1);
+      expect(callback).toHaveBeenCalledWith(true, undefined, 'signature');
+    });
+
+    /**
+     * @target GuardDetection.handleSignData should call callback function with fail status and message
+     * @dependencies
+     * @scenario
+     * - add sign instance to list
+     * - call handleSignData with Failed status and error message
+     * @expected
+     * - callback function called once
+     * - callback function called with false and error message
+     */
+    it('should call callback function with fail status and message', () => {
+      signer.handleSignData(
+        StatusEnum.Failed,
+        'valid signing data',
+        '',
+        'error message'
+      );
+      expect(callback).toHaveBeenCalledTimes(1);
+      expect(callback).toHaveBeenCalledWith(false, 'error message');
+    });
+
+    /**
+     * @target GuardDetection.handleSignData should remove sign element from signing queue
+     * @dependencies
+     * @scenario
+     * - add sign instance to list
+     * - call handleSignData
+     * @expected
+     * - signing list must be empty
+     */
+    it('should remove sign element from signing queue', async () => {
+      await signer.handleSignData(
+        StatusEnum.Success,
+        'valid signing data',
+        'signature'
+      );
+      const signs = signer.getSigns();
+      expect(signs.length).toEqual(0);
     });
   });
 });
