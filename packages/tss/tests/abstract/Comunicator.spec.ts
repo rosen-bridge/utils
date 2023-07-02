@@ -185,7 +185,7 @@ describe('Communicator', () => {
         type: 'message',
         payload: payload,
         publicKey,
-        timestamp: currentTime,
+        timestamp: currentTime - 61,
         sign: sign,
         index: 2,
       };
