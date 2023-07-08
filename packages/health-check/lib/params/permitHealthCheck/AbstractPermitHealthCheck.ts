@@ -75,6 +75,19 @@ abstract class AbstractPermitHealthCheckParam extends AbstractHealthCheckParam {
       return HealthStatusLevel.UNSTABLE;
     return HealthStatusLevel.HEALTHY;
   };
+
+  /**
+   * Updates the threshold to adapt to config changes
+   * @param criticalThreshold
+   * @param warnThreshold
+   */
+  updateThresholds = async (
+    warnThreshold: bigint,
+    criticalThreshold: bigint
+  ) => {
+    this.criticalThreshold = criticalThreshold;
+    this.warnThreshold = warnThreshold;
+  };
 }
 
 export { AbstractPermitHealthCheckParam };
