@@ -13,6 +13,16 @@ class TestPermitHealthCheckParam extends AbstractPermitHealthCheckParam {
   setRWTAmount = (amount: bigint) => {
     this.RWTCount = amount;
   };
+
+  /**
+   * @returns the protected critical threshold
+   */
+  getCriticalThreshold = () => this.criticalThreshold;
+
+  /**
+   * @returns the protected warning threshold
+   */
+  getWarnThreshold = () => this.warnThreshold;
 }
 
 export { TestPermitHealthCheckParam };

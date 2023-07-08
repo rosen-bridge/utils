@@ -62,4 +62,21 @@ describe('AbstractPermitHealthCheckParam', () => {
       expect(status).toBe(HealthStatusLevel.BROKEN);
     });
   });
+
+  describe('updateThresholds', () => {
+    /**
+     * @target AbstractPermitHealthCheckParam.updateThresholds should update the thresholds correctly
+     * @dependencies
+     * @scenario
+     * - call updateThreshold with new numbers
+     * - get health status
+     * @expected
+     * - should update the thresholds to 200n and 100n
+     */
+    it('should update the thresholds correctly', async () => {
+      permitHealthCheckParam.updateThresholds(200n, 100n);
+      expect(permitHealthCheckParam.getCriticalThreshold()).toEqual(100n);
+      expect(permitHealthCheckParam.getWarnThreshold()).toEqual(200n);
+    });
+  });
 });
