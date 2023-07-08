@@ -1,7 +1,9 @@
 {
   "name": "@rosen-bridge/health-check",
-  "version": "0.1.3",
+  "version": "1.0.0",
   "description": "Typescript library to check healthy status of rosen services",
+  "author": "Rosen Team",
+  "license": "GPL-3.0",
   "main": "dist/lib/index.js",
   "types": "dist/lib/index.d.ts",
   "type": "module",
@@ -17,8 +19,6 @@
   "files": [
     "dist"
   ],
-  "author": "Esmaeil Mohammadi",
-  "license": "GPL-3.0",
   "devDependencies": {
     "@types/jest": "^29.5.1",
     "@types/node": "^18.16.3",
@@ -40,7 +40,7 @@
   "dependencies": {
     "@cardano-ogmios/client": "^5.6.0",
     "@rosen-bridge/logger-interface": "^0.1.0",
-    "@rosen-bridge/scanner": "^1.0.4",
+    "@rosen-bridge/scanner": "^2.0.0",
     "@rosen-clients/cardano-koios": "^0.2.0",
     "@rosen-clients/ergo-explorer": "^0.2.0",
     "@rosen-clients/ergo-node": "^0.3.1",
