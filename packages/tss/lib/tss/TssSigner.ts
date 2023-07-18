@@ -521,8 +521,8 @@ export class TssSigner extends Communicator {
         sign.posted = true;
         const data = {
           peers: guards.map((item) => ({
-            shareId: this.shares[this.guardPks.indexOf(item.publicKey)],
-            p2pId: item.peerId,
+            shareID: this.shares[this.guardPks.indexOf(item.publicKey)],
+            p2pID: item.peerId,
           })),
           message: message,
           crypto: this.signer.getCrypto(),
