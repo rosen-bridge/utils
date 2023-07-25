@@ -43,7 +43,7 @@ export class TssSigner extends Communicator {
    */
   private updateThreshold = async () => {
     const res = await this.axios.get<{ threshold: number }>('threshold');
-    const threshold = res.data.threshold;
+    const threshold = res.data.threshold + 1;
     this.detection.setNeedGuardThreshold(threshold);
     this.threshold = threshold;
   };
@@ -457,10 +457,13 @@ export class TssSigner extends Communicator {
         await this.startSign(sign.msg, sign.request.guards);
       } else {
         this.logger.debug(
-${sign.signs.length} out of required ${this.threshold} guards approved message [${sign.msg}]. Signs are: ${sign.signs});
+          `${sign.signs.length} out of required ${this.threshold} guards approved message [${sign.msg}]. Signs are: ${sign.signs}`
+        );
       }
     } else {
-      this.logger.debug('new message arrived but current guard is in no-work-period');
+      this.logger.debug(
+        'new message arrived but current guard is in no-work-period'
+      );
     }
   };
 

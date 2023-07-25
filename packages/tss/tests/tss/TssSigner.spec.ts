@@ -39,7 +39,7 @@ describe('Signer', () => {
     });
     jest
       .spyOn((signer as any).axios, 'get')
-      .mockResolvedValue({ data: { threshold: 7 } });
+      .mockResolvedValue({ data: { threshold: 6 } });
     (signer as any).threshold = 7;
   });
 
