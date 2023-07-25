@@ -10,7 +10,6 @@ export interface GuardDetectionConfig {
   activeTimeoutSeconds?: number;
   heartbeatTimeoutSeconds?: number;
   messageValidDurationSeconds?: number;
-  needGuardThreshold: number;
   getPeerId: () => Promise<string>;
 }
 

@@ -22,9 +22,9 @@ describe('GuardDetection', () => {
       submit: mockSubmit,
       signer: guardSigners[0],
       guardsPublicKey: signers.guardPks,
-      needGuardThreshold: 7,
       getPeerId: () => Promise.resolve('myPeerId'),
     });
+    detection.setNeedGuardThreshold(7);
   });
 
   describe('init', () => {

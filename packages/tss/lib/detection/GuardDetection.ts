@@ -23,9 +23,18 @@ import { ActiveGuard } from '../types/abstract';
 export class GuardDetection extends Communicator {
   protected guardsInfo: Array<GuardInfo> = [];
   protected readonly activeTimeout: number;
-  protected readonly needGuardThreshold: number;
+  protected needGuardThreshold: number;
   protected readonly heartbeatTimeout: number;
   protected readonly getPeerId: () => Promise<string>;
+
+  /**
+   * set needed guards count.
+   * this value can change during execution
+   * @param needGuardThreshold
+   */
+  setNeedGuardThreshold = (needGuardThreshold: number) => {
+    this.needGuardThreshold = needGuardThreshold;
+  };
 
   constructor(config: GuardDetectionConfig) {
     super(
@@ -35,7 +44,7 @@ export class GuardDetection extends Communicator {
       config.guardsPublicKey,
       config.messageValidDurationSeconds
     );
-    this.needGuardThreshold = config.needGuardThreshold;
+    this.needGuardThreshold = 0;
     this.activeTimeout =
       config.activeTimeoutSeconds || guardActiveTimeoutDefault;
     this.heartbeatTimeout =
