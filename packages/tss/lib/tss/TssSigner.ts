@@ -15,16 +15,22 @@ import {
   signTurnDurationDefault,
   signTurnNoWorkDefault,
 } from '../const/const';
-import { approveMessage, requestMessage, startMessage } from '../const/signer';
+import {
+  approveMessage,
+  requestMessage,
+  signUrl,
+  startMessage,
+  thresholdUrl,
+} from '../const/signer';
 import { ActiveGuard } from '../types/abstract';
 import { DummyLogger } from '@rosen-bridge/logger-interface';
 import { Mutex } from 'await-semaphore';
-import axios from 'axios';
+import axios, { AxiosInstance } from 'axios';
 
 export class TssSigner extends Communicator {
-  private readonly tssSignUrl: string;
+  private readonly axios: AxiosInstance;
   private readonly callbackUrl: string;
-  private readonly threshold: number;
+  private threshold: number;
   private readonly turnDuration: number;
   private readonly turnNoWork: number;
   private readonly timeout: number;
@@ -37,6 +43,17 @@ export class TssSigner extends Communicator {
   private readonly signAccessMutex: Mutex;
   private readonly shares: Array<string>;
 
+  /**
+   * get threshold value from tss-api instance and set for this and detection
+   * this function calls on every update
+   */
+  private updateThreshold = async () => {
+    const res = await this.axios.get<{ threshold: number }>(thresholdUrl);
+    const threshold = res.data.threshold + 1;
+    this.detection.setNeedGuardThreshold(threshold);
+    this.threshold = threshold;
+  };
+
   constructor(config: SignerConfig) {
     super(
       config.logger ? config.logger : new DummyLogger(),
@@ -45,7 +62,9 @@ export class TssSigner extends Communicator {
       config.guardsPk,
       config.messageValidDuration
     );
-    this.tssSignUrl = config.tssSignUrl;
+    this.axios = axios.create({
+      baseURL: config.tssApiUrl,
+    });
     this.callbackUrl = config.callbackUrl;
     this.detection = config.detection;
     this.turnDuration = config.turnDurationSeconds
@@ -54,7 +73,7 @@ export class TssSigner extends Communicator {
     this.turnNoWork = config.turnNoWorkSeconds
       ? config.turnNoWorkSeconds
       : signTurnNoWorkDefault;
-    this.threshold = config.threshold;
+    this.threshold = -1;
     this.lastUpdateRound = 0;
     this.timeout = config.timeoutSeconds
       ? config.timeoutSeconds
@@ -91,6 +110,7 @@ export class TssSigner extends Communicator {
    * run start message for all signs
    */
   update = async () => {
+    await this.updateThreshold();
     await this.cleanup();
     if ((await this.getIndex()) !== this.getGuardTurn()) {
       return;
@@ -426,7 +446,8 @@ export class TssSigner extends Communicator {
 
     if (sign.request && !this.isNoWorkTime()) {
       sign.signs[guardIndex] = signature;
-      if (sign.signs.filter((item) => item !== '').length >= this.threshold) {
+      const validSignCount = sign.signs.filter((item) => item !== '').length;
+      if (validSignCount >= this.threshold) {
         const payload: SignStartPayload = {
           msg: sign.msg,
           signs: sign.signs,
@@ -441,7 +462,15 @@ export class TssSigner extends Communicator {
           sign.request.timestamp
         );
         await this.startSign(sign.msg, sign.request.guards);
+      } else {
+        this.logger.debug(
+          `[${validSignCount}] out of required [${this.threshold}] guards approved message [${sign.msg}]. Signs are: ${sign.signs}`
+        );
       }
+    } else {
+      this.logger.debug(
+        'new message arrived but current guard is in no-work-period'
+      );
     }
   };
 
@@ -528,8 +557,8 @@ export class TssSigner extends Communicator {
           crypto: this.signer.getCrypto(),
           callBackUrl: this.callbackUrl,
         };
-        return axios
-          .post(this.tssSignUrl, data)
+        return this.axios
+          .post(signUrl, data)
           .then((res) => release())
           .catch((err) => {
             this.logger.warn('Can not communicate with tss backend');
