@@ -15,7 +15,13 @@ import {
   signTurnDurationDefault,
   signTurnNoWorkDefault,
 } from '../const/const';
-import { approveMessage, requestMessage, startMessage } from '../const/signer';
+import {
+  approveMessage,
+  requestMessage,
+  signUrl,
+  startMessage,
+  thresholdUrl,
+} from '../const/signer';
 import { ActiveGuard } from '../types/abstract';
 import { DummyLogger } from '@rosen-bridge/logger-interface';
 import { Mutex } from 'await-semaphore';
@@ -42,7 +48,7 @@ export class TssSigner extends Communicator {
    * this function calls on every update
    */
   private updateThreshold = async () => {
-    const res = await this.axios.get<{ threshold: number }>('threshold');
+    const res = await this.axios.get<{ threshold: number }>(thresholdUrl);
     const threshold = res.data.threshold + 1;
     this.detection.setNeedGuardThreshold(threshold);
     this.threshold = threshold;
@@ -440,7 +446,8 @@ export class TssSigner extends Communicator {
 
     if (sign.request && !this.isNoWorkTime()) {
       sign.signs[guardIndex] = signature;
-      if (sign.signs.filter((item) => item !== '').length >= this.threshold) {
+      const validSignCount = sign.signs.filter((item) => item !== '').length;
+      if (validSignCount >= this.threshold) {
         const payload: SignStartPayload = {
           msg: sign.msg,
           signs: sign.signs,
@@ -457,7 +464,7 @@ export class TssSigner extends Communicator {
         await this.startSign(sign.msg, sign.request.guards);
       } else {
         this.logger.debug(
-          `${sign.signs.length} out of required ${this.threshold} guards approved message [${sign.msg}]. Signs are: ${sign.signs}`
+          `[${validSignCount}] out of required [${this.threshold}] guards approved message [${sign.msg}]. Signs are: ${sign.signs}`
         );
       }
     } else {
@@ -551,7 +558,7 @@ export class TssSigner extends Communicator {
           callBackUrl: this.callbackUrl,
         };
         return this.axios
-          .post('sign', data)
+          .post(signUrl, data)
           .then((res) => release())
           .catch((err) => {
             this.logger.warn('Can not communicate with tss backend');
