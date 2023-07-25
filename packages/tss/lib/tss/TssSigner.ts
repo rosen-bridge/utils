@@ -457,13 +457,10 @@ export class TssSigner extends Communicator {
         await this.startSign(sign.msg, sign.request.guards);
       } else {
         this.logger.debug(
-          `approved of [${sign.msg}] are ${JSON.stringify(
-            sign.signs
-          )} required signs are ${this.threshold}`
-        );
+${sign.signs.length} out of required ${this.threshold} guards approved message [${sign.msg}]. Signs are: ${sign.signs});
       }
     } else {
-      this.logger.debug('new message arrived but my in no work period');
+      this.logger.debug('new message arrived but current guard is in no-work-period');
     }
   };
 
