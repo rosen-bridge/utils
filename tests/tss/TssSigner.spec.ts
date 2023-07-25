@@ -25,7 +25,6 @@ describe('Signer', () => {
       signer: guardSigners[0],
       guardsPublicKey: signers.guardPks,
       submit: mockSubmit,
-      needGuardThreshold: 7,
       getPeerId: () => Promise.resolve('myPeerId'),
     });
     signer = new TestTssSigner({
@@ -33,12 +32,15 @@ describe('Signer', () => {
       callbackUrl: '',
       signer: guardSigners[0],
       detection: detection,
-      threshold: 7,
       guardsPk: signers.guardPks,
-      tssSignUrl: '',
+      tssApiUrl: '',
       getPeerId: () => Promise.resolve('myPeerId'),
       shares: signers.guardPks,
     });
+    jest
+      .spyOn((signer as any).axios, 'get')
+      .mockResolvedValue({ data: { threshold: 7 } });
+    (signer as any).threshold = 7;
   });
 
   describe('cleanup', () => {

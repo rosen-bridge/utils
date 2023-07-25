@@ -10,12 +10,11 @@ export interface SignerConfig {
   submitMsg: (message: string, guards: Array<string>) => unknown;
   messageValidDuration?: number;
   timeoutSeconds?: number;
-  tssSignUrl: string;
+  tssApiUrl: string;
   callbackUrl: string;
   detection: GuardDetection;
   turnDurationSeconds?: number;
   turnNoWorkSeconds?: number;
-  threshold: number;
   getPeerId: () => Promise<string>;
   shares: Array<string>;
 }
