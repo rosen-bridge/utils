@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/tss",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "TypeScript library for building and validating TSS signatures.",
   "main": "dist/lib/index.js",
   "types": "dist/lib/index.d.ts",
@@ -17,7 +17,7 @@
   "files": [
     "dist"
   ],
-  "author": "Sahand Zoufan",
+  "author": "Rosen Team",
   "license": "GPL-3.0",
   "devDependencies": {
     "@babel/core": "^7.22.1",
