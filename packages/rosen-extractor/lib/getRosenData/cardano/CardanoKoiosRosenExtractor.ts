@@ -1,3 +1,4 @@
+import { isPlainObject } from 'lodash-es';
 import { RosenData } from '../abstract/types';
 import AbstractRosenDataExtractor from '../abstract/AbstractRosenDataExtractor';
 import { CARDANO_CHAIN, CARDANO_NATIVE_TOKEN } from '../const';
@@ -19,6 +20,7 @@ export class CardanoKoiosRosenExtractor extends AbstractRosenDataExtractor<Koios
       if (metadata && Object.prototype.hasOwnProperty.call(metadata, '0')) {
         const data = metadata['0'];
         if (
+          isPlainObject(data) &&
           'to' in data &&
           'bridgeFee' in data &&
           'networkFee' in data &&
