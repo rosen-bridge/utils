@@ -48,10 +48,19 @@ export class TssSigner extends Communicator {
    * this function calls on every update
    */
   private updateThreshold = async () => {
-    const res = await this.axios.get<{ threshold: number }>(thresholdUrl);
-    const threshold = res.data.threshold + 1;
-    this.detection.setNeedGuardThreshold(threshold);
-    this.threshold = threshold;
+    try {
+      const res = await this.axios.get<{ threshold: number }>(thresholdUrl);
+      const threshold = res.data.threshold + 1;
+      this.detection.setNeedGuardThreshold(threshold);
+      this.threshold = threshold;
+    } catch (error) {
+      this.logger.warn(
+        `an error occurred when try getting threshold from tss ${error}`
+      );
+      if (error instanceof Error && error.stack) {
+        this.logger.warn(error.stack);
+      }
+    }
   };
 
   constructor(config: SignerConfig) {
