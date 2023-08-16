@@ -93,3 +93,44 @@ export const secondTokenMap: RosenTokens = {
     },
   ],
 };
+
+export const firstToken = {
+  ergo: {
+    tokenID: '1111111111111111111111111111111111111111111111111111111111111111',
+    tokenName: 'test token1',
+    metaData: {
+      type: 'tokenType',
+      residency: 'tokenResidency',
+    },
+  },
+  cardano: {
+    fingerprint: 'asset111111111111111111111111111111111111111',
+    policyID: '22222222222222222222222222222222222222222222222222222222',
+    assetID:
+      '3333333333333333333333333333333333333333333333333333333333333333333333333333',
+    metaData: {
+      type: 'tokenType',
+      residency: 'tokenResidency',
+    },
+  },
+};
+
+export const secondToken = {
+  ergo: {
+    tokenID: 'tokenId',
+    tokenName: 'test token3',
+    metaData: {
+      type: 'tokenType',
+      residency: 'tokenResidency',
+    },
+  },
+  cardano: {
+    fingerprint: 'asset3fingerprint',
+    policyID: 'policyID3',
+    assetID: 'assetID3',
+    metaData: {
+      type: 'tokenType',
+      residency: 'tokenResidency',
+    },
+  },
+};

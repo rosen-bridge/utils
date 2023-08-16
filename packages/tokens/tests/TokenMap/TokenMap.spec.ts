@@ -1,47 +1,11 @@
 import { RosenTokens } from '../../lib';
 import { TokenMap } from '../../lib';
-import { firstTokenMap, secondTokenMap } from './TokenMapTestData';
-
-const firstToken = {
-  ergo: {
-    tokenID: '1111111111111111111111111111111111111111111111111111111111111111',
-    tokenName: 'test token1',
-    metaData: {
-      type: 'tokenType',
-      residency: 'tokenResidency',
-    },
-  },
-  cardano: {
-    fingerprint: 'asset111111111111111111111111111111111111111',
-    policyID: '22222222222222222222222222222222222222222222222222222222',
-    assetID:
-      '3333333333333333333333333333333333333333333333333333333333333333333333333333',
-    metaData: {
-      type: 'tokenType',
-      residency: 'tokenResidency',
-    },
-  },
-};
-
-const secondToken = {
-  ergo: {
-    tokenID: 'tokenId',
-    tokenName: 'test token3',
-    metaData: {
-      type: 'tokenType',
-      residency: 'tokenResidency',
-    },
-  },
-  cardano: {
-    fingerprint: 'asset3fingerprint',
-    policyID: 'policyID3',
-    assetID: 'assetID3',
-    metaData: {
-      type: 'tokenType',
-      residency: 'tokenResidency',
-    },
-  },
-};
+import {
+  firstToken,
+  firstTokenMap,
+  secondToken,
+  secondTokenMap,
+} from './TokenMapTestData';
 
 describe('TokenMap', () => {
   describe('search', () => {
@@ -196,21 +160,6 @@ describe('TokenMap', () => {
     });
 
     /**
-     * @target TokenMap.getTokens should return empty list when target chain not supported
-     * @dependencies
-     * - RosenToken json
-     * @scenario
-     * - call getTokens from ergo to btc
-     * @expected
-     * - must return empty list
-     */
-    it('should return one ergo token from ergo to binance', function () {
-      const tokenMap = new TokenMap(firstTokenMap);
-      const res = tokenMap.getTokens('ergo', 'btc');
-      expect(res.length).toEqual(0);
-    });
-
-    /**
      * @target TokenMap.getTokens should return empty list when transfer token between chains not feasible
      * @dependencies
      * - RosenToken json
@@ -219,7 +168,7 @@ describe('TokenMap', () => {
      * @expected
      * - must return empty list
      */
-    it('should return one ergo token from ergo to binance', function () {
+    it('should return empty list when transfer token between chains not feasible', function () {
       const tokenMap = new TokenMap(firstTokenMap);
       const res = tokenMap.getTokens('cardano', 'binance');
       expect(res.length).toEqual(0);

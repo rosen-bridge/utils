@@ -23,9 +23,7 @@ export class TokenMap {
   getTokens = (fromChain: string, toChain: string): Array<RosenChainToken> => {
     return this.tokensConfig.tokens
       .filter(
-        (item) =>
-          Object.prototype.hasOwnProperty.call(item, fromChain) &&
-          Object.prototype.hasOwnProperty.call(item, toChain)
+        (item) => Object.hasOwn(item, fromChain) && Object.hasOwn(item, toChain)
       )
       .map((item) => item[fromChain]);
   };
