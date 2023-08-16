@@ -16,7 +16,7 @@ export class TokenMap {
   }
 
   /**
-   * Get a list of tokens can be transferred between specific chains
+   * Get a list of tokens that can be transferred between specific chains
    * @param fromChain
    * @param toChain
    */
