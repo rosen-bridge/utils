@@ -7,7 +7,7 @@ import {
   startMessage,
 } from '../../lib/const/signer';
 
-describe('Signer', () => {
+describe('TssSigner', () => {
   let signer: TestTssSigner;
   let mockSubmit = jest.fn();
   let guardSigners: Array<EdDSA>;
@@ -49,7 +49,7 @@ describe('Signer', () => {
      * @dependencies
      * @scenario
      * - mock `Date.now` to return 1686286005068 ( a random timestamp )
-     * - add one sign for 5 minute + 1 seconds before
+     * - add one sign for 5 minute + 1 second before
      * - call cleanup
      * @expected
      * - signs must be empty array
@@ -72,7 +72,7 @@ describe('Signer', () => {
      * @dependencies
      * @scenario
      * - mock `Date.now` to return 1686286005068 ( a random timestamp )
-     * - add one sign for 5 minute - 1 seconds before
+     * - add one sign for 5 minute - 1 second before
      * - call cleanup
      * @expected
      * - signs must contain one element
@@ -882,6 +882,7 @@ describe('Signer', () => {
      * when all conditions are met and signs are not enough
      * @dependencies
      * @scenario
+     * - mock EdDSA signer to approve signatures
      * - add sign instance to list with valid request and empty list of signs
      * - call handleApproveMessage
      * @expected
@@ -889,6 +890,7 @@ describe('Signer', () => {
      * - inserted sign must contain new signature only
      */
     it('should add guard sign to sign object when all conditions are met and signs are not enough', async () => {
+      jest.spyOn(guardSigners[0], 'verify').mockResolvedValue(true);
       await signer.mockedHandleApproveMessage(
         {
           msg: 'test message',
@@ -914,6 +916,7 @@ describe('Signer', () => {
      * @dependencies
      * @scenario
      * - add sign instance to list with valid request and empty list of 6 signatures
+     * - mock EdDsa verify to return true
      * - mock startSign method
      * - call handleApproveMessage
      * @expected
@@ -921,9 +924,25 @@ describe('Signer', () => {
      * - mockSubmit must call with start sign message
      */
     it('should call start sign and send sign message when signature are enough', async () => {
+      activeGuards = await Promise.all(
+        Array(7)
+          .fill('')
+          .map(async (item, index) => ({
+            peerId: `peerId-${index}`,
+            publicKey: await guardSigners[index].getPk(),
+          }))
+      );
+      jest
+        .spyOn(signer as any, 'getApprovedGuards')
+        .mockResolvedValue(activeGuards);
       const sign = signer.getSigns()[0];
+      sign.request = {
+        guards: activeGuards,
+        timestamp: timestamp,
+        index: 0,
+      };
       sign.signs = sign.signs.map((item, index) =>
-        index > 3 ? `random signature ${index}` : ''
+        index < 6 ? `random signature ${index}` : ''
       );
       const mockedStartSign = jest
         .spyOn(signer, 'startSign')
@@ -935,7 +954,7 @@ describe('Signer', () => {
           initGuardIndex: 0,
         },
         'peerId-2',
-        2,
+        6,
         'random signature'
       );
       expect(mockedStartSign).toHaveBeenCalledTimes(1);
@@ -946,7 +965,7 @@ describe('Signer', () => {
       expect(mockSubmit).toHaveBeenCalledTimes(1);
       expect(mockSubmit).toHaveBeenCalledWith(
         expect.any(String),
-        activeGuards.map((item) => item.peerId)
+        activeGuards.slice(1).map((item) => item.peerId)
       );
       const msg = JSON.parse(mockSubmit.mock.calls[0][0]);
       expect(msg.type).toEqual(startMessage);
@@ -956,13 +975,13 @@ describe('Signer', () => {
         msg: 'test message',
         guards: activeGuards,
         signs: [
-          '',
-          '',
-          'random signature',
-          '',
           ...Array(6)
             .fill('')
-            .map((item, index) => `random signature ${index + 4}`),
+            .map((item, index) => `random signature ${index}`),
+          'random signature',
+          '',
+          '',
+          '',
         ],
       });
     });
@@ -1087,7 +1106,9 @@ describe('Signer', () => {
      * - mockedStartSign must call once with `signing message` and activeGuards
      */
     it('should call start sign when all conditions are met', async () => {
-      jest.spyOn(guardSigners[0], 'verify').mockResolvedValue(true);
+      jest
+        .spyOn(signer as any, 'getApprovedGuards')
+        .mockResolvedValue(activeGuards);
       await signer.mockedHandleStartMessage(
         {
           msg: 'signing message',
@@ -1108,21 +1129,20 @@ describe('Signer', () => {
     });
 
     /**
-     * @target GuardDetection.handleStartMessage should not call start sign when at least on signatures are invalid
+     * @target GuardDetection.handleStartMessage should not call start sign when not required guard available
      * @dependencies
      * @scenario
      * - add sign instance to list
      * - mock startSign
-     * - mock verify method of EdDSA signer to return false once
+     * - mock getApprovedGuards to return list of 6 guards
      * - call handleStartMessage
      * @expected
      * - mockedStartSign must not call
      */
-    it('should not call start sign when at least on signatures are invalid', async () => {
+    it('should not call start sign when not required guard available', async () => {
       jest
-        .spyOn(guardSigners[0], 'verify')
-        .mockResolvedValueOnce(false)
-        .mockResolvedValue(true);
+        .spyOn(signer as any, 'getApprovedGuards')
+        .mockResolvedValue(activeGuards.slice(0, 6));
       await signer.mockedHandleStartMessage(
         {
           msg: 'signing message',
@@ -1171,14 +1191,12 @@ describe('Signer', () => {
      * @scenario
      * - add sign instance to list
      * - mock startSign
-     * - mock verify method of EdDSA signer to return false once
      * - remove guard index 0 from active guards
      * - call handleStartMessage
      * @expected
      * - mockedStartSign must not call
      */
     it('should not call start sign when selected guard not involved', async () => {
-      jest.spyOn(guardSigners[0], 'verify').mockResolvedValue(true);
       await signer.mockedHandleStartMessage(
         {
           msg: 'signing message',
@@ -1205,7 +1223,6 @@ describe('Signer', () => {
      * - mockedStartSign must not call
      */
     it('should not call start sign when message is invalid', async () => {
-      jest.spyOn(guardSigners[0], 'verify').mockResolvedValue(true);
       await signer.mockedHandleStartMessage(
         {
           msg: 'signing message invalid',
@@ -1327,6 +1344,118 @@ describe('Signer', () => {
       );
       const signs = signer.getSigns();
       expect(signs.length).toEqual(0);
+    });
+  });
+
+  describe('getApprovedGuards', () => {
+    /**
+     * @target TssSigner.getApprovedGuards should not return selected guard when signature is empty string
+     * @dependencies
+     * @scenario
+     * - call function with one guard and list of empty string as signatures
+     * @expected
+     * - returned list must be empty
+     */
+    it('should not return selected guard when signature is empty string', async () => {
+      const res = await signer.mockedGetApprovedGuards(
+        timestamp,
+        {
+          guards: [
+            {
+              publicKey: await guardSigners[1].getPk(),
+              peerId: 'peer-Id1',
+            },
+          ],
+          msg: 'testing message',
+          initGuardIndex: 1,
+        },
+        Array(10).fill('')
+      );
+      expect(res.length).toEqual(0);
+    });
+
+    /**
+     * @target TssSigner.getApprovedGuards should not return selected guard when pk not in guardsPk
+     * @dependencies
+     * @scenario
+     * - call function with one new guard and list of random strings as signatures
+     * @expected
+     * - returned list must be empty
+     */
+    it('should not return selected guard when pk not in guardsPk', async () => {
+      const res = await signer.mockedGetApprovedGuards(
+        timestamp,
+        {
+          guards: [
+            {
+              publicKey: await new EdDSA(await EdDSA.randomKey()).getPk(),
+              peerId: 'peer-Id1',
+            },
+          ],
+          msg: 'testing message',
+          initGuardIndex: 1,
+        },
+        Array(10).fill('random-signature')
+      );
+      expect(res.length).toEqual(0);
+    });
+
+    /**
+     * @target TssSigner.getApprovedGuards should not return selected guard when signature is invalid
+     * @dependencies
+     * @scenario
+     * - mock verify sign to return false
+     * - call function with one guard and list of random strings as signatures
+     * @expected
+     * - returned list must be empty
+     */
+    it('should not return selected guard when signature is invalid', async () => {
+      jest.spyOn(guardSigners[0], 'verify').mockResolvedValue(false);
+      const res = await signer.mockedGetApprovedGuards(
+        timestamp,
+        {
+          guards: [
+            {
+              publicKey: await guardSigners[0].getPk(),
+              peerId: 'peer-Id1',
+            },
+          ],
+          msg: 'testing message',
+          initGuardIndex: 1,
+        },
+        Array(10).fill('random-signature')
+      );
+      expect(res.length).toEqual(0);
+    });
+
+    /**
+     * @target TssSigner.getApprovedGuards should return selected guard when signature is valid
+     * @dependencies
+     * @scenario
+     * - mock verify sign to return true
+     * - call function with one guard and list of random strings as signatures
+     * @expected
+     * - returned list must contain entered guard
+     */
+    it('should return selected guard when signature is valid', async () => {
+      jest.spyOn(guardSigners[0], 'verify').mockResolvedValue(true);
+      const guards = [
+        {
+          publicKey: await guardSigners[0].getPk(),
+          peerId: 'peer-Id1',
+        },
+      ];
+      const res = await signer.mockedGetApprovedGuards(
+        timestamp,
+        {
+          guards,
+          msg: 'testing message',
+          initGuardIndex: 1,
+        },
+        Array(10).fill('random-signature')
+      );
+      expect(res.length).toEqual(1);
+      expect(res).toEqual(guards);
     });
   });
 });

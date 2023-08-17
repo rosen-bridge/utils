@@ -119,11 +119,13 @@ export class TssSigner extends Communicator {
    * run start message for all signs
    */
   update = async () => {
-    await this.updateThreshold();
     await this.cleanup();
     if ((await this.getIndex()) !== this.getGuardTurn()) {
       return;
     }
+    // TODO add interval to update threshold
+    // https://git.ergopool.io/ergo/rosen-bridge/utils/-/issues/62
+    await this.updateThreshold();
     const activeGuards = await this.detection.activeGuards();
     if (activeGuards.length < this.threshold) {
       return;
@@ -455,8 +457,16 @@ export class TssSigner extends Communicator {
 
     if (sign.request && !this.isNoWorkTime()) {
       sign.signs[guardIndex] = signature;
-      const validSignCount = sign.signs.filter((item) => item !== '').length;
-      if (validSignCount >= this.threshold) {
+      const approvedGuards = await this.getApprovedGuards(
+        sign.request.timestamp,
+        {
+          msg: sign.msg,
+          guards: sign.request.guards,
+          initGuardIndex: await this.getIndex(),
+        },
+        sign.signs
+      );
+      if (approvedGuards.length >= this.threshold) {
         const payload: SignStartPayload = {
           msg: sign.msg,
           signs: sign.signs,
@@ -465,15 +475,15 @@ export class TssSigner extends Communicator {
         await this.sendMessage(
           startMessage,
           payload,
-          sign.request.guards
+          approvedGuards
             .filter((item) => item.publicKey !== myPk)
             .map((item) => item.peerId),
           sign.request.timestamp
         );
-        await this.startSign(sign.msg, sign.request.guards);
+        await this.startSign(sign.msg, approvedGuards);
       } else {
         this.logger.debug(
-          `[${validSignCount}] out of required [${this.threshold}] guards approved message [${sign.msg}]. Signs are: ${sign.signs}`
+          `[${approvedGuards.length}] out of required [${this.threshold}] guards approved message [${sign.msg}]. Signs are: ${sign.signs}`
         );
       }
     } else {
@@ -522,29 +532,49 @@ export class TssSigner extends Communicator {
       );
       return;
     }
-    const validSigns = (
+    const approvedGuards = await this.getApprovedGuards(
+      timestamp,
+      payloadToSign,
+      payload.signs
+    );
+    if (approvedGuards.length >= this.threshold) {
+      await this.startSign(sign.msg, approvedGuards);
+    }
+  };
+
+  /**
+   * process list of selected guards and list of signs
+   * then return list of all approved guards
+   * @param timestamp
+   * @param payload
+   * @param signs
+   */
+  protected getApprovedGuards = async (
+    timestamp: number,
+    payload: SignApprovePayload,
+    signs: Array<string>
+  ): Promise<Array<ActiveGuard>> => {
+    return (
       await Promise.all(
-        payload.signs.map(
-          async (item, index) =>
-            item !== '' &&
-            payload.guards.filter(
-              (item) => item.publicKey === this.guardPks[index]
-            ) &&
+        payload.guards.map(async (item) => {
+          const index = this.guardPks.indexOf(item.publicKey);
+          if (index === -1) return undefined;
+          const sign = signs[index];
+          return sign !== '' &&
             (await this.signer.verify(
               TssSigner.generatePayloadToSign(
-                payloadToSign,
+                payload,
                 timestamp,
-                this.guardPks[index]
+                item.publicKey
               ),
-              item,
-              this.guardPks[index]
+              sign,
+              item.publicKey
             ))
-        )
+            ? item
+            : undefined;
+        })
       )
-    ).filter((item) => item);
-    if (validSigns.length >= this.threshold) {
-      await this.startSign(payload.msg, payload.guards);
-    }
+    ).filter((item) => item !== undefined) as Array<ActiveGuard>;
   };
 
   /**
