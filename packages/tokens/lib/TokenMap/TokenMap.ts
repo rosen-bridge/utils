@@ -16,6 +16,19 @@ export class TokenMap {
   }
 
   /**
+   * Get a list of tokens that can be transferred between specific chains
+   * @param fromChain
+   * @param toChain
+   */
+  getTokens = (fromChain: string, toChain: string): Array<RosenChainToken> => {
+    return this.tokensConfig.tokens
+      .filter(
+        (item) => Object.hasOwn(item, fromChain) && Object.hasOwn(item, toChain)
+      )
+      .map((item) => item[fromChain]);
+  };
+
+  /**
    * it returns specific token with respect to condition on the specific chain
    * @param chain
    *  example: "ergo"
