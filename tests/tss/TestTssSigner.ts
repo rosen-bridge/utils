@@ -25,6 +25,12 @@ export class TestTssSigner extends TssSigner {
 
   mockedGetPendingSign = (msg: string) => this.getPendingSign(msg);
 
+  mockedGetApprovedGuards = (
+    timestamp: number,
+    payload: SignApprovePayload,
+    signs: Array<string>
+  ) => this.getApprovedGuards(timestamp, payload, signs);
+
   mockedHandleRequestMessage = (
     payload: SignRequestPayload,
     sender: string,
