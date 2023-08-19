@@ -29,6 +29,15 @@ export class TokenMap {
   };
 
   /**
+   * get a list of all supported network names
+   */
+  getAllChains = () => {
+    return this.tokensConfig.tokens
+      .map((item) => Object.keys(item))
+      .reduce((a, b) => [...new Set([...a, ...b])], []);
+  };
+
+  /**
    * it returns specific token with respect to condition on the specific chain
    * @param chain
    *  example: "ergo"

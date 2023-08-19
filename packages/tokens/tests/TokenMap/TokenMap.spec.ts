@@ -153,7 +153,7 @@ describe('TokenMap', () => {
      * @expected
      * - must return one token with specified data
      */
-    it('should return one ergo token from ergo to binance', function () {
+    it('should return one ergo token from ergo to binance', () => {
       const tokenMap = new TokenMap(firstTokenMap);
       const res = tokenMap.getTokens('ergo', 'binance');
       expect(res).toEqual([firstTokenMap.tokens[1].ergo]);
@@ -168,10 +168,29 @@ describe('TokenMap', () => {
      * @expected
      * - must return empty list
      */
-    it('should return empty list when transfer token between chains not feasible', function () {
+    it('should return empty list when transfer token between chains not feasible', () => {
       const tokenMap = new TokenMap(firstTokenMap);
       const res = tokenMap.getTokens('cardano', 'binance');
       expect(res.length).toEqual(0);
+    });
+  });
+
+  describe('getAllChains', () => {
+    /**
+     * @target TokenMap.getAllChains should return all supported chains
+     * @dependencies
+     * @scenario
+     * - call getAllChains
+     * @expected
+     * - should return list of three supported network ['binance', 'cardano', 'ergo']
+     */
+    it('should return all supported chains', () => {
+      const tokenMap = new TokenMap(firstTokenMap);
+      expect(tokenMap.getAllChains().sort()).toEqual([
+        'binance',
+        'cardano',
+        'ergo',
+      ]);
     });
   });
 });
