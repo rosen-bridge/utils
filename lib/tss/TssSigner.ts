@@ -35,8 +35,8 @@ export class TssSigner extends Communicator {
   private readonly turnNoWork: number;
   private readonly timeout: number;
   private lastUpdateRound: number;
-  private signs: Array<Sign>;
-  private pendingSigns: Array<PendingSign>;
+  protected signs: Array<Sign>;
+  protected pendingSigns: Array<PendingSign>;
   private readonly detection: GuardDetection;
   private readonly getPeerId: () => Promise<string>;
   private readonly pendingAccessMutex: Mutex;
