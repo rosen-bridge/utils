@@ -31,10 +31,15 @@ export class TokenMap {
   /**
    * get a list of all supported network names
    */
-  getAllChains = () => {
+  getAllChains = (): Array<string> => {
     return this.tokensConfig.tokens
       .map((item) => Object.keys(item))
-      .reduce((a, b) => [...new Set([...a, ...b])], []);
+      .reduce(
+        (allUniqChains, tokenChains) => [
+          ...new Set([...allUniqChains, ...tokenChains]),
+        ],
+        []
+      );
   };
 
   /**
