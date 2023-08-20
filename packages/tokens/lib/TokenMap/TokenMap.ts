@@ -43,6 +43,21 @@ export class TokenMap {
   };
 
   /**
+   * get list of all supported chains for specific chain
+   * @param sourceChain
+   */
+  getSupportedChains = (sourceChain: string): Array<string> => {
+    return this.tokensConfig.tokens
+      .filter((token) => Object.hasOwn(token, sourceChain))
+      .map((token) => Object.keys(token))
+      .reduce(
+        (allChains, newChains) => [...new Set([...allChains, ...newChains])],
+        []
+      )
+      .filter((chain) => chain !== sourceChain);
+  };
+
+  /**
    * it returns specific token with respect to condition on the specific chain
    * @param chain
    *  example: "ergo"
