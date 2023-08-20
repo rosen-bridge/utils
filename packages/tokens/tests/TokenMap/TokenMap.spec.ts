@@ -193,4 +193,47 @@ describe('TokenMap', () => {
       ]);
     });
   });
+
+  describe('getSupportedChains', () => {
+    const tokenMap: TokenMap = new TokenMap(firstTokenMap);
+
+    /**
+     * @target TokenMap.getSupportedChains should not return source chain
+     * @dependencies
+     * @scenario
+     * - call getSupportedChains for ergo chain
+     * @expect
+     * - returned list must not contain ergo
+     */
+    it('should not return source chain', () => {
+      expect(tokenMap.getSupportedChains('ergo')).not.toContain('ergo');
+    });
+
+    /**
+     * @target TokenMap.getSupportedChains should not return unsupported chains for specific chain
+     * @dependencies
+     * @scenario
+     * - call getSupportedChains for binance chain
+     * @expect
+     * - returned list must not contain cardano
+     */
+    it('should not return unsupported chains for specific chain', () => {
+      expect(tokenMap.getSupportedChains('binance')).not.toContain('cardano');
+    });
+
+    /**
+     * @target TokenMap.getSupportedChains should return all supported chain for specific chain
+     * @dependencies
+     * @scenario
+     * - call getSupportedChains for ergo chain
+     * @expect
+     * - returned list must equal to ['binance', 'cardano']
+     */
+    it('should return all supported chain for specific chain', () => {
+      expect(tokenMap.getSupportedChains('ergo').sort()).toEqual([
+        'binance',
+        'cardano',
+      ]);
+    });
+  });
 });
