@@ -556,22 +556,21 @@ export class TssSigner extends Communicator {
   ): Promise<Array<ActiveGuard>> => {
     return (
       await Promise.all(
-        payload.guards.map(async (item) => {
-          const index = this.guardPks.indexOf(item.publicKey);
+        payload.guards.map(async (guard) => {
+          const index = this.guardPks.indexOf(guard.publicKey);
           if (index === -1) return undefined;
           const sign = signs[index];
-          return sign !== '' &&
-            (await this.signer.verify(
-              TssSigner.generatePayloadToSign(
-                payload,
-                timestamp,
-                item.publicKey
-              ),
-              sign,
-              item.publicKey
-            ))
-            ? item
-            : undefined;
+          if (sign === '') return undefined;
+          const verifiedSign = await this.signer.verify(
+            TssSigner.generatePayloadToSign(
+              payload,
+              timestamp,
+              guard.publicKey
+            ),
+            sign,
+            guard.publicKey
+          );
+          return verifiedSign ? guard : undefined;
         })
       )
     ).filter((item) => item !== undefined) as Array<ActiveGuard>;
