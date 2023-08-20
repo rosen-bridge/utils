@@ -12,12 +12,12 @@ export class TestTssSigner extends TssSigner {
   /**
    * get list of signs in current object
    */
-  getSigns = () => (this as any).signs as Array<Sign>;
+  getSigns = () => this.signs as Array<Sign>;
 
   /**
    * get list of pending signs in current object
    */
-  getPendingSigns = () => (this as any).pendingSigns as Array<PendingSign>;
+  getPendingSigns = () => this.pendingSigns as Array<PendingSign>;
 
   /**
    * calling protected function getUnknownGuards
