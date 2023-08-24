@@ -188,16 +188,15 @@ describe('TssSigner', () => {
      * @scenario
      * - mock activeGuards to return a list of 6 active guard
      * - mock `Date.now` to return 1686285600 ( a random timestamp when its this guard turn)
+     * - mock updateThreshold
      * - call update
      * @expected
      * - mocked submitMsg must not call
      */
     it('should not call sendMessage when active guards list length lower than threshold', async () => {
       jest.spyOn(Date, 'now').mockReturnValue(1686285600608);
-      jest
-        .spyOn((signer as any).axios, 'get')
-        .mockResolvedValue({ data: { threshold: 6 } });
-      (signer as any).threshold = { expiry: 0 };
+      jest.spyOn(signer as any, 'updateThreshold').mockResolvedValue(undefined);
+      (signer as any).threshold = { expiry: 0, value: 7 };
       const activeGuards = Array(6)
         .fill('')
         .map((item, index) => ({
@@ -882,6 +881,7 @@ describe('TssSigner', () => {
      * when all conditions are met and signs are not enough
      * @dependencies
      * @scenario
+     * - mock updateThreshold
      * - mock EdDSA signer to approve signatures
      * - add sign instance to list with valid request and empty list of signs
      * - call handleApproveMessage
@@ -891,10 +891,8 @@ describe('TssSigner', () => {
      */
     it('should add guard sign to sign object when all conditions are met and signs are not enough', async () => {
       jest.spyOn(guardSigners[0], 'verify').mockResolvedValue(true);
-      jest
-        .spyOn((signer as any).axios, 'get')
-        .mockResolvedValue({ data: { threshold: 6 } });
-      (signer as any).threshold = { expiry: 0 };
+      jest.spyOn(signer as any, 'updateThreshold').mockResolvedValue(undefined);
+      (signer as any).threshold = { expiry: 0, value: 7 };
       await signer.mockedHandleApproveMessage(
         {
           msg: 'test message',
@@ -1139,6 +1137,7 @@ describe('TssSigner', () => {
      * - add sign instance to list
      * - mock startSign
      * - mock getApprovedGuards to return list of 6 guards
+     * - mock updateThreshold
      * - call handleStartMessage
      * @expected
      * - mockedStartSign must not call
@@ -1147,10 +1146,8 @@ describe('TssSigner', () => {
       jest
         .spyOn(signer as any, 'getApprovedGuards')
         .mockResolvedValue(activeGuards.slice(0, 6));
-      jest
-        .spyOn((signer as any).axios, 'get')
-        .mockResolvedValue({ data: { threshold: 6 } });
-      (signer as any).threshold = { expiry: 0 };
+      jest.spyOn(signer as any, 'updateThreshold').mockResolvedValue(undefined);
+      (signer as any).threshold = { expiry: 0, value: 7 };
       await signer.mockedHandleStartMessage(
         {
           msg: 'signing message',
