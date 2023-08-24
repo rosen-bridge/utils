@@ -50,7 +50,7 @@ export class TssSigner extends Communicator {
    * get threshold value from tss-api instance if threshold didn't set or expired and set for this and detection
    * this function calls on every update
    */
-  private updateThreshold = async () => {
+  protected updateThreshold = async () => {
     try {
       if (this.threshold.expiry < Date.now()) {
         const res = await this.axios.get<{ threshold: number }>(thresholdUrl);
