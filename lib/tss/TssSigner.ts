@@ -47,7 +47,7 @@ export class TssSigner extends Communicator {
   private readonly shares: Array<string>;
 
   /**
-   * get threshold value from tss-api instance and set for this and detection
+   * get threshold value from tss-api instance if cacheThreshold didn't set or expired and set for this and detection
    * this function calls on every update
    */
   private updateThreshold = async () => {
