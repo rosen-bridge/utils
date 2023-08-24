@@ -1,6 +1,6 @@
 import { Communicator } from '../abstract';
 import {
-  CacheThreshold,
+  Threshold,
   PendingSign,
   Sign,
   SignApprovePayload,
@@ -12,7 +12,7 @@ import {
 } from '../types/signer';
 import { GuardDetection } from '../detection/GuardDetection';
 import {
-  defaultCacheThresholdTTL,
+  defaultThresholdTTL,
   defaultTimeoutDefault,
   signTurnDurationDefault,
   signTurnNoWorkDefault,
@@ -32,8 +32,8 @@ import axios, { AxiosInstance } from 'axios';
 export class TssSigner extends Communicator {
   private readonly axios: AxiosInstance;
   private readonly callbackUrl: string;
-  private cacheThreshold: CacheThreshold;
-  private readonly cacheThresholdTTL: number;
+  private threshold: Threshold;
+  private readonly thresholdTTL: number;
   private readonly turnDuration: number;
   private readonly turnNoWork: number;
   private readonly timeout: number;
@@ -47,20 +47,18 @@ export class TssSigner extends Communicator {
   private readonly shares: Array<string>;
 
   /**
-   * get threshold value from tss-api instance if cacheThreshold didn't set or expired and set for this and detection
+   * get threshold value from tss-api instance if threshold didn't set or expired and set for this and detection
    * this function calls on every update
    */
   private updateThreshold = async () => {
     try {
-      if (this.cacheThreshold.expiry > Date.now()) {
-        return this.cacheThreshold.threshold;
-      } else {
+      if (this.threshold.expiry < Date.now()) {
         const res = await this.axios.get<{ threshold: number }>(thresholdUrl);
         const threshold = res.data.threshold + 1;
         this.detection.setNeedGuardThreshold(threshold);
-        this.cacheThreshold = {
-          expiry: Date.now() + this.cacheThresholdTTL,
-          threshold: threshold,
+        this.threshold = {
+          expiry: Date.now() + this.thresholdTTL,
+          value: threshold,
         };
       }
     } catch (error) {
@@ -92,17 +90,17 @@ export class TssSigner extends Communicator {
     this.turnNoWork = config.turnNoWorkSeconds
       ? config.turnNoWorkSeconds
       : signTurnNoWorkDefault;
-    this.cacheThreshold = {
+    this.threshold = {
       expiry: 0,
-      threshold: -1,
+      value: -1,
     };
     this.lastUpdateRound = 0;
     this.timeout = config.timeoutSeconds
       ? config.timeoutSeconds
       : defaultTimeoutDefault;
-    this.cacheThresholdTTL = config.cacheThresholdTTL
-      ? config.cacheThresholdTTL
-      : defaultCacheThresholdTTL;
+    this.thresholdTTL = config.thresholdTTL
+      ? config.thresholdTTL
+      : defaultThresholdTTL;
     this.getPeerId = config.getPeerId;
     this.shares = config.shares;
     this.signs = [];
@@ -141,7 +139,7 @@ export class TssSigner extends Communicator {
     }
     await this.updateThreshold();
     const activeGuards = await this.detection.activeGuards();
-    if (activeGuards.length < this.cacheThreshold.threshold) {
+    if (activeGuards.length < this.threshold.value) {
       return;
     }
     const timestamp = this.getDate();
@@ -480,7 +478,7 @@ export class TssSigner extends Communicator {
         },
         sign.signs
       );
-      if (approvedGuards.length >= this.cacheThreshold.threshold) {
+      if (approvedGuards.length >= this.threshold.value) {
         const payload: SignStartPayload = {
           msg: sign.msg,
           signs: sign.signs,
@@ -497,7 +495,7 @@ export class TssSigner extends Communicator {
         await this.startSign(sign.msg, approvedGuards);
       } else {
         this.logger.debug(
-          `[${approvedGuards.length}] out of required [${this.cacheThreshold.threshold}] guards approved message [${sign.msg}]. Signs are: ${sign.signs}`
+          `[${approvedGuards.length}] out of required [${this.threshold.value}] guards approved message [${sign.msg}]. Signs are: ${sign.signs}`
         );
       }
     } else {
@@ -551,7 +549,7 @@ export class TssSigner extends Communicator {
       payloadToSign,
       payload.signs
     );
-    if (approvedGuards.length >= this.cacheThreshold.threshold) {
+    if (approvedGuards.length >= this.threshold.value) {
       await this.startSign(sign.msg, approvedGuards);
     }
   };
