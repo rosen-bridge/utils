@@ -1,5 +1,6 @@
 import { Communicator } from '../abstract';
 import {
+  CacheThreshold,
   PendingSign,
   Sign,
   SignApprovePayload,
@@ -11,6 +12,7 @@ import {
 } from '../types/signer';
 import { GuardDetection } from '../detection/GuardDetection';
 import {
+  defaultCacheThresholdTTL,
   defaultTimeoutDefault,
   signTurnDurationDefault,
   signTurnNoWorkDefault,
@@ -30,7 +32,8 @@ import axios, { AxiosInstance } from 'axios';
 export class TssSigner extends Communicator {
   private readonly axios: AxiosInstance;
   private readonly callbackUrl: string;
-  private threshold: number;
+  private cacheThreshold: CacheThreshold;
+  private readonly cacheThresholdTTL: number;
   private readonly turnDuration: number;
   private readonly turnNoWork: number;
   private readonly timeout: number;
@@ -49,10 +52,17 @@ export class TssSigner extends Communicator {
    */
   private updateThreshold = async () => {
     try {
-      const res = await this.axios.get<{ threshold: number }>(thresholdUrl);
-      const threshold = res.data.threshold + 1;
-      this.detection.setNeedGuardThreshold(threshold);
-      this.threshold = threshold;
+      if (this.cacheThreshold.expiry > Date.now()) {
+        return this.cacheThreshold.threshold;
+      } else {
+        const res = await this.axios.get<{ threshold: number }>(thresholdUrl);
+        const threshold = res.data.threshold + 1;
+        this.detection.setNeedGuardThreshold(threshold);
+        this.cacheThreshold = {
+          expiry: Date.now() + this.cacheThresholdTTL,
+          threshold: threshold,
+        };
+      }
     } catch (error) {
       this.logger.warn(
         `an error occurred when try getting threshold from tss ${error}`
@@ -82,11 +92,17 @@ export class TssSigner extends Communicator {
     this.turnNoWork = config.turnNoWorkSeconds
       ? config.turnNoWorkSeconds
       : signTurnNoWorkDefault;
-    this.threshold = -1;
+    this.cacheThreshold = {
+      expiry: 0,
+      threshold: -1,
+    };
     this.lastUpdateRound = 0;
     this.timeout = config.timeoutSeconds
       ? config.timeoutSeconds
       : defaultTimeoutDefault;
+    this.cacheThresholdTTL = config.cacheThresholdTTL
+      ? config.cacheThresholdTTL
+      : defaultCacheThresholdTTL;
     this.getPeerId = config.getPeerId;
     this.shares = config.shares;
     this.signs = [];
@@ -123,11 +139,9 @@ export class TssSigner extends Communicator {
     if ((await this.getIndex()) !== this.getGuardTurn()) {
       return;
     }
-    // TODO add interval to update threshold
-    // https://git.ergopool.io/ergo/rosen-bridge/utils/-/issues/62
     await this.updateThreshold();
     const activeGuards = await this.detection.activeGuards();
-    if (activeGuards.length < this.threshold) {
+    if (activeGuards.length < this.cacheThreshold.threshold) {
       return;
     }
     const timestamp = this.getDate();
@@ -466,7 +480,7 @@ export class TssSigner extends Communicator {
         },
         sign.signs
       );
-      if (approvedGuards.length >= this.threshold) {
+      if (approvedGuards.length >= this.cacheThreshold.threshold) {
         const payload: SignStartPayload = {
           msg: sign.msg,
           signs: sign.signs,
@@ -483,7 +497,7 @@ export class TssSigner extends Communicator {
         await this.startSign(sign.msg, approvedGuards);
       } else {
         this.logger.debug(
-          `[${approvedGuards.length}] out of required [${this.threshold}] guards approved message [${sign.msg}]. Signs are: ${sign.signs}`
+          `[${approvedGuards.length}] out of required [${this.cacheThreshold.threshold}] guards approved message [${sign.msg}]. Signs are: ${sign.signs}`
         );
       }
     } else {
@@ -537,7 +551,7 @@ export class TssSigner extends Communicator {
       payloadToSign,
       payload.signs
     );
-    if (approvedGuards.length >= this.threshold) {
+    if (approvedGuards.length >= this.cacheThreshold.threshold) {
       await this.startSign(sign.msg, approvedGuards);
     }
   };

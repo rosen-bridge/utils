@@ -40,7 +40,10 @@ describe('TssSigner', () => {
     jest
       .spyOn((signer as any).axios, 'get')
       .mockResolvedValue({ data: { threshold: 6 } });
-    (signer as any).threshold = 7;
+    (signer as any).cacheThreshold = {
+      threshold: 7,
+      expiry: 0,
+    };
   });
 
   describe('cleanup', () => {
