@@ -1468,9 +1468,9 @@ describe('TssSigner', () => {
     /**
      * @target TssSigner.updateThreshold should update threshold
      * @dependencies
+     * - Date
      * @scenario
-     * - mock axios to return { data: { threshold: 7 } }
-     * - mock `signer.threshold` to return { expiry: currentTime + 10, threshold: 7}
+     * - mock axios to return { data: { threshold: 6 } }
      * - call updateThreshold (should call axios and update expiry)
      * - call updateThreshold (should not call axios)
      * @expected
@@ -1489,11 +1489,12 @@ describe('TssSigner', () => {
     /**
      * @target TssSigner.updateThreshold should update threshold
      * @dependencies
+     * - Date
      * @scenario
      * - mock `Date.now` to return 1686286005068 (currentTime)
      * - mock `signer.threshold` to return { expiry: currentTime, threshold: 7}
      * - mock axios to return { data: { threshold: 7 } }
-     * - mock `Date.now` to return currentTime + 1 ( currentTime + 1m and 1ms)
+     * - mock `Date.now` to return currentTime + 1ms
      * - call updateThreshold (should call axios)
      * @expected
      * - must call axios once after expiredTime
