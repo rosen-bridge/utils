@@ -1466,7 +1466,7 @@ describe('TssSigner', () => {
 
   describe('updateThreshold', () => {
     /**
-     * @target TssSigner.updateThreshold should update threshold
+     * @target TssSigner.updateThreshold should update threshold in the first time and using that instead of axios call
      * @dependencies
      * - Date
      * @scenario
@@ -1476,7 +1476,7 @@ describe('TssSigner', () => {
      * @expected
      * - must call axios once and cache threshold
      */
-    it('must call axios once and cache threshold', async () => {
+    it('should update threshold in the first time and using that instead of axios call', async () => {
       const mockedAxios = jest
         .spyOn((signer as any).axios, 'get')
         .mockReturnValue({ data: { threshold: 6 } });
@@ -1487,7 +1487,7 @@ describe('TssSigner', () => {
     });
 
     /**
-     * @target TssSigner.updateThreshold should update threshold
+     * @target TssSigner.updateThreshold should update threshold after expiredTime
      * @dependencies
      * - Date
      * @scenario
@@ -1499,7 +1499,7 @@ describe('TssSigner', () => {
      * @expected
      * - must call axios once after expiredTime
      */
-    it('must call axios once after expiredTime', async () => {
+    it('should update threshold after expiredTime', async () => {
       const mockedAxios = jest
         .spyOn((signer as any).axios, 'get')
         .mockReturnValue({ data: { threshold: 7 } });
