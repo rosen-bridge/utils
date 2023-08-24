@@ -17,7 +17,7 @@ export interface SignerConfig {
   turnNoWorkSeconds?: number;
   getPeerId: () => Promise<string>;
   shares: Array<string>;
-  cacheThresholdTTL?: number;
+  thresholdTTL?: number;
 }
 
 export interface Sign {
@@ -64,7 +64,7 @@ export enum StatusEnum {
   Failed = 'failed',
 }
 
-export interface CacheThreshold {
-  threshold: number;
+export interface Threshold {
+  value: number;
   expiry: number;
 }
