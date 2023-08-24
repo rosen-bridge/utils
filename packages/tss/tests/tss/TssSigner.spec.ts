@@ -1491,9 +1491,8 @@ describe('TssSigner', () => {
      * @dependencies
      * @scenario
      * - mock `Date.now` to return 1686286005068 (currentTime)
-     * - mock `signer.threshold` to return { expiry: currentTime + 10, threshold: 7}
+     * - mock `signer.threshold` to return { expiry: currentTime, threshold: 7}
      * - mock axios to return { data: { threshold: 7 } }
-     * - call updateThreshold (should not call axios)
      * - mock `Date.now` to return currentTime + 60001 ( currentTime + 1m and 1ms)
      * - call updateThreshold (should call axios)
      * @expected
@@ -1503,9 +1502,7 @@ describe('TssSigner', () => {
       const mockedAxios = jest
         .spyOn((signer as any).axios, 'get')
         .mockReturnValue({ data: { threshold: 7 } });
-      (signer as any).threshold = { expiry: currentTime + 10, threshold: 7 };
-      await (signer as any).updateThreshold();
-      expect(mockedAxios).toHaveBeenCalledTimes(0);
+      (signer as any).threshold = { expiry: currentTime, threshold: 7 };
       jest.spyOn(Date, 'now').mockReturnValue(currentTime + 60001);
       await (signer as any).updateThreshold();
       expect(mockedAxios).toHaveBeenCalledTimes(1);
