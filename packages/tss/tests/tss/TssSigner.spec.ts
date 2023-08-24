@@ -1493,7 +1493,7 @@ describe('TssSigner', () => {
      * - mock `Date.now` to return 1686286005068 (currentTime)
      * - mock `signer.threshold` to return { expiry: currentTime, threshold: 7}
      * - mock axios to return { data: { threshold: 7 } }
-     * - mock `Date.now` to return currentTime + 60001 ( currentTime + 1m and 1ms)
+     * - mock `Date.now` to return currentTime + 1 ( currentTime + 1m and 1ms)
      * - call updateThreshold (should call axios)
      * @expected
      * - must call axios once after expiredTime
@@ -1503,7 +1503,7 @@ describe('TssSigner', () => {
         .spyOn((signer as any).axios, 'get')
         .mockReturnValue({ data: { threshold: 7 } });
       (signer as any).threshold = { expiry: currentTime, threshold: 7 };
-      jest.spyOn(Date, 'now').mockReturnValue(currentTime + 60001);
+      jest.spyOn(Date, 'now').mockReturnValue(currentTime + 1);
       await (signer as any).updateThreshold();
       expect(mockedAxios).toHaveBeenCalledTimes(1);
     });
