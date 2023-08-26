@@ -8,6 +8,7 @@ import {
 } from './types';
 import { CARDANO_CHAIN, CARDANO_NATIVE_TOKEN } from '../const';
 import * as JSONBigInt from 'json-bigint';
+import Utils from '../Utils';
 
 export class CardanoRosenExtractor extends AbstractRosenDataExtractor<string> {
   /**
@@ -23,6 +24,7 @@ export class CardanoRosenExtractor extends AbstractRosenDataExtractor<string> {
         `Failed to parse transaction json to CardanoTx format while extracting rosen data: ${e}`
       );
     }
+    const baseError = `No rosen data found for tx [${transaction.id}]`;
     const rosenMetadata = transaction.metadata?.['0'];
     if (
       rosenMetadata &&
@@ -55,7 +57,16 @@ export class CardanoRosenExtractor extends AbstractRosenDataExtractor<string> {
           };
         }
       }
-    }
+      this.logger.debug(
+        baseError + `: No valid transformation found in any output boxes`
+      );
+    } else
+      this.logger.debug(
+        baseError +
+          `: Incomplete metadata: ${Utils.JsonBI.stringify(
+            transaction.metadata
+          )}`
+      );
     return undefined;
   };
 
@@ -94,6 +105,13 @@ export class CardanoRosenExtractor extends AbstractRosenDataExtractor<string> {
         to: this.tokens.getID(lovelace[0], toChain),
         amount: box.value.toString(),
       };
-    } else return undefined;
+    } else {
+      this.logger.debug(
+        `No rosen asset transformation found for CardanoBoxCandidate with assets: ${Utils.JsonBI.stringify(
+          box.assets
+        )}`
+      );
+      return undefined;
+    }
   };
 }
