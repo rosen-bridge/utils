@@ -37,10 +37,6 @@ describe('TssSigner', () => {
       getPeerId: () => Promise.resolve('myPeerId'),
       shares: signers.guardPks,
     });
-    jest
-      .spyOn((signer as any).axios, 'get')
-      .mockResolvedValue({ data: { threshold: 6 } });
-    (signer as any).threshold = 7;
   });
 
   describe('cleanup', () => {
@@ -192,12 +188,15 @@ describe('TssSigner', () => {
      * @scenario
      * - mock activeGuards to return a list of 6 active guard
      * - mock `Date.now` to return 1686285600 ( a random timestamp when its this guard turn)
+     * - mock updateThreshold
      * - call update
      * @expected
      * - mocked submitMsg must not call
      */
     it('should not call sendMessage when active guards list length lower than threshold', async () => {
       jest.spyOn(Date, 'now').mockReturnValue(1686285600608);
+      jest.spyOn(signer as any, 'updateThreshold').mockResolvedValue(undefined);
+      (signer as any).threshold = { expiry: 0, value: 7 };
       const activeGuards = Array(6)
         .fill('')
         .map((item, index) => ({
@@ -882,6 +881,7 @@ describe('TssSigner', () => {
      * when all conditions are met and signs are not enough
      * @dependencies
      * @scenario
+     * - mock updateThreshold
      * - mock EdDSA signer to approve signatures
      * - add sign instance to list with valid request and empty list of signs
      * - call handleApproveMessage
@@ -891,6 +891,8 @@ describe('TssSigner', () => {
      */
     it('should add guard sign to sign object when all conditions are met and signs are not enough', async () => {
       jest.spyOn(guardSigners[0], 'verify').mockResolvedValue(true);
+      jest.spyOn(signer as any, 'updateThreshold').mockResolvedValue(undefined);
+      (signer as any).threshold = { expiry: 0, value: 7 };
       await signer.mockedHandleApproveMessage(
         {
           msg: 'test message',
@@ -1135,6 +1137,7 @@ describe('TssSigner', () => {
      * - add sign instance to list
      * - mock startSign
      * - mock getApprovedGuards to return list of 6 guards
+     * - mock updateThreshold
      * - call handleStartMessage
      * @expected
      * - mockedStartSign must not call
@@ -1143,6 +1146,8 @@ describe('TssSigner', () => {
       jest
         .spyOn(signer as any, 'getApprovedGuards')
         .mockResolvedValue(activeGuards.slice(0, 6));
+      jest.spyOn(signer as any, 'updateThreshold').mockResolvedValue(undefined);
+      (signer as any).threshold = { expiry: 0, value: 7 };
       await signer.mockedHandleStartMessage(
         {
           msg: 'signing message',
@@ -1456,6 +1461,52 @@ describe('TssSigner', () => {
       );
       expect(res.length).toEqual(1);
       expect(res).toEqual(guards);
+    });
+  });
+
+  describe('updateThreshold', () => {
+    /**
+     * @target TssSigner.updateThreshold should update threshold in the first time and using that instead of axios call
+     * @dependencies
+     * - Date
+     * @scenario
+     * - mock axios to return { data: { threshold: 6 } }
+     * - call updateThreshold (should call axios and update expiry)
+     * - call updateThreshold (should not call axios)
+     * @expected
+     * - must call axios once and cache threshold
+     */
+    it('should update threshold in the first time and using that instead of axios call', async () => {
+      const mockedAxios = jest
+        .spyOn((signer as any).axios, 'get')
+        .mockReturnValue({ data: { threshold: 6 } });
+      (signer as any).threshold = { expiry: 0 };
+      await signer.mockedUpdateThreshold();
+      await signer.mockedUpdateThreshold();
+      expect(mockedAxios).toHaveBeenCalledTimes(1);
+    });
+
+    /**
+     * @target TssSigner.updateThreshold should update threshold after expiredTime
+     * @dependencies
+     * - Date
+     * @scenario
+     * - mock `Date.now` to return 1686286005068 (currentTime)
+     * - mock `signer.threshold` to return { expiry: currentTime, threshold: 7}
+     * - mock axios to return { data: { threshold: 7 } }
+     * - mock `Date.now` to return currentTime + 1ms
+     * - call updateThreshold (should call axios)
+     * @expected
+     * - must call axios once after expiredTime
+     */
+    it('should update threshold after expiredTime', async () => {
+      const mockedAxios = jest
+        .spyOn((signer as any).axios, 'get')
+        .mockReturnValue({ data: { threshold: 7 } });
+      (signer as any).threshold = { expiry: currentTime, threshold: 7 };
+      jest.spyOn(Date, 'now').mockReturnValue(currentTime + 1);
+      await signer.mockedUpdateThreshold();
+      expect(mockedAxios).toHaveBeenCalledTimes(1);
     });
   });
 });
