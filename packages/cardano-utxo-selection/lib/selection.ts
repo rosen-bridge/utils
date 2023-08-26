@@ -39,7 +39,7 @@ export const selectCardanoUtxos = async (
     address: string,
     offset: number,
     limit: number
-  ) => Array<CardanoUtxo>,
+  ) => Promise<Array<CardanoUtxo>>,
   apiLimit = GET_UTXO_API_LIMIT
 ): Promise<CoveringBoxes<CardanoUtxo>> => {
   let uncoveredNativeToken = requiredAssets.nativeToken;
