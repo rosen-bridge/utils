@@ -112,4 +112,9 @@ export class TestTssSigner extends TssSigner {
     guardIndex: number,
     sender: string
   ) => this.handleStartMessage(payload, timestamp, guardIndex, sender);
+
+  /**
+   * calling protected function updateThreshold
+   */
+  mockedUpdateThreshold = () => this.updateThreshold();
 }
