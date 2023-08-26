@@ -1,4 +1,5 @@
 import { AssetBalance, BoxInfo, CardanoUtxo, CoveringBoxes } from './types';
+import { AbstractLogger, DummyLogger } from '@rosen-bridge/logger-interface';
 
 const GET_UTXO_API_LIMIT = 10;
 
@@ -28,6 +29,7 @@ export const getUtxoInfo = (utxo: CardanoUtxo): BoxInfo => {
  * @param trackMap the mapping of a box id to it's next box
  * @param getAddressBoxes a generator function to get utxos for an address using offset and limit
  * @param apiLimit the limit which is passing to generator function
+ * @param logger
  * @returns an object containing the selected boxes with a boolean showing if requirements covered or not
  */
 export const selectCardanoUtxos = async (
@@ -40,7 +42,8 @@ export const selectCardanoUtxos = async (
     offset: number,
     limit: number
   ) => Promise<Array<CardanoUtxo>>,
-  apiLimit = GET_UTXO_API_LIMIT
+  apiLimit = GET_UTXO_API_LIMIT,
+  logger: AbstractLogger = new DummyLogger()
 ): Promise<CoveringBoxes<CardanoUtxo>> => {
   let uncoveredNativeToken = requiredAssets.nativeToken;
   const uncoveredTokens = requiredAssets.tokens.filter(
@@ -57,6 +60,9 @@ export const selectCardanoUtxos = async (
   // get boxes until requirements are satisfied
   while (isRequirementRemaining()) {
     const boxes = await getAddressUtxos(address, offset, apiLimit);
+    logger.debug(
+      `fetched [${boxes.length}] new boxes for address [${address}]`
+    );
     offset += apiLimit;
 
     // end process if there are no more boxes
@@ -73,13 +79,19 @@ export const selectCardanoUtxos = async (
         trackedBox = trackMap.get(boxInfo.id);
         if (!trackedBox) {
           skipBox = true;
+          logger.debug(`box [${boxInfo.id}] is tracked to nothing`);
           break;
         }
+        const preId = boxInfo.id;
         boxInfo = getUtxoInfo(trackedBox);
+        logger.debug(`box [${preId}] is tracked to box [${boxInfo.id}]`);
       }
 
       // if tracked to no box or forbidden box, skip it
-      if (skipBox || forbiddenBoxIds.includes(boxInfo.id)) continue;
+      if (skipBox || forbiddenBoxIds.includes(boxInfo.id)) {
+        logger.debug(`box [${boxInfo.id}] is skipped`);
+        continue;
+      }
 
       // check and add if box assets are useful to requirements
       let isUseful = false;
@@ -92,6 +104,9 @@ export const selectCardanoUtxos = async (
           const token = uncoveredTokens[tokenIndex];
           if (token.value > boxToken.value) token.value -= boxToken.value;
           else uncoveredTokens.splice(tokenIndex, 1);
+          logger.debug(
+            `box [${boxInfo.id}] is selected due to need of token [${token.id}]`
+          );
         }
       });
       if (isUseful || uncoveredNativeToken > 0n) {
@@ -100,10 +115,14 @@ export const selectCardanoUtxos = async (
             ? boxInfo.assets.nativeToken
             : uncoveredNativeToken;
         result.push(trackedBox!);
-      }
+        logger.debug(`box [${boxInfo.id}] is selected`);
+      } else logger.debug(`box [${boxInfo.id}] is ignored`);
 
       // end process if requirements are satisfied
-      if (!isRequirementRemaining()) break;
+      if (!isRequirementRemaining()) {
+        logger.debug(`requirements satisfied`);
+        break;
+      }
     }
   }
 
