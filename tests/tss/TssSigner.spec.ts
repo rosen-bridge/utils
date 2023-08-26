@@ -1481,8 +1481,8 @@ describe('TssSigner', () => {
         .spyOn((signer as any).axios, 'get')
         .mockReturnValue({ data: { threshold: 6 } });
       (signer as any).threshold = { expiry: 0 };
-      await (signer as any).updateThreshold();
-      await (signer as any).updateThreshold();
+      await signer.mockedUpdateThreshold();
+      await signer.mockedUpdateThreshold();
       expect(mockedAxios).toHaveBeenCalledTimes(1);
     });
 
@@ -1505,7 +1505,7 @@ describe('TssSigner', () => {
         .mockReturnValue({ data: { threshold: 7 } });
       (signer as any).threshold = { expiry: currentTime, threshold: 7 };
       jest.spyOn(Date, 'now').mockReturnValue(currentTime + 1);
-      await (signer as any).updateThreshold();
+      await signer.mockedUpdateThreshold();
       expect(mockedAxios).toHaveBeenCalledTimes(1);
     });
   });
