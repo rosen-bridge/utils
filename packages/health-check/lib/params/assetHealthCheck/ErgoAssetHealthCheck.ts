@@ -66,14 +66,10 @@ class ErgoNodeAssetHealthCheckParam extends AbstractAssetHealthCheckParam {
   update = async () => {
     let tokenAmount = 0n;
     if (this.assetId == ERGO_NATIVE_ASSET) {
-      const assets = await this.nodeApi.blockchain.getAddressBalanceTotal(
-        this.address
-      );
+      const assets = await this.nodeApi.getAddressBalanceTotal(this.address);
       if (assets.confirmed) tokenAmount = assets.confirmed.nanoErgs;
     } else {
-      const assets = await this.nodeApi.blockchain.getAddressBalanceTotal(
-        this.address
-      );
+      const assets = await this.nodeApi.getAddressBalanceTotal(this.address);
       const token = assets?.confirmed?.tokens.find(
         (token) => token.tokenId == this.assetId
       );

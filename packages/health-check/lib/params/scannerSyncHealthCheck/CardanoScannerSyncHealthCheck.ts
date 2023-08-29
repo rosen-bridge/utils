@@ -24,7 +24,7 @@ class CardanoKoiosScannerHealthCheck extends AbstractScannerSyncHealthCheckParam
    * @returns last available block in network
    */
   getLastAvailableBlock = async () => {
-    return Number((await this.koiosApi.network.getTip())[0].block_no);
+    return Number((await this.koiosApi.getTip())[0].block_no);
   };
 }
 

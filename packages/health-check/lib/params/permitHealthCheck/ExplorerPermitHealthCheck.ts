@@ -5,7 +5,7 @@ import { AbstractPermitHealthCheckParam } from './AbstractPermitHealthCheck';
 
 class ExplorerPermitHealthCheckParam extends AbstractPermitHealthCheckParam {
   private explorerApi;
-  private API_REQUEST_LIMIT = 100n;
+  private API_REQUEST_LIMIT = 100;
 
   constructor(
     RWT: string,
@@ -25,7 +25,7 @@ class ExplorerPermitHealthCheckParam extends AbstractPermitHealthCheckParam {
   update = async () => {
     let RWTCount = 0n;
     let total,
-      offset = 0n;
+      offset = 0;
     do {
       const boxes = await this.explorerApi.v1.getApiV1BoxesUnspentByaddressP1(
         this.permitAddress,

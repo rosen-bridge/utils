@@ -84,7 +84,7 @@ class ErgoNodeSyncHealthCheckParam extends AbstractHealthCheckParam {
    * Updates the node sync health status and the update timestamp
    */
   update = async () => {
-    const nodeInfo = await this.nodeApi.info.getNodeInfo();
+    const nodeInfo = await this.nodeApi.getNodeInfo();
     if (!nodeInfo.headersHeight || !nodeInfo.fullHeight) {
       throw new Error(
         "Node info api response format is not correct, header height or full height doesn't exist"
@@ -95,10 +95,10 @@ class ErgoNodeSyncHealthCheckParam extends AbstractHealthCheckParam {
     );
     this.nodeLastBlockTime =
       (Date.now() -
-        Number((await this.nodeApi.blocks.getLastHeaders(1n))[0].timestamp)) /
+        Number((await this.nodeApi.getLastHeaders(1))[0].timestamp)) /
       60000; // Convert millisecond to minute
-    this.nodePeerCount = (await this.nodeApi.peers.getConnectedPeers()).length;
-    const maxPeerHeight = (await this.nodeApi.peers.getPeersSyncInfo()).reduce(
+    this.nodePeerCount = (await this.nodeApi.getConnectedPeers()).length;
+    const maxPeerHeight = (await this.nodeApi.getPeersSyncInfo()).reduce(
       (max, info) => {
         return Math.max(Number(info.height), max);
       },

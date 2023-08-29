@@ -80,11 +80,9 @@ describe('NodeWidHealthCheckParam', () => {
     it('Should update the wid status to exists', async () => {
       const BoxesApiMock = jest.fn();
       jest.mocked(ergoNodeClientFactory).mockReturnValue({
-        blockchain: {
-          // mock return value of node watcher address assets
-          getAddressBalanceTotal: mockedBalanceWithWid(),
-          getBoxesByAddressUnspent: BoxesApiMock,
-        },
+        // mock return value of node watcher address assets
+        getAddressBalanceTotal: mockedBalanceWithWid(),
+        getBoxesByAddressUnspent: BoxesApiMock,
       } as any);
 
       // mock return value of node address boxes
@@ -121,20 +119,18 @@ describe('NodeWidHealthCheckParam', () => {
     it('Should update the wid status to not exists', async () => {
       const BoxesApiMock = jest.fn();
       jest.mocked(ergoNodeClientFactory).mockReturnValue({
-        blockchain: {
-          // mock return value of node watcher address assets
-          getAddressBalanceTotal: async () => ({
-            confirmed: {
-              tokens: [
-                {
-                  tokenId: 'tokenId',
-                  amount: 1200n,
-                },
-              ],
-            },
-          }),
-          getBoxesByAddressUnspent: BoxesApiMock,
-        },
+        // mock return value of node watcher address assets
+        getAddressBalanceTotal: async () => ({
+          confirmed: {
+            tokens: [
+              {
+                tokenId: 'tokenId',
+                amount: 1200n,
+              },
+            ],
+          },
+        }),
+        getBoxesByAddressUnspent: BoxesApiMock,
       } as any);
 
       // mock return value of node address boxes
@@ -171,11 +167,9 @@ describe('NodeWidHealthCheckParam', () => {
     it('Should update the wid status to exists with multiple responses', async () => {
       const BoxesApiMock = jest.fn();
       jest.mocked(ergoNodeClientFactory).mockReturnValue({
-        blockchain: {
-          // mock return value of node watcher address assets
-          getAddressBalanceTotal: mockedBalanceWithWid(),
-          getBoxesByAddressUnspent: BoxesApiMock,
-        },
+        // mock return value of node watcher address assets
+        getAddressBalanceTotal: mockedBalanceWithWid(),
+        getBoxesByAddressUnspent: BoxesApiMock,
       } as any);
 
       // mock return value of node address boxes

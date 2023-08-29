@@ -5,7 +5,7 @@ import { intersection } from 'lodash-es';
 
 class ExplorerWidHealthCheckParam extends AbstractWidHealthCheckParam {
   private explorerApi;
-  private API_REQUEST_LIMIT = 100n;
+  private API_REQUEST_LIMIT = 100;
 
   constructor(
     rwtRepoAddress: string,
@@ -29,7 +29,7 @@ class ExplorerWidHealthCheckParam extends AbstractWidHealthCheckParam {
     const tokenIdList = assets.tokens?.map((token) => token.tokenId);
 
     let total,
-      offset = 0n;
+      offset = 0;
     do {
       const boxes = await this.explorerApi.v1.getApiV1BoxesUnspentByaddressP1(
         this.rwtRepoAddress,
