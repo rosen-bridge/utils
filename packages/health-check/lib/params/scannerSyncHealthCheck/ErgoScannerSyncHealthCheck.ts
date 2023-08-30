@@ -21,7 +21,7 @@ class ErgoNodeScannerHealthCheck extends AbstractScannerSyncHealthCheckParam {
    * @returns last available block in network
    */
   getLastAvailableBlock = async () => {
-    return Number((await this.nodeApi.info.getNodeInfo()).fullHeight);
+    return Number((await this.nodeApi.getNodeInfo()).fullHeight);
   };
 }
 

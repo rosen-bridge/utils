@@ -6,7 +6,7 @@ import { intersection } from 'lodash-es';
 
 class NodeWidHealthCheckParam extends AbstractWidHealthCheckParam {
   private nodeApi;
-  private API_REQUEST_LIMIT = 100n;
+  private API_REQUEST_LIMIT = 100;
 
   constructor(
     rwtRepoAddress: string,
@@ -22,18 +22,16 @@ class NodeWidHealthCheckParam extends AbstractWidHealthCheckParam {
    */
   update = async () => {
     // Finding all existing tokens for the address
-    const assets = await this.nodeApi.blockchain.getAddressBalanceTotal(
-      this.address
-    );
+    const assets = await this.nodeApi.getAddressBalanceTotal(this.address);
     const tokenIdList = assets?.confirmed?.tokens.map((token) => token.tokenId);
 
     let boxes = [],
-      offset = 0n;
+      offset = 0;
     do {
-      boxes = await this.nodeApi.blockchain.getBoxesByAddressUnspent(
-        this.rwtRepoAddress,
-        { offset: offset, limit: this.API_REQUEST_LIMIT }
-      );
+      boxes = await this.nodeApi.getBoxesByAddressUnspent(this.rwtRepoAddress, {
+        offset: offset,
+        limit: this.API_REQUEST_LIMIT,
+      });
 
       const repoBox = boxes?.find(
         (box) => (box as any).assets?.[0].tokenId === this.rwtRepoNft

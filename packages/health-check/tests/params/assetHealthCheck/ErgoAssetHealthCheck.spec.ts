@@ -80,14 +80,12 @@ describe('ErgoNodeAssetHealthCheck', () => {
      */
     beforeEach(() => {
       jest.mocked(ergoNodeClientFactory).mockReturnValue({
-        blockchain: {
-          getAddressBalanceTotal: async () => ({
-            confirmed: {
-              tokens: [{ tokenId: 'assetId', amount: 1200n }],
-              nanoErgs: 120000n,
-            },
-          }),
-        },
+        getAddressBalanceTotal: async () => ({
+          confirmed: {
+            tokens: [{ tokenId: 'assetId', amount: 1200n }],
+            nanoErgs: 120000n,
+          },
+        }),
       } as any);
     });
 
