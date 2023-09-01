@@ -41,9 +41,8 @@ class ExplorerPermitHealthCheckParam extends AbstractPermitHealthCheckParam {
           ).toString('hex') === this.WID
         ) {
           RWTCount +=
-            (box as unknown as OutputInfo).assets?.find(
-              (token) => token.tokenId === this.RWT
-            )?.amount ?? 0n;
+            box.assets?.find((token) => token.tokenId === this.RWT)?.amount ??
+            0n;
         }
       });
 

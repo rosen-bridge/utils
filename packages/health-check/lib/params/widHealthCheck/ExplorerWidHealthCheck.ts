@@ -37,8 +37,10 @@ class ExplorerWidHealthCheckParam extends AbstractWidHealthCheckParam {
       );
 
       // Finding the legit repo box
-      const repoBox = boxes.items?.find(
-        (box) => (box as any).assets[0].tokenId === this.rwtRepoNft
+      const repoBox = boxes.items?.find((box) =>
+        box.assets && box.assets.length > 0
+          ? box.assets[0].tokenId === this.rwtRepoNft
+          : false
       );
       if (repoBox) {
         // Extracting WID list
