@@ -12,6 +12,7 @@ export class CardanoOgmiosRosenExtractor extends AbstractRosenDataExtractor<TxBa
    * @param transaction the lock transaction in Koios format
    */
   get = (transaction: TxBabbage): RosenData | undefined => {
+    const baseError = `No rosen data found for tx [${transaction.id}]`;
     const metadata = transaction.metadata;
     try {
       if (metadata !== null) {
@@ -52,9 +53,22 @@ export class CardanoOgmiosRosenExtractor extends AbstractRosenDataExtractor<TxBa
                 };
               }
             }
-          }
-        }
-      }
+            this.logger.debug(
+              baseError + `: No valid transformation found in any output boxes`
+            );
+          } else
+            this.logger.debug(
+              baseError +
+                `: Incomplete metadata: ${Utils.JsonBI.stringify(metadata)}`
+            );
+        } else
+          this.logger.debug(
+            baseError + `: Invalid blob: ${Utils.JsonBI.stringify(metadata)}`
+          );
+      } else
+        this.logger.debug(
+          baseError + `: Invalid metadata: ${Utils.JsonBI.stringify(metadata)}`
+        );
     } catch (e) {
       this.logger.debug(
         `An error occurred while getting Cardano rosen data from Ogmios: ${e}`
@@ -113,6 +127,13 @@ export class CardanoOgmiosRosenExtractor extends AbstractRosenDataExtractor<TxBa
         to: this.tokens.getID(lovelace[0], toChain),
         amount: box.value.coins.toString(),
       };
-    } else return undefined;
+    } else {
+      this.logger.debug(
+        `No rosen asset transformation found for Ogmios box with assets: ${Utils.JsonBI.stringify(
+          box.value.assets
+        )}`
+      );
+      return undefined;
+    }
   };
 }

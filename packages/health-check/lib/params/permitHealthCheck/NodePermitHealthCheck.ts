@@ -5,7 +5,7 @@ import { ErgoTransactionOutput } from '@rosen-clients/ergo-node/dist/src/types/e
 
 class NodePermitHealthCheckParam extends AbstractPermitHealthCheckParam {
   private nodeApi;
-  private API_REQUEST_LIMIT = 100n;
+  private API_REQUEST_LIMIT = 100;
 
   constructor(
     RWT: string,
@@ -25,12 +25,12 @@ class NodePermitHealthCheckParam extends AbstractPermitHealthCheckParam {
   update = async () => {
     let RWTCount = 0n;
     let boxes = [],
-      offset = 0n;
+      offset = 0;
     do {
-      boxes = await this.nodeApi.blockchain.getBoxesByAddressUnspent(
-        this.permitAddress,
-        { offset: offset, limit: this.API_REQUEST_LIMIT }
-      );
+      boxes = await this.nodeApi.getBoxesByAddressUnspent(this.permitAddress, {
+        offset: offset,
+        limit: this.API_REQUEST_LIMIT,
+      });
 
       boxes.forEach((box) => {
         const R4 = (box as unknown as ErgoTransactionOutput)

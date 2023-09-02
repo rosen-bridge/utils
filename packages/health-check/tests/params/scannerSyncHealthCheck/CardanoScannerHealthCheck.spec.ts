@@ -24,13 +24,11 @@ describe('CardanoScannerHealthCheck', () => {
      */
     it('Should return the last available block in network', async () => {
       jest.mocked(cardanoKoiosClientFactory).mockReturnValue({
-        network: {
-          getTip: async () => [
-            {
-              block_no: 1115,
-            },
-          ],
-        },
+        getTip: async () => [
+          {
+            block_no: 1115,
+          },
+        ],
       } as any);
 
       const dataSource = await createDataSource();
