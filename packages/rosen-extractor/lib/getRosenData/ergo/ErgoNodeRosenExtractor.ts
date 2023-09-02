@@ -5,6 +5,7 @@ import { NodeOutputBox, NodeTransaction, TokenTransformation } from './types';
 import { RosenTokens } from '@rosen-bridge/tokens';
 import { Address, Constant } from 'ergo-lib-wasm-nodejs';
 import { AbstractLogger } from '@rosen-bridge/logger-interface';
+import Utils from '../Utils';
 
 export class ErgoNodeRosenExtractor extends AbstractRosenDataExtractor<NodeTransaction> {
   lockErgoTree: string;
@@ -25,8 +26,10 @@ export class ErgoNodeRosenExtractor extends AbstractRosenDataExtractor<NodeTrans
    * @param transaction the lock transaction in Node format
    */
   get = (transaction: NodeTransaction): RosenData | undefined => {
+    const baseError = `No rosen data found for tx [${transaction.id}]`;
     try {
       for (const box of transaction.outputs) {
+        const boxBaseError = `No rosen data found in box [${box.boxId}]`;
         if (box.ergoTree === this.lockErgoTree && box.additionalRegisters?.R4) {
           const R4 = Constant.decode_from_base16(box.additionalRegisters.R4);
           if (R4) {
@@ -51,10 +54,24 @@ export class ErgoNodeRosenExtractor extends AbstractRosenDataExtractor<NodeTrans
                   sourceTxId: transaction.id,
                 };
               }
-            }
+            } else
+              this.logger.debug(
+                boxBaseError +
+                  `: length of data in R4 is less than expected [${R4Serialized.length} < 5]`
+              );
           }
+        } else {
+          if (box.ergoTree !== this.lockErgoTree)
+            this.logger.debug(
+              boxBaseError +
+                `: invalid ergo tree [${box.ergoTree} !== ${this.lockErgoTree}]`
+            );
+          else this.logger.debug(boxBaseError + `: no R4`);
         }
       }
+      this.logger.debug(
+        baseError + `: No valid rosen data found in any output box registers`
+      );
     } catch (e) {
       this.logger.debug(
         `An error occurred while getting Ergo rosen data: ${e}`
@@ -100,6 +117,13 @@ export class ErgoNodeRosenExtractor extends AbstractRosenDataExtractor<NodeTrans
         to: this.tokens.getID(erg[0], toChain),
         amount: box.value,
       };
-    } else return undefined;
+    } else {
+      this.logger.debug(
+        `No rosen asset transformation found for box [${
+          box.boxId
+        }]: box assets: ${Utils.JsonBI.stringify(box.assets)}`
+      );
+      return undefined;
+    }
   };
 }

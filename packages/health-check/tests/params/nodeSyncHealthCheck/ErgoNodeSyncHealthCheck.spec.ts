@@ -100,37 +100,31 @@ describe('ErgoNodeSyncHealthCheckParam', () => {
      */
     it('should update all parameters correctly', async () => {
       jest.mocked(ergoNodeClientFactory).mockReturnValue({
-        info: {
-          getNodeInfo: async () => ({
-            headersHeight: 12345n,
-            fullHeight: 12300n,
-          }),
-        },
-        blocks: {
-          getLastHeaders: async () => [
-            {
-              timestamp: 1687161388456,
-            },
-          ],
-        },
-        peers: {
-          getConnectedPeers: async () => [
-            {
-              address: '127.0.0.1:5678',
-            },
-            {
-              address: '127.0.0.1:5679',
-            },
-          ],
-          getPeersSyncInfo: async () => [
-            {
-              height: 12350,
-            },
-            {
-              height: 12355,
-            },
-          ],
-        },
+        getNodeInfo: async () => ({
+          headersHeight: 12345n,
+          fullHeight: 12300n,
+        }),
+        getLastHeaders: async () => [
+          {
+            timestamp: 1687161388456,
+          },
+        ],
+        getConnectedPeers: async () => [
+          {
+            address: '127.0.0.1:5678',
+          },
+          {
+            address: '127.0.0.1:5679',
+          },
+        ],
+        getPeersSyncInfo: async () => [
+          {
+            height: 12350,
+          },
+          {
+            height: 12355,
+          },
+        ],
       } as any);
       jest.setSystemTime(1687167388456);
 

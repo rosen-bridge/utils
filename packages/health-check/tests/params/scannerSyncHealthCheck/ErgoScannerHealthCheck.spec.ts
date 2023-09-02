@@ -58,11 +58,9 @@ describe('ErgoScannerHealthCheck', () => {
      */
     it('Should return the last available block in network', async () => {
       jest.mocked(ergoNodeClientFactory).mockReturnValue({
-        info: {
-          getNodeInfo: async () => ({
-            fullHeight: 1115,
-          }),
-        },
+        getNodeInfo: async () => ({
+          fullHeight: 1115,
+        }),
       } as any);
 
       const dataSource = await createDataSource();

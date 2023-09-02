@@ -5,7 +5,7 @@ import { intersection } from 'lodash-es';
 
 class ExplorerWidHealthCheckParam extends AbstractWidHealthCheckParam {
   private explorerApi;
-  private API_REQUEST_LIMIT = 100n;
+  private API_REQUEST_LIMIT = 100;
 
   constructor(
     rwtRepoAddress: string,
@@ -29,7 +29,7 @@ class ExplorerWidHealthCheckParam extends AbstractWidHealthCheckParam {
     const tokenIdList = assets.tokens?.map((token) => token.tokenId);
 
     let total,
-      offset = 0n;
+      offset = 0;
     do {
       const boxes = await this.explorerApi.v1.getApiV1BoxesUnspentByaddressP1(
         this.rwtRepoAddress,
@@ -37,8 +37,10 @@ class ExplorerWidHealthCheckParam extends AbstractWidHealthCheckParam {
       );
 
       // Finding the legit repo box
-      const repoBox = boxes.items?.find(
-        (box) => (box as any).assets[0].tokenId === this.rwtRepoNft
+      const repoBox = boxes.items?.find((box) =>
+        box.assets && box.assets.length > 0
+          ? box.assets[0].tokenId === this.rwtRepoNft
+          : false
       );
       if (repoBox) {
         // Extracting WID list

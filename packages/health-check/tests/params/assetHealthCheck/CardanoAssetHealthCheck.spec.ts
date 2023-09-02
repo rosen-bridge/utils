@@ -19,18 +19,16 @@ describe('CardanoAssetHealthCheck', () => {
      */
     it('Should update the token amount using koios api', async () => {
       jest.mocked(cardanoKoiosClientFactory).mockReturnValue({
-        address: {
-          postAddressAssets: async () => [
-            {
-              asset_list: [
-                {
-                  fingerprint: 'assetId',
-                  quantity: '1200',
-                },
-              ],
-            },
-          ],
-        },
+        postAddressAssets: async () => [
+          {
+            asset_list: [
+              {
+                fingerprint: 'assetId',
+                quantity: '1200',
+              },
+            ],
+          },
+        ],
       } as any);
       const assetHealthCheckParam = new TestCardanoAssetHealthCheck(
         'assetId',
@@ -59,13 +57,11 @@ describe('CardanoAssetHealthCheck', () => {
    */
   it('Should update the ada amount using koios api', async () => {
     jest.mocked(cardanoKoiosClientFactory).mockReturnValue({
-      address: {
-        postAddressInfo: async () => [
-          {
-            balance: 120000n,
-          },
-        ],
-      },
+      postAddressInfo: async () => [
+        {
+          balance: 120000n,
+        },
+      ],
     } as any);
     const assetHealthCheckParam = new TestCardanoAssetHealthCheck(
       CARDANO_NATIVE_ASSET,
