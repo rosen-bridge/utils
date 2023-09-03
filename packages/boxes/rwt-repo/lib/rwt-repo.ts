@@ -1,6 +1,6 @@
-import { AbstractLogger } from '@rosen-bridge/logger-interface';
+import { AbstractLogger, DummyLogger } from '@rosen-bridge/logger-interface';
 
-export class RWTRepo {
+export class RWTRepoBuilder {
   constructor(
     private repoAddress: string,
     private repoNft: string,
@@ -13,19 +13,19 @@ export class RWTRepo {
     private maximumApproval: number,
     private ergCollateral: bigint,
     private rsnCollateral: bigint,
-    private widPermits?: Array<{ wid: string; rwtCount: bigint }>,
-    private logger?: AbstractLogger
+    private widPermits: Array<{ wid: string; rwtCount: bigint }>,
+    private logger: AbstractLogger = new DummyLogger()
   ) {}
 }
 
-export class RWTRepoBuilder {
+export class RWTRepo {
   constructor(
     private repoAddress: string,
     private repoNft: string,
     private rwt: string,
     private networkType: ErgoNetworkType,
     private networkUrl: string,
-    private logger?: AbstractLogger
+    private logger: AbstractLogger = new DummyLogger()
   ) {}
 }
 
