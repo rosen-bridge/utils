@@ -31,7 +31,8 @@
   "dependencies": {
     "@rosen-bridge/logger-interface": "^0.1.0",
     "@rosen-clients/ergo-explorer": "^1.0.2",
-    "@rosen-clients/ergo-node": "^1.0.2"
+    "@rosen-clients/ergo-node": "^1.0.2",
+    "@rosen-bridge/scanner": "^2.1.4"
   },
   "engines": {
     "node": ">=18.16.1"

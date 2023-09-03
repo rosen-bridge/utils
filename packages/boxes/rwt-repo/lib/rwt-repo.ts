@@ -1,6 +1,7 @@
 import { AbstractLogger, DummyLogger } from '@rosen-bridge/logger-interface';
 import ergoExplorerClientFactory from '@rosen-clients/ergo-explorer';
 import ergoNodeClientFactory from '@rosen-clients/ergo-node';
+import { ErgoNetworkType } from '@rosen-bridge/scanner';
 
 export class RWTRepoBuilder {
   constructor(
@@ -73,9 +74,4 @@ export class RWTRepo {
 
     return repoBoxes[0];
   }
-}
-
-export enum ErgoNetworkType {
-  Node,
-  Explorer,
 }
