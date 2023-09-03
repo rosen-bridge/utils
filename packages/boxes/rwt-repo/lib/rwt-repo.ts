@@ -1,4 +1,5 @@
 import { AbstractLogger, DummyLogger } from '@rosen-bridge/logger-interface';
+import { ErgoNetworkType } from '@rosen-bridge/scanner';
 
 export class RWTRepoBuilder {
   constructor(
@@ -27,9 +28,4 @@ export class RWTRepo {
     private networkUrl: string,
     private logger: AbstractLogger = new DummyLogger()
   ) {}
-}
-
-export enum ErgoNetworkType {
-  Node,
-  Explorer,
 }
