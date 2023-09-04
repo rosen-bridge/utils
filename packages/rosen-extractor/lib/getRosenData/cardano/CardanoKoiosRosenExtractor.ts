@@ -8,6 +8,7 @@ import {
   TokenTransformation,
   Utxo,
 } from './types';
+import Utils from '../Utils';
 
 export class CardanoKoiosRosenExtractor extends AbstractRosenDataExtractor<KoiosTransaction> {
   /**
@@ -15,6 +16,7 @@ export class CardanoKoiosRosenExtractor extends AbstractRosenDataExtractor<Koios
    * @param transaction the lock transaction in Koios format
    */
   get = (transaction: KoiosTransaction): RosenData | undefined => {
+    const baseError = `No rosen data found for tx [${transaction.tx_hash}]`;
     const metadata = transaction.metadata;
     try {
       if (metadata && Object.prototype.hasOwnProperty.call(metadata, '0')) {
@@ -51,8 +53,20 @@ export class CardanoKoiosRosenExtractor extends AbstractRosenDataExtractor<Koios
               };
             }
           }
-        }
-      }
+          this.logger.debug(
+            baseError + `: No valid transformation found in any output boxes`
+          );
+        } else
+          this.logger.debug(
+            baseError +
+              `: Incomplete metadata. isPlain: ${isPlainObject(
+                data
+              )}, data: ${Utils.JsonBI.stringify(data)}`
+          );
+      } else
+        this.logger.debug(
+          baseError + `: Invalid metadata: ${Utils.JsonBI.stringify(metadata)}`
+        );
     } catch (e) {
       this.logger.debug(
         `An error occurred while getting Cardano rosen data from Koios: ${e}`
@@ -99,6 +113,13 @@ export class CardanoKoiosRosenExtractor extends AbstractRosenDataExtractor<Koios
         to: this.tokens.getID(lovelace[0], toChain),
         amount: box.value,
       };
-    } else return undefined;
+    } else {
+      this.logger.debug(
+        `No rosen asset transformation found for box [${box.tx_hash}.${
+          box.tx_index
+        }]: box assets: ${Utils.JsonBI.stringify(box.asset_list)}`
+      );
+      return undefined;
+    }
   };
 }
