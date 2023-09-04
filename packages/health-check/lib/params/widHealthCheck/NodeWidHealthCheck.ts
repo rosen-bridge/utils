@@ -1,6 +1,5 @@
 import ergoNodeClientFactory from '@rosen-clients/ergo-node';
 import * as wasm from 'ergo-lib-wasm-nodejs';
-import { ErgoTransactionOutput } from '@rosen-clients/ergo-node/dist/src/types/ergoTransactionOutput.d';
 import { AbstractWidHealthCheckParam } from './AbstractWidHealthCheck';
 import { intersection } from 'lodash-es';
 
@@ -34,15 +33,13 @@ class NodeWidHealthCheckParam extends AbstractWidHealthCheckParam {
       });
 
       const repoBox = boxes?.find(
-        (box) => (box as any).assets?.[0].tokenId === this.rwtRepoNft
+        (box) => box.assets?.[0].tokenId === this.rwtRepoNft
       );
 
       if (repoBox) {
         // Extracting WID list
         const widList = wasm.Constant.decode_from_base16(
-          (repoBox as unknown as ErgoTransactionOutput).additionalRegisters[
-            'R4'
-          ]
+          repoBox.additionalRegisters['R4']
         )
           .to_js()
           .map((register: Uint8Array) => Buffer.from(register).toString('hex'));
