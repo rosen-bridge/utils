@@ -81,7 +81,7 @@ describe('selectCardanoUtxos', () => {
 
     // Check returned value
     expect(result.covered).toEqual(false);
-    expect(result.boxes).toEqual(expect.arrayContaining(utxos.slice(0, 2)));
+    expect(result.boxes).toEqual(utxos.slice(0, 2));
   });
 
   /**
@@ -122,7 +122,7 @@ describe('selectCardanoUtxos', () => {
 
     // Check returned value
     expect(result.covered).toEqual(false);
-    expect(result.boxes).toEqual(expect.arrayContaining(utxos.slice(0, 1)));
+    expect(result.boxes).toEqual(utxos.slice(0, 1));
   });
 
   /**
@@ -162,7 +162,7 @@ describe('selectCardanoUtxos', () => {
 
     // Check returned value
     expect(result.covered).toEqual(true);
-    expect(result.boxes).toEqual(expect.arrayContaining(utxos.slice(0, 11)));
+    expect(result.boxes).toEqual(utxos.slice(0, 11));
   });
 
   /**
@@ -202,7 +202,7 @@ describe('selectCardanoUtxos', () => {
 
     // Check returned value
     expect(result.covered).toEqual(false);
-    expect(result.boxes).toEqual(expect.arrayContaining(utxos));
+    expect(result.boxes).toEqual(utxos);
   });
 
   /**
@@ -327,7 +327,7 @@ describe('selectCardanoUtxos', () => {
 
     // Check returned value
     expect(result.covered).toEqual(false);
-    expect(result.boxes).toEqual(expect.arrayContaining(utxos.slice(1, 3)));
+    expect(result.boxes).toEqual([utxos[2], utxos[1]]);
   });
 
   /**
