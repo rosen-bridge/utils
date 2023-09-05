@@ -1,7 +1,6 @@
 import { AbstractLogger, DummyLogger } from '@rosen-bridge/logger-interface';
 import { ErgoNetworkType } from '@rosen-bridge/scanner';
 import ergoExplorerClientFactory from '@rosen-clients/ergo-explorer';
-import { UOutputInfo } from '@rosen-clients/ergo-explorer/dist/src/v0/types';
 import ergoNodeClientFactory from '@rosen-clients/ergo-node';
 import { Address, ErgoBox } from 'ergo-lib-wasm-nodejs';
 import { jsonBigInt } from './utils';
