@@ -6,6 +6,13 @@ describe('selectCardanoUtxos', () => {
   const tokenId1 = testData.tokenId1;
   const emptyTrackMap = testData.emptyMap;
 
+  const createMockedGeneratorFunction = (boxes: Array<CardanoUtxo>) => {
+    const mockedGenerator = jest.fn();
+    mockedGenerator.mockResolvedValue(undefined);
+    boxes.forEach((box) => mockedGenerator.mockResolvedValueOnce(box));
+    return mockedGenerator;
+  };
+
   /**
    * @target selectCardanoUtxos should return enough boxes
    * as covered when boxes cover required assets
@@ -20,10 +27,7 @@ describe('selectCardanoUtxos', () => {
    */
   it('should return enough boxes as covered when boxes cover required assets', async () => {
     // Mock a function to return 2 boxes
-    const mockedGetAddressUtxos = jest.fn();
-    mockedGetAddressUtxos
-      .mockResolvedValue([])
-      .mockResolvedValueOnce(utxos.slice(0, 2));
+    const nextUtxo = createMockedGeneratorFunction(utxos.slice(0, 2));
 
     // Mock an AssetBalance object with assets less than box assets
     const requiredAssets: AssetBalance = {
@@ -33,11 +37,10 @@ describe('selectCardanoUtxos', () => {
 
     // Run test
     const result = await selectCardanoUtxos(
-      '',
       requiredAssets,
       [],
       emptyTrackMap,
-      mockedGetAddressUtxos
+      nextUtxo
     );
 
     // Check returned value
@@ -59,10 +62,7 @@ describe('selectCardanoUtxos', () => {
    */
   it('should return all boxes as NOT covered when boxes do NOT cover required assets', async () => {
     // Mock a function to return 2 boxes
-    const mockedGetAddressUtxos = jest.fn();
-    mockedGetAddressUtxos
-      .mockResolvedValue([])
-      .mockResolvedValueOnce(utxos.slice(0, 2));
+    const nextUtxo = createMockedGeneratorFunction(utxos.slice(0, 2));
 
     // Mock an AssetBalance object with assets more than box assets
     const requiredAssets: AssetBalance = {
@@ -72,11 +72,10 @@ describe('selectCardanoUtxos', () => {
 
     // Run test
     const result = await selectCardanoUtxos(
-      '',
       requiredAssets,
       [],
       emptyTrackMap,
-      mockedGetAddressUtxos
+      nextUtxo
     );
 
     // Check returned value
@@ -100,10 +99,7 @@ describe('selectCardanoUtxos', () => {
   it('should return all useful boxes as NOT covered when boxes do NOT cover required tokens', async () => {
     // Mock a function to return 2 boxes
     //  (second box doesn't contain required token)
-    const mockedGetAddressUtxos = jest.fn();
-    mockedGetAddressUtxos
-      .mockResolvedValue([])
-      .mockResolvedValueOnce(utxos.slice(0, 2));
+    const nextUtxo = createMockedGeneratorFunction(utxos.slice(0, 2));
 
     // Mock an AssetBalance object with tokens more than box tokens
     const requiredAssets: AssetBalance = {
@@ -113,11 +109,10 @@ describe('selectCardanoUtxos', () => {
 
     // Run test
     const result = await selectCardanoUtxos(
-      '',
       requiredAssets,
       [],
       emptyTrackMap,
-      mockedGetAddressUtxos
+      nextUtxo
     );
 
     // Check returned value
@@ -139,11 +134,7 @@ describe('selectCardanoUtxos', () => {
    */
   it('should return enough boxes as covered when two pages boxes cover required assets', async () => {
     // Mock a function to return 12 boxes
-    const mockedGetAddressUtxos = jest.fn();
-    mockedGetAddressUtxos
-      .mockResolvedValue([])
-      .mockResolvedValueOnce(utxos.slice(0, 10))
-      .mockResolvedValueOnce(utxos.slice(10, 12));
+    const nextUtxo = createMockedGeneratorFunction(utxos.slice(0, 12));
 
     // Mock an AssetBalance object with assets less than box assets
     const requiredAssets: AssetBalance = {
@@ -153,11 +144,10 @@ describe('selectCardanoUtxos', () => {
 
     // Run test
     const result = await selectCardanoUtxos(
-      '',
       requiredAssets,
       [],
       emptyTrackMap,
-      mockedGetAddressUtxos
+      nextUtxo
     );
 
     // Check returned value
@@ -179,11 +169,7 @@ describe('selectCardanoUtxos', () => {
    */
   it('should return all boxes as NOT covered when two pages boxes do NOT cover required assets', async () => {
     // Mock a function to return 12 boxes
-    const mockedGetAddressUtxos = jest.fn();
-    mockedGetAddressUtxos
-      .mockResolvedValue([])
-      .mockResolvedValueOnce(utxos.slice(0, 10))
-      .mockResolvedValueOnce(utxos.slice(10, 12));
+    const nextUtxo = createMockedGeneratorFunction(utxos.slice(0, 12));
 
     // Mock an AssetBalance object with assets more than box assets
     const requiredAssets: AssetBalance = {
@@ -193,11 +179,10 @@ describe('selectCardanoUtxos', () => {
 
     // Run test
     const result = await selectCardanoUtxos(
-      '',
       requiredAssets,
       [],
       emptyTrackMap,
-      mockedGetAddressUtxos
+      nextUtxo
     );
 
     // Check returned value
@@ -219,8 +204,7 @@ describe('selectCardanoUtxos', () => {
    */
   it('should return no boxes as NOT covered when address has no boxes', async () => {
     // Mock a function to return NO boxes
-    const mockedGetAddressUtxos = jest.fn();
-    mockedGetAddressUtxos.mockResolvedValue([]);
+    const nextUtxo = createMockedGeneratorFunction([]);
 
     // Mock an AssetBalance object with some assets
     const requiredAssets: AssetBalance = {
@@ -230,11 +214,10 @@ describe('selectCardanoUtxos', () => {
 
     // Run test
     const result = await selectCardanoUtxos(
-      '',
       requiredAssets,
       [],
       emptyTrackMap,
-      mockedGetAddressUtxos
+      nextUtxo
     );
 
     // Check returned value
@@ -257,10 +240,7 @@ describe('selectCardanoUtxos', () => {
    */
   it('should return enough boxes as covered when tracked boxes cover required assets', async () => {
     // Mock a function to return 2 boxes
-    const mockedGetAddressUtxos = jest.fn();
-    mockedGetAddressUtxos
-      .mockResolvedValue([])
-      .mockResolvedValueOnce(utxos.slice(0, 2));
+    const nextUtxo = createMockedGeneratorFunction(utxos.slice(0, 2));
 
     // Mock a Map to track first box to a new box
     const trackMap = new Map<string, CardanoUtxo>();
@@ -274,11 +254,10 @@ describe('selectCardanoUtxos', () => {
 
     // Run test
     const result = await selectCardanoUtxos(
-      '',
       requiredAssets,
       [],
       trackMap,
-      mockedGetAddressUtxos
+      nextUtxo
     );
 
     // Check returned value
@@ -301,10 +280,7 @@ describe('selectCardanoUtxos', () => {
    */
   it('should return all boxes as NOT covered when tracked boxes do NOT cover required assets', async () => {
     // Mock a function to return 2 boxes
-    const mockedGetAddressUtxos = jest.fn();
-    mockedGetAddressUtxos
-      .mockResolvedValue([])
-      .mockResolvedValueOnce(utxos.slice(0, 2));
+    const nextUtxo = createMockedGeneratorFunction(utxos.slice(0, 2));
 
     // Mock a Map to track first box to a new box
     const trackMap = new Map<string, CardanoUtxo>();
@@ -318,11 +294,10 @@ describe('selectCardanoUtxos', () => {
 
     // Run test
     const result = await selectCardanoUtxos(
-      '',
       requiredAssets,
       [],
       trackMap,
-      mockedGetAddressUtxos
+      nextUtxo
     );
 
     // Check returned value
@@ -345,10 +320,7 @@ describe('selectCardanoUtxos', () => {
    */
   it('should return second box as covered when first box is not allowed', async () => {
     // Mock a function to return 2 boxes
-    const mockedGetAddressUtxos = jest.fn();
-    mockedGetAddressUtxos
-      .mockResolvedValue([])
-      .mockResolvedValueOnce(utxos.slice(0, 2));
+    const nextUtxo = createMockedGeneratorFunction(utxos.slice(0, 2));
 
     // Mock first box as forbidden
     const forbiddenIds = [`${utxos[0].txId}.${utxos[0].index}`];
@@ -361,11 +333,10 @@ describe('selectCardanoUtxos', () => {
 
     // Run test
     const result = await selectCardanoUtxos(
-      '',
       requiredAssets,
       forbiddenIds,
       emptyTrackMap,
-      mockedGetAddressUtxos
+      nextUtxo
     );
 
     // Check returned value
@@ -388,10 +359,7 @@ describe('selectCardanoUtxos', () => {
    */
   it('should return no boxes as NOT covered when tracking ends to no box', async () => {
     // Mock a function to return one box
-    const mockedGetAddressUtxos = jest.fn();
-    mockedGetAddressUtxos
-      .mockResolvedValue([])
-      .mockResolvedValueOnce(utxos.slice(0, 1));
+    const nextUtxo = createMockedGeneratorFunction(utxos.slice(0, 1));
 
     // Mock a Map to track first box to no box
     const trackMap = new Map<string, CardanoUtxo | undefined>();
@@ -405,11 +373,10 @@ describe('selectCardanoUtxos', () => {
 
     // Run test
     const result = await selectCardanoUtxos(
-      '',
       requiredAssets,
       [],
       trackMap,
-      mockedGetAddressUtxos
+      nextUtxo
     );
 
     // Check returned value
