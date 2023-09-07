@@ -1,7 +1,6 @@
 import ergoNodeClientFactory from '@rosen-clients/ergo-node';
 import * as wasm from 'ergo-lib-wasm-nodejs';
 import { AbstractPermitHealthCheckParam } from './AbstractPermitHealthCheck';
-import { ErgoTransactionOutput } from '@rosen-clients/ergo-node/dist/src/types/ergoTransactionOutput.d';
 
 class NodePermitHealthCheckParam extends AbstractPermitHealthCheckParam {
   private nodeApi;
@@ -33,8 +32,7 @@ class NodePermitHealthCheckParam extends AbstractPermitHealthCheckParam {
       });
 
       boxes.forEach((box) => {
-        const R4 = (box as unknown as ErgoTransactionOutput)
-          .additionalRegisters['R4'];
+        const R4 = box.additionalRegisters['R4'];
         if (
           R4 &&
           Buffer.from(wasm.Constant.decode_from_base16(R4).to_js()[0]).toString(
@@ -42,9 +40,8 @@ class NodePermitHealthCheckParam extends AbstractPermitHealthCheckParam {
           ) === this.WID
         ) {
           RWTCount +=
-            (box as unknown as ErgoTransactionOutput).assets?.find(
-              (token) => token.tokenId === this.RWT
-            )?.amount ?? 0n;
+            box.assets?.find((token) => token.tokenId === this.RWT)?.amount ??
+            0n;
         }
       });
 
