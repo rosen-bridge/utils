@@ -25,6 +25,8 @@ export class RWTRepoBuilder {
 
 export class RWTRepo {
   protected box?: ErgoBox;
+  private explorerClient: ReturnType<typeof ergoExplorerClientFactory>;
+  private nodeClient: ReturnType<typeof ergoNodeClientFactory>;
 
   constructor(
     private repoAddress: string,
@@ -33,7 +35,10 @@ export class RWTRepo {
     private networkType: ErgoNetworkType,
     private networkUrl: string,
     private logger: AbstractLogger = new DummyLogger()
-  ) {}
+  ) {
+    this.explorerClient = ergoExplorerClientFactory(this.networkUrl);
+    this.nodeClient = ergoNodeClientFactory(this.networkUrl);
+  }
 
   /**
    * fetches and updates this.box with unspent box info for this.repoAddress and
@@ -88,13 +93,11 @@ export class RWTRepo {
    * @memberof RWTRepo
    */
   private async getBoxFromExplorer() {
-    const explorer = ergoExplorerClientFactory(this.networkUrl);
-
     if (this.box) {
-      const currentBoxInfo = await explorer.v1.getApiV1BoxesP1(
-        this.box.box_id.toString()
+      const currentBoxInfo = await this.explorerClient.v1.getApiV1BoxesP1(
+        this.box.box_id().to_str()
       );
-      if (currentBoxInfo.spentTransactionId === undefined) {
+      if (!currentBoxInfo.spentTransactionId) {
         this.logger.info(
           `from explorer api, box with id "${this.box.box_id}" is still unspent and didn't need to be updated: repo-address->"${this.repoAddress}" --- repo-nft->"${this.repoNft}"`
         );
@@ -102,9 +105,10 @@ export class RWTRepo {
       }
     }
 
-    const itemsInfo = await explorer.v1.getApiV1BoxesUnspentByaddressP1(
-      this.repoAddress
-    );
+    const itemsInfo =
+      await this.explorerClient.v1.getApiV1BoxesUnspentByaddressP1(
+        this.repoAddress
+      );
 
     const rwtBoxInfos = itemsInfo.items?.filter((item) =>
       item.assets?.some((asset) => asset.tokenId === this.repoNft)
@@ -135,11 +139,10 @@ export class RWTRepo {
    * @memberof RWTRepo
    */
   private async getBoxFromExplorerMempool() {
-    const explorer = ergoExplorerClientFactory(this.networkUrl);
-
-    const txs = await explorer.v0.getApiV0TransactionsUnconfirmedByaddressP1(
-      this.repoAddress
-    );
+    const txs =
+      await this.explorerClient.v0.getApiV0TransactionsUnconfirmedByaddressP1(
+        this.repoAddress
+      );
 
     const inputBoxIds = txs.items?.flatMap(
       (item) => item.inputs?.map((input) => input.id) || []
@@ -183,11 +186,11 @@ export class RWTRepo {
    * @memberof RWTRepo
    */
   private async getBoxFromNode() {
-    const node = ergoNodeClientFactory(this.networkUrl);
-
     if (this.box) {
-      const boxState = await node.getBoxById(this.box.box_id.toString());
-      if (boxState.spentTransactionId === undefined) {
+      const boxState = await this.nodeClient.getBoxById(
+        this.box.box_id().to_str()
+      );
+      if (!boxState.spentTransactionId) {
         this.logger.info(
           `from node api, box "${this.box.box_id}" is still unspent and didn't need to update: repo-address->"${this.repoAddress}" --- repo-nft->"${this.repoNft}"`
         );
@@ -195,7 +198,9 @@ export class RWTRepo {
       }
     }
 
-    const boxInfos = await node.getBoxesByAddressUnspent(this.repoAddress);
+    const boxInfos = await this.nodeClient.getBoxesByAddressUnspent(
+      this.repoAddress
+    );
     const rwtBoxInfos = boxInfos.filter((boxInfo) =>
       boxInfo.assets?.some((asset) => asset.tokenId === this.repoNft)
     );
@@ -225,10 +230,8 @@ export class RWTRepo {
    * @memberof RWTRepo
    */
   private async getBoxFromNodeMempool() {
-    const node = ergoNodeClientFactory(this.networkUrl);
-
     const repoErgoTree = Address.from_base58(this.repoAddress).to_ergo_tree();
-    const txs = await node.getUnconfirmedTransactionsByErgoTree(
+    const txs = await this.nodeClient.getUnconfirmedTransactionsByErgoTree(
       repoErgoTree.to_base16_bytes()
     );
 
