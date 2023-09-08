@@ -25,7 +25,6 @@ export const getUtxoInfo = (utxo: CardanoUtxo): BoxInfo => {
  * @param forbiddenBoxIds the id of forbidden boxes
  * @param trackMap the mapping of a box id to it's next box
  * @param nextUtxo a generator function to get utxo
- * @param apiLimit the limit which is passing to generator function
  * @param logger
  * @returns an object containing the selected boxes with a boolean showing if requirements covered or not
  */
@@ -45,7 +44,6 @@ export const selectCardanoUtxos = async (
     return uncoveredTokens.length > 0 || uncoveredNativeToken > 0n;
   };
 
-  const offset = 0;
   const result: Array<CardanoUtxo> = [];
 
   // get boxes until requirements are satisfied
