@@ -10,7 +10,7 @@
     "build": "tsc --build tsconfig.build.json",
     "type-check": "tsc --noEmit",
     "test": "jest",
-    "coverage": "echo no coverage tests yet",
+    "coverage": "jest --coverage",
     "release": "npm run test && npm run build && npm publish --access public"
   },
   "repository": {
