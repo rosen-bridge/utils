@@ -28,6 +28,10 @@
     "prettier": "3.0.3",
     "typescript": "^5.2.2"
   },
+  "dependencies": {
+    "@rosen-bridge/logger-interface": "^0.1.0",
+    "@rosen-bridge/scanner": "^2.1.4"
+  },
   "engines": {
     "node": ">=18.16.1"
   }
