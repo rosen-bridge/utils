@@ -1,9 +1,7 @@
 {
-  "name": "@rosen-bridge/health-check",
-  "version": "1.1.4",
-  "description": "Typescript library to check healthy status of rosen services",
-  "author": "Rosen Team",
-  "license": "GPL-3.0",
+  "name": "@rosen-bridge/cardano-utxo-selection",
+  "version": "0.1.0",
+  "description": "Typescript package to select enough Cardano utxos for required amount of assets",
   "main": "dist/lib/index.js",
   "types": "dist/lib/index.d.ts",
   "type": "module",
@@ -19,6 +17,7 @@
   "files": [
     "dist"
   ],
+  "license": "GPL-3.0",
   "devDependencies": {
     "@types/jest": "^29.5.1",
     "@types/node": "^18.16.3",
@@ -28,7 +27,6 @@
     "eslint-config-prettier": "^8.8.0",
     "jest": "^29.5.0",
     "prettier": "^2.8.8",
-    "sqlite": "^5.0.1",
     "typescript": "^5.0.4"
   },
   "directories": {
@@ -39,12 +37,6 @@
     "rosen"
   ],
   "dependencies": {
-    "@cardano-ogmios/client": "^5.6.0",
-    "@rosen-bridge/logger-interface": "^0.1.0",
-    "@rosen-bridge/scanner": "^2.1.6",
-    "@rosen-clients/cardano-koios": "^1.0.3",
-    "@rosen-clients/ergo-explorer": "^1.0.2",
-    "@rosen-clients/ergo-node": "^1.0.3",
-    "lodash": "^4.17.21"
+    "@rosen-bridge/logger-interface": "^0.1.0"
   }
 }
