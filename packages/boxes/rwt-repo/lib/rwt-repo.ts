@@ -99,7 +99,11 @@ export class RWTRepo {
       );
       if (!currentBoxInfo.spentTransactionId) {
         this.logger.info(
-          `from explorer api, box with id "${this.box.box_id}" is still unspent and didn't need to be updated: repo-address->"${this.repoAddress}" --- repo-nft->"${this.repoNft}"`
+          `from explorer api, box with id "${this.box
+            .box_id()
+            .to_str()}" is still unspent and didn't need to be updated: repo-address->"${
+            this.repoAddress
+          }" --- repo-nft->"${this.repoNft}"`
         );
         return this.box;
       }
@@ -124,7 +128,11 @@ export class RWTRepo {
     const box = ErgoBox.from_json(jsonBigInt.stringify(rwtBoxInfos[0]));
     this.box = box;
     this.logger.info(
-      `box updated from explorer api: repo-address->"${this.repoAddress}" --- repo-nft->"${this.repoNft}"`
+      `box updated from explorer api: boxId->"${this.box
+        ?.box_id()
+        .to_str()}" --- repo-address->"${this.repoAddress}" --- repo-nft->"${
+        this.repoNft
+      }"`
     );
     return this.box;
   }
@@ -171,7 +179,11 @@ export class RWTRepo {
     const box = ErgoBox.from_json(jsonBigInt.stringify(outputBoxInfos[0]));
     this.box = box;
     this.logger.info(
-      `box updated from explorer mempool: repo-address->"${this.repoAddress}" --- repo-nft->"${this.repoNft}"`
+      `box updated from explorer mempool: boxId->"${this.box
+        ?.box_id()
+        .to_str()}" --- repo-address->"${this.repoAddress}" --- repo-nft->"${
+        this.repoNft
+      }"`
     );
     return box;
   }
@@ -215,7 +227,11 @@ export class RWTRepo {
     const box = ErgoBox.from_json(jsonBigInt.stringify(rwtBoxInfos[0]));
     this.box = box;
     this.logger.info(
-      `box updated from node api: repo-address->"${this.repoAddress}" --- repo-nft->"${this.repoNft}"`
+      `box updated from node api: boxId->"${this.box
+        ?.box_id()
+        .to_str()}" --- repo-address->"${this.repoAddress}" --- repo-nft->"${
+        this.repoNft
+      }"`
     );
     return box;
   }
@@ -261,7 +277,11 @@ export class RWTRepo {
     const box = ErgoBox.from_json(jsonBigInt.stringify(rwtOutputBoxInfos[0]));
     this.box = box;
     this.logger.info(
-      `box updated from node mempool: repo-address->"${this.repoAddress}" --- repo-nft->"${this.repoNft}"`
+      `box updated from node mempool: boxId->"${this.box
+        ?.box_id()
+        .to_str()}" --- repo-address->"${this.repoAddress}" --- repo-nft->"${
+        this.repoNft
+      }"`
     );
     return box;
   }
