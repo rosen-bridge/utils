@@ -55,7 +55,7 @@ export class RWTRepo {
     if (this.networkType === ErgoNetworkType.Explorer) {
       if (trackMempool) {
         this.logger.info(
-          `trying to update box from explorer mempool: repo-address->"${this.repoAddress}" --- repo-nft->"${this.repoNft}"`
+          `trying to update box from explorer mempool: ${this.rwtRepoLogDescription}`
         );
         if (await this.getBoxFromExplorerMempool()) {
           return;
@@ -63,13 +63,13 @@ export class RWTRepo {
       }
 
       this.logger.info(
-        `trying to update box from explorer api: repo-address->"${this.repoAddress}" --- repo-nft->"${this.repoNft}"`
+        `trying to update box from explorer api: ${this.rwtRepoLogDescription}`
       );
       await this.getBoxFromExplorer();
     } else {
       if (trackMempool) {
         this.logger.info(
-          `trying to update box from node mempool: repo-address->"${this.repoAddress}" --- repo-nft->"${this.repoNft}"`
+          `trying to update box from node mempool: ${this.rwtRepoLogDescription}`
         );
         if (await this.getBoxFromNodeMempool()) {
           return;
@@ -77,7 +77,7 @@ export class RWTRepo {
       }
 
       this.logger.info(
-        `trying to update box from node api: repo-address->"${this.repoAddress}" --- repo-nft->"${this.repoNft}"`
+        `trying to update box from node api: ${this.rwtRepoLogDescription}`
       );
       await this.getBoxFromNode();
     }
@@ -99,11 +99,7 @@ export class RWTRepo {
       );
       if (!currentBoxInfo.spentTransactionId) {
         this.logger.info(
-          `from explorer api, box with id "${this.box
-            .box_id()
-            .to_str()}" is still unspent and didn't need to be updated: repo-address->"${
-            this.repoAddress
-          }" --- repo-nft->"${this.repoNft}"`
+          `from explorer api, box is still unspent and didn't need to be updated: ${this.rwtRepoLogDescription}`
         );
         return this.box;
       }
@@ -120,7 +116,7 @@ export class RWTRepo {
 
     if (rwtBoxInfos === undefined || rwtBoxInfos.length <= 0) {
       this.logger.info(
-        `no unspent box found in explorer api: repo-repo-address->"${this.repoAddress}" --- repo-nft->"${this.repoNft}"`
+        `no unspent box found in explorer api: ${this.rwtRepoLogDescription}`
       );
       return undefined;
     }
@@ -128,11 +124,7 @@ export class RWTRepo {
     const box = ErgoBox.from_json(jsonBigInt.stringify(rwtBoxInfos[0]));
     this.box = box;
     this.logger.info(
-      `box updated from explorer api: boxId->"${this.box
-        ?.box_id()
-        .to_str()}" --- repo-address->"${this.repoAddress}" --- repo-nft->"${
-        this.repoNft
-      }"`
+      `box updated from explorer api: ${this.rwtRepoLogDescription}`
     );
     return this.box;
   }
@@ -171,7 +163,7 @@ export class RWTRepo {
 
     if (!outputBoxInfos || !outputBoxInfos.length) {
       this.logger.info(
-        `no box found in explorer mempool: repo-repo-address->"${this.repoAddress}" --- repo-nft->"${this.repoNft}"`
+        `no box found in explorer mempool: ${this.rwtRepoLogDescription}`
       );
       return undefined;
     }
@@ -179,11 +171,7 @@ export class RWTRepo {
     const box = ErgoBox.from_json(jsonBigInt.stringify(outputBoxInfos[0]));
     this.box = box;
     this.logger.info(
-      `box updated from explorer mempool: boxId->"${this.box
-        ?.box_id()
-        .to_str()}" --- repo-address->"${this.repoAddress}" --- repo-nft->"${
-        this.repoNft
-      }"`
+      `box updated from explorer mempool: ${this.rwtRepoLogDescription}`
     );
     return box;
   }
@@ -204,7 +192,7 @@ export class RWTRepo {
       );
       if (!boxState.spentTransactionId) {
         this.logger.info(
-          `from node api, box "${this.box.box_id}" is still unspent and didn't need to update: repo-address->"${this.repoAddress}" --- repo-nft->"${this.repoNft}"`
+          `from node api, box is still unspent and didn't need to be updated: ${this.rwtRepoLogDescription}`
         );
         return this.box;
       }
@@ -219,7 +207,7 @@ export class RWTRepo {
 
     if (rwtBoxInfos.length <= 0) {
       this.logger.info(
-        `no unspent box found in node api: repo-address->"${this.repoAddress}" --- repo-nft->"${this.repoNft}"`
+        `no unspent box found in node api: ${this.rwtRepoLogDescription}`
       );
       return undefined;
     }
@@ -227,11 +215,7 @@ export class RWTRepo {
     const box = ErgoBox.from_json(jsonBigInt.stringify(rwtBoxInfos[0]));
     this.box = box;
     this.logger.info(
-      `box updated from node api: boxId->"${this.box
-        ?.box_id()
-        .to_str()}" --- repo-address->"${this.repoAddress}" --- repo-nft->"${
-        this.repoNft
-      }"`
+      `box updated from node api: ${this.rwtRepoLogDescription}`
     );
     return box;
   }
@@ -269,7 +253,7 @@ export class RWTRepo {
 
     if (!rwtOutputBoxInfos.length) {
       this.logger.info(
-        `no box found in node mempool: repo-address->"${this.repoAddress}" --- repo-nft->"${this.repoNft}"`
+        `no box found in node mempool: ${this.rwtRepoLogDescription}`
       );
       return undefined;
     }
@@ -277,12 +261,57 @@ export class RWTRepo {
     const box = ErgoBox.from_json(jsonBigInt.stringify(rwtOutputBoxInfos[0]));
     this.box = box;
     this.logger.info(
-      `box updated from node mempool: boxId->"${this.box
-        ?.box_id()
-        .to_str()}" --- repo-address->"${this.repoAddress}" --- repo-nft->"${
-        this.repoNft
-      }"`
+      `box updated from node mempool: ${this.rwtRepoLogDescription}`
     );
     return box;
+  }
+
+  /**
+   * extract the value of ergCollateral from R6[4] of this.box. If this.box is
+   * undefined an exception is thrown
+   *
+   * @return {bigint}
+   * @memberof RWTRepo
+   */
+  getErgCollateral() {
+    if (!this.box) {
+      const error = new Error(
+        `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
+      );
+      this.logger.error(error.message);
+      throw error;
+    }
+
+    const ergCollateralRegister = (
+      this.box.register_value(6)?.to_i64_str_array() as string[] | undefined
+    )?.at(4);
+
+    if (!ergCollateralRegister) {
+      const error = new Error(
+        `could not extract ergCollateral from R6[4]: ${this.rwtRepoLogDescription} `
+      );
+      this.logger.error(error.message);
+      throw error;
+    }
+
+    return BigInt(ergCollateralRegister);
+  }
+
+  /**
+   * returns a string description of this instance's specs that can be used in
+   * logs.
+   *
+   * @readonly
+   * @private
+   * @memberof RWTRepo
+   */
+  private get rwtRepoLogDescription() {
+    if (this.box) {
+      return `boxId->"${this.box?.box_id().to_str()}" --- repo-address->"${
+        this.repoAddress
+      }" --- repo-nft->"${this.repoNft}"`;
+    } else {
+      return `repo-address->"${this.repoAddress}" --- repo-nft->"${this.repoNft}"`;
+    }
   }
 }
