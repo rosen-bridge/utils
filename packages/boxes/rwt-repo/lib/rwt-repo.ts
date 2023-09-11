@@ -298,6 +298,37 @@ export class RWTRepo {
   }
 
   /**
+   * extract the value of rsnCollateral from R6[5] of this.box. If this.box is
+   * undefined an exception is thrown
+   *
+   * @return {bigint}
+   * @memberof RWTRepo
+   */
+  getRsnCollateral() {
+    if (!this.box) {
+      const error = new Error(
+        `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
+      );
+      this.logger.error(error.message);
+      throw error;
+    }
+
+    const rsnCollateralRegister = (
+      this.box.register_value(6)?.to_i64_str_array() as string[] | undefined
+    )?.at(5);
+
+    if (!rsnCollateralRegister) {
+      const error = new Error(
+        `could not extract rsnCollateral from R6[5]: ${this.rwtRepoLogDescription} `
+      );
+      this.logger.error(error.message);
+      throw error;
+    }
+
+    return BigInt(rsnCollateralRegister);
+  }
+
+  /**
    * returns a string description of this instance's specs that can be used in
    * logs.
    *
