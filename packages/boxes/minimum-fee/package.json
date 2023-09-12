@@ -5,13 +5,14 @@
   "main": "dist/lib/index.js",
   "types": "dist/lib/index.d.ts",
   "type": "module",
+  "author": "Rosen Team",
   "scripts": {
     "prettify": "prettier --write . --ignore-path .gitignore",
     "lint": "eslint --fix . && npm run prettify",
     "build": "tsc",
     "type-check": "tsc --noEmit",
-    "test": "jest",
-    "coverage": "jest --coverage",
+    "test": "jest --passWithNoTests",
+    "coverage": "npm run test -- --coverage",
     "release": "npm run test && npm run build && npm publish --access public"
   },
   "repository": {
@@ -47,5 +48,8 @@
   },
   "keywords": [
     "rosen"
-  ]
+  ],
+  "engines": {
+    "node": ">=18.16.1"
+  }
 }
