@@ -3,7 +3,7 @@ import { ErgoNetworkType } from '@rosen-bridge/scanner';
 import ergoExplorerClientFactory from '@rosen-clients/ergo-explorer';
 import ergoNodeClientFactory from '@rosen-clients/ergo-node';
 import { Address, ErgoBox } from 'ergo-lib-wasm-nodejs';
-import { jsonBigInt } from './utils';
+import { jsonBigInt, min } from './utils';
 
 export class RWTRepoBuilder {
   constructor(
@@ -329,6 +329,71 @@ export class RWTRepo {
   }
 
   /**
+   * calculates and returns the value of requiredCommitmentCount according to
+   * this formula: min(R6[3], R6[1] * (len(R4) - 1) / 100 + R6[2])
+   *
+   * @return {bigint}
+   * @memberof RWTRepo
+   */
+  getRequiredCommitmentCount() {
+    if (!this.box) {
+      const error = new Error(
+        `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
+      );
+      this.logger.error(error.message);
+      throw error;
+    }
+
+    const r6_1 = this.r6At(1);
+    const r6_2 = this.r6At(2);
+    const r6_3 = this.r6At(3);
+    const r4 = this.r4;
+
+    if (!r6_1 || !r6_2 || !r6_3 || !r4) {
+      const error = new Error(
+        `could not calculate RequiredCommitmentCount, because R6[1] or R6[2] or R6[3] or R4 is undefined: ${this.rwtRepoLogDescription} `
+      );
+      this.logger.error(error.message);
+      throw error;
+    }
+
+    const requiredCommitmentCount = min(
+      (r6_1 * BigInt(r4.length - 1)) / 100n + r6_2,
+      r6_3
+    );
+
+    return requiredCommitmentCount;
+  }
+
+  /**
+   * returns the value at the specified index of the R6 register of this.box as
+   * a bigint
+   *
+   * @private
+   * @param {number} index
+   * @return {bigint | undefined}
+   * @memberof RWTRepo
+   */
+  private r6At(index: number) {
+    const val = (
+      this.box?.register_value(6)?.to_i64_str_array() as string[] | undefined
+    )?.at(index);
+
+    return val ? BigInt(val) : undefined;
+  }
+
+  /**
+   * pareses the R4 register of this.box which is a Coll[Coll[SByte]] and
+   * returns it as a Uint8Array[].
+   *
+   * @readonly
+   * @memberof RWTRepo
+   */
+  get r4() {
+    return this.box?.register_value(4)?.to_coll_coll_byte();
+  }
+
+  /**
    * returns a string description of this instance's specs that can be used in
    * logs.
    *
@@ -346,3 +411,17 @@ export class RWTRepo {
     }
   }
 }
+
+// const rwtRepo = new RWTRepo(
+//   '5qwczr7KdspNWq5dg6FZJZSDJ9YGcYDsCVi53E6M9gPamGjQTee9Zp5HLbJXQvWJ49ksh9Ao9YK3VcjHZjVVN2rP74YoYUwCo1xY25jJQRvmqF7tMJdUYAWxB1mg3U5xrcYy6oKhev7TNtnzgWW9831r6yx5B9jmBDj7FoC36s8y7DeKQPsG1HaZLBnyLyR8iKWRUeASSFg8QXMksZdE1ZgsnF218aEmjbeEmnj2DcjwQgatAhJKRzN24PNStzk2D41UL3Xe5FSTyVw7p3u6vXim2hDSKj3qAcGboaVv9SKayhbezzdYxiuKodcyggY63H39cUhgYFwHWahpNhVZBjWP4Q4yAm7ebxjfF2RFFjW8njZNGS1SERo5dqRZZcQ79faKeXmNkZ47TnHB8qQHhwxg4BVEWppfWUyoTbSFdBHGxZufej126i8P3QZaTT7Wi28iC8HA9xTj8ZT7A5facme2TGCFjVucYjRzPLd8PXHqjPq9hoAvUjRQi9pV6uppFppuhAPoNrCyi8JA2yTEcohaokoYLmRgp86QKW4AgCADJKhTczSoHz5wsDbbzTsGeoajPwPEosM2dDazqBobiuhnX5x1m4iegB4QWYJkeNWxPdXCWgxK3fTqGDhKdS6jja9nKUMtixmaLPrwLF22S61NcifoxwEfgTKT11UnmtGMCXkkTDkcreuGUkhZMAG7Kqy3MeuMvJin8f6fb6Mivr6A6ad6rqKChyPiFWr2YaeVbdeidGbQrW9FfjvYhRrTkwBBMcRac6eazjmVqYbe9Mqy1znj8t5PpdyndoGZHPmSbYo9ZF3ZTbjh9qT3kKPQ6TVc772NGyrYWaupPsbk7MJYTBZ5WWtnHbxQyqSLAEmeq4csX3pr5kcgQCoqkqY3UkgoFRBjsTDFp61FiAc6KdivhAh4AvWB5jAYKfqps6XwgQrCRqifD8XN6k6k41Cs6UeMU5FzH4fMqEwBTDyAsCigVaY7gz3eMdDrARc1Ec23rEYepqtuBeWe2ienoMgYazHwp27DvinbAyppFziYmf1n898UXpNqsD5ctyZxQ54n67mEXUAuYq7nJMEsTQpYSX9P4dh6qP9geDbYRbFwpN27gJG5HwqwhFwk1n4ytVxVrc7nHqUe86c5gPXb1DZTgJc9YC9b3yQhE6gcNk83Yn8vkrHvHXPE7wgzxQHgV1iMBtk8DkoFCBbHcd3X4MTskaSNKYcWgx4QPSf2GAg2xcsgRePe6ZKRuRLqoZ8dJKyZRc911UUxkY7qd4ZaBrp8ymmWy2s3mjbN3CY9uqXTLTdokNVUzdvAcrC8SKUAqbX567RN9TcuE5FmagD7RFpmy6eVME1MWSvdscheeoXWcvMCYPwVAvotnFrsypXmnZHXgEdNLQVsk19iNQKYG7Lxu51msGC7gKmVGaiifzrB',
+//   '32ee5d947cfe8db5480157ffa566b9b7d9faf41fa145c9d00628c7c1599878f6',
+//   '',
+//   ErgoNetworkType.Explorer,
+//   'https://api.ergoplatform.com/',
+// );
+
+// await rwtRepo.updateBox(false);
+// console.log(
+//   `#### commitmentCount: ${rwtRepo.r4
+//     ?.length} --- "${rwtRepo.getRequiredCommitmentCount()}"`,
+// );
