@@ -366,6 +366,35 @@ export class RWTRepo {
   }
 
   /**
+   * extract the value of commitmentRwtCount from R6[0] of this.box. If this.box
+   * is undefined an exception is thrown
+   *
+   * @return {bigint}
+   * @memberof RWTRepo
+   */
+  getCommitmentRwtCount() {
+    if (!this.box) {
+      const error = new Error(
+        `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
+      );
+      this.logger.error(error.message);
+      throw error;
+    }
+
+    const commitmentRwtCount = this.r6At(0);
+
+    if (!commitmentRwtCount) {
+      const error = new Error(
+        `could not extract commitmentRwtCount from R6[0]: ${this.rwtRepoLogDescription} `
+      );
+      this.logger.error(error.message);
+      throw error;
+    }
+
+    return commitmentRwtCount;
+  }
+
+  /**
    * returns the value at the specified index of the R6 register of this.box as
    * a bigint
    *

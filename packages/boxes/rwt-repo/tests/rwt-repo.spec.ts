@@ -330,9 +330,9 @@ describe('RWTRepo', () => {
      * - mock RWTRepo.explorerClient to return a client that returns predefined
      * box info for the repoAddress and repoNft
      * - call RWTRepo.updateBox to update RWTRepo.box
-     * - check RWTRepo.getErgCollateral() to return the currect value
+     * - check RWTRepo.getErgCollateral() to return the correct value
      * @expected
-     * - RWTRepo.getErgCollateral() should return the currect value
+     * - RWTRepo.getErgCollateral() should return the correct value
      */
     it(`RWTRepo.getErgCollateral should return a bigint with the value stores in
     R6[4] of RWTRepo.box`, async () => {
@@ -396,9 +396,9 @@ describe('RWTRepo', () => {
      * - mock RWTRepo.explorerClient to return a client that returns predefined
      * box info for the repoAddress and repoNft
      * - call RWTRepo.updateBox to update RWTRepo.box
-     * - check RWTRepo.getRsnCollateral() to return the currect value
+     * - check RWTRepo.getRsnCollateral() to return the correct value
      * @expected
-     * - RWTRepo.getRsnCollateral() should return the currect value
+     * - RWTRepo.getRsnCollateral() should return the correct value
      */
     it(`RWTRepo.getRsnCollateral should return a bigint with the value stored in
     R6[5] of RWTRepo.box`, async () => {
@@ -566,6 +566,74 @@ describe('RWTRepo', () => {
 
       expect(rwtRepo['box']).toBeUndefined();
       expect(() => rwtRepo.getRequiredCommitmentCount()).toThrowError();
+    });
+  });
+
+  describe('getCommitmentRwtCount', () => {
+    /**
+     * @target RWTRepo.getCommitmentRwtCount should return a bigint with the
+     * value stored in R6[0] of RWTRepo.box
+     * @dependencies
+     * - MockedErgoExplorerClientFactory
+     * @scenario
+     * - create an instance of RWTRepo with specific repoAddress and repoNft
+     * - mock RWTRepo.explorerClient to return a client that returns predefined
+     * box info for the repoAddress and repoNft
+     * - call RWTRepo.updateBox to update RWTRepo.box
+     * - check RWTRepo.getCommitmentRwtCount() to return the correct value
+     * @expected
+     * - RWTRepo.getCommitmentRwtCount() should return the correct value
+     */
+    it(`RWTRepo.getCommitmentRwtCount should return a bigint with the value
+    stored in R6[0] of RWTRepo.box`, async () => {
+      const rwtRepo = new RWTRepo(
+        rwtRepoInfoSample.Address,
+        rwtRepoInfoSample.nft,
+        '',
+        ErgoNetworkType.Explorer,
+        ''
+      );
+
+      rwtRepo['explorerClient'] = mockedErgoExplorerClientFactory(
+        ''
+      ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
+
+      await rwtRepo.updateBox(false);
+
+      const r6 = Constant.decode_from_base16(
+        rwtRepoInfoSample.boxInfo.additionalRegisters.R6.serializedValue
+      )
+        .to_i64_str_array()
+        .map(BigInt);
+
+      expect(rwtRepo.getCommitmentRwtCount()).toEqual(r6.at(0));
+    });
+
+    /**
+     * @target RWTRepo.getCommitmentRwtCount should throw an exception when
+     * RWTRepo.box is undefined
+     * @dependencies
+     * - None
+     * @scenario
+     * - create an instance of RWTRepo with specific repoAddress and repoNft
+     * - check RWTRepo.box to be undefined
+     * - check RWTRepo.getCommitmentRwtCount() to throw exception
+     * @expected
+     * - RWTRepo.box should be undefined
+     * - RWTRepo.getCommitmentRwtCount() should throw exception
+     */
+    it(`RWTRepo.getCommitmentRwtCount should throw an exception when RWTRepo.box
+    is undefined`, async () => {
+      const rwtRepo = new RWTRepo(
+        rwtRepoInfoSample.Address,
+        rwtRepoInfoSample.nft,
+        '',
+        ErgoNetworkType.Explorer,
+        ''
+      );
+
+      expect(rwtRepo['box']).toBeUndefined();
+      expect(() => rwtRepo.getCommitmentRwtCount()).toThrowError();
     });
   });
 });
