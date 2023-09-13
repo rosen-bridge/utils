@@ -395,6 +395,37 @@ export class RWTRepo {
   }
 
   /**
+   * finds the index wid in R4 register of this.box and returns -1 if not found.
+   *
+   * @param {string} wid - watcher id in hex format
+   * @return {number}
+   * @memberof RWTRepo
+   */
+  getWidIndex(wid: string) {
+    if (!this.box) {
+      const error = new Error(
+        `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
+      );
+      this.logger.error(error.message);
+      throw error;
+    }
+
+    const r4Hex = this.r4?.map((bytes) => Buffer.from(bytes).toString('hex'));
+
+    if (!r4Hex) {
+      const error = new Error(
+        `could not extract widIndex for wid=[${wid}] from R4: ${this.rwtRepoLogDescription} `
+      );
+      this.logger.error(error.message);
+      throw error;
+    }
+
+    const widIndex = r4Hex.indexOf(wid);
+
+    return widIndex;
+  }
+
+  /**
    * returns the value at the specified index of the R6 register of this.box as
    * a bigint
    *

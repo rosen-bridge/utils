@@ -636,4 +636,103 @@ describe('RWTRepo', () => {
       expect(() => rwtRepo.getCommitmentRwtCount()).toThrowError();
     });
   });
+
+  describe('getWidIndex', () => {
+    /**
+     * @target RWTRepo.getWidIndex should return index of wid (watcher id) in R4
+     * register of RWTRepo.box
+     * @dependencies
+     * - MockedErgoExplorerClientFactory
+     * @scenario
+     * - create an instance of RWTRepo with specific repoAddress and repoNft
+     * - mock RWTRepo.explorerClient to return a client that returns predefined
+     * box info for the repoAddress and repoNft
+     * - call RWTRepo.updateBox to update RWTRepo.box
+     * - check RWTRepo.getWidIndex() to return the index wid in R4
+     * @expected
+     * - RWTRepo.getWidIndex() should return the index wid in R4
+     */
+    it(`RWTRepo.getWidIndex should return index of wid (watcher id) in R4
+    register of RWTRepo.box`, async () => {
+      const rwtRepo = new RWTRepo(
+        rwtRepoInfoSample.Address,
+        rwtRepoInfoSample.nft,
+        '',
+        ErgoNetworkType.Explorer,
+        ''
+      );
+
+      rwtRepo['explorerClient'] = mockedErgoExplorerClientFactory(
+        ''
+      ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
+
+      await rwtRepo.updateBox(false);
+
+      const r4_2 = Constant.decode_from_base16(
+        rwtRepoInfoSample.boxInfo.additionalRegisters.R4.serializedValue
+      ).to_coll_coll_byte()[2];
+
+      expect(rwtRepo.getWidIndex(Buffer.from(r4_2).toString('hex'))).toEqual(2);
+    });
+
+    /**
+     * @target RWTRepo.getWidIndex should return -1 if wid (watcher id) is not
+     * present in R4 register of RWTRepo.box
+     * @dependencies
+     * - MockedErgoExplorerClientFactory
+     * @scenario
+     * - create an instance of RWTRepo with specific repoAddress and repoNft
+     * - mock RWTRepo.explorerClient to return a client that returns predefined
+     * box info for the repoAddress and repoNft
+     * - call RWTRepo.updateBox to update RWTRepo.box
+     * - check RWTRepo.getWidIndex() to return -1
+     * @expected
+     * - RWTRepo.getWidIndex() should return -1
+     */
+    it(`RWTRepo.getWidIndex should return -1 if wid (watcher id) is not present
+    in R4 register of RWTRepo.box`, async () => {
+      const rwtRepo = new RWTRepo(
+        rwtRepoInfoSample.Address,
+        rwtRepoInfoSample.nft,
+        '',
+        ErgoNetworkType.Explorer,
+        ''
+      );
+
+      rwtRepo['explorerClient'] = mockedErgoExplorerClientFactory(
+        ''
+      ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
+
+      await rwtRepo.updateBox(false);
+
+      expect(rwtRepo.getWidIndex('ff4a5b')).toEqual(-1);
+    });
+
+    /**
+     * @target RWTRepo.getWidIndex should throw an exception when RWTRepo.box is
+     * undefined
+     * @dependencies
+     * - None
+     * @scenario
+     * - create an instance of RWTRepo with specific repoAddress and repoNft
+     * - check RWTRepo.box to be undefined
+     * - check RWTRepo.getWidIndex() to throw exception
+     * @expected
+     * - RWTRepo.box should be undefined
+     * - RWTRepo.getWidIndex() should throw exception
+     */
+    it(`RWTRepo.getWidIndex should throw an exception when RWTRepo.box is
+    undefined`, async () => {
+      const rwtRepo = new RWTRepo(
+        rwtRepoInfoSample.Address,
+        rwtRepoInfoSample.nft,
+        '',
+        ErgoNetworkType.Explorer,
+        ''
+      );
+
+      expect(rwtRepo['box']).toBeUndefined();
+      expect(() => rwtRepo.getCommitmentRwtCount()).toThrowError();
+    });
+  });
 });
