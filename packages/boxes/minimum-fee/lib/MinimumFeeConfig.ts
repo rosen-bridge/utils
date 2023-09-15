@@ -11,12 +11,12 @@ export class MinimumFeeConfig {
   }
 
   /**
-   * adds fee for a chain
+   * sets fee for a chain
    * @param chain
    * @param height
    * @param chainFee
    */
-  addChainConfig = (
+  setChainConfig = (
     chain: string,
     height: number,
     chainFee: ChainFee | undefined
