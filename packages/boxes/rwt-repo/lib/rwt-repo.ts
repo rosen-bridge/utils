@@ -267,6 +267,60 @@ export class RWTRepo {
   }
 
   /**
+   * creates an instance of RWTRepoBuilder
+   *
+   * @return {RWTRepoBuilder}
+   * @memberof RWTRepo
+   */
+  toBuilder() {
+    if (!this.box) {
+      const error = new Error(
+        `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
+      );
+      this.logger.error(error.message);
+      throw error;
+    }
+
+    const quorumPercentage = Number(this.r6At(1));
+    const approvalOffset = Number(this.r6At(2));
+    const maximumApproval = Number(this.r6At(3));
+    const widPermits = this.r4
+      ?.map((wid) => Buffer.from(wid).toString('hex'))
+      .map((wid) => {
+        return { wid, rwtCount: this.getPermitCount(wid) };
+      });
+
+    if (
+      !quorumPercentage ||
+      !approvalOffset ||
+      !maximumApproval ||
+      !widPermits
+    ) {
+      const error = new Error(
+        `could not create RWTRepoBuilder becudase on of [quorumPercentage, approvalOffset, maximumApproval, widPermits] could not be calculated: ${this.rwtRepoLogDescription} `
+      );
+      this.logger.error(error.message);
+      throw error;
+    }
+
+    return new RWTRepoBuilder(
+      this.repoAddress,
+      this.repoNft,
+      this.rwt,
+      this.networkType,
+      this.networkUrl,
+      this.getCommitmentRwtCount(),
+      quorumPercentage,
+      approvalOffset,
+      maximumApproval,
+      this.getErgCollateral(),
+      this.getRsnCollateral(),
+      widPermits,
+      this.logger
+    );
+  }
+
+  /**
    * extract the value of ergCollateral from R6[4] of this.box. If this.box is
    * undefined an exception is thrown
    *
