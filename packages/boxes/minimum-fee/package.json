@@ -11,7 +11,7 @@
     "lint": "eslint --fix . && npm run prettify",
     "build": "tsc",
     "type-check": "tsc --noEmit",
-    "test": "jest --passWithNoTests",
+    "test": "jest",
     "coverage": "npm run test -- --coverage",
     "release": "npm run test && npm run build && npm publish --access public"
   },
