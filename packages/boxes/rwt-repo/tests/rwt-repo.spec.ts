@@ -849,7 +849,8 @@ describe('RWTRepo', () => {
 
   describe('toBuilder', () => {
     /**
-     * @target RWTRepo.toBuilder should create and return an instance of RWTRepoBuilder
+     * @target RWTRepo.toBuilder should create and return an instance of
+     * RWTRepoBuilder with correct parameters taken from the rwtRepo instance
      * @dependencies
      * - MockedErgoExplorerClientFactory
      * @scenario
@@ -857,15 +858,16 @@ describe('RWTRepo', () => {
      * - mock RWTRepo.explorerClient to return a client that returns predefined
      * box info for the repoAddress and repoNft
      * - call RWTRepo.updateBox to update RWTRepo.box
-     * - check RWTRepo.getPermitCount() to extract and return correct
-     * permitCount from RWTRepo.box.R5 register
+     * - check RWTRepo.toBuilder() to return an instance of RWTRepoBuilder
+     * - check RWTRepo.toBuilder() to have created the RWTRepoBuilder instance
+     * with correct parameters
      * @expected
-     * - RWTRepo.getPermitCount() should extract and return correct permitCount
-     * from RWTRepo.box.R5 register
+     * - check RWTRepo.toBuilder() should return an instance of RWTRepoBuilder
+     * - check RWTRepo.toBuilder() shoudd have created the RWTRepoBuilder
+     * instance with correct parameters
      */
-    it(`RWTRepo.getPermitCount should return permitCount for a wid which is
-    equal to RWTRepo.box.R5[widIndex]. widIndex is the index of wid in the
-    RWTRepo.box.R4 register`, async () => {
+    it(`RWTRepo.toBuilder should create and return an instance of RWTRepoBuilder
+    with correct parameters taken from the rwtRepo instance`, async () => {
       const rwtRepo = new RWTRepo(
         rwtRepoInfoSample.Address,
         rwtRepoInfoSample.nft,
