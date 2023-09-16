@@ -732,7 +732,7 @@ describe('RWTRepo', () => {
       );
 
       expect(rwtRepo['box']).toBeUndefined();
-      expect(() => rwtRepo.getCommitmentRwtCount()).toThrowError();
+      expect(() => rwtRepo.getWidIndex('6572676f')).toThrowError();
     });
   });
 });
