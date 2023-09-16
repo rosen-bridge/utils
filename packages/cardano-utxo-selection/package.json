@@ -37,6 +37,6 @@
     "rosen"
   ],
   "dependencies": {
-    "@rosen-bridge/logger-interface": "^0.1.0"
+    "@rosen-bridge/logger-interface": "^0.2.0"
   }
 }
