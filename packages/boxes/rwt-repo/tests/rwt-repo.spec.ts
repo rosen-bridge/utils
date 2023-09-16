@@ -2,7 +2,7 @@ import { ErgoNetworkType } from '@rosen-bridge/scanner';
 import ergoExplorerClientFactory from '@rosen-clients/ergo-explorer';
 import ergoNodeClientFactory from '@rosen-clients/ergo-node';
 import { Constant, ErgoBox } from 'ergo-lib-wasm-nodejs';
-import { RWTRepo, RWTRepoBuilder } from '../lib';
+import { RWTRepo } from '../lib';
 import { jsonBigInt } from '../lib/utils';
 import { rwtRepoInfoSample } from './rwt-repo-TestData';
 import {
@@ -844,112 +844,6 @@ describe('RWTRepo', () => {
 
       expect(rwtRepo['box']).toBeUndefined();
       expect(() => rwtRepo.getPermitCount('faer')).toThrowError();
-    });
-  });
-
-  describe('toBuilder', () => {
-    /**
-     * @target RWTRepo.toBuilder should create and return an instance of RWTRepoBuilder
-     * @dependencies
-     * - MockedErgoExplorerClientFactory
-     * @scenario
-     * - create an instance of RWTRepo with specific repoAddress and repoNft
-     * - mock RWTRepo.explorerClient to return a client that returns predefined
-     * box info for the repoAddress and repoNft
-     * - call RWTRepo.updateBox to update RWTRepo.box
-     * - check RWTRepo.getPermitCount() to extract and return correct
-     * permitCount from RWTRepo.box.R5 register
-     * @expected
-     * - RWTRepo.getPermitCount() should extract and return correct permitCount
-     * from RWTRepo.box.R5 register
-     */
-    it(`RWTRepo.getPermitCount should return permitCount for a wid which is
-    equal to RWTRepo.box.R5[widIndex]. widIndex is the index of wid in the
-    RWTRepo.box.R4 register`, async () => {
-      const rwtRepo = new RWTRepo(
-        rwtRepoInfoSample.Address,
-        rwtRepoInfoSample.nft,
-        '',
-        ErgoNetworkType.Explorer,
-        ''
-      );
-
-      rwtRepo['explorerClient'] = mockedErgoExplorerClientFactory(
-        ''
-      ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
-
-      await rwtRepo.updateBox(false);
-
-      const rwtRepoBuilder = rwtRepo.toBuilder();
-
-      const r4 = Constant.decode_from_base16(
-        rwtRepoInfoSample.boxInfo.additionalRegisters.R4.serializedValue
-      ).to_coll_coll_byte();
-
-      const r5 = (
-        Constant.decode_from_base16(
-          rwtRepoInfoSample.boxInfo.additionalRegisters.R5.serializedValue
-        ).to_i64_str_array() as string[]
-      ).map(BigInt);
-
-      const widPermits = r4
-        ?.map((wid) => Buffer.from(wid).toString('hex'))
-        .map((wid, i) => {
-          return { wid, rwtCount: r5[i] };
-        });
-
-      const r6 = (
-        Constant.decode_from_base16(
-          rwtRepoInfoSample.boxInfo.additionalRegisters.R6.serializedValue
-        ).to_i64_str_array() as string[]
-      ).map(BigInt);
-
-      expect(rwtRepoBuilder).toBeInstanceOf(RWTRepoBuilder);
-      expect(rwtRepoBuilder['repoAddress']).toEqual(rwtRepo['repoAddress']);
-      expect(rwtRepoBuilder['repoNft']).toEqual(rwtRepo['repoNft']);
-      expect(rwtRepoBuilder['rwt']).toEqual(rwtRepo['rwt']);
-      expect(rwtRepoBuilder['networkType']).toEqual(rwtRepo['networkType']);
-      expect(rwtRepoBuilder['networkUrl']).toEqual(rwtRepo['networkUrl']);
-      expect(rwtRepoBuilder['commitmentRwtCount']).toEqual(
-        rwtRepo.getCommitmentRwtCount()
-      );
-      expect(rwtRepoBuilder['quorumPercentage']).toEqual(Number(r6.at(1)));
-      expect(rwtRepoBuilder['approvalOffset']).toEqual(Number(r6.at(2)));
-      expect(rwtRepoBuilder['maximumApproval']).toEqual(Number(r6.at(3)));
-      expect(rwtRepoBuilder['ergCollateral']).toEqual(
-        rwtRepo.getErgCollateral()
-      );
-      expect(rwtRepoBuilder['rsnCollateral']).toEqual(
-        rwtRepo.getRsnCollateral()
-      );
-      expect(rwtRepoBuilder['widPermits']).toEqual(widPermits);
-    });
-
-    /**
-     * @target RWTRepo.toBuilder should throw an exception when RWTRepo.box is
-     * undefined
-     * @dependencies
-     * - None
-     * @scenario
-     * - create an instance of RWTRepo with specific repoAddress and repoNft
-     * - check RWTRepo.box to be undefined
-     * - check RWTRepo.toBuilder() to throw exception
-     * @expected
-     * - RWTRepo.box should be undefined
-     * - RWTRepo.toBuilder() should throw exception
-     */
-    it(`RWTRepo.toBuilder should throw an exception when RWTRepo.box is
-    undefined`, async () => {
-      const rwtRepo = new RWTRepo(
-        rwtRepoInfoSample.Address,
-        rwtRepoInfoSample.nft,
-        '',
-        ErgoNetworkType.Explorer,
-        ''
-      );
-
-      expect(rwtRepo['box']).toBeUndefined();
-      expect(() => rwtRepo.toBuilder()).toThrowError();
     });
   });
 });
