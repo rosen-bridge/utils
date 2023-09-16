@@ -735,4 +735,115 @@ describe('RWTRepo', () => {
       expect(() => rwtRepo.getCommitmentRwtCount()).toThrowError();
     });
   });
+
+  describe('getPermitCount', () => {
+    /**
+     * @target RWTRepo.getPermitCount should return permitCount for a wid which
+     * is equal to RWTRepo.box.R5[widIndex]. widIndex is the index of wid in the
+     * RWTRepo.box.R4 register
+     * @dependencies
+     * - MockedErgoExplorerClientFactory
+     * @scenario
+     * - create an instance of RWTRepo with specific repoAddress and repoNft
+     * - mock RWTRepo.explorerClient to return a client that returns predefined
+     * box info for the repoAddress and repoNft
+     * - call RWTRepo.updateBox to update RWTRepo.box
+     * - check RWTRepo.getPermitCount() to extract and return correct
+     * permitCount from RWTRepo.box.R5 register
+     * @expected
+     * - RWTRepo.getPermitCount() should extract and return correct permitCount
+     * from RWTRepo.box.R5 register
+     */
+    it(`RWTRepo.getPermitCount should return permitCount for a wid which is
+    equal to RWTRepo.box.R5[widIndex]. widIndex is the index of wid in the
+    RWTRepo.box.R4 register`, async () => {
+      const rwtRepo = new RWTRepo(
+        rwtRepoInfoSample.Address,
+        rwtRepoInfoSample.nft,
+        '',
+        ErgoNetworkType.Explorer,
+        ''
+      );
+
+      rwtRepo['explorerClient'] = mockedErgoExplorerClientFactory(
+        ''
+      ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
+
+      await rwtRepo.updateBox(false);
+
+      const r4_2 = Constant.decode_from_base16(
+        rwtRepoInfoSample.boxInfo.additionalRegisters.R4.serializedValue
+      ).to_coll_coll_byte()[2];
+
+      const r5 = (
+        Constant.decode_from_base16(
+          rwtRepoInfoSample.boxInfo.additionalRegisters.R5.serializedValue
+        ).to_i64_str_array() as string[]
+      ).map(BigInt);
+
+      expect(rwtRepo.getPermitCount(Buffer.from(r4_2).toString('hex'))).toEqual(
+        r5[2]
+      );
+    });
+
+    /**
+     * @target RWTRepo.getPermitCount should return 0 for a wid doesn't exist in
+     * RWTRepo.box.R4 register
+     * @dependencies
+     * - MockedErgoExplorerClientFactory
+     * @scenario
+     * - create an instance of RWTRepo with specific repoAddress and repoNft
+     * - mock RWTRepo.explorerClient to return a client that returns predefined
+     * box info for the repoAddress and repoNft
+     * - call RWTRepo.updateBox to update RWTRepo.box
+     * - check RWTRepo.getPermitCount() to return 0 for a missing wid
+     * @expected
+     * - RWTRepo.getPermitCount() should return 0 for a missing wid
+     */
+    it(`RWTRepo.getPermitCount should return 0 for a wid doesn't exist in
+    RWTRepo.box.R4 register`, async () => {
+      const rwtRepo = new RWTRepo(
+        rwtRepoInfoSample.Address,
+        rwtRepoInfoSample.nft,
+        '',
+        ErgoNetworkType.Explorer,
+        ''
+      );
+
+      rwtRepo['explorerClient'] = mockedErgoExplorerClientFactory(
+        ''
+      ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
+
+      await rwtRepo.updateBox(false);
+
+      expect(rwtRepo.getPermitCount('ff4a5b')).toEqual(0n);
+    });
+
+    /**
+     * @target RWTRepo.getPermitCount should throw an exception when RWTRepo.box
+     * is undefined
+     * @dependencies
+     * - None
+     * @scenario
+     * - create an instance of RWTRepo with specific repoAddress and repoNft
+     * - check RWTRepo.box to be undefined
+     * - check RWTRepo.getPermitCount() to throw exception
+     * @expected
+     * - RWTRepo.box should be undefined
+     * - RWTRepo.getPermitCount() should throw exception
+     */
+    it(`RWTRepo.getPermitCount should throw an exception when RWTRepo.box is
+    undefined`, async () => {
+      const rwtRepo = new RWTRepo(
+        rwtRepoInfoSample.Address,
+        rwtRepoInfoSample.nft,
+        '',
+        ErgoNetworkType.Explorer,
+        ''
+      );
+
+      expect(rwtRepo['box']).toBeUndefined();
+      expect(() => rwtRepo.getPermitCount('faer')).toThrowError();
+    });
+  });
 });
