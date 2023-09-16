@@ -3,7 +3,7 @@ import { ErgoNetworkType } from '@rosen-bridge/scanner';
 import ergoExplorerClientFactory from '@rosen-clients/ergo-explorer';
 import ergoNodeClientFactory from '@rosen-clients/ergo-node';
 import { Address, ErgoBox } from 'ergo-lib-wasm-nodejs';
-import { jsonBigInt } from './utils';
+import { jsonBigInt } from './Utils';
 
 export class RWTRepoBuilder {
   constructor(

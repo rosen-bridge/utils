@@ -1,4 +1,4 @@
-import { rwtRepoInfoSample } from './rwt-repo-TestData';
+import { rwtRepoInfoSample } from './RWTRepoTestData';
 
 export function mockedErgoExplorerClientFactory(url: string) {
   return {
