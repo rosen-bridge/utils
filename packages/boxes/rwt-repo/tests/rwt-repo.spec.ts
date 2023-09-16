@@ -1,15 +1,14 @@
 import { ErgoNetworkType } from '@rosen-bridge/scanner';
 import ergoExplorerClientFactory from '@rosen-clients/ergo-explorer';
+import ergoNodeClientFactory from '@rosen-clients/ergo-node';
+import { ErgoBox } from 'ergo-lib-wasm-nodejs';
 import { RWTRepo } from '../lib';
+import { jsonBigInt } from '../lib/utils';
 import { rwtRepoInfoSample } from './rwt-repo-TestData';
 import {
   mockedErgoExplorerClientFactory,
   mockedErgoNodeClientFactory,
 } from './rwt-repo.mock';
-import { AnyTxtRecord } from 'dns';
-import ergoNodeClientFactory from '@rosen-clients/ergo-node';
-import { ErgoBox } from 'ergo-lib-wasm-nodejs';
-import { jsonBigInt } from '../lib/utils';
 
 describe('RWTRepo', () => {
   describe('updateBox', () => {
@@ -39,7 +38,7 @@ describe('RWTRepo', () => {
      */
     it(`updateBox of RWTRepo created with networkType=ErgoNetworkType.Explorer
     argument, should update the box member variable with ErgoBox created from
-    the unspent box info received from explorere api for the corresponding
+    the unspent box info received from explorer api for the corresponding
     repoAddress and repoNft set on this instance`, async () => {
       const rwtRepo = new RWTRepo(
         rwtRepoInfoSample.Address,

@@ -13,7 +13,7 @@ export class RWTRepoBuilder {
     private networkType: ErgoNetworkType,
     private networkUrl: string,
     private commitmentRwtCount: bigint,
-    private quoromPercentage: number,
+    private quorumPercentage: number,
     private approvalOffset: number,
     private maximumApproval: number,
     private ergCollateral: bigint,
