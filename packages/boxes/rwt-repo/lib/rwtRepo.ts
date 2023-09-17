@@ -36,8 +36,11 @@ export class RWTRepo {
     private networkUrl: string,
     private logger: AbstractLogger = new DummyLogger()
   ) {
-    this.explorerClient = ergoExplorerClientFactory(this.networkUrl);
-    this.nodeClient = ergoNodeClientFactory(this.networkUrl);
+    if (networkType === ErgoNetworkType.Explorer) {
+      this.explorerClient = ergoExplorerClientFactory(this.networkUrl);
+    } else {
+      this.nodeClient = ergoNodeClientFactory(this.networkUrl);
+    }
 
     this.logger.debug(
       `RWTRepo instance created with repo-address=[${this.repoAddress}] and repo-nft=[${this.repoNft}]`
@@ -58,18 +61,14 @@ export class RWTRepo {
   async updateBox(trackMempool: boolean) {
     this.logger.debug(`box is being updated from ${this.networkType} api`);
     if (this.networkType === ErgoNetworkType.Explorer) {
-      if (trackMempool) {
-        if (await this.getBoxFromExplorerMempool()) {
-          return;
-        }
+      if (trackMempool && (await this.getBoxFromExplorerMempool())) {
+        return;
       }
 
       await this.getBoxFromExplorer();
     } else {
-      if (trackMempool) {
-        if (await this.getBoxFromNodeMempool()) {
-          return;
-        }
+      if (trackMempool && (await this.getBoxFromNodeMempool())) {
+        return;
       }
 
       await this.getBoxFromNode();
@@ -108,7 +107,7 @@ export class RWTRepo {
     );
 
     this.logger.debug(
-      `rwtRepo boxIds from node api: [${rwtBoxInfos
+      `rwtRepo boxIds from explorer api: [${rwtBoxInfos
         ?.map((item) => item.boxId)
         .join(', ')}]`
     );

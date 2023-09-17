@@ -12,7 +12,7 @@ import { rwtRepoInfoSample } from './rwtRepoTestData';
 
 describe('RWTRepo', () => {
   describe('updateBox', () => {
-    afterEach(() => {
+    beforeEach(() => {
       jest.restoreAllMocks();
     });
 
