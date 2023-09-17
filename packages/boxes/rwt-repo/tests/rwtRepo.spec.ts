@@ -3,12 +3,12 @@ import ergoExplorerClientFactory from '@rosen-clients/ergo-explorer';
 import ergoNodeClientFactory from '@rosen-clients/ergo-node';
 import { ErgoBox } from 'ergo-lib-wasm-nodejs';
 import { RWTRepo } from '../lib';
-import { jsonBigInt } from '../lib/Utils';
-import { rwtRepoInfoSample } from './RWTRepoTestData';
+import { jsonBigInt } from '../lib/utils';
 import {
   mockedErgoExplorerClientFactory,
   mockedErgoNodeClientFactory,
-} from './RWTRepo.mock';
+} from './rwtRepo.mock';
+import { rwtRepoInfoSample } from './rwtRepoTestData';
 
 describe('RWTRepo', () => {
   describe('updateBox', () => {
