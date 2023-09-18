@@ -2,7 +2,7 @@
   "name": "@rosen-bridge/rwt-repo",
   "version": "0.2.0",
   "description": "a package to manage RWT Repo box",
-  "main": "dist/index.js",
+  "main": "dist/lib/index.js",
   "type": "module",
   "scripts": {
     "prettify": "prettier --write . --ignore-path .gitignore",
