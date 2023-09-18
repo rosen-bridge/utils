@@ -8,6 +8,7 @@
     "prettify": "prettier --write . --ignore-path .gitignore",
     "lint": "eslint --fix . && npm run prettify",
     "build": "tsc --build tsconfig.build.json",
+    "tsc_version": "tsc --version",
     "type-check": "tsc --noEmit",
     "test": "jest --runInBand",
     "coverage": "npm run test -- --coverage",
