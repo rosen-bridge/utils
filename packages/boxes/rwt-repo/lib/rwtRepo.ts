@@ -1,8 +1,17 @@
 import { AbstractLogger, DummyLogger } from '@rosen-bridge/logger-interface';
 import { ErgoNetworkType } from '@rosen-bridge/scanner';
 import ergoExplorerClientFactory from '@rosen-clients/ergo-explorer';
-import ergoNodeClientFactory from '@rosen-clients/ergo-node';
-import { Address, ErgoBox } from 'ergo-lib-wasm-nodejs';
+import {
+  UOutputInfo,
+  UTransactionInfo,
+} from '@rosen-clients/ergo-explorer/dist/src/v0/types';
+import { OutputInfo } from '@rosen-clients/ergo-explorer/dist/src/v1/types';
+import ergoNodeClientFactory, {
+  ErgoTransactionOutput,
+  IndexedErgoBox,
+  Transactions,
+} from '@rosen-clients/ergo-node';
+import { Address, ErgoBox, ErgoTree } from 'ergo-lib-wasm-nodejs';
 import { jsonBigInt } from './utils';
 
 export class RWTRepoBuilder {
@@ -27,6 +36,7 @@ export class RWTRepo {
   protected box?: ErgoBox;
   private explorerClient: ReturnType<typeof ergoExplorerClientFactory>;
   private nodeClient: ReturnType<typeof ergoNodeClientFactory>;
+  private repoErgoTree: ErgoTree;
 
   constructor(
     private repoAddress: string,
@@ -41,6 +51,8 @@ export class RWTRepo {
     } else {
       this.nodeClient = ergoNodeClientFactory(this.networkUrl);
     }
+
+    this.repoErgoTree = Address.from_base58(this.repoAddress).to_ergo_tree();
 
     this.logger.debug(
       `RWTRepo instance created with repo-address=[${this.repoAddress}] and repo-nft=[${this.repoNft}]`
@@ -102,25 +114,13 @@ export class RWTRepo {
         this.repoAddress
       );
 
-    const rwtBoxInfos = itemsInfo.items?.filter((item) =>
-      item.assets?.some((asset) => asset.tokenId === this.repoNft)
-    );
-
-    this.logger.debug(
-      `rwtRepo boxIds from explorer api: [${rwtBoxInfos
-        ?.map((item) => item.boxId)
-        .join(', ')}]`
-    );
-
-    if (rwtBoxInfos === undefined || rwtBoxInfos.length <= 0) {
-      this.logger.info(
-        `no unspent box found in explorer api: ${this.rwtRepoLogDescription}`
-      );
+    if (itemsInfo.items == undefined) {
+      this.logger.info(`no unspent box found: ${this.rwtRepoLogDescription}`);
+      this.box = undefined;
       return undefined;
     }
 
-    const box = ErgoBox.from_json(jsonBigInt.stringify(rwtBoxInfos[0]));
-    this.box = box;
+    this.box = this.createBoxFromBoxInfo(itemsInfo.items);
     this.logger.info(
       `box updated from explorer api: ${this.rwtRepoLogDescription}`
     );
@@ -142,40 +142,19 @@ export class RWTRepo {
         this.repoAddress
       );
 
-    const inputBoxIds = txs.items?.flatMap(
-      (item) => item.inputs?.map((input) => input.id) || []
-    );
-
-    const inputBoxIdSet = new Set(inputBoxIds);
-
-    this.logger.debug(
-      `boxIds found in explorer mempool api: [${[...inputBoxIdSet].join(', ')}]`
-    );
-
-    const outputBoxInfos = txs.items?.flatMap(
-      (item) =>
-        item.outputs?.filter(
-          (output) =>
-            !inputBoxIdSet.has(output.id) &&
-            output.address &&
-            output.address === this.repoAddress &&
-            output.assets?.some((asset) => asset.tokenId === this.repoNft)
-        ) || []
-    );
-
-    if (!outputBoxInfos || !outputBoxInfos.length) {
+    if (txs.items == undefined) {
+      this.box = undefined;
       this.logger.debug(
-        `no box found in explorer mempool: ${this.rwtRepoLogDescription}`
+        `no box found in mempool: ${this.rwtRepoLogDescription}`
       );
-      return undefined;
+      return this.box;
     }
 
-    const box = ErgoBox.from_json(jsonBigInt.stringify(outputBoxInfos[0]));
-    this.box = box;
+    this.box = this.createBoxfromTx(txs.items);
     this.logger.info(
       `box updated from explorer mempool: ${this.rwtRepoLogDescription}`
     );
-    return box;
+    return this.box;
   }
 
   /**
@@ -203,29 +182,13 @@ export class RWTRepo {
     const boxInfos = await this.nodeClient.getBoxesByAddressUnspent(
       this.repoAddress
     );
-    const rwtBoxInfos = boxInfos.filter((boxInfo) =>
-      boxInfo.assets?.some((asset) => asset.tokenId === this.repoNft)
-    );
 
-    this.logger.debug(
-      `rwtRepo boxIds from node api: [${rwtBoxInfos
-        .map((item) => item.boxId)
-        .join(', ')}]`
-    );
-
-    if (rwtBoxInfos.length <= 0) {
-      this.logger.debug(
-        `no unspent box found in node api: ${this.rwtRepoLogDescription}`
-      );
-      return undefined;
-    }
-
-    const box = ErgoBox.from_json(jsonBigInt.stringify(rwtBoxInfos[0]));
-    this.box = box;
+    this.box = this.createBoxFromBoxInfo(boxInfos);
     this.logger.info(
       `box updated from node api: ${this.rwtRepoLogDescription}`
     );
-    return box;
+
+    return this.box;
   }
 
   /**
@@ -238,43 +201,87 @@ export class RWTRepo {
    * @memberof RWTRepo
    */
   private async getBoxFromNodeMempool() {
-    const repoErgoTree = Address.from_base58(this.repoAddress).to_ergo_tree();
     const txs = await this.nodeClient.getUnconfirmedTransactionsByErgoTree(
-      repoErgoTree.to_base16_bytes()
+      this.repoErgoTree.to_base16_bytes()
     );
 
+    this.box = this.createBoxfromTx(txs);
+    this.logger.info(
+      `box updated from node mempool: ${this.rwtRepoLogDescription}`
+    );
+    return this.box;
+  }
+
+  /**
+   * creates an RWTRepo ErgoBox instance from the corresponding boxInfo in the
+   * passed boxInfos array
+   *
+   * @private
+   * @param {(IndexedErgoBox[] | OutputInfo[])} boxInfos
+   * @return {ErgoBox | undefined}
+   * @memberof RWTRepo
+   */
+  private createBoxFromBoxInfo(boxInfos: IndexedErgoBox[] | OutputInfo[]) {
+    const rwtBoxInfos = boxInfos.filter((item) =>
+      item.assets?.some((asset) => asset.tokenId === this.repoNft)
+    );
+
+    this.logger.debug(
+      `rwtRepo boxIds received: [${rwtBoxInfos
+        .map((item) => item.boxId)
+        .join(', ')}]`
+    );
+
+    if (rwtBoxInfos === undefined || rwtBoxInfos.length <= 0) {
+      this.logger.info(`no unspent box found: ${this.rwtRepoLogDescription}`);
+      return undefined;
+    }
+
+    const box = ErgoBox.from_json(jsonBigInt.stringify(rwtBoxInfos[0]));
+
+    return box;
+  }
+
+  /**
+   * creates an RWTRepo ErgoBox instance from the corresponding boxInfo in the
+   * passed transactions array
+   *
+   * @private
+   * @param {(Transactions | UTransactionInfo[])} txs
+   * @return {ErgoBox | undefined}
+   * @memberof RWTRepo
+   */
+  private createBoxfromTx(txs: Transactions | UTransactionInfo[]) {
     const inputBoxIds = txs.flatMap(
-      (tx) => tx.inputs?.map((input) => input.boxId) || []
+      (tx) =>
+        tx.inputs?.map((input) => ('id' in input ? input.id : input.boxId)) ||
+        []
     );
 
     const inputBoxIdSet = new Set(inputBoxIds);
 
     this.logger.debug(
-      `boxIds found in node mempool api: [${[...inputBoxIdSet].join(', ')}]`
+      `boxIds found in mempool: [${[...inputBoxIdSet].join(', ')}]`
     );
 
     const rwtOutputBoxInfos = txs
-      .flatMap((tx) => tx.outputs)
+      .flatMap<UOutputInfo | ErgoTransactionOutput>((tx) => tx.outputs || [])
       .filter(
         (box) =>
-          box.boxId &&
-          !inputBoxIdSet.has(box.boxId) &&
-          box.ergoTree === repoErgoTree.to_base16_bytes() &&
+          (('id' in box && box.id && !inputBoxIdSet.has(box.id)) ||
+            ('boxId' in box && box.boxId && !inputBoxIdSet.has(box.boxId))) &&
+          box.ergoTree === this.repoErgoTree.to_base16_bytes() &&
           box.assets?.some((asset) => asset.tokenId === this.repoNft)
       );
 
     if (!rwtOutputBoxInfos.length) {
       this.logger.debug(
-        `no box found in node mempool: ${this.rwtRepoLogDescription}`
+        `no box found in mempool: ${this.rwtRepoLogDescription}`
       );
       return undefined;
     }
 
     const box = ErgoBox.from_json(jsonBigInt.stringify(rwtOutputBoxInfos[0]));
-    this.box = box;
-    this.logger.info(
-      `box updated from node mempool: ${this.rwtRepoLogDescription}`
-    );
     return box;
   }
 
