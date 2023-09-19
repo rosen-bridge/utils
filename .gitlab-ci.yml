@@ -28,8 +28,7 @@ build:
         - packages/*/node_modules
         - packages/*/dist
   script:
-    - npm run tsc_version -w ./packages/boxes/rwt-repo/
-    - npm run build -w ./packages/boxes/rwt-repo/
+    - cd ./packages/boxes/rwt-repo && npm ls typescript
     - npm run build
 
 type_check:
@@ -72,4 +71,4 @@ test:
     reports:
       coverage_report:
         coverage_format: cobertura
-        path: packages/*/coverage/cobertura-coverage.xml
+        path: packages/**/coverage/cobertura-coverage.xml
