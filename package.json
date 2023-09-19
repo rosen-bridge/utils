@@ -1,5 +1,5 @@
 {
-  "name": "tokens",
+  "name": "utils",
   "private": true,
   "workspaces": {
     "packages": [
