@@ -10,3 +10,9 @@ export interface ChainFee {
   rsnRatioDivisor: bigint;
   feeRatio: bigint;
 }
+
+export class InvalidConfig extends Error {
+  constructor(msg: string) {
+    super('InvalidConfig: ' + msg);
+  }
+}
