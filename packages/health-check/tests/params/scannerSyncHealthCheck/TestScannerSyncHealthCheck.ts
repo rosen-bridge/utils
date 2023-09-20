@@ -2,6 +2,13 @@ import { AbstractScannerSyncHealthCheckParam } from '../../../lib/params/scanner
 
 class TestScannerHealthCheckParam extends AbstractScannerSyncHealthCheckParam {
   /**
+   * mocked getId method
+   */
+  getId = () => {
+    return 'Id';
+  };
+
+  /**
    * mocked update method
    */
   getLastAvailableBlock = async () => {

@@ -2,10 +2,10 @@ import { NodePermitHealthCheckParam } from '../../../lib/params/permitHealthChec
 
 class TestNodePermitHealthCheck extends NodePermitHealthCheckParam {
   /**
-   * @returns protected token amount
+   * @returns protected report count
    */
-  getRWTCount = () => {
-    return this.RWTCount;
+  getReportCount = () => {
+    return this.reportCount;
   };
 }
 

@@ -12,20 +12,25 @@ abstract class AbstractAssetHealthCheckParam extends AbstractHealthCheckParam {
   protected warnThreshold: bigint;
   protected criticalThreshold: bigint;
   protected updateTimeStamp: Date;
+  protected assetDecimal: number;
 
   constructor(
     assetId: string,
     assetName: string,
     address: string,
     warnThreshold: bigint,
-    criticalThreshold: bigint
+    criticalThreshold: bigint,
+    assetDecimal = 0
   ) {
     super();
     this.assetId = assetId;
-    this.assetName = assetName;
+    if ([ERGO_NATIVE_ASSET, CARDANO_NATIVE_ASSET].includes(assetId))
+      this.assetName = assetName.toUpperCase();
+    else this.assetName = assetName;
     this.address = address;
     this.warnThreshold = warnThreshold;
     this.criticalThreshold = criticalThreshold;
+    this.assetDecimal = assetDecimal;
   }
 
   /**
@@ -34,8 +39,8 @@ abstract class AbstractAssetHealthCheckParam extends AbstractHealthCheckParam {
    */
   getId = (): string => {
     if ([ERGO_NATIVE_ASSET, CARDANO_NATIVE_ASSET].includes(this.assetId))
-      return `Native Asset ${this.assetName} Check`;
-    return `Asset ${this.assetName} [${this.assetId.slice(0, 6)}...] Check`;
+      return `Native Asset ${this.assetName}`;
+    return `Asset ${this.assetName} [${this.assetId.slice(0, 6)}...]`;
   };
 
   /**
@@ -45,15 +50,19 @@ abstract class AbstractAssetHealthCheckParam extends AbstractHealthCheckParam {
   getDescription = async (): Promise<string | undefined> => {
     if (this.tokenAmount < this.criticalThreshold)
       return (
-        `Service stopped working due to insufficient asset '${this.assetName}' balance` +
-        ` ([${this.tokenAmount}] is less than required amount [${this.criticalThreshold}]).\n` +
-        `Please charge [${this.address}] with asset [${this.assetId}]`
+        `Service has stopped working due to insufficient asset '${this.assetName}' balance` +
+        ` ([${this.criticalThreshold}] '${this.assetName}' is required, but [${
+          this.tokenAmount / BigInt(10 ** this.assetDecimal)
+        }] is available.).\n` +
+        `Please top up [${this.address}] with asset [${this.assetId}]`
       );
     else if (this.tokenAmount < this.warnThreshold)
       return (
-        `Service is in unstable situation due to insufficient asset '${this.assetName}' balance` +
-        ` ([${this.tokenAmount}] is less than recommended amount [${this.warnThreshold}]).\n` +
-        `Please charge [${this.address}] with asset [${this.assetId}]`
+        `Service is in unstable situation due to low asset '${this.assetName}' balance` +
+        ` ([${this.warnThreshold}] '${this.assetName}' is recommended, but [${
+          this.tokenAmount / BigInt(10 ** this.assetDecimal)
+        }] is available.).\n` +
+        `Please top up [${this.address}] with asset [${this.assetId}], otherwise your service will stop working soon.`
       );
     return undefined;
   };
@@ -74,9 +83,15 @@ abstract class AbstractAssetHealthCheckParam extends AbstractHealthCheckParam {
    * @returns asset health status
    */
   getHealthStatus = async (): Promise<HealthStatusLevel> => {
-    if (this.tokenAmount < this.criticalThreshold)
+    if (
+      this.tokenAmount <
+      this.criticalThreshold * BigInt(10 ** this.assetDecimal)
+    )
       return HealthStatusLevel.BROKEN;
-    else if (this.tokenAmount < this.warnThreshold)
+    else if (
+      this.tokenAmount <
+      this.warnThreshold * BigInt(10 ** this.assetDecimal)
+    )
       return HealthStatusLevel.UNSTABLE;
     else return HealthStatusLevel.HEALTHY;
   };
