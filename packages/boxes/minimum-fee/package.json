@@ -24,13 +24,12 @@
   ],
   "license": "GPL-3.0",
   "dependencies": {
+    "@rosen-bridge/json-bigint": "^0.1.0",
     "@rosen-clients/ergo-explorer": "^1.0.2",
-    "ergo-lib-wasm-nodejs": "^0.24.0",
-    "json-bigint": "^1.0.0"
+    "ergo-lib-wasm-nodejs": "^0.24.1"
   },
   "devDependencies": {
     "@types/jest": "^29.1.2",
-    "@types/json-bigint": "^1.0.1",
     "@types/node": "^18.0.0",
     "@typescript-eslint/eslint-plugin": "^5.30.7",
     "@typescript-eslint/parser": "^5.26.0",
