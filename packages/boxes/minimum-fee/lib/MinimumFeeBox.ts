@@ -1,5 +1,5 @@
 import { ErgoBox } from 'ergo-lib-wasm-nodejs';
-import { ErgoNetworkType } from './types';
+import { ChainMinimumFee, ErgoNetworkType, Fee } from './types';
 import { FailedError, NotFoundError } from './errors';
 import ergoExplorerClientFactory from '@rosen-clients/ergo-explorer';
 import ergoNodeClientFactory, {
@@ -195,4 +195,98 @@ export class MinimumFeeBox {
    * returns fetched config box
    */
   getBox = (): ErgoBox => this.box;
+
+  /**
+   * gets corresponding config for two chains and height
+   * @param fromChain
+   * @param height blockchain height for fromChain
+   * @param toChain
+   */
+  getFee = (
+    fromChain: string,
+    height: number,
+    toChain: string
+  ): ChainMinimumFee => {
+    if (!this.box) throw Error(`Box is not fetched yet`);
+
+    const fees = this.extractFeeFromBox().reverse();
+    this.logger.debug(
+      `Extracted fee config from box [${this.box
+        .box_id()
+        .to_str()}]: ${JsonBigInt.stringify(fees)}`
+    );
+    for (const fee of fees) {
+      if (!Object.hasOwn(fee.heights, fromChain))
+        throw new NotFoundError(
+          `No fee found for chain [${fromChain}] in box [${this.box
+            .box_id()
+            .to_str()}]`
+        );
+      if (fee.heights[fromChain] < height) {
+        const chainFee = fee.configs[toChain];
+        if (chainFee) return new ChainMinimumFee(chainFee);
+        else throw new Error(`Chain [${toChain}] is not supported anymore`);
+      }
+    }
+
+    throw new NotFoundError(
+      `Config does not support height [${height}] for chain [${fromChain}] in box [${this.box
+        .box_id()
+        .to_str()}]`
+    );
+  };
+
+  /**
+   * extracts Fee config from box registers
+   */
+  protected extractFeeFromBox = (): Array<Fee> => {
+    const R4 = this.box.register_value(4);
+    const R5 = this.box.register_value(5);
+    const R6 = this.box.register_value(6);
+    const R7 = this.box.register_value(7);
+    const R8 = this.box.register_value(8);
+    const R9 = this.box.register_value(9);
+
+    if (!R4 || !R5 || !R6 || !R7 || !R8 || !R9)
+      throw Error(
+        `Incomplete register data for minimum-fee config box [${this.box
+          .box_id()
+          .to_str()}]`
+      );
+
+    const fees: Array<Fee> = [];
+    const chains = R4.to_coll_coll_byte().map((element) =>
+      Buffer.from(element).toString()
+    );
+    const heights = R5.to_js() as Array<Array<number>>;
+    const bridgeFees = R6.to_js() as Array<Array<bigint>>;
+    const networkFees = R7.to_js() as Array<Array<bigint>>;
+    const rsnRatios = R8.to_js() as Array<Array<Array<bigint>>>;
+    const feeRatios = R9.to_js() as Array<Array<bigint>>;
+
+    for (let feeIdx = 0; feeIdx < heights.length; feeIdx++) {
+      const fee: Fee = {
+        heights: {},
+        configs: {},
+      };
+      for (let chainIdx = 0; chainIdx < chains.length; chainIdx++) {
+        const chain = chains[chainIdx];
+
+        if (heights[feeIdx][chainIdx] === -1) continue;
+        fee.heights[chain] = heights[feeIdx][chainIdx];
+
+        if (bridgeFees[feeIdx][chainIdx] === -1n) continue;
+        fee.configs[chain] = {
+          bridgeFee: bridgeFees[feeIdx][chainIdx],
+          networkFee: networkFees[feeIdx][chainIdx],
+          rsnRatio: rsnRatios[feeIdx][chainIdx][0],
+          rsnRatioDivisor: rsnRatios[feeIdx][chainIdx][1],
+          feeRatio: feeRatios[feeIdx][chainIdx],
+        };
+      }
+      fees.push(fee);
+    }
+
+    return fees;
+  };
 }

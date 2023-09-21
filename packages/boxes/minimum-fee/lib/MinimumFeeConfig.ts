@@ -2,7 +2,6 @@ import { ChainFee, Fee } from './types';
 
 export class MinimumFeeConfig {
   protected fee: Fee;
-  readonly feeRatioDivisor: bigint = 10000n;
 
   constructor() {
     this.fee = {
