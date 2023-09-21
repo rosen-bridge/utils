@@ -1,8 +1,10 @@
-import { ErgoNetworkType, NotFoundError } from '../lib';
+import { ErgoBox } from 'ergo-lib-wasm-nodejs';
+import { ErgoNetworkType, FailedError, NotFoundError } from '../lib';
 import { TestMinimumFeeBox } from './TestMinimumFeeBox';
 import * as testData from './testData';
 import ergoExplorerClientFactory from '@rosen-clients/ergo-explorer';
 import ergoNodeClientFactory from '@rosen-clients/ergo-node';
+import JsonBigInt from '@rosen-bridge/json-bigint';
 
 jest.mock('@rosen-clients/ergo-explorer');
 jest.mock('@rosen-clients/ergo-node');
@@ -125,14 +127,14 @@ describe('MinimumFeeBox', () => {
 
     /**
      * @target MinimumFeeBox.fetchBox should throw NotFoundError
-     * when got no config box from explorer client successfully
+     * when got no config box from explorer client
      * @dependencies
      * @scenario
      * - mock explorer client to return test boxes
      * - run test & check thrown exception
      * - check returned value
      * @expected
-     * - returned box id should be as expected
+     * - NotFoundError should be thrown
      */
     it('should throw NotFoundError when got no config box from explorer client successfully', async () => {
       mockExplorerGetApiV1BoxesUnspentBytokenidP1(false);
@@ -204,14 +206,14 @@ describe('MinimumFeeBox', () => {
 
     /**
      * @target MinimumFeeBox.fetchBox should throw NotFoundError
-     * when got no config box from node client successfully
+     * when got no config box from node client
      * @dependencies
      * @scenario
      * - mock node client to return test boxes
      * - run test & check thrown exception
      * - check returned value
      * @expected
-     * - returned box id should be as expected
+     * - NotFoundError should be thrown
      */
     it('should throw NotFoundError when got no config box from node client successfully', async () => {
       mockNodeGetBoxesByAddressUnspentToThrow();
@@ -225,6 +227,35 @@ describe('MinimumFeeBox', () => {
       await expect(async () => {
         await minimumFeeBox.fetchBox();
       }).rejects.toThrow(NotFoundError);
+    });
+  });
+
+  describe('selectEligibleBox', () => {
+    /**
+     * @target MinimumFeeBox.fetchBox should throw FailedError
+     * when found multiple config box
+     * @dependencies
+     * @scenario
+     * - mock test boxes
+     * - run test & check thrown exception
+     * - check returned value
+     * @expected
+     * - FailedError should be thrown
+     */
+    it('should throw FailedError when found multiple config box', async () => {
+      const testBoxes = testData.nodeTestBoxes.map((boxJson) =>
+        ErgoBox.from_json(JsonBigInt.stringify(boxJson))
+      );
+      const minimumFeeBox = new TestMinimumFeeBox(
+        nativeTokenId,
+        defaultMinimumFeeNFT,
+        defaultAddress,
+        ErgoNetworkType.explorer,
+        ''
+      );
+      expect(() => {
+        minimumFeeBox.callSelectEligibleBox(testBoxes);
+      }).toThrow(FailedError);
     });
   });
 });
