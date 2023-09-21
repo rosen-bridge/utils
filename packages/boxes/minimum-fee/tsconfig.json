@@ -4,6 +4,5 @@
     "outDir": "dist",
     "rootDir": "./"
   },
-  "include": ["tests", "lib"],
-  "references": [{ "path": "../../logger-interface" }]
+  "include": ["tests", "lib"]
 }
