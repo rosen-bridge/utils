@@ -10,7 +10,8 @@ import {
   ErgoBoxCandidate,
 } from 'ergo-lib-wasm-nodejs';
 import { MinimumFeeConfig } from './MinimumFeeConfig';
-import { Fee, InvalidConfig } from './types';
+import { Fee } from './types';
+import { InvalidConfig } from './errors';
 
 const ERGO_NATIVE_TOKEN = 'erg';
 

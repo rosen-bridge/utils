@@ -11,8 +11,7 @@ export interface ChainFee {
   feeRatio: bigint;
 }
 
-export class InvalidConfig extends Error {
-  constructor(msg: string) {
-    super('InvalidConfig: ' + msg);
-  }
+export enum ErgoNetworkType {
+  explorer = 'explorer',
+  node = 'node',
 }
