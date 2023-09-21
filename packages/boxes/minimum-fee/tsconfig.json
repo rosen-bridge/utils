@@ -4,5 +4,9 @@
     "outDir": "dist",
     "rootDir": "./"
   },
-  "include": ["tests", "lib"]
+  "include": ["tests", "lib"],
+  "references": [
+    { "path": "../../logger-interface" },
+    { "path": "../../json-bigint" }
+  ]
 }
