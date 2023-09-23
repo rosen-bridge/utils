@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/cardano-utxo-selection",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Typescript package to select enough Cardano utxos for required amount of assets",
   "main": "dist/lib/index.js",
   "types": "dist/lib/index.d.ts",
@@ -10,8 +10,8 @@
     "lint": "eslint --fix . && npm run prettify",
     "build": "tsc --build tsconfig.build.json",
     "type-check": "tsc --noEmit",
-    "test": "jest",
-    "coverage": "jest --coverage",
+    "test": "jest --runInBand",
+    "coverage": "jest --coverage --runInBand",
     "release": "npm run test && npm run build && npm publish --access public"
   },
   "files": [
@@ -37,6 +37,6 @@
     "rosen"
   ],
   "dependencies": {
-    "@rosen-bridge/logger-interface": "^0.1.0"
+    "@rosen-bridge/logger-interface": "^0.2.0"
   }
 }
