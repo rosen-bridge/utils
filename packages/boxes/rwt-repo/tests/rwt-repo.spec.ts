@@ -910,8 +910,6 @@ describe('RWTRepo', () => {
       expect(rwtRepoBuilder['repoAddress']).toEqual(rwtRepo['repoAddress']);
       expect(rwtRepoBuilder['repoNft']).toEqual(rwtRepo['repoNft']);
       expect(rwtRepoBuilder['rwt']).toEqual(rwtRepo['rwt']);
-      expect(rwtRepoBuilder['networkType']).toEqual(rwtRepo['networkType']);
-      expect(rwtRepoBuilder['networkUrl']).toEqual(rwtRepo['networkUrl']);
       expect(rwtRepoBuilder['commitmentRwtCount']).toEqual(
         rwtRepo.getCommitmentRwtCount()
       );

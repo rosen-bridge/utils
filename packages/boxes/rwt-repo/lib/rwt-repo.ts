@@ -10,8 +10,10 @@ export class RWTRepoBuilder {
     private repoAddress: string,
     private repoNft: string,
     private rwt: string,
-    private networkType: ErgoNetworkType,
-    private networkUrl: string,
+    private rwtCount: bigint,
+    private rsn: string,
+    private rsnCount: bigint,
+    private chainId: string,
     private commitmentRwtCount: bigint,
     private quorumPercentage: number,
     private approvalOffset: number,
@@ -281,23 +283,40 @@ export class RWTRepo {
       throw error;
     }
 
+    const rwtCount = BigInt(
+      this.box.tokens().get(1).amount().as_i64().to_str()
+    );
+
+    const rsn = this.box.tokens().get(2).id().to_str();
+    const rsnCount = BigInt(
+      this.box.tokens().get(2).amount().as_i64().to_str()
+    );
+
+    const chainIdBytes = this.r4?.at(0);
+    const chainId =
+      chainIdBytes != undefined
+        ? Buffer.from(chainIdBytes).toString('hex')
+        : undefined;
+
     const quorumPercentage = Number(this.r6At(1));
     const approvalOffset = Number(this.r6At(2));
     const maximumApproval = Number(this.r6At(3));
     const widPermits = this.r4
-      ?.map((wid) => Buffer.from(wid).toString('hex'))
+      ?.slice(1)
+      .map((wid) => Buffer.from(wid).toString('hex'))
       .map((wid) => {
         return { wid, rwtCount: this.getPermitCount(wid) };
       });
 
     if (
+      !chainId ||
       !quorumPercentage ||
       !approvalOffset ||
       !maximumApproval ||
       !widPermits
     ) {
       const error = new Error(
-        `could not create RWTRepoBuilder becudase on of [quorumPercentage, approvalOffset, maximumApproval, widPermits] could not be calculated: ${this.rwtRepoLogDescription} `
+        `could not create RWTRepoBuilder becudase one of [chainId=${chainId}, quorumPercentage=${quorumPercentage}, approvalOffset=${approvalOffset}, maximumApproval=${maximumApproval}, widPermits=${widPermits}] could not be calculated: ${this.rwtRepoLogDescription} `
       );
       this.logger.error(error.message);
       throw error;
@@ -307,8 +326,10 @@ export class RWTRepo {
       this.repoAddress,
       this.repoNft,
       this.rwt,
-      this.networkType,
-      this.networkUrl,
+      rwtCount,
+      rsn,
+      rsnCount,
+      chainId,
       this.getCommitmentRwtCount(),
       quorumPercentage,
       approvalOffset,
