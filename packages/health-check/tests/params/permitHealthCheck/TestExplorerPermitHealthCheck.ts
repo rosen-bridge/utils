@@ -5,7 +5,7 @@ class TestExplorerPermitHealthCheck extends ExplorerPermitHealthCheckParam {
    * @returns protected token amount
    */
   getReportCount = () => {
-    return this.reportCount;
+    return this.reportsCount;
   };
 }
 

@@ -3,6 +3,7 @@ import {
   HealthStatusLevel,
 } from '../AbstractHealthCheckParam';
 import { AbstractLogger } from '@rosen-bridge/logger-interface';
+import { upperFirst } from 'lodash-es';
 
 type LogLevel = keyof AbstractLogger;
 
@@ -105,9 +106,7 @@ class LogLevelHealthCheck extends AbstractHealthCheckParam {
    * get logger health param id
    */
   getId = () => {
-    return `${
-      this.level.charAt(0).toUpperCase() + this.level.slice(1)
-    } in Logs`;
+    return `${upperFirst(this.level)} in Logs`;
   };
 
   /**

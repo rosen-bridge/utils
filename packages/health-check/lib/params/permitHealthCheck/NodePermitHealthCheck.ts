@@ -56,7 +56,7 @@ class NodePermitHealthCheckParam extends AbstractPermitHealthCheckParam {
       offset += this.API_REQUEST_LIMIT;
     } while (boxes.length > 0);
 
-    this.reportCount = RWTCount / BigInt(this.rwtPerCommitment);
+    this.reportsCount = RWTCount / BigInt(this.rwtPerCommitment);
     this.updateTimeStamp = new Date();
   };
 }

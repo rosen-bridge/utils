@@ -56,7 +56,7 @@ class ExplorerPermitHealthCheckParam extends AbstractPermitHealthCheckParam {
       total = boxes.total ?? 0n;
       offset += this.API_REQUEST_LIMIT;
     } while (offset < total);
-    this.reportCount = RWTCount / BigInt(this.rwtPerCommitment);
+    this.reportsCount = RWTCount / BigInt(this.rwtPerCommitment);
     this.updateTimeStamp = new Date();
   };
 }

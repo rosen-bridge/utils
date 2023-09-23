@@ -20,7 +20,7 @@ abstract class AbstractAssetHealthCheckParam extends AbstractHealthCheckParam {
     address: string,
     warnThreshold: bigint,
     criticalThreshold: bigint,
-    assetDecimal = 0
+    assetDecimal: number
   ) {
     super();
     this.assetId = assetId;
@@ -48,20 +48,23 @@ abstract class AbstractAssetHealthCheckParam extends AbstractHealthCheckParam {
    * @returns parameter health description
    */
   getDescription = async (): Promise<string | undefined> => {
+    const roundTokenAmount =
+      this.tokenAmount.toString().slice(0, -this.assetDecimal) || '0';
+    const decimalTokenAmount = this.tokenAmount
+      .toString()
+      .slice(-this.assetDecimal)
+      .padStart(this.assetDecimal, '0');
+    const amountStr = roundTokenAmount + '.' + decimalTokenAmount;
     if (this.tokenAmount < this.criticalThreshold)
       return (
         `Service has stopped working due to insufficient asset '${this.assetName}' balance` +
-        ` ([${this.criticalThreshold}] '${this.assetName}' is required, but [${
-          this.tokenAmount / BigInt(10 ** this.assetDecimal)
-        }] is available.).\n` +
+        ` ([${this.criticalThreshold}] '${this.assetName}' is required, but [${amountStr}] is available.).\n` +
         `Please top up [${this.address}] with asset [${this.assetId}]`
       );
     else if (this.tokenAmount < this.warnThreshold)
       return (
         `Service is in unstable situation due to low asset '${this.assetName}' balance` +
-        ` ([${this.warnThreshold}] '${this.assetName}' is recommended, but [${
-          this.tokenAmount / BigInt(10 ** this.assetDecimal)
-        }] is available.).\n` +
+        ` ([${this.warnThreshold}] '${this.assetName}' is recommended, but [${amountStr}] is available.).\n` +
         `Please top up [${this.address}] with asset [${this.assetId}], otherwise your service will stop working soon.`
       );
     return undefined;
@@ -85,12 +88,12 @@ abstract class AbstractAssetHealthCheckParam extends AbstractHealthCheckParam {
   getHealthStatus = async (): Promise<HealthStatusLevel> => {
     if (
       this.tokenAmount <
-      this.criticalThreshold * BigInt(10 ** this.assetDecimal)
+      this.criticalThreshold * 10n ** BigInt(this.assetDecimal)
     )
       return HealthStatusLevel.BROKEN;
     else if (
       this.tokenAmount <
-      this.warnThreshold * BigInt(10 ** this.assetDecimal)
+      this.warnThreshold * 10n ** BigInt(this.assetDecimal)
     )
       return HealthStatusLevel.UNSTABLE;
     else return HealthStatusLevel.HEALTHY;

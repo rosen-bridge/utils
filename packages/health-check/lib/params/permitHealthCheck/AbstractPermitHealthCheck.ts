@@ -9,7 +9,7 @@ abstract class AbstractPermitHealthCheckParam extends AbstractHealthCheckParam {
   protected WID: string;
   protected warnThreshold: bigint;
   protected criticalThreshold: bigint;
-  protected reportCount: bigint;
+  protected reportsCount: bigint;
   protected updateTimeStamp: Date;
   protected rwtPerCommitment: number;
 
@@ -43,16 +43,16 @@ abstract class AbstractPermitHealthCheckParam extends AbstractHealthCheckParam {
    * @returns parameter health description
    */
   getDescription = async (): Promise<string | undefined> => {
-    if (this.reportCount <= this.criticalThreshold)
+    if (this.reportsCount <= this.criticalThreshold)
       return (
         `Insufficient or critical amount of permit tokens.\n` +
-        `Service may stop working soon. [${this.reportCount}] report permits is left.` +
-        ` Please lock more RSN to get more permits.`
+        `Service may stop working soon. [${this.reportsCount}] report permits is left.` +
+        ` Please lock more RSN to get more report permits.`
       );
-    else if (this.reportCount <= this.warnThreshold)
+    else if (this.reportsCount <= this.warnThreshold)
       return (
-        `Service may stop working soon. Available report permits [${this.reportCount}] are less than ` +
-        `the recommended reports [${this.warnThreshold}]. Please lock more RSN to get more permits.`
+        `Service may stop working soon. Available report permits [${this.reportsCount}] are less than ` +
+        `the recommended reports [${this.warnThreshold}]. Please lock more RSN to get more report permits.`
       );
     return undefined;
   };
@@ -73,9 +73,9 @@ abstract class AbstractPermitHealthCheckParam extends AbstractHealthCheckParam {
    * @returns asset health status
    */
   getHealthStatus = async (): Promise<HealthStatusLevel> => {
-    if (this.reportCount <= this.criticalThreshold)
+    if (this.reportsCount <= this.criticalThreshold)
       return HealthStatusLevel.BROKEN;
-    else if (this.reportCount <= this.warnThreshold)
+    else if (this.reportsCount <= this.warnThreshold)
       return HealthStatusLevel.UNSTABLE;
     return HealthStatusLevel.HEALTHY;
   };
