@@ -12,7 +12,8 @@ describe('AbstractAssetHealthCheckParam', () => {
       'assetName',
       'address',
       100n,
-      10n
+      10n,
+      0
     );
   });
 
