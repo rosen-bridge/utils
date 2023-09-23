@@ -4,11 +4,11 @@ import ergoNodeClientFactory from '@rosen-clients/ergo-node';
 import { Constant, ErgoBox } from 'ergo-lib-wasm-nodejs';
 import { RWTRepo, RWTRepoBuilder } from '../lib';
 import { jsonBigInt } from '../lib/utils';
-import { rwtRepoInfoSample } from './rwt-repo-TestData';
+import { rwtRepoInfoSample } from './rwtRepoTestData';
 import {
   mockedErgoExplorerClientFactory,
   mockedErgoNodeClientFactory,
-} from './rwt-repo.mock';
+} from './rwtRepo.mock';
 
 describe('RWTRepo', () => {
   describe('updateBox', () => {
