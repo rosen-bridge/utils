@@ -4,15 +4,15 @@ import ergoNodeClientFactory from '@rosen-clients/ergo-node';
 import { ErgoBox } from 'ergo-lib-wasm-nodejs';
 import { RWTRepo } from '../lib';
 import { jsonBigInt } from '../lib/utils';
-import { rwtRepoInfoSample } from './rwtRepoTestData';
 import {
   mockedErgoExplorerClientFactory,
   mockedErgoNodeClientFactory,
 } from './rwtRepo.mock';
+import { rwtRepoInfoSample } from './rwtRepoTestData';
 
 describe('RWTRepo', () => {
   describe('updateBox', () => {
-    afterEach(() => {
+    beforeEach(() => {
       jest.restoreAllMocks();
     });
 
@@ -31,14 +31,14 @@ describe('RWTRepo', () => {
      * box info for the repoAddress and repoNft
      * - call RWTRepo.updateBox to update RWTRepo.box
      * - check RWTRepo.box to be populated with correct info
-     * - check if RWTRepo.getBoxFromExplorer private method has been called
+     * - check if Explorer client api has been called
      * @expected
      * - RWTRepo.box should be populated with correct info
-     * - RWTRepo.getBoxFromExplorer private method should have been called
+     * - Explorer client api should have been called
      */
     it(`updateBox of RWTRepo created with networkType=ErgoNetworkType.Explorer
     argument, should update the box member variable with ErgoBox created from
-    the unspent box info received from explorere api for the corresponding
+    the unspent box info received from explorer api for the corresponding
     repoAddress and repoNft set on this instance`, async () => {
       const rwtRepo = new RWTRepo(
         rwtRepoInfoSample.Address,
@@ -48,14 +48,14 @@ describe('RWTRepo', () => {
         ''
       );
 
-      const spyGetBoxFromExplorer = jest.spyOn(
-        rwtRepo as any,
-        'getBoxFromExplorer'
-      );
-
-      rwtRepo['explorerClient'] = mockedErgoExplorerClientFactory(
+      const mockedExplorerClient = mockedErgoExplorerClientFactory(
         ''
       ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
+      const spyGetBoxFromExplorer = jest.spyOn(
+        mockedExplorerClient.v1,
+        'getApiV1BoxesUnspentByaddressP1'
+      );
+      rwtRepo['explorerClient'] = mockedExplorerClient;
 
       await rwtRepo.updateBox(false);
 
@@ -79,12 +79,12 @@ describe('RWTRepo', () => {
      * box info for the repoAddress and repoNft
      * - call RWTRepo.updateBox to check if it should update the box
      * - check RWTRepo.box to be populated with correct info
-     * - check if RWTRepo.getBoxFromExplorer private method has been called
+     * - check if Explorer client api has been called
      * - check if RWTRepo.box is not changed and not replaced with a new
      * instance
      * @expected
      * - RWTRepo.box should be populated with correct info
-     * - RWTRepo.getBoxFromExplorer private method should have been called
+     * - Explorer client api should have been called
      * - RWTRepo.box should not be changed and not replaced with a new instance
      */
     it(`updateBox of RWTRepo created with networkType=ErgoNetworkType.Explorer
@@ -103,14 +103,14 @@ describe('RWTRepo', () => {
       );
       rwtRepo['box'] = currentBox;
 
-      const spyGetBoxFromExplorer = jest.spyOn(
-        rwtRepo as any,
-        'getBoxFromExplorer'
-      );
-
-      rwtRepo['explorerClient'] = mockedErgoExplorerClientFactory(
+      const mockedExplorerClient = mockedErgoExplorerClientFactory(
         ''
       ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
+      const spyGetBoxFromExplorer = jest.spyOn(
+        mockedExplorerClient.v1,
+        'getApiV1BoxesP1'
+      );
+      rwtRepo['explorerClient'] = mockedExplorerClient;
 
       await rwtRepo.updateBox(false);
 
@@ -136,10 +136,10 @@ describe('RWTRepo', () => {
      * box info for the repoAddress and repoNft
      * - call RWTRepo.updateBox(true) to update RWTRepo.box from mempool
      * - check RWTRepo.box to be populated with correct info
-     * - check if RWTRepo.getBoxFromExplorerMempool private method has been called
+     * - check if explorer client mempool api has been called
      * @expected
      * - RWTRepo.box should be populated with correct info
-     * - RWTRepo.getBoxFromExplorerMempool private method should have been called
+     * - explorer client mempool api should have been called
      */
     it(`updateBox(true) of RWTRepo created with
     networkType=ErgoNetworkType.Explorer argument, should update the box member
@@ -153,14 +153,14 @@ describe('RWTRepo', () => {
         ''
       );
 
-      const spyGetBoxFromExplorerMempool = jest.spyOn(
-        rwtRepo as any,
-        'getBoxFromExplorerMempool'
-      );
-
-      rwtRepo['explorerClient'] = mockedErgoExplorerClientFactory(
+      const mockedExplorerClient = mockedErgoExplorerClientFactory(
         ''
       ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
+      const spyGetBoxFromExplorerMempool = jest.spyOn(
+        mockedExplorerClient.v0,
+        'getApiV0TransactionsUnconfirmedByaddressP1'
+      );
+      rwtRepo['explorerClient'] = mockedExplorerClient;
 
       await rwtRepo.updateBox(true);
 
@@ -185,10 +185,10 @@ describe('RWTRepo', () => {
      * box info for the repoAddress and repoNft
      * - call RWTRepo.updateBox to update RWTRepo.box
      * - check RWTRepo.box to be populated with correct info
-     * - check if RWTRepo.getBoxFromNode private method has been called
+     * - check if node client api has been called
      * @expected
      * - RWTRepo.box should be populated with correct info
-     * - RWTRepo.getBoxFromNode private method should have been called
+     * - node client api should have been called
      */
     it(`updateBox of RWTRepo created with networkType=ErgoNetworkType.Node
     argument, should update the box member variable with ErgoBox created from
@@ -202,11 +202,14 @@ describe('RWTRepo', () => {
         ''
       );
 
-      const spyGetBoxFromNode = jest.spyOn(rwtRepo as any, 'getBoxFromNode');
-
-      rwtRepo['nodeClient'] = mockedErgoNodeClientFactory(
+      const mockedNodeClient = mockedErgoNodeClientFactory(
         ''
       ) as unknown as ReturnType<typeof ergoNodeClientFactory>;
+      const spyGetBoxFromNode = jest.spyOn(
+        mockedNodeClient,
+        'getBoxesByAddressUnspent'
+      );
+      rwtRepo['nodeClient'] = mockedNodeClient;
 
       await rwtRepo.updateBox(false);
 
@@ -231,10 +234,10 @@ describe('RWTRepo', () => {
      * box info for the repoAddress and repoNft
      * - call RWTRepo.updateBox(true) to update RWTRepo.box from mempool
      * - check RWTRepo.box to be populated with correct info
-     * - check if RWTRepo.getBoxFromNodeMempool private method has been called
+     * - - check if node client mempool api has been called
      * @expected
      * - RWTRepo.box should be populated with correct info
-     * - RWTRepo.getBoxFromNodeMempool private method should have been called
+     * - node client mempool api should have been called
      */
     it(`updateBox(true) of RWTRepo created with networkType=ErgoNetworkType.Node
     argument, should update the box member variable with ErgoBox created from
@@ -248,14 +251,14 @@ describe('RWTRepo', () => {
         ''
       );
 
-      const spyGetBoxFromNodeMempool = jest.spyOn(
-        rwtRepo as any,
-        'getBoxFromNodeMempool'
-      );
-
-      rwtRepo['nodeClient'] = mockedErgoNodeClientFactory(
+      const mockedNodeClient = mockedErgoNodeClientFactory(
         ''
       ) as unknown as ReturnType<typeof ergoNodeClientFactory>;
+      const spyGetBoxFromNodeMempool = jest.spyOn(
+        mockedNodeClient,
+        'getUnconfirmedTransactionsByErgoTree'
+      );
+      rwtRepo['nodeClient'] = mockedNodeClient;
 
       await rwtRepo.updateBox(true);
 
@@ -279,12 +282,12 @@ describe('RWTRepo', () => {
      * box info for the repoAddress and repoNft
      * - call RWTRepo.updateBox to check if it should update the box
      * - check RWTRepo.box to be populated with correct info
-     * - check if RWTRepo.getBoxFromNode private method has been called
+     * - check if node client api has been called
      * - check if RWTRepo.box is not changed and not replaced with a new
      * instance
      * @expected
      * - RWTRepo.box should be populated with correct info
-     * - RWTRepo.getBoxFromNode private method should have been called
+     * - node client api should have been called
      * - RWTRepo.box should not be changed and not replaced with a new instance
      */
     it(`updateBox of RWTRepo created with networkType=ErgoNetworkType.Node
@@ -303,11 +306,11 @@ describe('RWTRepo', () => {
       );
       rwtRepo['box'] = currentBox;
 
-      const spyGetBoxFromNode = jest.spyOn(rwtRepo as any, 'getBoxFromNode');
-
-      rwtRepo['nodeClient'] = mockedErgoNodeClientFactory(
+      const mockedNodeClient = mockedErgoNodeClientFactory(
         ''
       ) as unknown as ReturnType<typeof ergoNodeClientFactory>;
+      const spyGetBoxFromNode = jest.spyOn(mockedNodeClient, 'getBoxById');
+      rwtRepo['nodeClient'] = mockedNodeClient;
 
       await rwtRepo.updateBox(false);
 
