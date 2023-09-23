@@ -251,10 +251,9 @@ export class RWTRepo {
    */
   getErgCollateral() {
     if (!this.box) {
-      const error = new Error(
+      throw new Error(
         `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
       );
-      throw error;
     }
 
     const ergCollateralRegister = (
@@ -262,11 +261,9 @@ export class RWTRepo {
     )?.at(4);
 
     if (!ergCollateralRegister) {
-      const error = new Error(
+      throw new Error(
         `could not extract ergCollateral from R6[4]: ${this.rwtRepoLogDescription} `
       );
-      this.logger.error(error.message);
-      throw error;
     }
 
     this.logger.debug(
