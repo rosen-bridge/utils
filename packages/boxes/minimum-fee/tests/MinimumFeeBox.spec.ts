@@ -394,14 +394,14 @@ describe('MinimumFeeBox', () => {
      * - check box parameters
      * @expected
      * - box parameters should be identical
-     * -   value
-     * -   address
-     * -   tokens
-     * -   registers
+     *   - value
+     *   - address
+     *   - tokens
+     *   - registers
      */
     it('should return a builder with the same parameters', () => {
       const minimumFeeBox = generateDefaultMinimumFeeBox();
-      const testBox = ErgoBox.from_json(testData.normalFeeBox);
+      const testBox = ErgoBox.from_json(testData.tokenNormalFeeBox);
       minimumFeeBox.setBox(testBox);
       const result = minimumFeeBox.toBuilder();
       result.setHeight(1000000);
@@ -417,12 +417,12 @@ describe('MinimumFeeBox', () => {
         resultBoxCandidate.tokens().len()
       );
       for (let i = 0; i < resultBoxCandidate.tokens().len(); i++) {
-        expect(resultBoxCandidate.tokens().get(0).id().to_str()).toEqual(
-          testBox.tokens().get(0).id().to_str()
+        expect(resultBoxCandidate.tokens().get(i).id().to_str()).toEqual(
+          testBox.tokens().get(i).id().to_str()
         );
         expect(
-          resultBoxCandidate.tokens().get(0).amount().as_i64().to_str()
-        ).toEqual(testBox.tokens().get(0).amount().as_i64().to_str());
+          resultBoxCandidate.tokens().get(i).amount().as_i64().to_str()
+        ).toEqual(testBox.tokens().get(i).amount().as_i64().to_str());
       }
 
       expect(
@@ -436,21 +436,11 @@ describe('MinimumFeeBox', () => {
           ?.to_coll_coll_byte()
           .map((element) => Buffer.from(element).toString())
       );
-      expect(resultBoxCandidate.register_value(5)?.to_js()).toEqual(
-        testBox.register_value(5)?.to_js()
-      );
-      expect(resultBoxCandidate.register_value(6)?.to_js()).toEqual(
-        testBox.register_value(6)?.to_js()
-      );
-      expect(resultBoxCandidate.register_value(7)?.to_js()).toEqual(
-        testBox.register_value(7)?.to_js()
-      );
-      expect(resultBoxCandidate.register_value(8)?.to_js()).toEqual(
-        testBox.register_value(8)?.to_js()
-      );
-      expect(resultBoxCandidate.register_value(9)?.to_js()).toEqual(
-        testBox.register_value(9)?.to_js()
-      );
+      for (let i = 5; i < 10; i++) {
+        expect(resultBoxCandidate.register_value(i)?.to_js()).toEqual(
+          testBox.register_value(i)?.to_js()
+        );
+      }
     });
 
     /**

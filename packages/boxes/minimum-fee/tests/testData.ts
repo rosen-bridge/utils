@@ -914,3 +914,30 @@ export const removeChainFeeBox = `{
   "transactionId": "3e377a54c457f48078914774af804b26d84f5cfa0ac13b64baacb0248835b073",
   "index": 2
 }`;
+
+export const tokenNormalFeeBox = `{
+  "boxId": "d9d0ce822af1dfdad43a1aad134a1960f999c358d0783996ded2b73e9f0e6a49",
+  "value": 500000,
+  "ergoTree": "0008cd02b2623a06a2497e11a79352187094d41409369d8525180a8e8f7e751ae1b28c6b",
+  "assets": [
+    {
+      "tokenId": "c597eac4db28f62419eab5639122f2bc4955dfedf958e7cdba5248ba2a81210a",
+      "amount": 1
+    },
+    {
+      "tokenId": "6cbeec04af6a5047d8818eac2ac6e2b28e1e74a0d339cff96f7641a1a0c3ca9b",
+      "amount": 1
+    }
+  ],
+  "additionalRegisters": {
+    "R4": "1a030762696e616e63650763617264616e6f046572676f",
+    "R5": "1c0203b40ab8a036cead0103920cc6e8439cdb02",
+    "R6": "1e02030202bc0201900164030203200201f40200c8",
+    "R7": "1e0203015d0146011e03016001500128",
+    "R9": "1e0203013c0132012803013d01330129",
+    "R8": "0c1e020302011e020bb80201140207d002010a0203e80302011f020c1c02011502083402010b02044c"
+  },
+  "creationHeight": 1000000,
+  "transactionId": "b6792f0fdfb5c56b4e7799241e2a305b5de3e4c2ec66c70b412ef130fd62a037",
+  "index": 0
+}`;
