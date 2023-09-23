@@ -254,7 +254,6 @@ export class RWTRepo {
       const error = new Error(
         `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
       );
-      this.logger.error(error.message);
       throw error;
     }
 
@@ -269,6 +268,10 @@ export class RWTRepo {
       this.logger.error(error.message);
       throw error;
     }
+
+    this.logger.debug(
+      `ergCollateral in R6[4] register value: ${ergCollateralRegister}`
+    );
 
     return BigInt(ergCollateralRegister);
   }

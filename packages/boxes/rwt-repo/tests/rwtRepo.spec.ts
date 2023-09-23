@@ -333,9 +333,9 @@ describe('RWTRepo', () => {
      * - mock RWTRepo.explorerClient to return a client that returns predefined
      * box info for the repoAddress and repoNft
      * - call RWTRepo.updateBox to update RWTRepo.box
-     * - check RWTRepo.getErgCollateral() to return the currect value
+     * - check RWTRepo.getErgCollateral() to return the correct value
      * @expected
-     * - RWTRepo.getErgCollateral() should return the currect value
+     * - RWTRepo.getErgCollateral() should return the correct value
      */
     it(`RWTRepo.getErgCollateral should return a bigint with the value stores in
     R6[4] of RWTRepo.box`, async () => {
