@@ -55,13 +55,19 @@ abstract class AbstractAssetHealthCheckParam extends AbstractHealthCheckParam {
       .slice(-this.assetDecimal)
       .padStart(this.assetDecimal, '0');
     const amountStr = roundTokenAmount + '.' + decimalTokenAmount;
-    if (this.tokenAmount < this.criticalThreshold)
+    if (
+      this.tokenAmount <
+      this.criticalThreshold * 10n ** BigInt(this.assetDecimal)
+    )
       return (
         `Service has stopped working due to insufficient asset '${this.assetName}' balance` +
         ` ([${this.criticalThreshold}] '${this.assetName}' is required, but [${amountStr}] is available.).\n` +
         `Please top up [${this.address}] with asset [${this.assetId}]`
       );
-    else if (this.tokenAmount < this.warnThreshold)
+    else if (
+      this.tokenAmount <
+      this.warnThreshold * 10n ** BigInt(this.assetDecimal)
+    )
       return (
         `Service is in unstable situation due to low asset '${this.assetName}' balance` +
         ` ([${this.warnThreshold}] '${this.assetName}' is recommended, but [${amountStr}] is available.).\n` +
