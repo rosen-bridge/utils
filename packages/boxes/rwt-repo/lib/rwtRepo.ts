@@ -398,7 +398,7 @@ export class RWTRepo {
       throw error;
     }
 
-    const widIndex = r4Hex.indexOf(wid);
+    const widIndex = r4Hex.slice(1).indexOf(wid);
 
     return widIndex;
   }
