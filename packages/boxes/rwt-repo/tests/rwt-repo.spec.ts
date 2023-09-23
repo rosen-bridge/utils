@@ -894,22 +894,32 @@ describe('RWTRepo', () => {
         ).to_i64_str_array() as string[]
       ).map(BigInt);
 
-      const widPermits = r4
-        ?.map((wid) => Buffer.from(wid).toString('hex'))
-        .map((wid, i) => {
-          return { wid, rwtCount: r5[i] };
-        });
-
       const r6 = (
         Constant.decode_from_base16(
           rwtRepoInfoSample.boxInfo.additionalRegisters.R6.serializedValue
         ).to_i64_str_array() as string[]
       ).map(BigInt);
 
+      const widPermits = r4
+        .slice(1)
+        ?.map((wid) => Buffer.from(wid).toString('hex'))
+        .map((wid, i) => {
+          return { wid, rwtCount: r5[i + 1] };
+        });
+
+      const rwtCount = BigInt(rwtRepoInfoSample.boxInfo.assets[1].amount);
+      const rsnToken = rwtRepoInfoSample.boxInfo.assets[2];
+
       expect(rwtRepoBuilder).toBeInstanceOf(RWTRepoBuilder);
       expect(rwtRepoBuilder['repoAddress']).toEqual(rwtRepo['repoAddress']);
       expect(rwtRepoBuilder['repoNft']).toEqual(rwtRepo['repoNft']);
       expect(rwtRepoBuilder['rwt']).toEqual(rwtRepo['rwt']);
+      expect(rwtRepoBuilder['rwtCount']).toEqual(rwtCount);
+      expect(rwtRepoBuilder['rsn']).toEqual(rsnToken.tokenId);
+      expect(rwtRepoBuilder['rsnCount']).toEqual(BigInt(rsnToken.amount));
+      expect(rwtRepoBuilder['chainId']).toEqual(
+        Buffer.from(r4[0]).toString('hex')
+      );
       expect(rwtRepoBuilder['commitmentRwtCount']).toEqual(
         rwtRepo.getCommitmentRwtCount()
       );
