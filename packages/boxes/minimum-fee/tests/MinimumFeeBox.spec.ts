@@ -1,5 +1,10 @@
 import { ErgoBox } from 'ergo-lib-wasm-nodejs';
-import { ErgoNetworkType, FailedError, NotFoundError } from '../lib';
+import {
+  ChainMinimumFee,
+  ErgoNetworkType,
+  FailedError,
+  NotFoundError,
+} from '../lib';
 import { TestMinimumFeeBox } from './TestMinimumFeeBox';
 import * as testData from './testData';
 import ergoExplorerClientFactory from '@rosen-clients/ergo-explorer';
@@ -16,6 +21,15 @@ describe('MinimumFeeBox', () => {
   const defaultMinimumFeeNFT =
     'c597eac4db28f62419eab5639122f2bc4955dfedf958e7cdba5248ba2a81210a';
   const defaultAddress = '9fsd61VwCBMZaFGctm8q7v59FsS67KusD5yHDhuwQc6KFfFX34U';
+
+  const generateDefaultMinimumFeeBox = () =>
+    new TestMinimumFeeBox(
+      nativeTokenId,
+      defaultMinimumFeeNFT,
+      defaultAddress,
+      ErgoNetworkType.explorer,
+      ''
+    );
 
   describe('fetchBox', () => {
     /**
@@ -84,13 +98,7 @@ describe('MinimumFeeBox', () => {
      */
     it('should fetch and select Erg config box from explorer client successfully', async () => {
       mockExplorerGetApiV1BoxesUnspentBytokenidP1();
-      const minimumFeeBox = new TestMinimumFeeBox(
-        nativeTokenId,
-        defaultMinimumFeeNFT,
-        defaultAddress,
-        ErgoNetworkType.explorer,
-        ''
-      );
+      const minimumFeeBox = generateDefaultMinimumFeeBox();
       await minimumFeeBox.fetchBox();
       const result = minimumFeeBox.getBox();
       expect(result.box_id().to_str()).toEqual(
@@ -132,19 +140,12 @@ describe('MinimumFeeBox', () => {
      * @scenario
      * - mock explorer client to return test boxes
      * - run test & check thrown exception
-     * - check returned value
      * @expected
      * - NotFoundError should be thrown
      */
     it('should throw NotFoundError when got no config box from explorer client successfully', async () => {
       mockExplorerGetApiV1BoxesUnspentBytokenidP1(false);
-      const minimumFeeBox = new TestMinimumFeeBox(
-        nativeTokenId,
-        defaultMinimumFeeNFT,
-        defaultAddress,
-        ErgoNetworkType.explorer,
-        ''
-      );
+      const minimumFeeBox = generateDefaultMinimumFeeBox();
       await expect(async () => {
         await minimumFeeBox.fetchBox();
       }).rejects.toThrow(NotFoundError);
@@ -211,7 +212,6 @@ describe('MinimumFeeBox', () => {
      * @scenario
      * - mock node client to return test boxes
      * - run test & check thrown exception
-     * - check returned value
      * @expected
      * - NotFoundError should be thrown
      */
@@ -238,7 +238,6 @@ describe('MinimumFeeBox', () => {
      * @scenario
      * - mock test boxes
      * - run test & check thrown exception
-     * - check returned value
      * @expected
      * - FailedError should be thrown
      */
@@ -246,16 +245,139 @@ describe('MinimumFeeBox', () => {
       const testBoxes = testData.nodeTestBoxes.map((boxJson) =>
         ErgoBox.from_json(JsonBigInt.stringify(boxJson))
       );
-      const minimumFeeBox = new TestMinimumFeeBox(
-        nativeTokenId,
-        defaultMinimumFeeNFT,
-        defaultAddress,
-        ErgoNetworkType.explorer,
-        ''
-      );
+      const minimumFeeBox = generateDefaultMinimumFeeBox();
       expect(() => {
         minimumFeeBox.callSelectEligibleBox(testBoxes);
       }).toThrow(FailedError);
+    });
+  });
+
+  describe('getFee', () => {
+    /**
+     * @target MinimumFeeBox.getFee should extract normal fee successfully
+     * @dependencies
+     * @scenario
+     * - mock object box with an ErgoBox with normal fee
+     * - run test
+     * - check returned value
+     * @expected
+     * - returned box id should be as expected
+     */
+    it('should extract normal fee successfully', () => {
+      const minimumFeeBox = generateDefaultMinimumFeeBox();
+      minimumFeeBox.setBox(ErgoBox.from_json(testData.normalFeeBox));
+      const result = minimumFeeBox.getFee('ergo', 12000, 'cardano');
+      expect(result).toEqual(
+        new ChainMinimumFee(testData.normalFee[0].configs.cardano)
+      );
+    });
+
+    /**
+     * @target MinimumFeeBox.getFee should extract new chain fee successfully
+     * @dependencies
+     * @scenario
+     * - mock object box with an ErgoBox with new chain fee
+     * - run test
+     * - check returned value
+     * @expected
+     * - returned box id should be as expected
+     */
+    it('should extract new chain fee successfully', () => {
+      const minimumFeeBox = generateDefaultMinimumFeeBox();
+      minimumFeeBox.setBox(ErgoBox.from_json(testData.newChainFeeBox));
+      const result = minimumFeeBox.getFee('ergo', 23000, 'cardano');
+      expect(result).toEqual(
+        new ChainMinimumFee(testData.newChainFee[1].configs.cardano)
+      );
+    });
+
+    /**
+     * @target MinimumFeeBox.getFee should extract remove chain fee successfully
+     * @dependencies
+     * @scenario
+     * - mock object box with an ErgoBox with remove chain fee
+     * - run test
+     * - check returned value
+     * @expected
+     * - returned box id should be as expected
+     */
+    it('should extract remove chain fee successfully', () => {
+      const minimumFeeBox = generateDefaultMinimumFeeBox();
+      minimumFeeBox.setBox(ErgoBox.from_json(testData.removeChainFeeBox));
+      const result = minimumFeeBox.getFee('ergo', 12000, 'cardano');
+      expect(result).toEqual(
+        new ChainMinimumFee(testData.removeChainFee[0].configs.cardano)
+      );
+    });
+
+    /**
+     * @target MinimumFeeBox.getFee should throw error
+     * when fromChain is not supported
+     * @dependencies
+     * @scenario
+     * - mock object box with an ErgoBox with normal fee
+     * - run test & check thrown exception
+     * @expected
+     * - NotFoundError should be thrown
+     */
+    it('should throw error when fromChain is not supported', () => {
+      const minimumFeeBox = generateDefaultMinimumFeeBox();
+      minimumFeeBox.setBox(ErgoBox.from_json(testData.normalFeeBox));
+      expect(() => {
+        minimumFeeBox.getFee('notSupportedChain', 12000, 'cardano');
+      }).toThrow(NotFoundError);
+    });
+
+    /**
+     * @target MinimumFeeBox.getFee should throw error
+     * when toChain is not supported
+     * @dependencies
+     * @scenario
+     * - mock object box with an ErgoBox with normal fee
+     * - run test & check thrown exception
+     * @expected
+     * - Error should be thrown
+     */
+    it('should throw error when toChain is not supported', () => {
+      const minimumFeeBox = generateDefaultMinimumFeeBox();
+      minimumFeeBox.setBox(ErgoBox.from_json(testData.normalFeeBox));
+      expect(() => {
+        minimumFeeBox.getFee('ergo', 12000, 'notSupporetedChain');
+      }).toThrow(Error);
+    });
+
+    /**
+     * @target MinimumFeeBox.getFee should throw error
+     * when given height of fromChain is not supported
+     * @dependencies
+     * @scenario
+     * - mock object box with an ErgoBox with normal fee
+     * - run test & check thrown exception
+     * @expected
+     * - NotFoundError should be thrown
+     */
+    it('should throw error when given height of fromChain is not supported', () => {
+      const minimumFeeBox = generateDefaultMinimumFeeBox();
+      minimumFeeBox.setBox(ErgoBox.from_json(testData.normalFeeBox));
+      expect(() => {
+        minimumFeeBox.getFee('ergo', 10000, 'cardano');
+      }).toThrow(NotFoundError);
+    });
+
+    /**
+     * @target MinimumFeeBox.getFee should throw error
+     * when box is not fetched yet
+     * @dependencies
+     * @scenario
+     * - run test & check thrown exception
+     * @expected
+     * - Error should be thrown
+     */
+    it('should throw error when box is not fetched yet', () => {
+      const minimumFeeBox = generateDefaultMinimumFeeBox();
+      expect(() => {
+        minimumFeeBox.getFee('ergo', 12000, 'cardano');
+      }).toThrow(Error);
     });
   });
 });

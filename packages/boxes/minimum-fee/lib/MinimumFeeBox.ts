@@ -225,7 +225,12 @@ export class MinimumFeeBox {
       if (fee.heights[fromChain] < height) {
         const chainFee = fee.configs[toChain];
         if (chainFee) return new ChainMinimumFee(chainFee);
-        else throw new Error(`Chain [${toChain}] is not supported anymore`);
+        else
+          throw new Error(
+            `Chain [${toChain}] is not supported at given height of fromChain [${height} of ${fromChain}] in box [${this.box
+              .box_id()
+              .to_str()}]`
+          );
       }
     }
 
