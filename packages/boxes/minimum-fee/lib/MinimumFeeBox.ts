@@ -8,6 +8,8 @@ import ergoNodeClientFactory, {
 import JsonBigInt from '@rosen-bridge/json-bigint';
 import handleApiError from './handleApiError';
 import { AbstractLogger, DummyLogger } from '@rosen-bridge/logger-interface';
+import { MinimumFeeBoxBuilder } from './MinimumFeeBoxBuilder';
+import { MinimumFeeConfig } from './MinimumFeeConfig';
 
 const ERGO_NATIVE_TOKEN = 'erg';
 
@@ -210,11 +212,6 @@ export class MinimumFeeBox {
     if (!this.box) throw Error(`Box is not fetched yet`);
 
     const fees = this.extractFeeFromBox().reverse();
-    this.logger.debug(
-      `Extracted fee config from box [${this.box
-        .box_id()
-        .to_str()}]: ${JsonBigInt.stringify(fees)}`
-    );
     for (const fee of fees) {
       if (!Object.hasOwn(fee.heights, fromChain))
         throw new NotFoundError(
@@ -292,6 +289,37 @@ export class MinimumFeeBox {
       fees.push(fee);
     }
 
+    this.logger.debug(
+      `Extracted fee config from box [${this.box
+        .box_id()
+        .to_str()}]: ${JsonBigInt.stringify(fees)}`
+    );
+
     return fees;
+  };
+
+  /**
+   * generates a MinimumFeeBoxBuilder using current box
+   *  note that 'height' parameter of builder won't be set
+   */
+  toBuilder = (): MinimumFeeBoxBuilder => {
+    const builder = new MinimumFeeBoxBuilder(this.minimumFeeNFT, this.address)
+      .setValue(BigInt(this.box.value().as_i64().to_str()))
+      .setToken(this.tokenId);
+
+    this.extractFeeFromBox().forEach((fee) => {
+      const chainFee = new MinimumFeeConfig();
+      Object.keys(fee.heights).forEach((chain) => {
+        if (Object.hasOwn(fee.configs, chain))
+          chainFee.setChainConfig(
+            chain,
+            fee.heights[chain],
+            fee.configs[chain]
+          );
+        else chainFee.setChainConfig(chain, fee.heights[chain], undefined);
+      });
+      builder.addConfig(chainFee);
+    });
+    return builder;
   };
 }

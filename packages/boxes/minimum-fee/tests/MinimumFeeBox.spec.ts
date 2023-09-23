@@ -3,6 +3,7 @@ import {
   ChainMinimumFee,
   ErgoNetworkType,
   FailedError,
+  InvalidConfig,
   NotFoundError,
 } from '../lib';
 import { TestMinimumFeeBox } from './TestMinimumFeeBox';
@@ -378,6 +379,98 @@ describe('MinimumFeeBox', () => {
       expect(() => {
         minimumFeeBox.getFee('ergo', 12000, 'cardano');
       }).toThrow(Error);
+    });
+  });
+
+  describe('toBuilder', () => {
+    /**
+     * @target MinimumFeeBox.toBuilder should return a builder
+     * with the same parameters
+     * @dependencies
+     * @scenario
+     * - mock object box with an ErgoBox with normal fee
+     * - run test
+     * - set height for returned value and build it
+     * - check box parameters
+     * @expected
+     * - box parameters should be identical
+     * -   value
+     * -   address
+     * -   tokens
+     * -   registers
+     */
+    it('should return a builder with the same parameters', () => {
+      const minimumFeeBox = generateDefaultMinimumFeeBox();
+      const testBox = ErgoBox.from_json(testData.normalFeeBox);
+      minimumFeeBox.setBox(testBox);
+      const result = minimumFeeBox.toBuilder();
+      result.setHeight(1000000);
+      const resultBoxCandidate = result.build();
+
+      expect(resultBoxCandidate.value().as_i64().to_str()).toEqual(
+        testBox.value().as_i64().to_str()
+      );
+      expect(resultBoxCandidate.ergo_tree().to_base16_bytes()).toEqual(
+        testBox.ergo_tree().to_base16_bytes()
+      );
+      expect(resultBoxCandidate.tokens().len()).toEqual(
+        resultBoxCandidate.tokens().len()
+      );
+      for (let i = 0; i < resultBoxCandidate.tokens().len(); i++) {
+        expect(resultBoxCandidate.tokens().get(0).id().to_str()).toEqual(
+          testBox.tokens().get(0).id().to_str()
+        );
+        expect(
+          resultBoxCandidate.tokens().get(0).amount().as_i64().to_str()
+        ).toEqual(testBox.tokens().get(0).amount().as_i64().to_str());
+      }
+
+      expect(
+        resultBoxCandidate
+          .register_value(4)
+          ?.to_coll_coll_byte()
+          .map((element) => Buffer.from(element).toString())
+      ).toEqual(
+        testBox
+          .register_value(4)
+          ?.to_coll_coll_byte()
+          .map((element) => Buffer.from(element).toString())
+      );
+      expect(resultBoxCandidate.register_value(5)?.to_js()).toEqual(
+        testBox.register_value(5)?.to_js()
+      );
+      expect(resultBoxCandidate.register_value(6)?.to_js()).toEqual(
+        testBox.register_value(6)?.to_js()
+      );
+      expect(resultBoxCandidate.register_value(7)?.to_js()).toEqual(
+        testBox.register_value(7)?.to_js()
+      );
+      expect(resultBoxCandidate.register_value(8)?.to_js()).toEqual(
+        testBox.register_value(8)?.to_js()
+      );
+      expect(resultBoxCandidate.register_value(9)?.to_js()).toEqual(
+        testBox.register_value(9)?.to_js()
+      );
+    });
+
+    /**
+     * @target MinimumFeeBox.toBuilder should not set height
+     * for builder
+     * @dependencies
+     * @scenario
+     * - mock object box with an ErgoBox with normal fee
+     * - run test
+     * - build the returned value & check thrown exception
+     * @expected
+     * - InvalidConfig should be thrown
+     */
+    it('should not set height for builder', () => {
+      const minimumFeeBox = generateDefaultMinimumFeeBox();
+      minimumFeeBox.setBox(ErgoBox.from_json(testData.normalFeeBox));
+      const result = minimumFeeBox.toBuilder();
+      expect(() => {
+        result.build();
+      }).toThrow(InvalidConfig);
     });
   });
 });
