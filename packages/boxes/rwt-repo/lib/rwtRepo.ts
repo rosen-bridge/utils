@@ -11,7 +11,8 @@ import ergoNodeClientFactory, {
   IndexedErgoBox,
   Transactions,
 } from '@rosen-clients/ergo-node';
-import { Address, ErgoBox, ErgoTree } from 'ergo-lib-wasm-nodejs';
+import { Address, ErgoBox } from 'ergo-lib-wasm-nodejs';
+import { ErgoTree } from 'ergo-lib-wasm-nodejs';
 import { jsonBigInt } from './utils';
 
 export class RWTRepoBuilder {
@@ -195,7 +196,6 @@ export class RWTRepo {
     }
 
     const box = ErgoBox.from_json(jsonBigInt.stringify(rwtBoxInfos[0]));
-
     return box;
   }
 
@@ -240,6 +240,37 @@ export class RWTRepo {
 
     const box = ErgoBox.from_json(jsonBigInt.stringify(rwtOutputBoxInfos[0]));
     return box;
+  }
+
+  /**
+   * extract the value of ergCollateral from R6[4] of this.box. If this.box is
+   * undefined an exception is thrown
+   *
+   * @return {bigint}
+   * @memberof RWTRepo
+   */
+  getErgCollateral() {
+    if (!this.box) {
+      throw new Error(
+        `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
+      );
+    }
+
+    const ergCollateralRegister = (
+      this.box.register_value(6)?.to_i64_str_array() as string[] | undefined
+    )?.at(4);
+
+    if (!ergCollateralRegister) {
+      throw new Error(
+        `could not extract ergCollateral from R6[4]: ${this.rwtRepoLogDescription} `
+      );
+    }
+
+    this.logger.debug(
+      `ergCollateral in R6[4] register value: ${ergCollateralRegister}`
+    );
+
+    return BigInt(ergCollateralRegister);
   }
 
   /**
