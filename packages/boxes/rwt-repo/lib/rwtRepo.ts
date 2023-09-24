@@ -284,11 +284,9 @@ export class RWTRepo {
    */
   getRsnCollateral() {
     if (!this.box) {
-      const error = new Error(
+      throw new Error(
         `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
       );
-      this.logger.error(error.message);
-      throw error;
     }
 
     const rsnCollateralRegister = (
@@ -296,11 +294,9 @@ export class RWTRepo {
     )?.at(5);
 
     if (!rsnCollateralRegister) {
-      const error = new Error(
+      throw new Error(
         `could not extract rsnCollateral from R6[5]: ${this.rwtRepoLogDescription} `
       );
-      this.logger.error(error.message);
-      throw error;
     }
 
     return BigInt(rsnCollateralRegister);
