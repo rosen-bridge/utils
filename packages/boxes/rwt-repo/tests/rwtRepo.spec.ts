@@ -966,3 +966,78 @@ describe('RWTRepo', () => {
     });
   });
 });
+
+describe('RWTRepoBuilder', () => {
+  describe('addNewUser', () => {
+    /**
+     * @target RWTRepo.addNewUser should add the passed wid, rwtCount arguements
+     * to this.widPermits, and do the fullowing updates:
+     * this.rwtCount -= rwtCount
+     * this.rsnCount += rsnCount
+     * @dependencies
+     * - MockedErgoExplorerClientFactory
+     * @scenario
+     * - create an instance of RWTRepo with specific repoAddress and repoNft
+     * - mock RWTRepo.explorerClient to return a client that returns predefined
+     * box info for the repoAddress and repoNft
+     * - call RWTRepo.updateBox to update RWTRepo.box
+     * - call RWTRepo.toBuilder to return an instance of RWTRepoBuilder
+     * - call RWTRepoBuilder.addNewUser
+     * - check RWTRepoBuilder.widPermits to not have contained the new wid
+     * before RWTRepoBuilder.addNewUser
+     * - check RWTRepoBuilder.widPermits to contain the new wid after
+     * RWTRepoBuilder.addNewUser
+     * - check RWTRepoBuilder.rwtCount to have been updated correctly
+     * - check RWTRepoBuilder.rsnCount to have been updated correctly
+     * - check RWTRepoBuilder.lastModifiedWid to have been updated with the
+     * passed wid
+     * @expected
+     * - RWTRepoBuilder.widPermits should not have contained the new wid before
+     * RWTRepoBuilder.addNewUser
+     * - RWTRepoBuilder.widPermits should contain the new wid after
+     * RWTRepoBuilder.addNewUser
+     * - RWTRepoBuilder.rwtCount should have been updated correctly
+     * - RWTRepoBuilder.rsnCount should have been updated correctly
+     * - RWTRepoBuilder.lastModifiedWid should have been updated with the passed
+     * wid
+     */
+    it(`RWTRepo.addNewUser should add the passed wid, rwtCount arguements to
+    this.widPermits, and do the fullowing updates:
+    this.rwtCount -= rwtCount
+    this.rsnCount += rsnCount`, async () => {
+      const rwtRepo = new RWTRepo(
+        rwtRepoInfoSample.Address,
+        rwtRepoInfoSample.nft,
+        '',
+        ErgoNetworkType.Explorer,
+        ''
+      );
+
+      rwtRepo['explorerClient'] = mockedErgoExplorerClientFactory(
+        ''
+      ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
+
+      await rwtRepo.updateBox(false);
+
+      const rwtRepoBuilder = rwtRepo.toBuilder();
+
+      const wid = '34f2a6bb';
+      const rwtCount = 2n;
+      const oldWidPermits = [...rwtRepoBuilder['widPermits']];
+      const oldRwtCount = rwtRepoBuilder['rwtCount'];
+      const oldRsnCount = rwtRepoBuilder['rsnCount'];
+
+      rwtRepoBuilder.addNewUser(wid, rwtCount);
+
+      expect(oldWidPermits.map((permit) => permit.wid).includes(wid)).toEqual(
+        false
+      );
+      expect(
+        rwtRepoBuilder['widPermits'].map((permit) => permit.wid).includes(wid)
+      ).toEqual(true);
+      expect(rwtRepoBuilder['rwtCount']).toEqual(oldRwtCount - rwtCount);
+      expect(rwtRepoBuilder['rsnCount']).toEqual(oldRsnCount + rwtCount);
+      expect(rwtRepoBuilder['lastModifiedWid']).toEqual(wid);
+    });
+  });
+});
