@@ -57,6 +57,22 @@ export class RWTRepoBuilder {
 
     return this;
   }
+
+  removeUser(wid: string): RWTRepoBuilder {
+    const widIndex = this.widPermits.map((permit) => permit.wid).indexOf(wid);
+    if (widIndex === -1) {
+      throw new Error(`cannot remove user: wid doesn't exist in widPermits`);
+    }
+    const { rwtCount } = this.widPermits.splice(widIndex, 1)[0];
+    this.rwtCount += rwtCount;
+    this.rsnCount -= rwtCount;
+
+    this.logger.debug(`removed user with wid=[${wid}]`);
+
+    this.lastModifiedWid = wid;
+
+    return this;
+  }
 }
 
 export class RWTRepo {
