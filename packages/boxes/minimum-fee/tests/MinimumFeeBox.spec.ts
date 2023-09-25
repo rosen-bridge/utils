@@ -34,14 +34,14 @@ describe('MinimumFeeBox', () => {
 
   describe('fetchBox', () => {
     /**
-     * mocks `getApiV1BoxesUnspentBytokenidP1` of ergo explorer client
+     * mocks `getApiV1BoxesUnspentByaddressP1` of ergo explorer client
      */
-    const mockExplorerGetApiV1BoxesUnspentBytokenidP1 = (
+    const mockExplorerGetApiV1BoxesUnspentByaddressP1 = (
       shouldIncludeItemsField = true
     ) =>
       jest.mocked(ergoExplorerClientFactory).mockReturnValueOnce({
         v1: {
-          getApiV1BoxesUnspentBytokenidP1: async (
+          getApiV1BoxesUnspentByaddressP1: async (
             address: string,
             {
               offset,
@@ -98,7 +98,7 @@ describe('MinimumFeeBox', () => {
      * - returned box id should be as expected
      */
     it('should fetch and select Erg config box from explorer client successfully', async () => {
-      mockExplorerGetApiV1BoxesUnspentBytokenidP1();
+      mockExplorerGetApiV1BoxesUnspentByaddressP1();
       const minimumFeeBox = generateDefaultMinimumFeeBox();
       await minimumFeeBox.fetchBox();
       const result = minimumFeeBox.getBox();
@@ -119,7 +119,7 @@ describe('MinimumFeeBox', () => {
      * - returned box id should be as expected
      */
     it('should fetch and select token config box from explorer client successfully', async () => {
-      mockExplorerGetApiV1BoxesUnspentBytokenidP1();
+      mockExplorerGetApiV1BoxesUnspentByaddressP1();
       const minimumFeeBox = new TestMinimumFeeBox(
         tokenId,
         defaultMinimumFeeNFT,
@@ -145,7 +145,7 @@ describe('MinimumFeeBox', () => {
      * - NotFoundError should be thrown
      */
     it('should throw NotFoundError when got no config box from explorer client successfully', async () => {
-      mockExplorerGetApiV1BoxesUnspentBytokenidP1(false);
+      mockExplorerGetApiV1BoxesUnspentByaddressP1(false);
       const minimumFeeBox = generateDefaultMinimumFeeBox();
       await expect(async () => {
         await minimumFeeBox.fetchBox();

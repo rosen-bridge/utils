@@ -113,16 +113,16 @@ export class MinimumFeeBox {
     try {
       let currentPage = 0;
       let boxesPage =
-        await this.explorerClient.v1.getApiV1BoxesUnspentBytokenidP1(
-          this.minimumFeeNFT,
+        await this.explorerClient.v1.getApiV1BoxesUnspentByaddressP1(
+          this.address,
           {
             offset: currentPage * this.BOX_FETCHING_PAGE_SIZE,
             limit: this.BOX_FETCHING_PAGE_SIZE,
           }
         );
       this.logger.debug(
-        `requested 'explorerClient.getApiV1BoxesUnspentBytokenidP1' for token [${
-          this.minimumFeeNFT
+        `requested 'explorerClient.getApiV1BoxesUnspentByaddressP1' for address [${
+          this.address
         }]. res: ${JsonBigInt.stringify(boxesPage)}`
       );
       while (boxesPage.items?.length) {
@@ -133,16 +133,16 @@ export class MinimumFeeBox {
         );
         currentPage++;
         boxesPage =
-          await this.explorerClient.v1.getApiV1BoxesUnspentBytokenidP1(
-            this.minimumFeeNFT,
+          await this.explorerClient.v1.getApiV1BoxesUnspentByaddressP1(
+            this.address,
             {
               offset: currentPage * this.BOX_FETCHING_PAGE_SIZE,
               limit: this.BOX_FETCHING_PAGE_SIZE,
             }
           );
         this.logger.debug(
-          `requested 'explorerClient.getApiV1BoxesUnspentBytokenidP1' for token [${
-            this.minimumFeeNFT
+          `requested 'explorerClient.getApiV1BoxesUnspentByaddressP1' for address [${
+            this.address
           }]. res: ${JsonBigInt.stringify(boxesPage)}`
         );
       }
