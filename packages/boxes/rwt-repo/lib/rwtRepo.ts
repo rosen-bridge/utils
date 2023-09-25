@@ -1,4 +1,4 @@
-import { AbstractLogger, DummyLogger } from '@rosen-bridge/logger-interface';
+import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
 import { ErgoNetworkType } from '@rosen-bridge/scanner';
 import ergoExplorerClientFactory from '@rosen-clients/ergo-explorer';
 import {
@@ -250,10 +250,9 @@ export class RWTRepo {
    */
   getErgCollateral() {
     if (!this.box) {
-      const error = new Error(
+      throw new Error(
         `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
       );
-      throw error;
     }
 
     const ergCollateralRegister = (
@@ -261,11 +260,9 @@ export class RWTRepo {
     )?.at(4);
 
     if (!ergCollateralRegister) {
-      const error = new Error(
+      throw new Error(
         `could not extract ergCollateral from R6[4]: ${this.rwtRepoLogDescription} `
       );
-      this.logger.error(error.message);
-      throw error;
     }
 
     this.logger.debug(
@@ -284,11 +281,9 @@ export class RWTRepo {
    */
   getRsnCollateral() {
     if (!this.box) {
-      const error = new Error(
+      throw new Error(
         `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
       );
-      this.logger.error(error.message);
-      throw error;
     }
 
     const rsnCollateralRegister = (
@@ -296,12 +291,14 @@ export class RWTRepo {
     )?.at(5);
 
     if (!rsnCollateralRegister) {
-      const error = new Error(
+      throw new Error(
         `could not extract rsnCollateral from R6[5]: ${this.rwtRepoLogDescription} `
       );
-      this.logger.error(error.message);
-      throw error;
     }
+
+    this.logger.debug(
+      `rsnCollateral in R6[5] register value: ${rsnCollateralRegister}`
+    );
 
     return BigInt(rsnCollateralRegister);
   }
