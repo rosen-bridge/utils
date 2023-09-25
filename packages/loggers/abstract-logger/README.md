@@ -1,4 +1,4 @@
-# Rosen Bridge abstract logger
+# @rosen-bridge/abstract-logger
 
 ## Table of contents
 
@@ -7,19 +7,19 @@
 
 ## Introduction
 
-Rosen Bridge abstract logger contains abstract logger class, the base type for
-loggers used in all Rosen packages.
+`@rosen-bridge/abstract-logger` contains abstract logger class, the base type
+for loggers used in all Rosen packages.
 
 ## Installation
 
 npm:
 
 ```sh
-npm i @rosen-bridge/logger-interface
+npm i @rosen-bridge/abstract-logger
 ```
 
 yarn:
 
 ```sh
-yarn add @rosen-bridge/logger-interface
+yarn add @rosen-bridge/abstract-logger
 ```
