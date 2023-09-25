@@ -68,6 +68,16 @@ export class RWTRepoBuilder {
     return this;
   }
 
+  /**
+   * removes (wid, rwtCount) pair from this.widPermits. Also stores wid in
+   * this.lastModifiedWid and does the following updates:
+   * this.rwtCount += rwtCount;
+   * this.rsnCount -= rwtCount;
+   *
+   * @param {string} wid
+   * @return {RWTRepoBuilder}  {RWTRepoBuilder}
+   * @memberof RWTRepoBuilder
+   */
   removeUser(wid: string): RWTRepoBuilder {
     const widIndex = this.widPermits.map((permit) => permit.wid).indexOf(wid);
     if (widIndex === -1) {
