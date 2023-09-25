@@ -85,7 +85,7 @@ class LogLevelHealthCheck extends AbstractHealthCheckParam {
    */
   getDescription = async () => {
     if (this.times.length > this.maxAllowedCount) {
-      return `There are ${this.times.length} ${this.level} in logs. The last one is "${this.lastMessage}"`;
+      return `There are ${this.times.length} ${this.level}s in logs. The last one is "${this.lastMessage}"`;
     }
     return undefined;
   };

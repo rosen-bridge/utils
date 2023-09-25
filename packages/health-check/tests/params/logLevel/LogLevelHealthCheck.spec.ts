@@ -157,7 +157,7 @@ describe('LogLevelHealthCheck', () => {
 
       const description = await logLevelHealthCheck.getDescription();
       expect(description).toEqual(
-        'There are 4 error in logs. The last one is "Test error 4"'
+        'There are 4 errors in logs. The last one is "Test error 4"'
       );
     });
 

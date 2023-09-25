@@ -69,7 +69,7 @@ describe('AbstractAssetHealthCheckParam', () => {
      * @target AbstractAssetHealthCheckParam.getTokenAmountStr should return correct format without decimal
      * @dependencies
      * @scenario
-     * - mock token amount and decimal to 0
+     * - mock token amount and decimal
      * - get token decimal str
      * @expected
      * - should return the amount str without any change
@@ -84,7 +84,7 @@ describe('AbstractAssetHealthCheckParam', () => {
      * @target AbstractAssetHealthCheckParam.getTokenAmountStr should return correct format with 1 decimal
      * @dependencies
      * @scenario
-     * - mock token amount and decimal to 0
+     * - mock token amount and decimal
      * - get token decimal str
      * @expected
      * - should return the amount str with one decimal
@@ -99,7 +99,7 @@ describe('AbstractAssetHealthCheckParam', () => {
      * @target AbstractAssetHealthCheckParam.getTokenAmountStr should return correct format with 2 decimals
      * @dependencies
      * @scenario
-     * - mock token amount and decimal to 0
+     * - mock token amount and decimal
      * - get token decimal str
      * @expected
      * - should return the amount str with 2 decimals
@@ -114,7 +114,7 @@ describe('AbstractAssetHealthCheckParam', () => {
      * @target AbstractAssetHealthCheckParam.getTokenAmountStr should return correct format with 3 decimals
      * @dependencies
      * @scenario
-     * - mock token amount and decimal to 0
+     * - mock token amount and decimal
      * - get token decimal str
      * @expected
      * - should return the amount str with 3 decimals
