@@ -1,7 +1,7 @@
 {
   "name": "@rosen-bridge/logger-interface",
   "version": "0.2.0",
-  "description": "this project contains abstract and dummy logger",
+  "description": "Rosen Bridge abstract logger class, the base type for loggers used in all Rosen packages",
   "main": "dist/lib/index.js",
   "types": "dist/lib/index.d.ts",
   "type": "module",
