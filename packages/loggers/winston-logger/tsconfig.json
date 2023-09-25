@@ -7,6 +7,6 @@
   "include": ["lib"],
   "references": [
     { "path": "../abstract-logger" },
-    { "path": "../../json-bigint" }
+    { "path": "../../json-bigint/tsconfig.build.json" }
   ]
 }
