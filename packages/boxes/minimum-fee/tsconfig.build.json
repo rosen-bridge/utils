@@ -3,6 +3,6 @@
   "exclude": ["tests"],
   "references": [
     { "path": "../../logger-interface" },
-    { "path": "../../json-bigint" }
+    { "path": "../../json-bigint/tsconfig.build.json" }
   ]
 }

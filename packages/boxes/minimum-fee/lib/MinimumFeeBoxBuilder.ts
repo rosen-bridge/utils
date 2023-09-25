@@ -10,7 +10,8 @@ import {
   ErgoBoxCandidate,
 } from 'ergo-lib-wasm-nodejs';
 import { MinimumFeeConfig } from './MinimumFeeConfig';
-import { Fee, InvalidConfig } from './types';
+import { Fee } from './types';
+import { InvalidConfig } from './errors';
 
 const ERGO_NATIVE_TOKEN = 'erg';
 
@@ -143,16 +144,16 @@ export class MinimumFeeBoxBuilder {
     chains.sort();
     //  extract configs
     const heights: Array<Array<number>> = [];
-    const brdigeFees: Array<Array<bigint>> = [];
-    const networkFees: Array<Array<bigint>> = [];
-    const rsnRatios: Array<Array<Array<bigint>>> = [];
-    const feeRatios: Array<Array<bigint>> = [];
+    const brdigeFees: Array<Array<string>> = [];
+    const networkFees: Array<Array<string>> = [];
+    const rsnRatios: Array<Array<Array<string>>> = [];
+    const feeRatios: Array<Array<string>> = [];
     this.fees.forEach((fee) => {
       const heightsConfigs: Array<number> = [];
-      const brdigeFeesConfigs: Array<bigint> = [];
-      const networkFeesConfigs: Array<bigint> = [];
-      const rsnRatiosConfigs: Array<Array<bigint>> = [];
-      const feeRatiosConfigs: Array<bigint> = [];
+      const brdigeFeesConfigs: Array<string> = [];
+      const networkFeesConfigs: Array<string> = [];
+      const rsnRatiosConfigs: Array<Array<string>> = [];
+      const feeRatiosConfigs: Array<string> = [];
 
       chains.forEach((chain) => {
         if (Object.hasOwn(fee.heights, chain))
@@ -160,18 +161,18 @@ export class MinimumFeeBoxBuilder {
         else heightsConfigs.push(-1);
 
         if (Object.hasOwn(fee.configs, chain)) {
-          brdigeFeesConfigs.push(fee.configs[chain].bridgeFee);
-          networkFeesConfigs.push(fee.configs[chain].networkFee);
+          brdigeFeesConfigs.push(fee.configs[chain].bridgeFee.toString());
+          networkFeesConfigs.push(fee.configs[chain].networkFee.toString());
           rsnRatiosConfigs.push([
-            fee.configs[chain].rsnRatio,
-            fee.configs[chain].rsnRatioDivisor,
+            fee.configs[chain].rsnRatio.toString(),
+            fee.configs[chain].rsnRatioDivisor.toString(),
           ]);
-          feeRatiosConfigs.push(fee.configs[chain].feeRatio);
+          feeRatiosConfigs.push(fee.configs[chain].feeRatio.toString());
         } else {
-          brdigeFeesConfigs.push(-1n);
-          networkFeesConfigs.push(-1n);
-          rsnRatiosConfigs.push([-1n, -1n]);
-          feeRatiosConfigs.push(-1n);
+          brdigeFeesConfigs.push('-1');
+          networkFeesConfigs.push('-1');
+          rsnRatiosConfigs.push(['-1', '-1']);
+          feeRatiosConfigs.push('-1');
         }
       });
 
