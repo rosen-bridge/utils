@@ -11,8 +11,7 @@ import ergoNodeClientFactory, {
   IndexedErgoBox,
   Transactions,
 } from '@rosen-clients/ergo-node';
-import { Address, ErgoBox } from 'ergo-lib-wasm-nodejs';
-import { ErgoTree } from 'ergo-lib-wasm-nodejs';
+import { Address, ErgoBox, ErgoTree } from 'ergo-lib-wasm-nodejs';
 import { jsonBigInt } from './utils';
 
 export class RWTRepoBuilder {
@@ -271,6 +270,37 @@ export class RWTRepo {
     );
 
     return BigInt(ergCollateralRegister);
+  }
+
+  /**
+   * extract the value of rsnCollateral from R6[5] of this.box. If this.box is
+   * undefined an exception is thrown
+   *
+   * @return {bigint}
+   * @memberof RWTRepo
+   */
+  getRsnCollateral() {
+    if (!this.box) {
+      throw new Error(
+        `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
+      );
+    }
+
+    const rsnCollateralRegister = (
+      this.box.register_value(6)?.to_i64_str_array() as string[] | undefined
+    )?.at(5);
+
+    if (!rsnCollateralRegister) {
+      throw new Error(
+        `could not extract rsnCollateral from R6[5]: ${this.rwtRepoLogDescription} `
+      );
+    }
+
+    this.logger.debug(
+      `rsnCollateral in R6[5] register value: ${rsnCollateralRegister}`
+    );
+
+    return BigInt(rsnCollateralRegister);
   }
 
   /**

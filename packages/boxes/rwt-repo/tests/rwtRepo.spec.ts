@@ -387,4 +387,70 @@ describe('RWTRepo', () => {
       expect(() => rwtRepo.getErgCollateral()).toThrowError();
     });
   });
+
+  describe('getRsnCollateral', () => {
+    /**
+     * @target RWTRepo.getRsnCollateral should return a bigint with the value
+     * stored in R6[5] of RWTRepo.box
+     * @dependencies
+     * - MockedErgoExplorerClientFactory
+     * @scenario
+     * - create an instance of RWTRepo with specific repoAddress and repoNft
+     * - mock RWTRepo.explorerClient to return a client that returns predefined
+     * box info for the repoAddress and repoNft
+     * - call RWTRepo.updateBox to update RWTRepo.box
+     * - check RWTRepo.getRsnCollateral() to return the correct value
+     * @expected
+     * - RWTRepo.getRsnCollateral() should return the correct value
+     */
+    it(`RWTRepo.getRsnCollateral should return a bigint with the value stored in
+    R6[5] of RWTRepo.box`, async () => {
+      const rwtRepo = new RWTRepo(
+        rwtRepoInfoSample.Address,
+        rwtRepoInfoSample.nft,
+        '',
+        ErgoNetworkType.Explorer,
+        ''
+      );
+
+      rwtRepo['explorerClient'] = mockedErgoExplorerClientFactory(
+        ''
+      ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
+
+      await rwtRepo.updateBox(false);
+
+      expect(rwtRepo.getRsnCollateral()).toEqual(
+        jsonBigInt.parse(
+          rwtRepoInfoSample.BoxInfo.additionalRegisters.R6.renderedValue
+        )[5]
+      );
+    });
+
+    /**
+     * @target RWTRepo.getRsnCollateral should throw an exception when
+     * RWTRepo.box is undefined
+     * @dependencies
+     * - None
+     * @scenario
+     * - create an instance of RWTRepo with specific repoAddress and repoNft
+     * - check RWTRepo.box to be undefined
+     * - check RWTRepo.getRsnCollateral() to throw exception
+     * @expected
+     * - RWTRepo.box should be undefined
+     * - RWTRepo.getRsnCollateral() should throw exception
+     */
+    it(`RWTRepo.getRsnCollateral should throw an exception when RWTRepo.box is
+    undefined`, async () => {
+      const rwtRepo = new RWTRepo(
+        rwtRepoInfoSample.Address,
+        rwtRepoInfoSample.nft,
+        '',
+        ErgoNetworkType.Explorer,
+        ''
+      );
+
+      expect(rwtRepo['box']).toBeUndefined();
+      expect(() => rwtRepo.getRsnCollateral()).toThrowError();
+    });
+  });
 });
