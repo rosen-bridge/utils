@@ -48,20 +48,15 @@ abstract class AbstractAssetHealthCheckParam extends AbstractHealthCheckParam {
    * @returns parameter health description
    */
   getDescription = async (): Promise<string | undefined> => {
-    const roundTokenAmount =
-      this.tokenAmount.toString().slice(0, -this.assetDecimal) || '0';
-    const decimalTokenAmount = this.tokenAmount
-      .toString()
-      .slice(-this.assetDecimal)
-      .padStart(this.assetDecimal, '0');
-    const amountStr = roundTokenAmount + '.' + decimalTokenAmount;
     if (
       this.tokenAmount <
       this.criticalThreshold * 10n ** BigInt(this.assetDecimal)
     )
       return (
         `Service has stopped working due to insufficient asset '${this.assetName}' balance` +
-        ` ([${this.criticalThreshold}] '${this.assetName}' is required, but [${amountStr}] is available.).\n` +
+        ` ([${this.criticalThreshold}] '${
+          this.assetName
+        }' is required, but [${this.getTokenDecimalStr()}] is available.).\n` +
         `Please top up [${this.address}] with asset [${this.assetId}]`
       );
     else if (
@@ -70,7 +65,9 @@ abstract class AbstractAssetHealthCheckParam extends AbstractHealthCheckParam {
     )
       return (
         `Service is in unstable situation due to low asset '${this.assetName}' balance` +
-        ` ([${this.warnThreshold}] '${this.assetName}' is recommended, but [${amountStr}] is available.).\n` +
+        ` ([${this.warnThreshold}] '${
+          this.assetName
+        }' is recommended, but [${this.getTokenDecimalStr()}] is available.).\n` +
         `Please top up [${this.address}] with asset [${this.assetId}], otherwise your service will stop working soon.`
       );
     return undefined;
@@ -103,6 +100,21 @@ abstract class AbstractAssetHealthCheckParam extends AbstractHealthCheckParam {
     )
       return HealthStatusLevel.UNSTABLE;
     else return HealthStatusLevel.HEALTHY;
+  };
+
+  /**
+   * Generates asset amount with its decimal
+   * @returns token amount string
+   */
+  getTokenDecimalStr = () => {
+    if (!this.assetDecimal) return this.tokenAmount.toString();
+    const roundTokenAmount =
+      this.tokenAmount.toString().slice(0, -this.assetDecimal) || '0';
+    const decimalTokenAmount = this.tokenAmount
+      .toString()
+      .slice(-this.assetDecimal)
+      .padStart(this.assetDecimal, '0');
+    return `${roundTokenAmount}.${decimalTokenAmount}`;
   };
 }
 
