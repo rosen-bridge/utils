@@ -1,10 +1,8 @@
-import { ErgoBox } from 'ergo-lib-wasm-nodejs';
+import { Address, ErgoBox } from 'ergo-lib-wasm-nodejs';
 import { ChainMinimumFee, ErgoNetworkType, Fee } from './types';
 import { FailedError, NotFoundError } from './errors';
 import ergoExplorerClientFactory from '@rosen-clients/ergo-explorer';
-import ergoNodeClientFactory, {
-  IndexedErgoBox,
-} from '@rosen-clients/ergo-node';
+import ergoNodeClientFactory from '@rosen-clients/ergo-node';
 import JsonBigInt from '@rosen-bridge/json-bigint';
 import handleApiError from './handleApiError';
 import { AbstractLogger, DummyLogger } from '@rosen-bridge/logger-interface';
@@ -20,6 +18,7 @@ export class MinimumFeeBox {
   protected tokenId: string;
   protected minimumFeeNFT: string;
   protected address: string;
+  protected ergoTree: string;
   protected explorerClient: ReturnType<typeof ergoExplorerClientFactory>;
   protected nodeClient: ReturnType<typeof ergoNodeClientFactory>;
 
@@ -34,6 +33,9 @@ export class MinimumFeeBox {
     this.tokenId = tokenId;
     this.minimumFeeNFT = minimumFeeNFT;
     this.address = address;
+    this.ergoTree = Address.from_base58(this.address)
+      .to_ergo_tree()
+      .to_base16_bytes();
     if (networkType === ErgoNetworkType.explorer)
       this.explorerClient = ergoExplorerClientFactory(networkUrl);
     else this.nodeClient = ergoNodeClientFactory(networkUrl);
@@ -44,8 +46,32 @@ export class MinimumFeeBox {
    * fetches the box from the blockchain
    */
   fetchBox = async (): Promise<void> => {
-    if (this.explorerClient) this.box = await this.fetchBoxUsingExplorer();
-    else this.box = await this.fetchBoxUsingNode();
+    const boxes = this.explorerClient
+      ? await this.fetchBoxesUsingExplorer()
+      : await this.fetchBoxesUsingNode();
+
+    const boxHasCorrectAddress = (box: ErgoBox) =>
+      box.ergo_tree().to_base16_bytes() === this.ergoTree;
+    const boxHasAppropriateTokens = (box: ErgoBox) => {
+      const tokenLen = box.tokens().len();
+      let hasMinimumFeeNFT = false;
+      let hasTargetToken = this.tokenId === ERGO_NATIVE_TOKEN ? true : false;
+      const hasCorrectTokens =
+        this.tokenId === ERGO_NATIVE_TOKEN ? tokenLen === 1 : tokenLen === 2;
+      for (let i = 0; i < tokenLen; i++) {
+        const id = box.tokens().get(i).id().to_str();
+        if (id === this.minimumFeeNFT) hasMinimumFeeNFT = true;
+        else if (id === this.tokenId) hasTargetToken = true;
+      }
+      return hasCorrectTokens && hasMinimumFeeNFT && hasTargetToken;
+    };
+
+    this.box = this.selectEligibleBox(
+      boxes.filter(
+        (box: ErgoBox) =>
+          boxHasCorrectAddress(box) && boxHasAppropriateTokens(box)
+      )
+    );
   };
 
   /**
@@ -82,8 +108,8 @@ export class MinimumFeeBox {
   /**
    * fetches box from the blockchain using explorer client
    */
-  protected fetchBoxUsingExplorer = async (): Promise<ErgoBox> => {
-    const eligibleBoxes: Array<ErgoBox> = [];
+  protected fetchBoxesUsingExplorer = async (): Promise<Array<ErgoBox>> => {
+    const boxes: Array<ErgoBox> = [];
     try {
       let currentPage = 0;
       let boxesPage =
@@ -94,22 +120,16 @@ export class MinimumFeeBox {
             limit: this.BOX_FETCHING_PAGE_SIZE,
           }
         );
+      this.logger.debug(
+        `requested 'explorerClient.getApiV1BoxesUnspentBytokenidP1' for token [${
+          this.minimumFeeNFT
+        }]. res: ${JsonBigInt.stringify(boxesPage)}`
+      );
       while (boxesPage.items?.length) {
-        this.logger.debug(
-          `requested 'explorerClient.getApiV1BoxesUnspentBytokenidP1' for token [${
-            this.minimumFeeNFT
-          }]. res: ${JsonBigInt.stringify(boxesPage)}`
-        );
-
-        eligibleBoxes.push(
-          ...boxesPage.items
-            .filter((box) =>
-              box.address === this.address && this.tokenId === ERGO_NATIVE_TOKEN
-                ? box.assets?.length === 1
-                : box.assets?.length === 2 &&
-                  box.assets?.some((asset) => asset.tokenId === this.tokenId)
-            )
-            .map((box: any) => ErgoBox.from_json(JsonBigInt.stringify(box)))
+        boxes.push(
+          ...boxesPage.items.map((box) =>
+            ErgoBox.from_json(JsonBigInt.stringify(box))
+          )
         );
         currentPage++;
         boxesPage =
@@ -120,6 +140,11 @@ export class MinimumFeeBox {
               limit: this.BOX_FETCHING_PAGE_SIZE,
             }
           );
+        this.logger.debug(
+          `requested 'explorerClient.getApiV1BoxesUnspentBytokenidP1' for token [${
+            this.minimumFeeNFT
+          }]. res: ${JsonBigInt.stringify(boxesPage)}`
+        );
       }
     } catch (error) {
       return handleApiError(
@@ -128,23 +153,15 @@ export class MinimumFeeBox {
       );
     }
 
-    return this.selectEligibleBox(eligibleBoxes);
+    return boxes;
   };
 
   /**
    * fetches the box from the blockchain using node client
    */
-  protected fetchBoxUsingNode = async (): Promise<ErgoBox> => {
-    const eligibleBoxes: Array<ErgoBox> = [];
+  protected fetchBoxesUsingNode = async (): Promise<Array<ErgoBox>> => {
+    const boxes: Array<ErgoBox> = [];
     try {
-      const boxHasConfigToken = (box: IndexedErgoBox) =>
-        box.assets?.some((asset) => asset.tokenId === this.minimumFeeNFT);
-      const boxHasAppropriateToken = (box: IndexedErgoBox) =>
-        this.tokenId === ERGO_NATIVE_TOKEN
-          ? box.assets?.length === 1
-          : box.assets?.length === 2 &&
-            box.assets?.some((asset) => asset.tokenId === this.tokenId);
-
       let currentPage = 0;
       let boxesPage = await this.nodeClient.getBoxesByAddressUnspent(
         this.address,
@@ -153,21 +170,16 @@ export class MinimumFeeBox {
           limit: this.BOX_FETCHING_PAGE_SIZE,
         }
       );
+      this.logger.debug(
+        `requested 'nodeClient.getBoxesByAddressUnspent' for address [${
+          this.address
+        }]. res: ${JsonBigInt.stringify(boxesPage)}`
+      );
       while (boxesPage.length !== 0) {
-        this.logger.debug(
-          `requested 'nodeClient.getBoxesByAddressUnspent' for token [${
-            this.minimumFeeNFT
-          }]. res: ${JsonBigInt.stringify(boxesPage)}`
-        );
-
-        eligibleBoxes.push(
-          ...boxesPage
-            .filter(
-              (box) => boxHasConfigToken(box) && boxHasAppropriateToken(box)
-            )
-            .map((box: IndexedErgoBox) =>
-              ErgoBox.from_json(JsonBigInt.stringify(box))
-            )
+        boxes.push(
+          ...boxesPage.map((box) =>
+            ErgoBox.from_json(JsonBigInt.stringify(box))
+          )
         );
         currentPage++;
         boxesPage = await this.nodeClient.getBoxesByAddressUnspent(
@@ -176,6 +188,11 @@ export class MinimumFeeBox {
             offset: currentPage * this.BOX_FETCHING_PAGE_SIZE,
             limit: this.BOX_FETCHING_PAGE_SIZE,
           }
+        );
+        this.logger.debug(
+          `requested 'nodeClient.getBoxesByAddressUnspent' for address [${
+            this.address
+          }]. res: ${JsonBigInt.stringify(boxesPage)}`
         );
       }
     } catch (error) {
@@ -190,7 +207,7 @@ export class MinimumFeeBox {
       });
     }
 
-    return this.selectEligibleBox(eligibleBoxes);
+    return boxes;
   };
 
   /**
