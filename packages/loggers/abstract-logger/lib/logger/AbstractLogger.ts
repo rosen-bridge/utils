@@ -1,6 +1,6 @@
 export abstract class AbstractLogger {
-  abstract info: (message: string, context?: any) => unknown;
-  abstract warn: (message: string, context?: any) => unknown;
-  abstract error: (message: string, context?: any) => unknown;
-  abstract debug: (message: string, context?: any) => unknown;
+  abstract info: (message: string, context?: unknown) => unknown;
+  abstract warn: (message: string, context?: unknown) => unknown;
+  abstract error: (message: string, context?: unknown) => unknown;
+  abstract debug: (message: string, context?: unknown) => unknown;
 }
