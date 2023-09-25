@@ -312,11 +312,9 @@ export class RWTRepo {
    */
   getRequiredCommitmentCount() {
     if (!this.box) {
-      const error = new Error(
+      throw new Error(
         `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
       );
-      this.logger.error(error.message);
-      throw error;
     }
 
     const r6_1 = this.r6At(1);
@@ -325,11 +323,9 @@ export class RWTRepo {
     const r4 = this.r4;
 
     if (!r6_1 || !r6_2 || !r6_3 || !r4) {
-      const error = new Error(
+      throw new Error(
         `could not calculate RequiredCommitmentCount, because R6[1] or R6[2] or R6[3] or R4 is undefined: ${this.rwtRepoLogDescription} `
       );
-      this.logger.error(error.message);
-      throw error;
     }
 
     const requiredCommitmentCount = min(
