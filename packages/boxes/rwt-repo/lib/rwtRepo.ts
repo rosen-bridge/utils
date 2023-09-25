@@ -93,6 +93,78 @@ export class RWTRepoBuilder {
 
     return this;
   }
+
+  /**
+   * sets value of this.commitmentRwtCount
+   *
+   * @param {bigint} commitmentRwtCount
+   * @return {RWTRepoBuilder}
+   * @memberof RWTRepoBuilder
+   */
+  setCommitmentRwtCount(commitmentRwtCount: bigint): RWTRepoBuilder {
+    this.commitmentRwtCount = commitmentRwtCount;
+    return this;
+  }
+
+  /**
+   * sets value of this.quorumPercentage
+   *
+   * @param {number} watcherQuoromPercentage
+   * @return {RWTRepoBuilder}
+   * @memberof RWTRepoBuilder
+   */
+  setWatcherQuoromPercentage(watcherQuoromPercentage: number): RWTRepoBuilder {
+    this.quorumPercentage = watcherQuoromPercentage;
+    return this;
+  }
+
+  /**
+   * sets value of this.approvalOffset
+   *
+   * @param {number} approvalOffset
+   * @return {RWTRepoBuilder}
+   * @memberof RWTRepoBuilder
+   */
+  setApprovalOffset(approvalOffset: number): RWTRepoBuilder {
+    this.approvalOffset = approvalOffset;
+    return this;
+  }
+
+  /**
+   * sets value of this.maximumApproval
+   *
+   * @param {number} maximumApproval
+   * @return {RWTRepoBuilder}
+   * @memberof RWTRepoBuilder
+   */
+  setMaximumApproval(maximumApproval: number): RWTRepoBuilder {
+    this.maximumApproval = maximumApproval;
+    return this;
+  }
+
+  /**
+   * sets value of this.ergCollateral
+   *
+   * @param {bigint} ergCollateral
+   * @return {RWTRepoBuilder}
+   * @memberof RWTRepoBuilder
+   */
+  setErgCollateral(ergCollateral: bigint): RWTRepoBuilder {
+    this.ergCollateral = ergCollateral;
+    return this;
+  }
+
+  /**
+   * sets value of this.rsnCollateral
+   *
+   * @param {bigint} rsnCollateral
+   * @return {RWTRepoBuilder}
+   * @memberof RWTRepoBuilder
+   */
+  setRsnCollateral(rsnCollateral: bigint): RWTRepoBuilder {
+    this.rsnCollateral = rsnCollateral;
+    return this;
+  }
 }
 
 export class RWTRepo {
