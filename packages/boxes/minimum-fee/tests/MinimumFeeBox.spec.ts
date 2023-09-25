@@ -274,16 +274,17 @@ describe('MinimumFeeBox', () => {
     });
 
     /**
-     * @target MinimumFeeBox.getFee should extract new chain fee successfully
+     * @target MinimumFeeBox.getFee should extract the fee
+     * that adds a new chain successfully
      * @dependencies
      * @scenario
-     * - mock object box with an ErgoBox with new chain fee
+     * - mock object box with an ErgoBox containing the fee with a new chain
      * - run test
      * - check returned value
      * @expected
      * - returned box id should be as expected
      */
-    it('should extract new chain fee successfully', () => {
+    it('should extract the fee that adds a new chain successfully', () => {
       const minimumFeeBox = generateDefaultMinimumFeeBox();
       minimumFeeBox.setBox(ErgoBox.from_json(testData.newChainFeeBox));
       const result = minimumFeeBox.getFee('ergo', 23000, 'cardano');
@@ -293,16 +294,17 @@ describe('MinimumFeeBox', () => {
     });
 
     /**
-     * @target MinimumFeeBox.getFee should extract remove chain fee successfully
+     * @target MinimumFeeBox.getFee should extract the fee
+     * that removes a chain successfully
      * @dependencies
      * @scenario
-     * - mock object box with an ErgoBox with remove chain fee
+     * - mock object box with an ErgoBox containing the fee without a previous chain
      * - run test
      * - check returned value
      * @expected
      * - returned box id should be as expected
      */
-    it('should extract remove chain fee successfully', () => {
+    it('should extract the fee that removes a chain successfully', () => {
       const minimumFeeBox = generateDefaultMinimumFeeBox();
       minimumFeeBox.setBox(ErgoBox.from_json(testData.removeChainFeeBox));
       const result = minimumFeeBox.getFee('ergo', 12000, 'cardano');
@@ -450,17 +452,15 @@ describe('MinimumFeeBox', () => {
      * @scenario
      * - mock object box with an ErgoBox with normal fee
      * - run test
-     * - build the returned value & check thrown exception
+     * - check returned value
      * @expected
-     * - InvalidConfig should be thrown
+     * - height of returned builder should be undefined
      */
     it('should not set height for builder', () => {
       const minimumFeeBox = generateDefaultMinimumFeeBox();
       minimumFeeBox.setBox(ErgoBox.from_json(testData.normalFeeBox));
       const result = minimumFeeBox.toBuilder();
-      expect(() => {
-        result.build();
-      }).toThrow(InvalidConfig);
+      expect((result as any).height).toBeUndefined();
     });
   });
 });
