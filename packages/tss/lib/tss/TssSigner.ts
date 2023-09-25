@@ -25,7 +25,7 @@ import {
   thresholdUrl,
 } from '../const/signer';
 import { ActiveGuard } from '../types/abstract';
-import { DummyLogger } from '@rosen-bridge/logger-interface';
+import { DummyLogger } from '@rosen-bridge/abstract-logger';
 import { Mutex } from 'await-semaphore';
 import axios, { AxiosInstance } from 'axios';
 

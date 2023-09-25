@@ -1,4 +1,4 @@
-import { AbstractLogger, DummyLogger } from '@rosen-bridge/logger-interface';
+import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
 import { ErgoNetworkType } from '@rosen-bridge/scanner';
 import ergoExplorerClientFactory from '@rosen-clients/ergo-explorer';
 import {
@@ -195,7 +195,6 @@ export class RWTRepo {
     }
 
     const box = ErgoBox.from_json(jsonBigInt.stringify(rwtBoxInfos[0]));
-
     return box;
   }
 
@@ -240,6 +239,68 @@ export class RWTRepo {
 
     const box = ErgoBox.from_json(jsonBigInt.stringify(rwtOutputBoxInfos[0]));
     return box;
+  }
+
+  /**
+   * extract the value of ergCollateral from R6[4] of this.box. If this.box is
+   * undefined an exception is thrown
+   *
+   * @return {bigint}
+   * @memberof RWTRepo
+   */
+  getErgCollateral() {
+    if (!this.box) {
+      throw new Error(
+        `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
+      );
+    }
+
+    const ergCollateralRegister = (
+      this.box.register_value(6)?.to_i64_str_array() as string[] | undefined
+    )?.at(4);
+
+    if (!ergCollateralRegister) {
+      throw new Error(
+        `could not extract ergCollateral from R6[4]: ${this.rwtRepoLogDescription} `
+      );
+    }
+
+    this.logger.debug(
+      `ergCollateral in R6[4] register value: ${ergCollateralRegister}`
+    );
+
+    return BigInt(ergCollateralRegister);
+  }
+
+  /**
+   * extract the value of rsnCollateral from R6[5] of this.box. If this.box is
+   * undefined an exception is thrown
+   *
+   * @return {bigint}
+   * @memberof RWTRepo
+   */
+  getRsnCollateral() {
+    if (!this.box) {
+      throw new Error(
+        `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
+      );
+    }
+
+    const rsnCollateralRegister = (
+      this.box.register_value(6)?.to_i64_str_array() as string[] | undefined
+    )?.at(5);
+
+    if (!rsnCollateralRegister) {
+      throw new Error(
+        `could not extract rsnCollateral from R6[5]: ${this.rwtRepoLogDescription} `
+      );
+    }
+
+    this.logger.debug(
+      `rsnCollateral in R6[5] register value: ${rsnCollateralRegister}`
+    );
+
+    return BigInt(rsnCollateralRegister);
   }
 
   /**

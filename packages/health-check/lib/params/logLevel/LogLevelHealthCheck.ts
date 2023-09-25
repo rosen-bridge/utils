@@ -2,7 +2,7 @@ import {
   AbstractHealthCheckParam,
   HealthStatusLevel,
 } from '../AbstractHealthCheckParam';
-import { AbstractLogger } from '@rosen-bridge/logger-interface';
+import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import { upperFirst } from 'lodash-es';
 
 type LogLevel = keyof AbstractLogger;

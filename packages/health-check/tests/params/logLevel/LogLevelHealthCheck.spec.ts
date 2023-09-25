@@ -1,4 +1,4 @@
-import { DummyLogger } from '@rosen-bridge/logger-interface';
+import { DummyLogger } from '@rosen-bridge/abstract-logger';
 import { HealthStatusLevel } from '../../../lib';
 import TestLogLevelHealthCheck from './TestLogLevelHealthCheck';
 
