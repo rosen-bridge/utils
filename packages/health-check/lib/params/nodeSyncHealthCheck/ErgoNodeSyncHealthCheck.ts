@@ -36,7 +36,7 @@ class ErgoNodeSyncHealthCheckParam extends AbstractHealthCheckParam {
    * @returns parameter id
    */
   getId = (): string => {
-    return `Ergo Node Sync Check`;
+    return `Ergo Node Sync`;
   };
 
   /**
@@ -47,14 +47,14 @@ class ErgoNodeSyncHealthCheckParam extends AbstractHealthCheckParam {
     let notification;
     const healthStatus = await this.getHealthStatus();
     if (healthStatus === HealthStatusLevel.UNSTABLE) {
-      notification = `Service is in unstable situation since the ergo node is out of sync.\n`;
+      notification = `Service is unstable since the Ergo node has some issues.\n`;
     } else if (healthStatus === HealthStatusLevel.BROKEN) {
-      notification = `Service has stopped working correctly since the ergo node is out of sync.\n`;
+      notification = `Service has stopped working correctly since the Ergo node is out of sync.\n`;
     }
     if (this.nodeHeightDifference > this.maxHeightDifference) {
       notification =
         notification +
-        `[${this.nodeHeightDifference}] block headers are scanned but the full blocks are not scanned yet.\n`;
+        `[${this.nodeHeightDifference}] block headers are scanned but the full block data is still not available.\n`;
     }
     if (this.nodeLastBlockTime > this.maxBlockTime) {
       let time;
@@ -63,9 +63,7 @@ class ErgoNodeSyncHealthCheckParam extends AbstractHealthCheckParam {
           this.nodeLastBlockTime % 60
         }] minutes`;
       } else time = `[${Math.floor(this.nodeLastBlockTime)}] minutes`;
-      notification =
-        notification +
-        `The last block is scanned ${time} ago which seems to be too long.\n`;
+      notification = notification + `The last block is scanned ${time} ago.\n`;
     }
     if (this.nodePeerCount < this.minPeerCount) {
       notification =
@@ -75,7 +73,7 @@ class ErgoNodeSyncHealthCheckParam extends AbstractHealthCheckParam {
     if (this.nodePeerHeightDifference > this.maxPeerHeightDifference) {
       notification =
         notification +
-        `The connected peers are [${this.nodePeerHeightDifference}] block ahead of our node.\n`;
+        `The connected peers are [${this.nodePeerHeightDifference}] blocks ahead of yours.\n`;
     }
     return notification;
   };

@@ -11,9 +11,17 @@ class CardanoAssetHealthCheckParam extends AbstractAssetHealthCheckParam {
     address: string,
     warnThreshold: bigint,
     criticalThreshold: bigint,
-    koiosUrl: string
+    koiosUrl: string,
+    assetDecimal = 0
   ) {
-    super(assetId, assetName, address, warnThreshold, criticalThreshold);
+    super(
+      assetId,
+      assetName,
+      address,
+      warnThreshold,
+      criticalThreshold,
+      assetDecimal
+    );
     this.koiosApi = cardanoKoiosClientFactory(koiosUrl);
   }
 

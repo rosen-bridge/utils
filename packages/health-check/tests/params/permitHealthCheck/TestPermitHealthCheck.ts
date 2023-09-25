@@ -7,11 +7,11 @@ class TestPermitHealthCheckParam extends AbstractPermitHealthCheckParam {
   update: () => undefined;
 
   /**
-   * set mocked amount
-   * @param amount mocked amount
+   * set mocked report count
+   * @param amount mocked report count
    */
-  setRWTAmount = (amount: bigint) => {
-    this.RWTCount = amount;
+  setReportCount = (amount: bigint) => {
+    this.reportsCount = amount;
   };
 
   /**
