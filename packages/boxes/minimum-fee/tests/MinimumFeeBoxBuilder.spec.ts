@@ -84,31 +84,31 @@ describe('MinimumFeeBoxBuilder', () => {
       ];
       expect(result.register_value(5)?.to_js()).toEqual(expectedHeights);
       const expectedBridgeFees = [
-        [700n, 400n, 100n],
-        [800n, 500n, 200n],
+        ['700', '400', '100'],
+        ['800', '500', '200'],
       ];
       expect(result.register_value(6)?.to_js()).toEqual(expectedBridgeFees);
       const expectedNetworkFees = [
-        [93n, 70n, 30n],
-        [96n, 80n, 40n],
+        ['93', '70', '30'],
+        ['96', '80', '40'],
       ];
       expect(result.register_value(7)?.to_js()).toEqual(expectedNetworkFees);
       const expectedRsnRatios = [
         [
-          [30n, 3000n],
-          [20n, 2000n],
-          [10n, 1000n],
+          ['30', '3000'],
+          ['20', '2000'],
+          ['10', '1000'],
         ],
         [
-          [31n, 3100n],
-          [21n, 2100n],
-          [11n, 1100n],
+          ['31', '3100'],
+          ['21', '2100'],
+          ['11', '1100'],
         ],
       ];
       expect(result.register_value(8)?.to_js()).toEqual(expectedRsnRatios);
       const expectedFeeRatios = [
-        [60n, 50n, 40n],
-        [61n, 51n, 41n],
+        ['60', '50', '40'],
+        ['61', '51', '41'],
       ];
       expect(result.register_value(9)?.to_js()).toEqual(expectedFeeRatios);
     });
@@ -185,31 +185,31 @@ describe('MinimumFeeBoxBuilder', () => {
       ];
       expect(result.register_value(5)?.to_js()).toEqual(expectedHeights);
       const expectedBridgeFees = [
-        [700n, 400n, 100n],
-        [800n, 500n, 200n],
+        ['700', '400', '100'],
+        ['800', '500', '200'],
       ];
       expect(result.register_value(6)?.to_js()).toEqual(expectedBridgeFees);
       const expectedNetworkFees = [
-        [93n, 70n, 30n],
-        [96n, 80n, 40n],
+        ['93', '70', '30'],
+        ['96', '80', '40'],
       ];
       expect(result.register_value(7)?.to_js()).toEqual(expectedNetworkFees);
       const expectedRsnRatios = [
         [
-          [30n, 3000n],
-          [20n, 2000n],
-          [10n, 1000n],
+          ['30', '3000'],
+          ['20', '2000'],
+          ['10', '1000'],
         ],
         [
-          [31n, 3100n],
-          [21n, 2100n],
-          [11n, 1100n],
+          ['31', '3100'],
+          ['21', '2100'],
+          ['11', '1100'],
         ],
       ];
       expect(result.register_value(8)?.to_js()).toEqual(expectedRsnRatios);
       const expectedFeeRatios = [
-        [60n, 50n, 40n],
-        [61n, 51n, 41n],
+        ['60', '50', '40'],
+        ['61', '51', '41'],
       ];
       expect(result.register_value(9)?.to_js()).toEqual(expectedFeeRatios);
     });
@@ -282,31 +282,31 @@ describe('MinimumFeeBoxBuilder', () => {
       ];
       expect(result.register_value(5)?.to_js()).toEqual(expectedHeights);
       const expectedBridgeFees = [
-        [700n, -1n, 100n],
-        [800n, 500n, 200n],
+        ['700', '-1', '100'],
+        ['800', '500', '200'],
       ];
       expect(result.register_value(6)?.to_js()).toEqual(expectedBridgeFees);
       const expectedNetworkFees = [
-        [93n, -1n, 30n],
-        [96n, 80n, 40n],
+        ['93', '-1', '30'],
+        ['96', '80', '40'],
       ];
       expect(result.register_value(7)?.to_js()).toEqual(expectedNetworkFees);
       const expectedRsnRatios = [
         [
-          [30n, 3000n],
-          [-1n, -1n],
-          [10n, 1000n],
+          ['30', '3000'],
+          ['-1', '-1'],
+          ['10', '1000'],
         ],
         [
-          [31n, 3100n],
-          [21n, 2100n],
-          [11n, 1100n],
+          ['31', '3100'],
+          ['21', '2100'],
+          ['11', '1100'],
         ],
       ];
       expect(result.register_value(8)?.to_js()).toEqual(expectedRsnRatios);
       const expectedFeeRatios = [
-        [60n, -1n, 40n],
-        [61n, 51n, 41n],
+        ['60', '-1', '40'],
+        ['61', '51', '41'],
       ];
       expect(result.register_value(9)?.to_js()).toEqual(expectedFeeRatios);
     });
@@ -379,31 +379,31 @@ describe('MinimumFeeBoxBuilder', () => {
       ];
       expect(result.register_value(5)?.to_js()).toEqual(expectedHeights);
       const expectedBridgeFees = [
-        [700n, 400n, 100n],
-        [800n, -1n, 200n],
+        ['700', '400', '100'],
+        ['800', '-1', '200'],
       ];
       expect(result.register_value(6)?.to_js()).toEqual(expectedBridgeFees);
       const expectedNetworkFees = [
-        [93n, 70n, 30n],
-        [96n, -1n, 40n],
+        ['93', '70', '30'],
+        ['96', '-1', '40'],
       ];
       expect(result.register_value(7)?.to_js()).toEqual(expectedNetworkFees);
       const expectedRsnRatios = [
         [
-          [30n, 3000n],
-          [20n, 2000n],
-          [10n, 1000n],
+          ['30', '3000'],
+          ['20', '2000'],
+          ['10', '1000'],
         ],
         [
-          [31n, 3100n],
-          [-1n, -1n],
-          [11n, 1100n],
+          ['31', '3100'],
+          ['-1', '-1'],
+          ['11', '1100'],
         ],
       ];
       expect(result.register_value(8)?.to_js()).toEqual(expectedRsnRatios);
       const expectedFeeRatios = [
-        [60n, 50n, 40n],
-        [61n, -1n, 41n],
+        ['60', '50', '40'],
+        ['61', '-1', '41'],
       ];
       expect(result.register_value(9)?.to_js()).toEqual(expectedFeeRatios);
     });
@@ -442,7 +442,7 @@ describe('MinimumFeeBoxBuilder', () => {
      * @expected
      * - should throw Error
      */
-    it('should throw Error when box value is not given', () => {
+    it('should throw Error when box value is not give', () => {
       // mock test data
       const fees = testData.normalFee;
 
@@ -485,7 +485,7 @@ describe('MinimumFeeBoxBuilder', () => {
      * @expected
      * - should throw Error
      */
-    it('should throw Error when box height is not given', () => {
+    it('should throw Error when box height is not give', () => {
       // mock test data
       const fees = testData.normalFee;
 
@@ -528,7 +528,7 @@ describe('MinimumFeeBoxBuilder', () => {
      * @expected
      * - should throw Error
      */
-    it('should throw Error when token is not given', () => {
+    it('should throw Error when token is not give', () => {
       // mock test data
       const fees = testData.normalFee;
 
@@ -571,7 +571,7 @@ describe('MinimumFeeBoxBuilder', () => {
      * @expected
      * - should throw Error
      */
-    it('should throw Error when fee config is not given', () => {
+    it('should throw Error when fee config is not give', () => {
       // mock test data
       const fees = testData.normalFee;
 
@@ -614,7 +614,7 @@ describe('MinimumFeeBoxBuilder', () => {
      * @expected
      * - should throw Error
      */
-    it('should throw Error when a config misses a previous chain', () => {
+    it('should throw Error when a config misses a previous chai', () => {
       // mock test data
       const fees = testData.missPreviousChainFee;
 

@@ -261,10 +261,10 @@ export class MinimumFeeBox {
       Buffer.from(element).toString()
     );
     const heights = R5.to_js() as Array<Array<number>>;
-    const bridgeFees = R6.to_js() as Array<Array<bigint>>;
-    const networkFees = R7.to_js() as Array<Array<bigint>>;
-    const rsnRatios = R8.to_js() as Array<Array<Array<bigint>>>;
-    const feeRatios = R9.to_js() as Array<Array<bigint>>;
+    const bridgeFees = R6.to_js() as Array<Array<string>>;
+    const networkFees = R7.to_js() as Array<Array<string>>;
+    const rsnRatios = R8.to_js() as Array<Array<Array<string>>>;
+    const feeRatios = R9.to_js() as Array<Array<string>>;
 
     for (let feeIdx = 0; feeIdx < heights.length; feeIdx++) {
       const fee: Fee = {
@@ -277,13 +277,13 @@ export class MinimumFeeBox {
         if (heights[feeIdx][chainIdx] === -1) continue;
         fee.heights[chain] = heights[feeIdx][chainIdx];
 
-        if (bridgeFees[feeIdx][chainIdx] === -1n) continue;
+        if (bridgeFees[feeIdx][chainIdx] === '-1') continue;
         fee.configs[chain] = {
-          bridgeFee: bridgeFees[feeIdx][chainIdx],
-          networkFee: networkFees[feeIdx][chainIdx],
-          rsnRatio: rsnRatios[feeIdx][chainIdx][0],
-          rsnRatioDivisor: rsnRatios[feeIdx][chainIdx][1],
-          feeRatio: feeRatios[feeIdx][chainIdx],
+          bridgeFee: BigInt(bridgeFees[feeIdx][chainIdx]),
+          networkFee: BigInt(networkFees[feeIdx][chainIdx]),
+          rsnRatio: BigInt(rsnRatios[feeIdx][chainIdx][0]),
+          rsnRatioDivisor: BigInt(rsnRatios[feeIdx][chainIdx][1]),
+          feeRatio: BigInt(feeRatios[feeIdx][chainIdx]),
         };
       }
       fees.push(fee);
