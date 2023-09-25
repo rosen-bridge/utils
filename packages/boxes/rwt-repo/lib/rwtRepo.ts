@@ -299,6 +299,10 @@ export class RWTRepo {
       );
     }
 
+    this.logger.debug(
+      `rsnCollateral in R6[5] register value: ${rsnCollateralRegister}`
+    );
+
     return BigInt(rsnCollateralRegister);
   }
 
