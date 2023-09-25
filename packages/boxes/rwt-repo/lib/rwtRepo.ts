@@ -34,6 +34,16 @@ export class RWTRepoBuilder {
     private logger: AbstractLogger = new DummyLogger()
   ) {}
 
+  /**
+   * adds (wid, rwtCount) pair to this.widPermits. Also stores wid in
+   * this.lastModifiedWid and does the following updates:
+   * this.rwtCount -= rwtCount;
+   * this.rsnCount += rwtCount;
+   * @param {string} wid
+   * @param {bigint} rwtCount
+   * @return {RWTRepoBuilder}  {RWTRepoBuilder}
+   * @memberof RWTRepoBuilder
+   */
   addNewUser(wid: string, rwtCount: bigint): RWTRepoBuilder {
     const widExists = this.widPermits.map((permit) => permit.wid).includes(wid);
     if (widExists) {
