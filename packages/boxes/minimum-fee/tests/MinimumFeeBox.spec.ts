@@ -444,6 +444,65 @@ describe('MinimumFeeBox', () => {
         );
       }
     });
+    /**
+     * @target MinimumFeeBox.toBuilder should return a builder
+     * with the same parameters with a config that removes a chain
+     * @dependencies
+     * @scenario
+     * - mock object box with an ErgoBox with remove chain fee
+     * - run test
+     * - set height for returned value and build it
+     * - check box parameters
+     * @expected
+     * - box parameters should be identical
+     *   - value
+     *   - address
+     *   - tokens
+     *   - registers
+     */
+    it('should return a builder with the same parameters with a config that removes a chain', () => {
+      const minimumFeeBox = generateDefaultMinimumFeeBox();
+      const testBox = ErgoBox.from_json(testData.removeChainFeeBox);
+      minimumFeeBox.setBox(testBox);
+      const result = minimumFeeBox.toBuilder();
+      result.setHeight(1000000);
+      const resultBoxCandidate = result.build();
+
+      expect(resultBoxCandidate.value().as_i64().to_str()).toEqual(
+        testBox.value().as_i64().to_str()
+      );
+      expect(resultBoxCandidate.ergo_tree().to_base16_bytes()).toEqual(
+        testBox.ergo_tree().to_base16_bytes()
+      );
+      expect(resultBoxCandidate.tokens().len()).toEqual(
+        resultBoxCandidate.tokens().len()
+      );
+      for (let i = 0; i < resultBoxCandidate.tokens().len(); i++) {
+        expect(resultBoxCandidate.tokens().get(i).id().to_str()).toEqual(
+          testBox.tokens().get(i).id().to_str()
+        );
+        expect(
+          resultBoxCandidate.tokens().get(i).amount().as_i64().to_str()
+        ).toEqual(testBox.tokens().get(i).amount().as_i64().to_str());
+      }
+
+      expect(
+        resultBoxCandidate
+          .register_value(4)
+          ?.to_coll_coll_byte()
+          .map((element) => Buffer.from(element).toString())
+      ).toEqual(
+        testBox
+          .register_value(4)
+          ?.to_coll_coll_byte()
+          .map((element) => Buffer.from(element).toString())
+      );
+      for (let i = 5; i < 10; i++) {
+        expect(resultBoxCandidate.register_value(i)?.to_js()).toEqual(
+          testBox.register_value(i)?.to_js()
+        );
+      }
+    });
 
     /**
      * @target MinimumFeeBox.toBuilder should not set height
