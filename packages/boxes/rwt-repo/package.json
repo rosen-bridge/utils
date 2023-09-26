@@ -34,7 +34,7 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "@rosen-bridge/logger-interface": "^0.2.0",
+    "@rosen-bridge/abstract-logger": "^0.3.0",
     "@rosen-bridge/scanner": "^2.1.4",
     "@rosen-clients/ergo-explorer": "^1.0.2",
     "@rosen-clients/ergo-node": "^1.0.2",

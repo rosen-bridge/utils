@@ -12,9 +12,17 @@ class ErgoExplorerAssetHealthCheckParam extends AbstractAssetHealthCheckParam {
     address: string,
     warnThreshold: bigint,
     criticalThreshold: bigint,
-    explorerUrl: string
+    explorerUrl: string,
+    assetDecimal = 0
   ) {
-    super(assetId, assetName, address, warnThreshold, criticalThreshold);
+    super(
+      assetId,
+      assetName,
+      address,
+      warnThreshold,
+      criticalThreshold,
+      assetDecimal
+    );
     this.explorerApi = ergoExplorerClientFactory(explorerUrl);
   }
 
@@ -54,9 +62,17 @@ class ErgoNodeAssetHealthCheckParam extends AbstractAssetHealthCheckParam {
     address: string,
     warnThreshold: bigint,
     criticalThreshold: bigint,
-    nodeUrl: string
+    nodeUrl: string,
+    assetDecimal = 0
   ) {
-    super(assetId, assetName, address, warnThreshold, criticalThreshold);
+    super(
+      assetId,
+      assetName,
+      address,
+      warnThreshold,
+      criticalThreshold,
+      assetDecimal
+    );
     this.nodeApi = ergoNodeClientFactory(nodeUrl);
   }
 
