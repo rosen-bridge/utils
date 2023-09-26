@@ -1,6 +1,9 @@
 import { rwtRepoInfoSample } from './rwtRepoTestData';
 
-export function mockedErgoExplorerClientFactory(url: string) {
+export function mockedErgoExplorerClientFactory(
+  url: string,
+  boxInfo: any = rwtRepoInfoSample.boxInfo
+) {
   return {
     v0: {
       async getApiV0TransactionsUnconfirmedByaddressP1(address: string) {
@@ -17,7 +20,7 @@ export function mockedErgoExplorerClientFactory(url: string) {
       async getApiV1BoxesUnspentByaddressP1(p1: string) {
         if (p1 === rwtRepoInfoSample.Address) {
           return {
-            items: [rwtRepoInfoSample.BoxInfo],
+            items: [boxInfo],
             total: 1,
           };
         }
@@ -27,8 +30,8 @@ export function mockedErgoExplorerClientFactory(url: string) {
         };
       },
       async getApiV1BoxesP1(boxId: string) {
-        if (boxId === rwtRepoInfoSample.BoxInfo.boxId) {
-          return rwtRepoInfoSample.BoxInfo;
+        if (boxId === boxInfo.boxId) {
+          return boxInfo;
         }
         throw new Error('no boxes with this id were found');
       },
@@ -40,18 +43,18 @@ export function mockedErgoNodeClientFactory(url: string) {
   return {
     getBoxesByAddressUnspent(address: string) {
       if (address === rwtRepoInfoSample.Address) {
-        return [rwtRepoInfoSample.BoxInfo];
+        return [rwtRepoInfoSample.boxInfo];
       }
       return [];
     },
     getBoxById(boxId: string) {
-      if (boxId === rwtRepoInfoSample.BoxInfo.boxId) {
-        return rwtRepoInfoSample.BoxInfo;
+      if (boxId === rwtRepoInfoSample.boxInfo.boxId) {
+        return rwtRepoInfoSample.boxInfo;
       }
       throw new Error('no boxes with this id were found');
     },
     getUnconfirmedTransactionsByErgoTree(ergoTree: string) {
-      if (ergoTree === rwtRepoInfoSample.BoxInfo.ergoTree) {
+      if (ergoTree === rwtRepoInfoSample.boxInfo.ergoTree) {
         return rwtRepoInfoSample.MempoolTxSample.items;
       }
       return [];

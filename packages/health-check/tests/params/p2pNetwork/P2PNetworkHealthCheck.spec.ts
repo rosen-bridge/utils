@@ -78,7 +78,7 @@ describe('P2PNetworkHealthCheck', () => {
     it('should return the health check id', () => {
       const healthCheck = runHealthyFixture();
 
-      expect(healthCheck.getId()).toEqual('p2p network');
+      expect(healthCheck.getId()).toEqual('P2P Network');
     });
   });
 
@@ -221,7 +221,7 @@ describe('P2PNetworkHealthCheck', () => {
       const healthCheck = runRelayDefectFixture();
 
       expect(await healthCheck.getDescription()).toEqual(
-        'No relay is connected'
+        'Not connected to any relay. Please check the relay address and your connection.'
       );
     });
 
@@ -238,7 +238,7 @@ describe('P2PNetworkHealthCheck', () => {
       const healthCheck = runGuardsDefectFixture();
 
       expect(await healthCheck.getDescription()).toEqual(
-        `${GUARDS_BROKEN_COUNT} of guards are connected which is below or equal to ${GUARDS_THRESHOLD} threshold`
+        `Connected to only [${GUARDS_BROKEN_COUNT}] guards. At least [${GUARDS_THRESHOLD}] connections is required. Please check the connection.`
       );
     });
   });
