@@ -358,6 +358,10 @@ export class RWTRepo {
       );
     }
 
+    this.logger.debug(
+      `commitmentRwtCount in R6[0] register value: ${commitmentRwtCount}`
+    );
+
     return commitmentRwtCount;
   }
 
