@@ -48,10 +48,7 @@ abstract class AbstractAssetHealthCheckParam extends AbstractHealthCheckParam {
    * @returns parameter health description
    */
   getDescription = async (): Promise<string | undefined> => {
-    if (
-      this.tokenAmount <
-      this.criticalThreshold * 10n ** BigInt(this.assetDecimal)
-    )
+    if (this.tokenAmount < this.criticalThreshold)
       return (
         `Service has stopped working due to insufficient asset '${this.assetName}' balance` +
         ` ([${this.criticalThreshold}] '${
@@ -59,10 +56,7 @@ abstract class AbstractAssetHealthCheckParam extends AbstractHealthCheckParam {
         }' is required, but [${this.getTokenDecimalStr()}] is available.).\n` +
         `Please top up [${this.address}] with asset [${this.assetId}]`
       );
-    else if (
-      this.tokenAmount <
-      this.warnThreshold * 10n ** BigInt(this.assetDecimal)
-    )
+    else if (this.tokenAmount < this.warnThreshold)
       return (
         `Service is in unstable situation due to low asset '${this.assetName}' balance` +
         ` ([${this.warnThreshold}] '${
@@ -89,15 +83,9 @@ abstract class AbstractAssetHealthCheckParam extends AbstractHealthCheckParam {
    * @returns asset health status
    */
   getHealthStatus = async (): Promise<HealthStatusLevel> => {
-    if (
-      this.tokenAmount <
-      this.criticalThreshold * 10n ** BigInt(this.assetDecimal)
-    )
+    if (this.tokenAmount < this.criticalThreshold)
       return HealthStatusLevel.BROKEN;
-    else if (
-      this.tokenAmount <
-      this.warnThreshold * 10n ** BigInt(this.assetDecimal)
-    )
+    else if (this.tokenAmount < this.warnThreshold)
       return HealthStatusLevel.UNSTABLE;
     else return HealthStatusLevel.HEALTHY;
   };
