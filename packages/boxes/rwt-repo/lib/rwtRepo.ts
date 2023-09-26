@@ -293,6 +293,14 @@ export class RWTRepo {
       );
     }
 
+    this.logger.debug(
+      `creating new RWTRepoBuilder instance with following arguements: repoAddress=[${
+        this.repoAddress
+      }], repoNft=[${this.repoNft}], rwt=[${
+        this.rwt
+      }], rwtCount=[${rwtCount}], rsn=[${rsn}], rsnCount=[${rsnCount}], chainId=[${chainId}], commitmentRwtCount=[${this.getCommitmentRwtCount()}], quorumPercentage=[${quorumPercentage}], approvalOffset=[${approvalOffset}], maximumApproval=[${maximumApproval}], ergCollateral=[${this.getErgCollateral()}], rsnCollateral=[${this.getRsnCollateral()}], widPermits=[${widPermits}]`
+    );
+
     return new RWTRepoBuilder(
       this.repoAddress,
       this.repoNft,
