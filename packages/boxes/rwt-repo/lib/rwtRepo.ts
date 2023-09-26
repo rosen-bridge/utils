@@ -414,11 +414,9 @@ export class RWTRepo {
    */
   getPermitCount(wid: string) {
     if (!this.box) {
-      const error = new Error(
+      throw new Error(
         `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
       );
-      this.logger.error(error.message);
-      throw error;
     }
 
     const widIndex = this.getWidIndex(wid);
@@ -430,11 +428,9 @@ export class RWTRepo {
     const permitCount = this.r5?.at(widIndex);
 
     if (permitCount == undefined) {
-      const error = new Error(
+      throw new Error(
         `could not extract permitCount for wid=[${wid}] and widIndex=[${widIndex}] from R5: ${this.rwtRepoLogDescription} `
       );
-      this.logger.error(error.message);
-      throw error;
     }
 
     return permitCount;
