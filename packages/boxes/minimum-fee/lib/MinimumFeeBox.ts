@@ -5,7 +5,7 @@ import ergoExplorerClientFactory from '@rosen-clients/ergo-explorer';
 import ergoNodeClientFactory from '@rosen-clients/ergo-node';
 import JsonBigInt from '@rosen-bridge/json-bigint';
 import handleApiError from './handleApiError';
-import { AbstractLogger, DummyLogger } from '@rosen-bridge/logger-interface';
+import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
 import { MinimumFeeBoxBuilder } from './MinimumFeeBoxBuilder';
 import { MinimumFeeConfig } from './MinimumFeeConfig';
 

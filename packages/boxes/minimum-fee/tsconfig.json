@@ -6,7 +6,7 @@
   },
   "include": ["tests", "lib"],
   "references": [
-    { "path": "../../logger-interface" },
+    { "path": "../../loggers/abstract-logger" },
     { "path": "../../json-bigint" }
   ]
 }
