@@ -381,21 +381,17 @@ export class RWTRepo {
    */
   getWidIndex(wid: string) {
     if (!this.box) {
-      const error = new Error(
+      throw new Error(
         `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
       );
-      this.logger.error(error.message);
-      throw error;
     }
 
     const r4Hex = this.r4?.map((bytes) => Buffer.from(bytes).toString('hex'));
 
     if (!r4Hex) {
-      const error = new Error(
+      throw new Error(
         `could not extract widIndex for wid=[${wid}] from R4: ${this.rwtRepoLogDescription} `
       );
-      this.logger.error(error.message);
-      throw error;
     }
 
     let widIndex = r4Hex.slice(1).indexOf(wid);
