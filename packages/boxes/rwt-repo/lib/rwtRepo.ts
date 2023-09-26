@@ -251,11 +251,9 @@ export class RWTRepo {
    */
   toBuilder() {
     if (!this.box) {
-      const error = new Error(
+      throw new Error(
         `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
       );
-      this.logger.error(error.message);
-      throw error;
     }
 
     const rwtCount = BigInt(
@@ -290,11 +288,9 @@ export class RWTRepo {
       !maximumApproval ||
       !widPermits
     ) {
-      const error = new Error(
+      throw new Error(
         `could not create RWTRepoBuilder becudase one of [chainId=${chainId}, quorumPercentage=${quorumPercentage}, approvalOffset=${approvalOffset}, maximumApproval=${maximumApproval}, widPermits=${widPermits}] could not be calculated: ${this.rwtRepoLogDescription} `
       );
-      this.logger.error(error.message);
-      throw error;
     }
 
     return new RWTRepoBuilder(
