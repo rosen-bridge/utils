@@ -190,6 +190,31 @@ export class RWTRepoBuilder {
     this.lastModifiedWid = wid;
     return this;
   }
+
+  /**
+   * increments rwtCount for a specific wid in RWTRepoBuilder.widPermits by the
+   * specified amount. throws exception if wid not found in
+   * RWTRepoBuilder.widPermits array. Also stores the passed wid in
+   * RWTRepoBuilder.lastModifiedWid and does the following updates:
+   * RWTRepoBuilder.rwtCount += rwtCount;
+   * RWTRepoBuilder.rsnCount -= rwtCount;
+   *
+   * @param {string} wid
+   * @param {bigint} rwtCount
+   * @return {RWTRepoBuilder}
+   * @memberof RWTRepoBuilder
+   */
+  incrementPermits(wid: string, rwtCount: bigint): RWTRepoBuilder {
+    const index = this.widPermits.findIndex((permit) => permit.wid === wid);
+    if (index === -1) {
+      throw new Error(`wid=[${wid}] not found in widPermits`);
+    }
+    this.widPermits[index].rwtCount += rwtCount;
+    this.rwtCount += rwtCount;
+    this.rsnCount -= rwtCount;
+    this.lastModifiedWid = wid;
+    return this;
+  }
 }
 
 export class RWTRepo {
