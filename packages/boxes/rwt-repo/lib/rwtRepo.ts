@@ -433,6 +433,10 @@ export class RWTRepo {
       );
     }
 
+    this.logger.debug(
+      `permitCount for wid=[${wid}] in R5: permitCount=${permitCount}, widIndex=${widIndex}`
+    );
+
     return permitCount;
   }
 
