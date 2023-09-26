@@ -21,6 +21,14 @@ class CardanoKoiosScannerHealthCheck extends AbstractScannerSyncHealthCheckParam
   }
 
   /**
+   * generates a unique id with network name and type
+   * @returns parameter id
+   */
+  getId = (): string => {
+    return `Cardano Scanner Sync (Koios)`;
+  };
+
+  /**
    * @returns last available block in network
    */
   getLastAvailableBlock = async () => {
@@ -44,6 +52,14 @@ class CardanoOgmiosScannerHealthCheck extends AbstractScannerSyncHealthCheckPara
     this.ogmiosHost = ogmiosHost;
     this.ogmiosPort = ogmiosPort;
   }
+
+  /**
+   * generates a unique id with network name and type
+   * @returns parameter id
+   */
+  getId = (): string => {
+    return `Cardano Scanner Sync (Ogmios)`;
+  };
 
   /**
    * @returns last available block in network

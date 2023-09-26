@@ -13,6 +13,14 @@ class TestAssetHealthCheckParam extends AbstractAssetHealthCheckParam {
   setTokenAmount = (amount: bigint) => {
     this.tokenAmount = amount;
   };
+
+  /**
+   * set mocked decimal
+   * @param amount mocked decimal
+   */
+  setTokenDecimal = (decimal: number) => {
+    this.assetDecimal = decimal;
+  };
 }
 
 export { TestAssetHealthCheckParam };

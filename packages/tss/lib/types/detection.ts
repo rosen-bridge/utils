@@ -1,4 +1,4 @@
-import { AbstractLogger } from '@rosen-bridge/logger-interface';
+import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import { EncryptionHandler } from '../abstract';
 import { randomBytes } from '@noble/hashes/utils';
 

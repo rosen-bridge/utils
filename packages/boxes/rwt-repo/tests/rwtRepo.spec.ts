@@ -1,7 +1,7 @@
 import { ErgoNetworkType } from '@rosen-bridge/scanner';
 import ergoExplorerClientFactory from '@rosen-clients/ergo-explorer';
 import ergoNodeClientFactory from '@rosen-clients/ergo-node';
-import { ErgoBox } from 'ergo-lib-wasm-nodejs';
+import { Constant, ErgoBox } from 'ergo-lib-wasm-nodejs';
 import { RWTRepo } from '../lib';
 import { jsonBigInt } from '../lib/utils';
 import {
@@ -60,7 +60,7 @@ describe('RWTRepo', () => {
       await rwtRepo.updateBox(false);
 
       expect(rwtRepo['box']?.box_id().to_str()).toEqual(
-        rwtRepoInfoSample.BoxInfo.boxId
+        rwtRepoInfoSample.boxInfo.boxId
       );
       expect(spyGetBoxFromExplorer).toHaveBeenCalled();
     });
@@ -99,7 +99,7 @@ describe('RWTRepo', () => {
       );
 
       const currentBox = ErgoBox.from_json(
-        jsonBigInt.stringify(rwtRepoInfoSample.BoxInfo)
+        jsonBigInt.stringify(rwtRepoInfoSample.boxInfo)
       );
       rwtRepo['box'] = currentBox;
 
@@ -115,7 +115,7 @@ describe('RWTRepo', () => {
       await rwtRepo.updateBox(false);
 
       expect(rwtRepo['box']?.box_id().to_str()).toEqual(
-        rwtRepoInfoSample.BoxInfo.boxId
+        rwtRepoInfoSample.boxInfo.boxId
       );
       expect(spyGetBoxFromExplorer).toHaveBeenCalled();
       expect(rwtRepo['box']).toBe(currentBox);
@@ -165,7 +165,7 @@ describe('RWTRepo', () => {
       await rwtRepo.updateBox(true);
 
       expect(rwtRepo['box']?.box_id().to_str()).toEqual(
-        rwtRepoInfoSample.BoxInfo.boxId
+        rwtRepoInfoSample.boxInfo.boxId
       );
       expect(spyGetBoxFromExplorerMempool).toHaveBeenCalled();
     });
@@ -214,7 +214,7 @@ describe('RWTRepo', () => {
       await rwtRepo.updateBox(false);
 
       expect(rwtRepo['box']?.box_id().to_str()).toEqual(
-        rwtRepoInfoSample.BoxInfo.boxId
+        rwtRepoInfoSample.boxInfo.boxId
       );
       expect(spyGetBoxFromNode).toHaveBeenCalled();
     });
@@ -263,7 +263,7 @@ describe('RWTRepo', () => {
       await rwtRepo.updateBox(true);
 
       expect(rwtRepo['box']?.box_id().to_str()).toEqual(
-        rwtRepoInfoSample.BoxInfo.boxId
+        rwtRepoInfoSample.boxInfo.boxId
       );
       expect(spyGetBoxFromNodeMempool).toHaveBeenCalled();
     });
@@ -302,7 +302,7 @@ describe('RWTRepo', () => {
       );
 
       const currentBox = ErgoBox.from_json(
-        jsonBigInt.stringify(rwtRepoInfoSample.BoxInfo)
+        jsonBigInt.stringify(rwtRepoInfoSample.boxInfo)
       );
       rwtRepo['box'] = currentBox;
 
@@ -315,10 +315,260 @@ describe('RWTRepo', () => {
       await rwtRepo.updateBox(false);
 
       expect(rwtRepo['box']?.box_id().to_str()).toEqual(
-        rwtRepoInfoSample.BoxInfo.boxId
+        rwtRepoInfoSample.boxInfo.boxId
       );
       expect(spyGetBoxFromNode).toHaveBeenCalled();
       expect(rwtRepo['box']).toBe(currentBox);
+    });
+  });
+
+  describe('getErgCollateral', () => {
+    /**
+     * @target RWTRepo.getErgCollateral should return a bigint with the value
+     * stores in R6[4] of RWTRepo.box
+     * @dependencies
+     * - MockedErgoExplorerClientFactory
+     * @scenario
+     * - create an instance of RWTRepo with specific repoAddress and repoNft
+     * - mock RWTRepo.explorerClient to return a client that returns predefined
+     * box info for the repoAddress and repoNft
+     * - call RWTRepo.updateBox to update RWTRepo.box
+     * - check RWTRepo.getErgCollateral() to return the correct value
+     * @expected
+     * - RWTRepo.getErgCollateral() should return the correct value
+     */
+    it(`RWTRepo.getErgCollateral should return a bigint with the value stores in
+    R6[4] of RWTRepo.box`, async () => {
+      const rwtRepo = new RWTRepo(
+        rwtRepoInfoSample.Address,
+        rwtRepoInfoSample.nft,
+        '',
+        ErgoNetworkType.Explorer,
+        ''
+      );
+
+      rwtRepo['explorerClient'] = mockedErgoExplorerClientFactory(
+        ''
+      ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
+
+      await rwtRepo.updateBox(false);
+
+      expect(rwtRepo.getErgCollateral()).toEqual(
+        jsonBigInt.parse(
+          rwtRepoInfoSample.boxInfo.additionalRegisters.R6.renderedValue
+        )[4]
+      );
+    });
+
+    /**
+     * @target RWTRepo.getErgCollateral should throw an exception when
+     * RWTRepo.box is undefined
+     * @dependencies
+     * - None
+     * @scenario
+     * - create an instance of RWTRepo with specific repoAddress and repoNft
+     * - check RWTRepo.box to be undefined
+     * - check RWTRepo.getErgCollateral() to throw exception
+     * @expected
+     * - RWTRepo.box should be undefined
+     * - RWTRepo.getErgCollateral() should throw exception
+     */
+    it(`RWTRepo.getErgCollateral should throw an exception when RWTRepo.box is
+    undefined`, async () => {
+      const rwtRepo = new RWTRepo(
+        rwtRepoInfoSample.Address,
+        rwtRepoInfoSample.nft,
+        '',
+        ErgoNetworkType.Explorer,
+        ''
+      );
+
+      expect(rwtRepo['box']).toBeUndefined();
+      expect(() => rwtRepo.getErgCollateral()).toThrowError();
+    });
+  });
+
+  describe('getRsnCollateral', () => {
+    /**
+     * @target RWTRepo.getRsnCollateral should return a bigint with the value
+     * stored in R6[5] of RWTRepo.box
+     * @dependencies
+     * - MockedErgoExplorerClientFactory
+     * @scenario
+     * - create an instance of RWTRepo with specific repoAddress and repoNft
+     * - mock RWTRepo.explorerClient to return a client that returns predefined
+     * box info for the repoAddress and repoNft
+     * - call RWTRepo.updateBox to update RWTRepo.box
+     * - check RWTRepo.getRsnCollateral() to return the correct value
+     * @expected
+     * - RWTRepo.getRsnCollateral() should return the correct value
+     */
+    it(`RWTRepo.getRsnCollateral should return a bigint with the value stored in
+    R6[5] of RWTRepo.box`, async () => {
+      const rwtRepo = new RWTRepo(
+        rwtRepoInfoSample.Address,
+        rwtRepoInfoSample.nft,
+        '',
+        ErgoNetworkType.Explorer,
+        ''
+      );
+
+      rwtRepo['explorerClient'] = mockedErgoExplorerClientFactory(
+        ''
+      ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
+
+      await rwtRepo.updateBox(false);
+
+      expect(rwtRepo.getRsnCollateral()).toEqual(
+        jsonBigInt.parse(
+          rwtRepoInfoSample.boxInfo.additionalRegisters.R6.renderedValue
+        )[5]
+      );
+    });
+
+    /**
+     * @target RWTRepo.getRsnCollateral should throw an exception when
+     * RWTRepo.box is undefined
+     * @dependencies
+     * - None
+     * @scenario
+     * - create an instance of RWTRepo with specific repoAddress and repoNft
+     * - check RWTRepo.box to be undefined
+     * - check RWTRepo.getRsnCollateral() to throw exception
+     * @expected
+     * - RWTRepo.box should be undefined
+     * - RWTRepo.getRsnCollateral() should throw exception
+     */
+    it(`RWTRepo.getRsnCollateral should throw an exception when RWTRepo.box is
+    undefined`, async () => {
+      const rwtRepo = new RWTRepo(
+        rwtRepoInfoSample.Address,
+        rwtRepoInfoSample.nft,
+        '',
+        ErgoNetworkType.Explorer,
+        ''
+      );
+
+      expect(rwtRepo['box']).toBeUndefined();
+      expect(() => rwtRepo.getRsnCollateral()).toThrowError();
+    });
+  });
+
+  describe('getRequiredCommitmentCount', () => {
+    /**
+     * @target RWTRepo.getRequiredCommitmentCount should the value of the second
+     * arguement of the following formula, when R6[3] is the greater value:
+     * min(R6[3], R6[1] * (len(R4) - 1) / 100 + R6[2])
+     * @dependencies
+     * - MockedErgoExplorerClientFactory
+     * @scenario
+     * - create an instance of RWTRepo with specific repoAddress and repoNft
+     * - mock RWTRepo.explorerClient to return a client that returns predefined
+     * box info for the repoAddress and repoNft
+     * - call RWTRepo.updateBox to update RWTRepo.box
+     * - check RWTRepo.getRequiredCommitmentCount() to return the correct value
+     * @expected
+     * - RWTRepo.getRequiredCommitmentCount() should return the correct value
+     */
+    it(`RWTRepo.getRequiredCommitmentCount should the value of the second
+    arguement of the following formula, when R6[3] is the greater value:
+    min(R6[3], R6[1] * (len(R4) - 1) / 100 + R6[2])`, async () => {
+      const rwtRepo = new RWTRepo(
+        rwtRepoInfoSample.Address,
+        rwtRepoInfoSample.nft,
+        '',
+        ErgoNetworkType.Explorer,
+        ''
+      );
+
+      const boxInfo = rwtRepoInfoSample.boxInfo2;
+
+      rwtRepo['explorerClient'] = mockedErgoExplorerClientFactory(
+        '',
+        boxInfo
+      ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
+
+      await rwtRepo.updateBox(false);
+
+      const r6 = Constant.decode_from_base16(boxInfo.additionalRegisters.R6)
+        .to_i64_str_array()
+        .map(BigInt);
+      const r4 = Constant.decode_from_base16(
+        boxInfo.additionalRegisters.R4
+      ).to_coll_coll_byte();
+
+      expect(rwtRepo.getRequiredCommitmentCount()).toEqual(
+        (r6[1] * BigInt(r4.length - 1)) / 100n + r6[2]
+      );
+    });
+
+    /**
+     * @target RWTRepo.getRequiredCommitmentCount should return R6[3], when
+     * R6[3] is the lower value in the following formula:
+     * min(R6[3], R6[1] * (len(R4) - 1) / 100 + R6[2])
+     * @dependencies
+     * - MockedErgoExplorerClientFactory
+     * @scenario
+     * - create an instance of RWTRepo with specific repoAddress and repoNft
+     * - mock RWTRepo.explorerClient to return a client that returns predefined
+     * box info for the repoAddress and repoNft
+     * - call RWTRepo.updateBox to update RWTRepo.box
+     * - check RWTRepo.getRequiredCommitmentCount() to return the correct value
+     * @expected
+     * - RWTRepo.getRequiredCommitmentCount() should return the correct value
+     */
+    it(`RWTRepo.getRequiredCommitmentCount should return R6[3], when R6[3] is
+    the lower value in the following formula:
+    min(R6[3], R6[1] * (len(R4) - 1) / 100 + R6[2])`, async () => {
+      const rwtRepo = new RWTRepo(
+        rwtRepoInfoSample.Address,
+        rwtRepoInfoSample.nft,
+        '',
+        ErgoNetworkType.Explorer,
+        ''
+      );
+
+      rwtRepo['explorerClient'] = mockedErgoExplorerClientFactory(
+        ''
+      ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
+
+      await rwtRepo.updateBox(false);
+
+      const boxInfo = rwtRepoInfoSample.boxInfo;
+      const r6 = Constant.decode_from_base16(
+        boxInfo.additionalRegisters.R6.serializedValue
+      )
+        .to_i64_str_array()
+        .map(BigInt);
+
+      expect(rwtRepo.getRequiredCommitmentCount()).toEqual(r6[3]);
+    });
+
+    /**
+     * @target RWTRepo.getRequiredCommitmentCount should throw an exception when
+     * RWTRepo.box is undefined
+     * @dependencies
+     * - None
+     * @scenario
+     * - create an instance of RWTRepo with specific repoAddress and repoNft
+     * - check RWTRepo.box to be undefined
+     * - check RWTRepo.getRequiredCommitmentCount() to throw exception
+     * @expected
+     * - RWTRepo.box should be undefined
+     * - RWTRepo.getRequiredCommitmentCount() should throw exception
+     */
+    it(`RWTRepo.getRequiredCommitmentCount should throw an exception when
+    RWTRepo.box is undefined`, async () => {
+      const rwtRepo = new RWTRepo(
+        rwtRepoInfoSample.Address,
+        rwtRepoInfoSample.nft,
+        '',
+        ErgoNetworkType.Explorer,
+        ''
+      );
+
+      expect(rwtRepo['box']).toBeUndefined();
+      expect(() => rwtRepo.getRequiredCommitmentCount()).toThrowError();
     });
   });
 });

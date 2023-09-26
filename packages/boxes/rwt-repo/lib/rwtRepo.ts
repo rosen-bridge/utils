@@ -1,4 +1,4 @@
-import { AbstractLogger, DummyLogger } from '@rosen-bridge/logger-interface';
+import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
 import { ErgoNetworkType } from '@rosen-bridge/scanner';
 import ergoExplorerClientFactory from '@rosen-clients/ergo-explorer';
 import {
@@ -12,7 +12,7 @@ import ergoNodeClientFactory, {
   Transactions,
 } from '@rosen-clients/ergo-node';
 import { Address, ErgoBox, ErgoTree } from 'ergo-lib-wasm-nodejs';
-import { jsonBigInt } from './utils';
+import { jsonBigInt, min } from './utils';
 
 export class RWTRepoBuilder {
   constructor(
@@ -195,7 +195,6 @@ export class RWTRepo {
     }
 
     const box = ErgoBox.from_json(jsonBigInt.stringify(rwtBoxInfos[0]));
-
     return box;
   }
 
@@ -240,6 +239,129 @@ export class RWTRepo {
 
     const box = ErgoBox.from_json(jsonBigInt.stringify(rwtOutputBoxInfos[0]));
     return box;
+  }
+
+  /**
+   * extract the value of ergCollateral from R6[4] of this.box. If this.box is
+   * undefined an exception is thrown
+   *
+   * @return {bigint}
+   * @memberof RWTRepo
+   */
+  getErgCollateral() {
+    if (!this.box) {
+      throw new Error(
+        `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
+      );
+    }
+
+    const ergCollateralRegister = (
+      this.box.register_value(6)?.to_i64_str_array() as string[] | undefined
+    )?.at(4);
+
+    if (!ergCollateralRegister) {
+      throw new Error(
+        `could not extract ergCollateral from R6[4]: ${this.rwtRepoLogDescription} `
+      );
+    }
+
+    this.logger.debug(
+      `ergCollateral in R6[4] register value: ${ergCollateralRegister}`
+    );
+
+    return BigInt(ergCollateralRegister);
+  }
+
+  /**
+   * extract the value of rsnCollateral from R6[5] of this.box. If this.box is
+   * undefined an exception is thrown
+   *
+   * @return {bigint}
+   * @memberof RWTRepo
+   */
+  getRsnCollateral() {
+    if (!this.box) {
+      throw new Error(
+        `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
+      );
+    }
+
+    const rsnCollateralRegister = (
+      this.box.register_value(6)?.to_i64_str_array() as string[] | undefined
+    )?.at(5);
+
+    if (!rsnCollateralRegister) {
+      throw new Error(
+        `could not extract rsnCollateral from R6[5]: ${this.rwtRepoLogDescription} `
+      );
+    }
+
+    this.logger.debug(
+      `rsnCollateral in R6[5] register value: ${rsnCollateralRegister}`
+    );
+
+    return BigInt(rsnCollateralRegister);
+  }
+
+  /**
+   * calculates and returns the value of requiredCommitmentCount according to
+   * this formula: min(R6[3], R6[1] * (len(R4) - 1) / 100 + R6[2])
+   *
+   * @return {bigint}
+   * @memberof RWTRepo
+   */
+  getRequiredCommitmentCount() {
+    if (!this.box) {
+      throw new Error(
+        `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
+      );
+    }
+
+    const r6_1 = this.r6At(1);
+    const r6_2 = this.r6At(2);
+    const r6_3 = this.r6At(3);
+    const r4 = this.r4;
+
+    if (!r6_1 || !r6_2 || !r6_3 || !r4) {
+      throw new Error(
+        `could not calculate RequiredCommitmentCount, because R6[1] or R6[2] or R6[3] or R4 is undefined: ${this.rwtRepoLogDescription} `
+      );
+    }
+
+    const requiredCommitmentCount = min(
+      (r6_1 * BigInt(r4.length - 1)) / 100n + r6_2,
+      r6_3
+    );
+
+    return requiredCommitmentCount;
+  }
+
+  /**
+   * returns the value at the specified index of the R6 register of this.box as
+   * a bigint
+   *
+   * @private
+   * @param {number} index
+   * @return {bigint | undefined}
+   * @memberof RWTRepo
+   */
+  private r6At(index: number) {
+    const val = (
+      this.box?.register_value(6)?.to_i64_str_array() as string[] | undefined
+    )?.at(index);
+
+    return val ? BigInt(val) : undefined;
+  }
+
+  /**
+   * pareses the R4 register of this.box which is a Coll[Coll[SByte]] and
+   * returns it as a Uint8Array[].
+   *
+   * @readonly
+   * @memberof RWTRepo
+   */
+  get r4() {
+    return this.box?.register_value(4)?.to_coll_coll_byte();
   }
 
   /**
