@@ -262,7 +262,7 @@ describe('MinimumFeeBox', () => {
      * - run test
      * - check returned value
      * @expected
-     * - returned box id should be as expected
+     * - returned config should be as expected
      */
     it('should extract normal fee successfully', () => {
       const minimumFeeBox = generateDefaultMinimumFeeBox();
@@ -282,7 +282,7 @@ describe('MinimumFeeBox', () => {
      * - run test
      * - check returned value
      * @expected
-     * - returned box id should be as expected
+     * - returned config should be as expected
      */
     it('should extract the fee that adds a new chain successfully', () => {
       const minimumFeeBox = generateDefaultMinimumFeeBox();
@@ -302,7 +302,7 @@ describe('MinimumFeeBox', () => {
      * - run test
      * - check returned value
      * @expected
-     * - returned box id should be as expected
+     * - returned config should be as expected
      */
     it('should extract the fee that removes a chain successfully', () => {
       const minimumFeeBox = generateDefaultMinimumFeeBox();
@@ -444,6 +444,7 @@ describe('MinimumFeeBox', () => {
         );
       }
     });
+
     /**
      * @target MinimumFeeBox.toBuilder should return a builder
      * with the same parameters with a config that removes a chain
