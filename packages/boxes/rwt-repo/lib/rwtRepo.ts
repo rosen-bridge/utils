@@ -390,9 +390,13 @@ export class RWTRepo {
     let widIndex = r4Hex.slice(1).indexOf(wid);
     widIndex = widIndex === -1 ? widIndex : widIndex + 1;
 
-    this.logger.debug(
-      `index of wid=[${wid}] found in R4: index=${widIndex}, R4[${widIndex}]=${r4Hex[widIndex]}`
-    );
+    if (widIndex !== -1) {
+      this.logger.debug(
+        `index of wid=[${wid}] found in R4: index=[${widIndex}], R4[${widIndex}]=[${r4Hex[widIndex]}]`
+      );
+    } else {
+      this.logger.debug(`index of wid=[${wid}] not found in R4`);
+    }
 
     return widIndex;
   }
