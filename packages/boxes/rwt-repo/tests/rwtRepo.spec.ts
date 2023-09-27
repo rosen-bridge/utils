@@ -1,6 +1,7 @@
 import { ErgoNetworkType } from '@rosen-bridge/scanner';
 import ergoExplorerClientFactory from '@rosen-clients/ergo-explorer';
 import ergoNodeClientFactory from '@rosen-clients/ergo-node';
+import * as ergo from 'ergo-lib-wasm-nodejs';
 import { Constant, ErgoBox } from 'ergo-lib-wasm-nodejs';
 import { RWTRepo, RWTRepoBuilder } from '../lib';
 import { jsonBigInt } from '../lib/utils';
@@ -1549,6 +1550,113 @@ describe('RWTRepoBuilder', () => {
       expect(rwtRepoBuilder['rwtCount']).toEqual(oldRwtCount + increment);
       expect(rwtRepoBuilder['rsnCount']).toEqual(oldRsnCount - increment);
       expect(rwtRepoBuilder['lastModifiedWid']).toEqual(wid);
+    });
+  });
+
+  describe('build', () => {
+    /**
+     * @target RWTRepoBuilder.build should create a rwt repo candidate Ergo box
+     * based on data stored in its properties.
+     * @dependencies
+     * - MockedErgoExplorerClientFactory
+     * @scenario
+     * - create an instance of RWTRepo with specific repoAddress and repoNft
+     * - mock RWTRepo.explorerClient to return a client that returns predefined
+     * box info for the repoAddress and repoNft
+     * - call RWTRepo.updateBox to update RWTRepo.box
+     * - call RWTRepo.toBuilder to return an instance of RWTRepoBuilder
+     * - call RWTRepoBuilder.setValue to set box Erg value
+     * - call RWTRepoBuilder.setHeight to set box creation height
+     * - call RWTRepoBuilder.build to get an ErgoBoxCandidate instance
+     * - check returned ErgoBoxCandidate to have correct address, value and
+     * height set
+     * - check returned ErgoBoxCandidate to have correct valued for R4, R5, R6
+     * and R7 registers set
+     * - check returned ErgoBoxCandidate to have correct tokenId and values set
+     * @expected
+     * - returned ErgoBoxCandidate should have correct address, value and height
+     * set
+     * - returned ErgoBoxCandidate should have correct valued for R4, R5, R6 and
+     * R7 registers set
+     * - check returned ErgoBoxCandidate to have correct tokenId and values set
+     */
+    it(`RWTRepoBuilder.build should create a rwt repo candidate Ergo box based
+    on data stored in its properties.`, async () => {
+      const rwtRepo = new RWTRepo(
+        rwtRepoInfoSample.Address,
+        rwtRepoInfoSample.nft,
+        '3825b2b4acaaaba626440113153246c65ddb2e9df406c4a56418b5842c9f839a',
+        ErgoNetworkType.Explorer,
+        ''
+      );
+
+      rwtRepo['explorerClient'] = mockedErgoExplorerClientFactory(
+        ''
+      ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
+      await rwtRepo.updateBox(false);
+
+      const rwtRepoBuilder = rwtRepo.toBuilder();
+      const ergValue = 7_000_000n;
+      const height = 5_000;
+      const lastModifiedWidIndex = 2;
+      rwtRepoBuilder['lastModifiedWid'] =
+        rwtRepoBuilder['widPermits'][lastModifiedWidIndex].wid;
+      rwtRepoBuilder.setValue(ergValue);
+      rwtRepoBuilder.setHeight(height);
+      const candidateBox = rwtRepoBuilder.build();
+
+      const r4Serialized =
+        rwtRepoInfoSample.boxInfo.additionalRegisters.R4.serializedValue;
+
+      const r5Serialized =
+        rwtRepoInfoSample.boxInfo.additionalRegisters.R5.serializedValue;
+
+      const r6Serialized =
+        rwtRepoInfoSample.boxInfo.additionalRegisters.R6.serializedValue;
+
+      expect(
+        ergo.Address.recreate_from_ergo_tree(
+          candidateBox.ergo_tree()
+        ).to_base58(ergo.NetworkPrefix.Mainnet)
+      ).toEqual(rwtRepoInfoSample.Address);
+      expect(candidateBox.value().as_i64().to_str()).toEqual(
+        ergValue.toString()
+      );
+      expect(candidateBox.creation_height()).toEqual(height);
+
+      expect(candidateBox.register_value(4)?.encode_to_base16()).toEqual(
+        r4Serialized
+      );
+      expect(candidateBox.register_value(5)?.encode_to_base16()).toEqual(
+        r5Serialized
+      );
+      expect(candidateBox.register_value(6)?.encode_to_base16()).toEqual(
+        r6Serialized
+      );
+      expect(candidateBox.register_value(7)?.to_js()).toEqual(
+        lastModifiedWidIndex
+      );
+
+      expect(candidateBox.tokens().get(0).id().to_str()).toEqual(
+        rwtRepoInfoSample.nft
+      );
+      expect(candidateBox.tokens().get(0).amount().as_i64().to_str()).toEqual(
+        '1'
+      );
+
+      expect(candidateBox.tokens().get(1).id().to_str()).toEqual(
+        rwtRepoInfoSample.boxInfo.assets[1].tokenId
+      );
+      expect(candidateBox.tokens().get(1).amount().as_i64().to_str()).toEqual(
+        rwtRepoInfoSample.boxInfo.assets[1].amount.toString()
+      );
+
+      expect(candidateBox.tokens().get(2).id().to_str()).toEqual(
+        rwtRepoInfoSample.boxInfo.assets[2].tokenId
+      );
+      expect(candidateBox.tokens().get(2).amount().as_i64().to_str()).toEqual(
+        rwtRepoInfoSample.boxInfo.assets[2].amount.toString()
+      );
     });
   });
 });

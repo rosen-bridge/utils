@@ -11,11 +11,15 @@ import ergoNodeClientFactory, {
   IndexedErgoBox,
   Transactions,
 } from '@rosen-clients/ergo-node';
+import * as ergo from 'ergo-lib-wasm-nodejs';
 import { Address, ErgoBox, ErgoTree } from 'ergo-lib-wasm-nodejs';
 import { jsonBigInt, min } from './utils';
 
 export class RWTRepoBuilder {
   private lastModifiedWid?: string;
+  private value?: bigint;
+  private height?: number;
+
   constructor(
     private repoAddress: string,
     private repoNft: string,
@@ -214,6 +218,106 @@ export class RWTRepoBuilder {
     this.rsnCount -= rwtCount;
     this.lastModifiedWid = wid;
     return this;
+  }
+
+  /**
+   * creates a RWTRepo box from the properties of this RWTRepoBuilder instance
+   *
+   * @return {ergo.ErgoBoxCandidate}
+   * @memberof RWTRepoBuilder
+   */
+  build(): ergo.ErgoBoxCandidate {
+    if (this.value == undefined || this.height == undefined) {
+      throw new Error(
+        `value and height should be set on the instance in order for box to be created: value=${this.value}, height=${this.height}`
+      );
+    }
+
+    const boxBuilder = new ergo.ErgoBoxCandidateBuilder(
+      ergo.BoxValue.from_i64(ergo.I64.from_str(this.value.toString())),
+      ergo.Contract.new(
+        ergo.Address.from_base58(this.repoAddress).to_ergo_tree()
+      ),
+      this.height
+    );
+
+    const r4 = ergo.Constant.from_coll_coll_byte(
+      [this.chainId, ...this.widPermits.map((permit) => permit.wid)].map(
+        (item) => Uint8Array.from(Buffer.from(item, 'hex'))
+      )
+    );
+    boxBuilder.set_register_value(4, r4);
+
+    const r5 = ergo.Constant.from_i64_str_array(
+      [0n, ...this.widPermits.map((permit) => permit.rwtCount)].map((item) =>
+        item.toString()
+      )
+    );
+    boxBuilder.set_register_value(5, r5);
+
+    const r6 = ergo.Constant.from_i64_str_array(
+      [
+        this.commitmentRwtCount,
+        this.quorumPercentage,
+        this.approvalOffset,
+        this.maximumApproval,
+        this.ergCollateral,
+        this.rsnCollateral,
+      ].map((item) => item.toString())
+    );
+    boxBuilder.set_register_value(6, r6);
+
+    if (this.lastModifiedWid != undefined) {
+      const index = this.widPermits.findIndex(
+        (permit) => permit.wid === this.lastModifiedWid
+      );
+      if (index !== -1) {
+        const r7 = ergo.Constant.from_i32(index);
+        boxBuilder.set_register_value(7, r7);
+      }
+    }
+
+    boxBuilder.add_token(
+      ergo.TokenId.from_str(this.repoNft),
+      ergo.TokenAmount.from_i64(ergo.I64.from_str('1'))
+    );
+    boxBuilder.add_token(
+      ergo.TokenId.from_str(this.rwt),
+      ergo.TokenAmount.from_i64(ergo.I64.from_str(this.rwtCount.toString()))
+    );
+    boxBuilder.add_token(
+      ergo.TokenId.from_str(this.rsn),
+      ergo.TokenAmount.from_i64(ergo.I64.from_str(this.rsnCount.toString()))
+    );
+
+    return boxBuilder.build();
+  }
+
+  /**
+   * sets value for the box to be built through RWTRepoBuilder.build method
+   *
+   * @param {bigint} value
+   * @memberof RWTRepoBuilder
+   */
+  setValue(value: bigint) {
+    if (value < 0n) {
+      throw new Error(`box value cannot be negative`);
+    }
+    this.value = value;
+  }
+
+  /**
+   * sets creation height for the box to be built through RWTRepoBuilder.build
+   * method
+   *
+   * @param {number} height
+   * @memberof RWTRepoBuilder
+   */
+  setHeight(height: number) {
+    if (height < 1) {
+      throw new Error(`height should be a positive number`);
+    }
+    this.height = height;
   }
 }
 
