@@ -11,10 +11,10 @@ export const jsonBigInt = JSONbigint({
  * @param {...bigint[]} nums
  * @return {bigint}
  */
-export function min(...nums: bigint[]) {
+export const min = (...nums: bigint[]) => {
   const val = nums.reduce(
     (currentMin, num) => (num <= currentMin ? num : currentMin),
     nums[0]
   );
   return val;
-}
+};

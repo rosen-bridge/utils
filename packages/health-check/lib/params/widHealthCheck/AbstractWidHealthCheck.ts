@@ -22,7 +22,7 @@ abstract class AbstractWidHealthCheckParam extends AbstractHealthCheckParam {
    * @returns parameter id
    */
   getId = (): string => {
-    return `Wid Check`;
+    return `WID Token`;
   };
 
   /**
