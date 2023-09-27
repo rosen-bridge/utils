@@ -8,8 +8,7 @@ import handleApiError from './handleApiError';
 import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
 import { MinimumFeeBoxBuilder } from './MinimumFeeBoxBuilder';
 import { MinimumFeeConfig } from './MinimumFeeConfig';
-
-const ERGO_NATIVE_TOKEN = 'erg';
+import { ERGO_NATIVE_TOKEN } from './constants';
 
 export class MinimumFeeBox {
   protected readonly BOX_FETCHING_PAGE_SIZE = 50;

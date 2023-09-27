@@ -12,8 +12,7 @@ import {
 import { MinimumFeeConfig } from './MinimumFeeConfig';
 import { Fee } from './types';
 import { InvalidConfig } from './errors';
-
-const ERGO_NATIVE_TOKEN = 'erg';
+import { ERGO_NATIVE_TOKEN } from './constants';
 
 export class MinimumFeeBoxBuilder {
   protected fees: Array<Fee>;
