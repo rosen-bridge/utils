@@ -23,6 +23,7 @@ export class MinimumFeeConfig {
   ): MinimumFeeConfig => {
     this.fee.heights[chain] = height;
     if (chainFee) this.fee.configs[chain] = chainFee;
+    else delete this.fee.configs[chain];
     return this;
   };
 

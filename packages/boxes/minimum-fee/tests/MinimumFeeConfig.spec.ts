@@ -50,6 +50,37 @@ describe('MinimumFeeConfig', () => {
       expect(result.getConfig().heights[chain]).toEqual(height);
       expect(result.getConfig().configs[chain]).toBeUndefined();
     });
+
+    /**
+     * @target MinimumFeeConfig.setChainConfig should remove chain config
+     * when has been set again without config
+     * @dependencies
+     * @scenario
+     * - mock test data
+     * - run test
+     * - check returned value
+     * @expected
+     * - returned object should contain only height for new chain
+     */
+    it('should remove chain config when has been set again without config', () => {
+      const chain = 'chain';
+      const height = 5000;
+      const chainFee: ChainFee = {
+        bridgeFee: 100n,
+        networkFee: 101n,
+        rsnRatio: 102n,
+        rsnRatioDivisor: 103n,
+        feeRatio: 104n,
+      };
+
+      const minimumFeeConfig = new MinimumFeeConfig();
+      const result = minimumFeeConfig
+        .setChainConfig(chain, height, chainFee)
+        .setChainConfig(chain, height, undefined);
+
+      expect(result.getConfig().heights[chain]).toEqual(height);
+      expect(result.getConfig().configs[chain]).toBeUndefined();
+    });
   });
 
   describe('removeChainConfig', () => {
