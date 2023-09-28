@@ -55,6 +55,57 @@ export const normalFee: Array<Fee> = [
   },
 ];
 
+export const normalFeeWith4Fees: Array<Fee> = [
+  {
+    heights: { ergo: 11111 },
+    configs: {
+      ergo: {
+        bridgeFee: 100n,
+        networkFee: 30n,
+        rsnRatio: 10n,
+        rsnRatioDivisor: 1000n,
+        feeRatio: 40n,
+      },
+    },
+  },
+  {
+    heights: { ergo: 22222 },
+    configs: {
+      ergo: {
+        bridgeFee: 200n,
+        networkFee: 40n,
+        rsnRatio: 11n,
+        rsnRatioDivisor: 1100n,
+        feeRatio: 41n,
+      },
+    },
+  },
+  {
+    heights: { ergo: 33333 },
+    configs: {
+      ergo: {
+        bridgeFee: 500n,
+        networkFee: 80n,
+        rsnRatio: 21n,
+        rsnRatioDivisor: 2100n,
+        feeRatio: 51n,
+      },
+    },
+  },
+  {
+    heights: { ergo: 44444 },
+    configs: {
+      ergo: {
+        bridgeFee: 800n,
+        networkFee: 96n,
+        rsnRatio: 31n,
+        rsnRatioDivisor: 3100n,
+        feeRatio: 61n,
+      },
+    },
+  },
+];
+
 export const newChainFee: Array<Fee> = [
   {
     heights: { ergo: 11111, binance: 666 },

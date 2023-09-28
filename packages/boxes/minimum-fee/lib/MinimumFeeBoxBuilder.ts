@@ -42,7 +42,7 @@ export class MinimumFeeBoxBuilder {
    * @param index
    */
   removeConfig = (index: number): MinimumFeeBoxBuilder => {
-    this.fees.splice(index);
+    this.fees.splice(index, 1);
     return this;
   };
 

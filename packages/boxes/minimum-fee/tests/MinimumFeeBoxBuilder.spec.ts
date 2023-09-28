@@ -442,7 +442,7 @@ describe('MinimumFeeBoxBuilder', () => {
      * @expected
      * - should throw Error
      */
-    it('should throw Error when box value is not give', () => {
+    it('should throw Error when box value is not given', () => {
       // mock test data
       const fees = testData.normalFee;
 
@@ -485,7 +485,7 @@ describe('MinimumFeeBoxBuilder', () => {
      * @expected
      * - should throw Error
      */
-    it('should throw Error when box height is not give', () => {
+    it('should throw Error when box height is not given', () => {
       // mock test data
       const fees = testData.normalFee;
 
@@ -528,7 +528,7 @@ describe('MinimumFeeBoxBuilder', () => {
      * @expected
      * - should throw Error
      */
-    it('should throw Error when token is not give', () => {
+    it('should throw Error when token is not given', () => {
       // mock test data
       const fees = testData.normalFee;
 
@@ -571,7 +571,7 @@ describe('MinimumFeeBoxBuilder', () => {
      * @expected
      * - should throw Error
      */
-    it('should throw Error when fee config is not give', () => {
+    it('should throw Error when fee config is not given', () => {
       // mock test data
       const fees = testData.normalFee;
 
@@ -689,6 +689,51 @@ describe('MinimumFeeBoxBuilder', () => {
       expect(() => {
         builder.build();
       }).toThrow(InvalidConfig);
+    });
+  });
+
+  describe('removeConfig', () => {
+    /**
+     * @target MinimumFeeBoxBuilder.removeConfig should remove
+     * given index successfully
+     * @dependencies
+     * @scenario
+     * - mock test data
+     * - create builder and set configs
+     * - run test
+     * - check fees in builder
+     * @expected
+     * - only given index should be removed
+     */
+    it('should throw Error when box value is not given', () => {
+      // mock test data
+      const fees = testData.normalFeeWith4Fees;
+
+      const feeConfig: Array<MinimumFeeConfig> = [];
+      fees.forEach((fee) => {
+        const minimumFeeConfig = new MinimumFeeConfig();
+        Object.keys(fee.heights).forEach((chain) =>
+          minimumFeeConfig.setChainConfig(
+            chain,
+            fee.heights[chain],
+            fee.configs[chain]
+          )
+        );
+        feeConfig.push(minimumFeeConfig);
+      });
+
+      // create builder and set configs
+      const builder = new MinimumFeeBoxBuilder(
+        defaultMinimumFeeNFT,
+        defaultAddress
+      );
+      feeConfig.forEach((fee) => builder.addConfig(fee));
+
+      // run test
+      builder.removeConfig(1);
+
+      // check fees in builder
+      expect((builder as any).fees).toEqual([fees[0], ...fees.slice(2)]);
     });
   });
 });
