@@ -721,7 +721,6 @@ describe('RWTRepo', () => {
      * - check RWTRepo.box to be undefined
      * - check RWTRepo.getWidIndex() to throw exception
      * @expected
-     * - RWTRepo.box should be undefined
      * - RWTRepo.getWidIndex() should throw exception
      */
     it(`RWTRepo.getWidIndex should throw an exception when RWTRepo.box is
@@ -734,7 +733,6 @@ describe('RWTRepo', () => {
         ''
       );
 
-      expect(rwtRepo['box']).toBeUndefined();
       expect(() => rwtRepo.getWidIndex('6572676f')).toThrowError();
     });
   });

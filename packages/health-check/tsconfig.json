@@ -5,5 +5,5 @@
     "rootDir": "./"
   },
   "include": ["tests", "lib"],
-  "references": [{ "path": "../logger-interface" }]
+  "references": [{ "path": "../loggers/abstract-logger" }]
 }

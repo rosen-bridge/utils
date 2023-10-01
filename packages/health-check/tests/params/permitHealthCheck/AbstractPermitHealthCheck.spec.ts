@@ -12,7 +12,8 @@ describe('AbstractPermitHealthCheckParam', () => {
       'permitAddress',
       'WID',
       100n,
-      10n
+      10n,
+      10
     );
   });
 
@@ -27,7 +28,7 @@ describe('AbstractPermitHealthCheckParam', () => {
      * - The status should be HEALTHY when permit count is more than warning threshold
      */
     it('should return the healthy status when permit count is more than warning threshold', async () => {
-      permitHealthCheckParam.setRWTAmount(1200n);
+      permitHealthCheckParam.setReportCount(1200n);
       const status = await permitHealthCheckParam.getHealthStatus();
       expect(status).toBe(HealthStatusLevel.HEALTHY);
     });
@@ -42,7 +43,7 @@ describe('AbstractPermitHealthCheckParam', () => {
      * - The status should be UNSTABLE when permit count is less than warning threshold
      */
     it('should return the unstable status when permit count is less than warning threshold', async () => {
-      permitHealthCheckParam.setRWTAmount(90n);
+      permitHealthCheckParam.setReportCount(90n);
       const status = await permitHealthCheckParam.getHealthStatus();
       expect(status).toBe(HealthStatusLevel.UNSTABLE);
     });
@@ -57,7 +58,7 @@ describe('AbstractPermitHealthCheckParam', () => {
      * - The status should be BROKEN when permit count is less than critical threshold'
      */
     it('should return the broken status when permit count is less than critical threshold', async () => {
-      permitHealthCheckParam.setRWTAmount(9n);
+      permitHealthCheckParam.setReportCount(9n);
       const status = await permitHealthCheckParam.getHealthStatus();
       expect(status).toBe(HealthStatusLevel.BROKEN);
     });
