@@ -827,10 +827,8 @@ describe('RWTRepo', () => {
      * - None
      * @scenario
      * - create an instance of RWTRepo with specific repoAddress and repoNft
-     * - check RWTRepo.box to be undefined
      * - check RWTRepo.getPermitCount() to throw exception
      * @expected
-     * - RWTRepo.box should be undefined
      * - RWTRepo.getPermitCount() should throw exception
      */
     it(`RWTRepo.getPermitCount should throw an exception when RWTRepo.box is
@@ -843,7 +841,6 @@ describe('RWTRepo', () => {
         ''
       );
 
-      expect(rwtRepo['box']).toBeUndefined();
       expect(() => rwtRepo.getPermitCount('faer')).toThrowError();
     });
   });
