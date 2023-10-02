@@ -268,7 +268,7 @@ export class RWTRepo {
     const chainIdBytes = this.r4?.at(0);
     const chainId =
       chainIdBytes != undefined
-        ? Buffer.from(chainIdBytes).toString('hex')
+        ? Buffer.from(chainIdBytes).toString()
         : undefined;
 
     const quorumPercentage = Number(this.r6At(1));
