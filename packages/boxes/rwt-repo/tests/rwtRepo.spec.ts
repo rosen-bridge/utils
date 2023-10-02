@@ -920,9 +920,7 @@ describe('RWTRepo', () => {
       expect(rwtRepoBuilder['rwtCount']).toEqual(rwtCount);
       expect(rwtRepoBuilder['rsn']).toEqual(rsnToken.tokenId);
       expect(rwtRepoBuilder['rsnCount']).toEqual(BigInt(rsnToken.amount));
-      expect(rwtRepoBuilder['chainId']).toEqual(
-        Buffer.from(r4[0]).toString('hex')
-      );
+      expect(rwtRepoBuilder['chainId']).toEqual(Buffer.from(r4[0]).toString());
       expect(rwtRepoBuilder['commitmentRwtCount']).toEqual(
         rwtRepo.getCommitmentRwtCount()
       );
