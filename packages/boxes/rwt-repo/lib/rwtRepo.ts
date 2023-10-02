@@ -53,7 +53,7 @@ export class RWTRepoBuilder {
 
     if (this.rwtCount < rwtCount) {
       throw new Error(
-        `cannot add user: RWTRepoBuilder.addNewUser: this.rwtCount=[${this.rwtCount}] is less than passed rwtCount=[${rwtCount}] to addNewUser`
+        `could not add user: passed arguement rwtCount=[${rwtCount}] must be less than or equal to this.rwtCount=[${this.rwtCount}]`
       );
     }
     this.rwtCount -= rwtCount;
