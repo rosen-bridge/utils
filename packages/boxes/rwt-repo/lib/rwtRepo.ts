@@ -402,6 +402,42 @@ export class RWTRepo {
   }
 
   /**
+   * gets permitCount for wid by first finding widIndex (index of wid in R4) and
+   * extracting R5[WidIndex] as permitCount
+   *
+   * @param {string} wid
+   * @return {bigint}
+   * @memberof RWTRepo
+   */
+  getPermitCount(wid: string) {
+    if (!this.box) {
+      throw new Error(
+        `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
+      );
+    }
+
+    const widIndex = this.getWidIndex(wid);
+
+    if (widIndex === -1) {
+      return 0n;
+    }
+
+    const permitCount = this.r5?.at(widIndex);
+
+    if (permitCount == undefined) {
+      throw new Error(
+        `could not extract permitCount for wid=[${wid}] and widIndex=[${widIndex}] from R5: ${this.rwtRepoLogDescription} `
+      );
+    }
+
+    this.logger.debug(
+      `permitCount for wid=[${wid}] in R5: permitCount=${permitCount}, widIndex=${widIndex}`
+    );
+
+    return permitCount;
+  }
+
+  /**
    * returns the value at the specified index of the R6 register of this.box as
    * a bigint
    *
@@ -427,6 +463,18 @@ export class RWTRepo {
    */
   get r4() {
     return this.box?.register_value(4)?.to_coll_coll_byte();
+  }
+
+  /**
+   * parses R5:Coll[SLong] as an array of bigints
+   *
+   * @readonly
+   * @memberof RWTRepo
+   */
+  get r5() {
+    return (
+      this.box?.register_value(5)?.to_i64_str_array() as string[] | undefined
+    )?.map(BigInt);
   }
 
   /**
