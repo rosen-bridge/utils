@@ -969,6 +969,50 @@ describe('RWTRepo', () => {
 
 describe('RWTRepoBuilder', () => {
   describe('addNewUser', () => {
+    let rwtRepoBuilder: RWTRepoBuilder;
+    beforeEach(() => {
+      const boxInfo = rwtRepoInfoSample.boxInfo;
+
+      const r4 = Constant.decode_from_base16(
+        boxInfo.additionalRegisters.R4.serializedValue
+      ).to_coll_coll_byte();
+
+      const r5 = (
+        Constant.decode_from_base16(
+          boxInfo.additionalRegisters.R5.serializedValue
+        ).to_i64_str_array() as string[]
+      ).map(BigInt);
+
+      const r6 = (
+        Constant.decode_from_base16(
+          boxInfo.additionalRegisters.R6.serializedValue
+        ).to_i64_str_array() as string[]
+      ).map(BigInt);
+
+      const widPermits = r4
+        .slice(1)
+        ?.map((wid) => Buffer.from(wid).toString('hex'))
+        .map((wid, i) => {
+          return { wid, rwtCount: r5[i + 1] };
+        });
+
+      rwtRepoBuilder = new RWTRepoBuilder(
+        rwtRepoInfoSample.Address,
+        rwtRepoInfoSample.nft,
+        boxInfo.assets[1].tokenId,
+        BigInt(boxInfo.assets[1].amount),
+        boxInfo.assets[2].tokenId,
+        BigInt(boxInfo.assets[2].amount),
+        Buffer.from(r4[0]).toString(),
+        r6[0],
+        Number(r6[1]),
+        Number(r6[2]),
+        Number(r6[3]),
+        r6[4],
+        r6[5],
+        widPermits
+      );
+    });
     /**
      * @target RWTRepo.addNewUser should add the passed wid, rwtCount arguements
      * to this.widPermits, and do the fullowing updates:
@@ -1005,22 +1049,6 @@ describe('RWTRepoBuilder', () => {
     this.widPermits, and do the fullowing updates:
     this.rwtCount -= rwtCount
     this.rsnCount += rsnCount`, async () => {
-      const rwtRepo = new RWTRepo(
-        rwtRepoInfoSample.Address,
-        rwtRepoInfoSample.nft,
-        '',
-        ErgoNetworkType.Explorer,
-        ''
-      );
-
-      rwtRepo['explorerClient'] = mockedErgoExplorerClientFactory(
-        ''
-      ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
-
-      await rwtRepo.updateBox(false);
-
-      const rwtRepoBuilder = rwtRepo.toBuilder();
-
       const wid = '34f2a6bb';
       const rwtCount = 2n;
       const oldWidPermits = [...rwtRepoBuilder['widPermits']];
