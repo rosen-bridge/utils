@@ -2,7 +2,7 @@ import { ErgoNetworkType } from '@rosen-bridge/scanner';
 import ergoExplorerClientFactory from '@rosen-clients/ergo-explorer';
 import ergoNodeClientFactory from '@rosen-clients/ergo-node';
 import { Constant, ErgoBox } from 'ergo-lib-wasm-nodejs';
-import { RWTRepo } from '../lib';
+import { RWTRepo, RWTRepoBuilder } from '../lib';
 import { jsonBigInt } from '../lib/utils';
 import {
   mockedErgoExplorerClientFactory,
@@ -842,6 +842,117 @@ describe('RWTRepo', () => {
       );
 
       expect(() => rwtRepo.getPermitCount('faer')).toThrowError();
+    });
+  });
+
+  describe('toBuilder', () => {
+    /**
+     * @target RWTRepo.toBuilder should create and return an instance of
+     * RWTRepoBuilder with correct parameters taken from the rwtRepo instance
+     * @dependencies
+     * - MockedErgoExplorerClientFactory
+     * @scenario
+     * - create an instance of RWTRepo with specific repoAddress and repoNft
+     * - mock RWTRepo.explorerClient to return a client that returns predefined
+     * box info for the repoAddress and repoNft
+     * - call RWTRepo.updateBox to update RWTRepo.box
+     * - check RWTRepo.toBuilder() to return an instance of RWTRepoBuilder
+     * - check RWTRepo.toBuilder() to have created the RWTRepoBuilder instance
+     * with correct parameters
+     * @expected
+     * - check RWTRepo.toBuilder() should return an instance of RWTRepoBuilder
+     * - check RWTRepo.toBuilder() shoudd have created the RWTRepoBuilder
+     * instance with correct parameters
+     */
+    it(`RWTRepo.toBuilder should create and return an instance of RWTRepoBuilder
+    with correct parameters taken from the rwtRepo instance`, async () => {
+      const rwtRepo = new RWTRepo(
+        rwtRepoInfoSample.Address,
+        rwtRepoInfoSample.nft,
+        '',
+        ErgoNetworkType.Explorer,
+        ''
+      );
+
+      rwtRepo['explorerClient'] = mockedErgoExplorerClientFactory(
+        ''
+      ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
+
+      await rwtRepo.updateBox(false);
+
+      const rwtRepoBuilder = rwtRepo.toBuilder();
+
+      const r4 = Constant.decode_from_base16(
+        rwtRepoInfoSample.boxInfo.additionalRegisters.R4.serializedValue
+      ).to_coll_coll_byte();
+
+      const r5 = (
+        Constant.decode_from_base16(
+          rwtRepoInfoSample.boxInfo.additionalRegisters.R5.serializedValue
+        ).to_i64_str_array() as string[]
+      ).map(BigInt);
+
+      const r6 = (
+        Constant.decode_from_base16(
+          rwtRepoInfoSample.boxInfo.additionalRegisters.R6.serializedValue
+        ).to_i64_str_array() as string[]
+      ).map(BigInt);
+
+      const widPermits = r4
+        .slice(1)
+        ?.map((wid) => Buffer.from(wid).toString('hex'))
+        .map((wid, i) => {
+          return { wid, rwtCount: r5[i + 1] };
+        });
+
+      const rwtCount = BigInt(rwtRepoInfoSample.boxInfo.assets[1].amount);
+      const rsnToken = rwtRepoInfoSample.boxInfo.assets[2];
+
+      expect(rwtRepoBuilder).toBeInstanceOf(RWTRepoBuilder);
+      expect(rwtRepoBuilder['repoAddress']).toEqual(rwtRepo['repoAddress']);
+      expect(rwtRepoBuilder['repoNft']).toEqual(rwtRepo['repoNft']);
+      expect(rwtRepoBuilder['rwt']).toEqual(rwtRepo['rwt']);
+      expect(rwtRepoBuilder['rwtCount']).toEqual(rwtCount);
+      expect(rwtRepoBuilder['rsn']).toEqual(rsnToken.tokenId);
+      expect(rwtRepoBuilder['rsnCount']).toEqual(BigInt(rsnToken.amount));
+      expect(rwtRepoBuilder['chainId']).toEqual(Buffer.from(r4[0]).toString());
+      expect(rwtRepoBuilder['commitmentRwtCount']).toEqual(
+        rwtRepo.getCommitmentRwtCount()
+      );
+      expect(rwtRepoBuilder['quorumPercentage']).toEqual(Number(r6.at(1)));
+      expect(rwtRepoBuilder['approvalOffset']).toEqual(Number(r6.at(2)));
+      expect(rwtRepoBuilder['maximumApproval']).toEqual(Number(r6.at(3)));
+      expect(rwtRepoBuilder['ergCollateral']).toEqual(
+        rwtRepo.getErgCollateral()
+      );
+      expect(rwtRepoBuilder['rsnCollateral']).toEqual(
+        rwtRepo.getRsnCollateral()
+      );
+      expect(rwtRepoBuilder['widPermits']).toEqual(widPermits);
+    });
+
+    /**
+     * @target RWTRepo.toBuilder should throw an exception when RWTRepo.box is
+     * undefined
+     * @dependencies
+     * - None
+     * @scenario
+     * - create an instance of RWTRepo with specific repoAddress and repoNft
+     * - check RWTRepo.toBuilder() to throw exception
+     * @expected
+     * - RWTRepo.toBuilder() should throw exception
+     */
+    it(`RWTRepo.toBuilder should throw an exception when RWTRepo.box is
+    undefined`, async () => {
+      const rwtRepo = new RWTRepo(
+        rwtRepoInfoSample.Address,
+        rwtRepoInfoSample.nft,
+        '',
+        ErgoNetworkType.Explorer,
+        ''
+      );
+
+      expect(() => rwtRepo.toBuilder()).toThrowError();
     });
   });
 });
