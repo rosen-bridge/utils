@@ -1013,24 +1013,21 @@ describe('RWTRepoBuilder', () => {
         widPermits
       );
     });
+
     /**
      * @target RWTRepo.addNewUser should add the passed wid, rwtCount arguements
      * to this.widPermits, and do the fullowing updates:
      * this.rwtCount -= rwtCount
      * this.rsnCount += rsnCount
      * @dependencies
-     * - MockedErgoExplorerClientFactory
+     * - None
      * @scenario
-     * - create an instance of RWTRepo with specific repoAddress and repoNft
-     * - mock RWTRepo.explorerClient to return a client that returns predefined
-     * box info for the repoAddress and repoNft
-     * - call RWTRepo.updateBox to update RWTRepo.box
-     * - call RWTRepo.toBuilder to return an instance of RWTRepoBuilder
+     * - create an instance of RWTRepoBuilder
      * - call RWTRepoBuilder.addNewUser
      * - check RWTRepoBuilder.widPermits to not have contained the new wid
      * before RWTRepoBuilder.addNewUser
      * - check RWTRepoBuilder.widPermits to contain the new wid after
-     * RWTRepoBuilder.addNewUser
+     * RWTRepoBuilder.addNewUser as the last item
      * - check RWTRepoBuilder.rwtCount to have been updated correctly
      * - check RWTRepoBuilder.rsnCount to have been updated correctly
      * - check RWTRepoBuilder.lastModifiedWid to have been updated with the
@@ -1039,13 +1036,13 @@ describe('RWTRepoBuilder', () => {
      * - RWTRepoBuilder.widPermits should not have contained the new wid before
      * RWTRepoBuilder.addNewUser
      * - RWTRepoBuilder.widPermits should contain the new wid after
-     * RWTRepoBuilder.addNewUser
+     * RWTRepoBuilder.addNewUser as the last item
      * - RWTRepoBuilder.rwtCount should have been updated correctly
      * - RWTRepoBuilder.rsnCount should have been updated correctly
      * - RWTRepoBuilder.lastModifiedWid should have been updated with the passed
      * wid
      */
-    it(`RWTRepo.addNewUser should add the passed wid, rwtCount arguements to
+    it(`should add the passed wid, rwtCount arguements to
     this.widPermits, and do the fullowing updates:
     this.rwtCount -= rwtCount
     this.rsnCount += rsnCount`, async () => {
@@ -1061,11 +1058,51 @@ describe('RWTRepoBuilder', () => {
         false
       );
       expect(
-        rwtRepoBuilder['widPermits'].map((permit) => permit.wid).includes(wid)
-      ).toEqual(true);
+        rwtRepoBuilder['widPermits'][rwtRepoBuilder['widPermits'].length - 1]
+          .wid
+      ).toEqual(wid);
       expect(rwtRepoBuilder['rwtCount']).toEqual(oldRwtCount - rwtCount);
       expect(rwtRepoBuilder['rsnCount']).toEqual(oldRsnCount + rwtCount);
       expect(rwtRepoBuilder['lastModifiedWid']).toEqual(wid);
+    });
+
+    /**
+     * @target should throw exception when passed rwtCount as arguement is
+     * greater than available rwtCount
+     * @dependencies
+     * - None
+     * @scenario
+     * - create an instance of RWTRepoBuilder
+     * - call RWTRepoBuilder.addNewUser with a rwtCount greater than
+     * this.rwtCount
+     * - check RWTRepoBuilder.addNewUser to throw an exception
+     * @expected
+     * - RWTRepoBuilder.addNewUser should throw an exception
+     */
+    it(`should throw exception when passed rwtCount as arguement is greater than
+    available rwtCount`, async () => {
+      const wid = '34f2a6bb';
+
+      expect(() =>
+        rwtRepoBuilder.addNewUser(wid, rwtRepoBuilder['rwtCount'] + 1n)
+      ).toThrowError();
+    });
+
+    /**
+     * @target should throw exception adding an existing wid
+     * @dependencies
+     * - None
+     * @scenario
+     * - create an instance of RWTRepoBuilder
+     * - call RWTRepoBuilder.addNewUser with an existing wid
+     * - check RWTRepoBuilder.addNewUser to throw an exception
+     * @expected
+     * - RWTRepoBuilder.addNewUser should throw an exception
+     */
+    it(`should throw exception adding an existing wid`, async () => {
+      expect(() =>
+        rwtRepoBuilder.addNewUser(rwtRepoBuilder['widPermits'][0].wid, 1n)
+      ).toThrowError();
     });
   });
 });
