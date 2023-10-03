@@ -956,3 +956,143 @@ describe('RWTRepo', () => {
     });
   });
 });
+
+describe('RWTRepoBuilder', () => {
+  describe('addNewUser', () => {
+    let rwtRepoBuilder: RWTRepoBuilder;
+    beforeEach(() => {
+      const boxInfo = rwtRepoInfoSample.boxInfo;
+
+      const r4 = Constant.decode_from_base16(
+        boxInfo.additionalRegisters.R4.serializedValue
+      ).to_coll_coll_byte();
+
+      const r5 = (
+        Constant.decode_from_base16(
+          boxInfo.additionalRegisters.R5.serializedValue
+        ).to_i64_str_array() as string[]
+      ).map(BigInt);
+
+      const r6 = (
+        Constant.decode_from_base16(
+          boxInfo.additionalRegisters.R6.serializedValue
+        ).to_i64_str_array() as string[]
+      ).map(BigInt);
+
+      const widPermits = r4
+        .slice(1)
+        ?.map((wid) => Buffer.from(wid).toString('hex'))
+        .map((wid, i) => {
+          return { wid, rwtCount: r5[i + 1] };
+        });
+
+      rwtRepoBuilder = new RWTRepoBuilder(
+        rwtRepoInfoSample.Address,
+        rwtRepoInfoSample.nft,
+        boxInfo.assets[1].tokenId,
+        BigInt(boxInfo.assets[1].amount),
+        boxInfo.assets[2].tokenId,
+        BigInt(boxInfo.assets[2].amount),
+        Buffer.from(r4[0]).toString(),
+        r6[0],
+        Number(r6[1]),
+        Number(r6[2]),
+        Number(r6[3]),
+        r6[4],
+        r6[5],
+        widPermits
+      );
+    });
+
+    /**
+     * @target RWTRepo.addNewUser should add the passed wid, rwtCount arguements
+     * to this.widPermits, and do the fullowing updates:
+     * this.rwtCount -= rwtCount
+     * this.rsnCount += rsnCount
+     * @dependencies
+     * - None
+     * @scenario
+     * - create an instance of RWTRepoBuilder
+     * - call RWTRepoBuilder.addNewUser
+     * - check RWTRepoBuilder.widPermits to not have contained the new wid
+     * before RWTRepoBuilder.addNewUser
+     * - check RWTRepoBuilder.widPermits to contain the new wid after
+     * RWTRepoBuilder.addNewUser as the last item
+     * - check RWTRepoBuilder.rwtCount to have been updated correctly
+     * - check RWTRepoBuilder.rsnCount to have been updated correctly
+     * - check RWTRepoBuilder.lastModifiedWid to have been updated with the
+     * passed wid
+     * @expected
+     * - RWTRepoBuilder.widPermits should not have contained the new wid before
+     * RWTRepoBuilder.addNewUser
+     * - RWTRepoBuilder.widPermits should contain the new wid after
+     * RWTRepoBuilder.addNewUser as the last item
+     * - RWTRepoBuilder.rwtCount should have been updated correctly
+     * - RWTRepoBuilder.rsnCount should have been updated correctly
+     * - RWTRepoBuilder.lastModifiedWid should have been updated with the passed
+     * wid
+     */
+    it(`should add the passed wid, rwtCount arguements to
+    this.widPermits, and do the fullowing updates:
+    this.rwtCount -= rwtCount
+    this.rsnCount += rsnCount`, async () => {
+      const wid = '34f2a6bb';
+      const rwtCount = 2n;
+      const oldWidPermits = [...rwtRepoBuilder['widPermits']];
+      const oldRwtCount = rwtRepoBuilder['rwtCount'];
+      const oldRsnCount = rwtRepoBuilder['rsnCount'];
+
+      rwtRepoBuilder.addNewUser(wid, rwtCount);
+
+      expect(oldWidPermits.map((permit) => permit.wid).includes(wid)).toEqual(
+        false
+      );
+      expect(
+        rwtRepoBuilder['widPermits'][rwtRepoBuilder['widPermits'].length - 1]
+          .wid
+      ).toEqual(wid);
+      expect(rwtRepoBuilder['rwtCount']).toEqual(oldRwtCount - rwtCount);
+      expect(rwtRepoBuilder['rsnCount']).toEqual(oldRsnCount + rwtCount);
+      expect(rwtRepoBuilder['lastModifiedWid']).toEqual(wid);
+    });
+
+    /**
+     * @target should throw exception when passed rwtCount as arguement is
+     * greater than available rwtCount
+     * @dependencies
+     * - None
+     * @scenario
+     * - create an instance of RWTRepoBuilder
+     * - call RWTRepoBuilder.addNewUser with a rwtCount greater than
+     * this.rwtCount
+     * - check RWTRepoBuilder.addNewUser to throw an exception
+     * @expected
+     * - RWTRepoBuilder.addNewUser should throw an exception
+     */
+    it(`should throw exception when passed rwtCount as arguement is greater than
+    available rwtCount`, async () => {
+      const wid = '34f2a6bb';
+
+      expect(() =>
+        rwtRepoBuilder.addNewUser(wid, rwtRepoBuilder['rwtCount'] + 1n)
+      ).toThrowError();
+    });
+
+    /**
+     * @target should throw exception adding an existing wid
+     * @dependencies
+     * - None
+     * @scenario
+     * - create an instance of RWTRepoBuilder
+     * - call RWTRepoBuilder.addNewUser with an existing wid
+     * - check RWTRepoBuilder.addNewUser to throw an exception
+     * @expected
+     * - RWTRepoBuilder.addNewUser should throw an exception
+     */
+    it(`should throw exception adding an existing wid`, async () => {
+      expect(() =>
+        rwtRepoBuilder.addNewUser(rwtRepoBuilder['widPermits'][0].wid, 1n)
+      ).toThrowError();
+    });
+  });
+});

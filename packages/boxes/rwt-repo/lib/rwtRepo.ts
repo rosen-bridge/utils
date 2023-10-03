@@ -15,6 +15,7 @@ import { Address, ErgoBox, ErgoTree } from 'ergo-lib-wasm-nodejs';
 import { jsonBigInt, min } from './utils';
 
 export class RWTRepoBuilder {
+  private lastModifiedWid?: string;
   constructor(
     private repoAddress: string,
     private repoNft: string,
@@ -32,6 +33,40 @@ export class RWTRepoBuilder {
     private widPermits: Array<{ wid: string; rwtCount: bigint }>,
     private logger: AbstractLogger = new DummyLogger()
   ) {}
+
+  /**
+   * adds (wid, rwtCount) pair to this.widPermits. Also stores wid in
+   * this.lastModifiedWid and does the following updates:
+   * this.rwtCount -= rwtCount;
+   * this.rsnCount += rwtCount;
+   * @param {string} wid
+   * @param {bigint} rwtCount
+   * @return {RWTRepoBuilder}  {RWTRepoBuilder}
+   * @memberof RWTRepoBuilder
+   */
+  addNewUser(wid: string, rwtCount: bigint): RWTRepoBuilder {
+    const widExists = this.widPermits.map((permit) => permit.wid).includes(wid);
+    if (widExists) {
+      throw new Error(`cannot add user: wid already exists in widPermits`);
+    }
+    this.widPermits.push({ wid, rwtCount });
+
+    if (this.rwtCount < rwtCount) {
+      throw new Error(
+        `available RWT count [${this.rwtCount}] is less than required rwt count[${rwtCount}]`
+      );
+    }
+    this.rwtCount -= rwtCount;
+    this.rsnCount += rwtCount;
+
+    this.logger.debug(
+      `added new user with wid=[${wid}] and rwtCount=[${rwtCount}]`
+    );
+
+    this.lastModifiedWid = wid;
+
+    return this;
+  }
 }
 
 export class RWTRepo {
