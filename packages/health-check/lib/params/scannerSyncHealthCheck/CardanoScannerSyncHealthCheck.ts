@@ -39,6 +39,7 @@ class CardanoKoiosScannerHealthCheck extends AbstractScannerSyncHealthCheckParam
 class CardanoOgmiosScannerHealthCheck extends AbstractScannerSyncHealthCheckParam {
   private ogmiosPort: number;
   private ogmiosHost: string;
+  private useTls: boolean;
 
   constructor(
     dataSource: DataSource,
@@ -46,11 +47,13 @@ class CardanoOgmiosScannerHealthCheck extends AbstractScannerSyncHealthCheckPara
     warnDifference: number,
     criticalDifference: number,
     ogmiosHost: string,
-    ogmiosPort: number
+    ogmiosPort: number,
+    useTls = false
   ) {
     super(dataSource, scannerName, warnDifference, criticalDifference);
     this.ogmiosHost = ogmiosHost;
     this.ogmiosPort = ogmiosPort;
+    this.useTls = useTls;
   }
 
   /**
@@ -68,7 +71,13 @@ class CardanoOgmiosScannerHealthCheck extends AbstractScannerSyncHealthCheckPara
     const context: InteractionContext = await createInteractionContext(
       (err) => console.error(err),
       () => undefined,
-      { connection: { port: this.ogmiosPort, host: this.ogmiosHost } }
+      {
+        connection: {
+          port: this.ogmiosPort,
+          host: this.ogmiosHost,
+          tls: this.useTls,
+        },
+      }
     );
     const ogmiosClient = await createStateQueryClient(context);
     const height = await ogmiosClient.blockHeight();
