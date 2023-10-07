@@ -78,7 +78,7 @@ export class RWTRepoBuilder {
    * @return {RWTRepoBuilder}  {RWTRepoBuilder}
    * @memberof RWTRepoBuilder
    */
-  removeUser(wid: string): RWTRepoBuilder {
+  removeUser = (wid: string): RWTRepoBuilder => {
     const widIndex = this.widPermits.map((permit) => permit.wid).indexOf(wid);
     if (widIndex === -1) {
       throw new Error(`cannot remove user: wid doesn't exist in widPermits`);
@@ -92,7 +92,7 @@ export class RWTRepoBuilder {
     this.lastModifiedWid = wid;
 
     return this;
-  }
+  };
 }
 
 export class RWTRepo {
