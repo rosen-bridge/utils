@@ -958,52 +958,52 @@ describe('RWTRepo', () => {
 });
 
 describe('RWTRepoBuilder', () => {
+  let rwtRepoBuilder: RWTRepoBuilder;
+  beforeEach(() => {
+    const boxInfo = rwtRepoInfoSample.boxInfo;
+
+    const r4 = Constant.decode_from_base16(
+      boxInfo.additionalRegisters.R4.serializedValue
+    ).to_coll_coll_byte();
+
+    const r5 = (
+      Constant.decode_from_base16(
+        boxInfo.additionalRegisters.R5.serializedValue
+      ).to_i64_str_array() as string[]
+    ).map(BigInt);
+
+    const r6 = (
+      Constant.decode_from_base16(
+        boxInfo.additionalRegisters.R6.serializedValue
+      ).to_i64_str_array() as string[]
+    ).map(BigInt);
+
+    const widPermits = r4
+      .slice(1)
+      ?.map((wid) => Buffer.from(wid).toString('hex'))
+      .map((wid, i) => {
+        return { wid, rwtCount: r5[i + 1] };
+      });
+
+    rwtRepoBuilder = new RWTRepoBuilder(
+      rwtRepoInfoSample.Address,
+      rwtRepoInfoSample.nft,
+      boxInfo.assets[1].tokenId,
+      BigInt(boxInfo.assets[1].amount),
+      boxInfo.assets[2].tokenId,
+      BigInt(boxInfo.assets[2].amount),
+      Buffer.from(r4[0]).toString(),
+      r6[0],
+      Number(r6[1]),
+      Number(r6[2]),
+      Number(r6[3]),
+      r6[4],
+      r6[5],
+      widPermits
+    );
+  });
+
   describe('addNewUser', () => {
-    let rwtRepoBuilder: RWTRepoBuilder;
-    beforeEach(() => {
-      const boxInfo = rwtRepoInfoSample.boxInfo;
-
-      const r4 = Constant.decode_from_base16(
-        boxInfo.additionalRegisters.R4.serializedValue
-      ).to_coll_coll_byte();
-
-      const r5 = (
-        Constant.decode_from_base16(
-          boxInfo.additionalRegisters.R5.serializedValue
-        ).to_i64_str_array() as string[]
-      ).map(BigInt);
-
-      const r6 = (
-        Constant.decode_from_base16(
-          boxInfo.additionalRegisters.R6.serializedValue
-        ).to_i64_str_array() as string[]
-      ).map(BigInt);
-
-      const widPermits = r4
-        .slice(1)
-        ?.map((wid) => Buffer.from(wid).toString('hex'))
-        .map((wid, i) => {
-          return { wid, rwtCount: r5[i + 1] };
-        });
-
-      rwtRepoBuilder = new RWTRepoBuilder(
-        rwtRepoInfoSample.Address,
-        rwtRepoInfoSample.nft,
-        boxInfo.assets[1].tokenId,
-        BigInt(boxInfo.assets[1].amount),
-        boxInfo.assets[2].tokenId,
-        BigInt(boxInfo.assets[2].amount),
-        Buffer.from(r4[0]).toString(),
-        r6[0],
-        Number(r6[1]),
-        Number(r6[2]),
-        Number(r6[3]),
-        r6[4],
-        r6[5],
-        widPermits
-      );
-    });
-
     /**
      * @target RWTRepo.addNewUser should add the passed wid, rwtCount arguements
      * to this.widPermits, and do the fullowing updates:
@@ -1079,7 +1079,7 @@ describe('RWTRepoBuilder', () => {
     });
 
     /**
-     * @target should throw exception adding an existing wid
+     * @target should throw exception when adding an existing wid
      * @dependencies
      * - None
      * @scenario
@@ -1089,7 +1089,7 @@ describe('RWTRepoBuilder', () => {
      * @expected
      * - RWTRepoBuilder.addNewUser should throw an exception
      */
-    it(`should throw exception adding an existing wid`, async () => {
+    it(`should throw exception when adding an existing wid`, async () => {
       expect(() =>
         rwtRepoBuilder.addNewUser(rwtRepoBuilder['widPermits'][0].wid, 1n)
       ).toThrowError();
@@ -1166,6 +1166,28 @@ describe('RWTRepoBuilder', () => {
       expect(rwtRepoBuilder['rwtCount']).toEqual(oldRwtCount + rwtCount);
       expect(rwtRepoBuilder['rsnCount']).toEqual(oldRsnCount - rwtCount);
       expect(rwtRepoBuilder['lastModifiedWid']).toEqual(wid);
+    });
+
+    /**
+     * @target should throw exception when removing a non-existent wid
+     * @dependencies
+     * - None
+     * @scenario
+     * - create an instance of RWTRepoBuilder
+     * - call RWTRepoBuilder.removeUser with a non-existent wid
+     * - check RWTRepoBuilder.removeUser to throw an exception
+     * @expected
+     * - RWTRepoBuilder.removeUser should throw an exception
+     */
+    it(`should throw exception when removing a non-existent wid`, async () => {
+      const oldWidPermits = [...rwtRepoBuilder['widPermits']];
+      const oldRwtCount = rwtRepoBuilder['rwtCount'];
+      const oldRsnCount = rwtRepoBuilder['rsnCount'];
+
+      expect(() => rwtRepoBuilder.removeUser('abcd')).toThrowError();
+      expect(rwtRepoBuilder['widPermits']).toEqual(oldWidPermits);
+      expect(rwtRepoBuilder['rwtCount']).toEqual(oldRwtCount);
+      expect(rwtRepoBuilder['rsnCount']).toEqual(oldRsnCount);
     });
   });
 });
