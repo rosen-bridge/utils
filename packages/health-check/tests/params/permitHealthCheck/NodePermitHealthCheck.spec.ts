@@ -85,12 +85,13 @@ describe('NodePermitAssetHealthCheckParam', () => {
         'd4e03eda58a338f8f65b40de258407dbdbbd9b8ccca374f66be8d97e52c8a752',
         100n,
         10n,
-        'url'
+        'url',
+        1
       );
 
       // update the parameter
       await assetHealthCheckParam.update();
-      expect(assetHealthCheckParam.getRWTCount()).toBe(22n);
+      expect(assetHealthCheckParam.getReportCount()).toBe(22n);
     });
   });
 });

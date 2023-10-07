@@ -1,0 +1,38 @@
+{
+  "name": "@rosen-bridge/abstract-logger",
+  "version": "0.3.0",
+  "description": "Rosen Bridge abstract logger class, the base type for loggers used in all Rosen packages",
+  "main": "dist/lib/index.js",
+  "types": "dist/lib/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "prettify": "prettier --write . --ignore-path .gitignore",
+    "lint": "eslint --fix . && npm run prettify",
+    "build": "tsc --build",
+    "type-check": "tsc --noEmit",
+    "release": "npm run test && npm run build && npm publish --access public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rosen-bridge/utils.git"
+  },
+  "files": [
+    "dist"
+  ],
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.30.7",
+    "@typescript-eslint/parser": "^5.26.0",
+    "eslint": "^8.16.0",
+    "eslint-config-prettier": "^8.5.0",
+    "prettier": "^2.7.1",
+    "typescript": "^5.0.0"
+  },
+  "directories": {
+    "lib": "lib"
+  },
+  "keywords": [
+    "rosen"
+  ]
+}

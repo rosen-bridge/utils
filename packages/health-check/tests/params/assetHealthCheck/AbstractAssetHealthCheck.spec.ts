@@ -12,7 +12,8 @@ describe('AbstractAssetHealthCheckParam', () => {
       'assetName',
       'address',
       100n,
-      10n
+      10n,
+      0
     );
   });
 
@@ -48,7 +49,7 @@ describe('AbstractAssetHealthCheckParam', () => {
     });
 
     /**
-     * @target AbstractAssetHealthCheckParam.getHealthStatus Should return the should return BROKEN when token amount is less than critical threshold
+     * @target AbstractAssetHealthCheckParam.getHealthStatus Should return BROKEN when token amount is less than critical threshold
      * @dependencies
      * @scenario
      * - mock token amount to less than critical threshold
@@ -60,6 +61,68 @@ describe('AbstractAssetHealthCheckParam', () => {
       assetHealthCheckParam.setTokenAmount(9n);
       const status = await assetHealthCheckParam.getHealthStatus();
       expect(status).toBe(HealthStatusLevel.BROKEN);
+    });
+  });
+
+  describe('getTokenAmountStr', () => {
+    /**
+     * @target AbstractAssetHealthCheckParam.getTokenAmountStr should return correct format without decimal
+     * @dependencies
+     * @scenario
+     * - mock token amount and decimal
+     * - get token decimal str
+     * @expected
+     * - should return the amount str without any change
+     */
+    it('should return correct format without decimal', () => {
+      assetHealthCheckParam.setTokenAmount(99n);
+      assetHealthCheckParam.setTokenDecimal(0);
+      expect(assetHealthCheckParam.getTokenDecimalStr()).toEqual('99');
+    });
+
+    /**
+     * @target AbstractAssetHealthCheckParam.getTokenAmountStr should return correct format with 1 decimal
+     * @dependencies
+     * @scenario
+     * - mock token amount and decimal
+     * - get token decimal str
+     * @expected
+     * - should return the amount str with one decimal
+     */
+    it('should return correct format with 1 decimal', () => {
+      assetHealthCheckParam.setTokenAmount(99n);
+      assetHealthCheckParam.setTokenDecimal(1);
+      expect(assetHealthCheckParam.getTokenDecimalStr()).toEqual('9.9');
+    });
+
+    /**
+     * @target AbstractAssetHealthCheckParam.getTokenAmountStr should return correct format with 2 decimals
+     * @dependencies
+     * @scenario
+     * - mock token amount and decimal
+     * - get token decimal str
+     * @expected
+     * - should return the amount str with 2 decimals
+     */
+    it('should generate correct format with 2 decimals', () => {
+      assetHealthCheckParam.setTokenAmount(99n);
+      assetHealthCheckParam.setTokenDecimal(2);
+      expect(assetHealthCheckParam.getTokenDecimalStr()).toEqual('0.99');
+    });
+
+    /**
+     * @target AbstractAssetHealthCheckParam.getTokenAmountStr should return correct format with 3 decimals
+     * @dependencies
+     * @scenario
+     * - mock token amount and decimal
+     * - get token decimal str
+     * @expected
+     * - should return the amount str with 3 decimals
+     */
+    it('should generate correct format with 3 decimals', () => {
+      assetHealthCheckParam.setTokenAmount(99n);
+      assetHealthCheckParam.setTokenDecimal(3);
+      expect(assetHealthCheckParam.getTokenDecimalStr()).toEqual('0.099');
     });
   });
 });

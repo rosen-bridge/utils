@@ -27,14 +27,6 @@ abstract class AbstractScannerSyncHealthCheckParam extends AbstractHealthCheckPa
   }
 
   /**
-   * generates a unique id with scannerName
-   * @returns parameter id
-   */
-  getId = (): string => {
-    return `Scanner ${this.scannerName} Sync Check`;
-  };
-
-  /**
    * if the difference between scanned blocks and network blocks is more than the differences returns the required notification
    * @returns parameter health description
    */

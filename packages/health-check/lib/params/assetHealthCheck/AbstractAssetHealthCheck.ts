@@ -12,20 +12,25 @@ abstract class AbstractAssetHealthCheckParam extends AbstractHealthCheckParam {
   protected warnThreshold: bigint;
   protected criticalThreshold: bigint;
   protected updateTimeStamp: Date;
+  protected assetDecimal: number;
 
   constructor(
     assetId: string,
     assetName: string,
     address: string,
     warnThreshold: bigint,
-    criticalThreshold: bigint
+    criticalThreshold: bigint,
+    assetDecimal: number
   ) {
     super();
     this.assetId = assetId;
-    this.assetName = assetName;
+    if ([ERGO_NATIVE_ASSET, CARDANO_NATIVE_ASSET].includes(assetId))
+      this.assetName = assetName.toUpperCase();
+    else this.assetName = assetName;
     this.address = address;
     this.warnThreshold = warnThreshold;
     this.criticalThreshold = criticalThreshold;
+    this.assetDecimal = assetDecimal;
   }
 
   /**
@@ -34,8 +39,8 @@ abstract class AbstractAssetHealthCheckParam extends AbstractHealthCheckParam {
    */
   getId = (): string => {
     if ([ERGO_NATIVE_ASSET, CARDANO_NATIVE_ASSET].includes(this.assetId))
-      return `Native Asset ${this.assetName} Check`;
-    return `Asset ${this.assetName} [${this.assetId.slice(0, 6)}...] Check`;
+      return `Native Asset ${this.assetName}`;
+    return `Asset ${this.assetName} [${this.assetId.slice(0, 6)}...]`;
   };
 
   /**
@@ -45,15 +50,19 @@ abstract class AbstractAssetHealthCheckParam extends AbstractHealthCheckParam {
   getDescription = async (): Promise<string | undefined> => {
     if (this.tokenAmount < this.criticalThreshold)
       return (
-        `Service stopped working due to insufficient asset '${this.assetName}' balance` +
-        ` ([${this.tokenAmount}] is less than required amount [${this.criticalThreshold}]).\n` +
-        `Please charge [${this.address}] with asset [${this.assetId}]`
+        `Service has stopped working due to insufficient asset '${this.assetName}' balance` +
+        ` ([${this.criticalThreshold}] '${
+          this.assetName
+        }' is required, but [${this.getTokenDecimalStr()}] is available.).\n` +
+        `Please top up [${this.address}] with asset [${this.assetId}]`
       );
     else if (this.tokenAmount < this.warnThreshold)
       return (
-        `Service is in unstable situation due to insufficient asset '${this.assetName}' balance` +
-        ` ([${this.tokenAmount}] is less than recommended amount [${this.warnThreshold}]).\n` +
-        `Please charge [${this.address}] with asset [${this.assetId}]`
+        `Service is in unstable situation due to low asset '${this.assetName}' balance` +
+        ` ([${this.warnThreshold}] '${
+          this.assetName
+        }' is recommended, but [${this.getTokenDecimalStr()}] is available.).\n` +
+        `Please top up [${this.address}] with asset [${this.assetId}], otherwise your service will stop working soon.`
       );
     return undefined;
   };
@@ -79,6 +88,21 @@ abstract class AbstractAssetHealthCheckParam extends AbstractHealthCheckParam {
     else if (this.tokenAmount < this.warnThreshold)
       return HealthStatusLevel.UNSTABLE;
     else return HealthStatusLevel.HEALTHY;
+  };
+
+  /**
+   * Generates asset amount with its decimal
+   * @returns token amount string
+   */
+  getTokenDecimalStr = () => {
+    if (!this.assetDecimal) return this.tokenAmount.toString();
+    const roundTokenAmount =
+      this.tokenAmount.toString().slice(0, -this.assetDecimal) || '0';
+    const decimalTokenAmount = this.tokenAmount
+      .toString()
+      .slice(-this.assetDecimal)
+      .padStart(this.assetDecimal, '0');
+    return `${roundTokenAmount}.${decimalTokenAmount}`;
   };
 }
 

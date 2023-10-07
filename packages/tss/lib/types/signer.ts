@@ -1,5 +1,5 @@
 import { EncryptionHandler } from '../abstract';
-import { AbstractLogger } from '@rosen-bridge/logger-interface';
+import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import { GuardDetection } from '../detection/GuardDetection';
 import { ActiveGuard } from './abstract';
 
