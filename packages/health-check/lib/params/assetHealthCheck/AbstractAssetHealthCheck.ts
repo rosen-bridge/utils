@@ -51,17 +51,21 @@ abstract class AbstractAssetHealthCheckParam extends AbstractHealthCheckParam {
     if (this.tokenAmount < this.criticalThreshold)
       return (
         `Service has stopped working due to insufficient asset '${this.assetName}' balance` +
-        ` ([${this.criticalThreshold}] '${
+        ` ([${this.getTokenDecimalStr(this.criticalThreshold)}] '${
           this.assetName
-        }' is required, but [${this.getTokenDecimalStr()}] is available.).\n` +
+        }' is required, but [${this.getTokenDecimalStr(
+          this.tokenAmount
+        )}] is available.).\n` +
         `Please top up [${this.address}] with asset [${this.assetId}]`
       );
     else if (this.tokenAmount < this.warnThreshold)
       return (
         `Service is in unstable situation due to low asset '${this.assetName}' balance` +
-        ` ([${this.warnThreshold}] '${
+        ` ([${this.getTokenDecimalStr(this.warnThreshold)}] '${
           this.assetName
-        }' is recommended, but [${this.getTokenDecimalStr()}] is available.).\n` +
+        }' is recommended, but [${this.getTokenDecimalStr(
+          this.tokenAmount
+        )}] is available.).\n` +
         `Please top up [${this.address}] with asset [${this.assetId}], otherwise your service will stop working soon.`
       );
     return undefined;
@@ -92,13 +96,14 @@ abstract class AbstractAssetHealthCheckParam extends AbstractHealthCheckParam {
 
   /**
    * Generates asset amount with its decimal
-   * @returns token amount string
+   * @param amount token amount without decimal
+   * @returns token amount string considering decimal
    */
-  getTokenDecimalStr = () => {
-    if (!this.assetDecimal) return this.tokenAmount.toString();
+  getTokenDecimalStr = (amount: bigint) => {
+    if (!this.assetDecimal) return amount.toString();
     const roundTokenAmount =
-      this.tokenAmount.toString().slice(0, -this.assetDecimal) || '0';
-    const decimalTokenAmount = this.tokenAmount
+      amount.toString().slice(0, -this.assetDecimal) || '0';
+    const decimalTokenAmount = amount
       .toString()
       .slice(-this.assetDecimal)
       .padStart(this.assetDecimal, '0');
