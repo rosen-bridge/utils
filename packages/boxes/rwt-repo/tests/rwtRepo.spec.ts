@@ -457,7 +457,7 @@ describe('RWTRepo', () => {
   describe('getRequiredCommitmentCount', () => {
     /**
      * @target RWTRepo.getRequiredCommitmentCount should the value of the second
-     * arguement of the following formula, when R6[3] is the greater value:
+     * argument of the following formula, when R6[3] is the greater value:
      * min(R6[3], R6[1] * (len(R4) - 1) / 100 + R6[2])
      * @dependencies
      * - MockedErgoExplorerClientFactory
@@ -471,7 +471,7 @@ describe('RWTRepo', () => {
      * - RWTRepo.getRequiredCommitmentCount() should return the correct value
      */
     it(`RWTRepo.getRequiredCommitmentCount should the value of the second
-    arguement of the following formula, when R6[3] is the greater value:
+    argument of the following formula, when R6[3] is the greater value:
     min(R6[3], R6[1] * (len(R4) - 1) / 100 + R6[2])`, async () => {
       const rwtRepo = new RWTRepo(
         rwtRepoInfoSample.Address,
@@ -1005,8 +1005,8 @@ describe('RWTRepoBuilder', () => {
 
   describe('addNewUser', () => {
     /**
-     * @target RWTRepo.addNewUser should add the passed wid, rwtCount arguements
-     * to this.widPermits, and do the fullowing updates:
+     * @target RWTRepo.addNewUser should add the passed wid, rwtCount arguments
+     * to this.widPermits, and do the following updates:
      * this.rwtCount -= rwtCount
      * this.rsnCount += rsnCount
      * @dependencies
@@ -1032,8 +1032,8 @@ describe('RWTRepoBuilder', () => {
      * - RWTRepoBuilder.lastModifiedWid should have been updated with the passed
      * wid
      */
-    it(`should add the passed wid, rwtCount arguements to
-    this.widPermits, and do the fullowing updates:
+    it(`should add the passed wid, rwtCount arguments to
+    this.widPermits, and do the following updates:
     this.rwtCount -= rwtCount
     this.rsnCount += rsnCount`, async () => {
       const wid = '34f2a6bb';
@@ -1053,11 +1053,13 @@ describe('RWTRepoBuilder', () => {
       ).toEqual(wid);
       expect(rwtRepoBuilder['rwtCount']).toEqual(oldRwtCount - rwtCount);
       expect(rwtRepoBuilder['rsnCount']).toEqual(oldRsnCount + rwtCount);
-      expect(rwtRepoBuilder['lastModifiedWid']).toEqual(wid);
+      expect(rwtRepoBuilder['lastModifiedWidIndex']).toEqual(
+        rwtRepoBuilder['widPermits'].length - 1
+      );
     });
 
     /**
-     * @target should throw exception when passed rwtCount as arguement is
+     * @target should throw exception when passed rwtCount as argument is
      * greater than available rwtCount
      * @dependencies
      * - None
@@ -1069,7 +1071,7 @@ describe('RWTRepoBuilder', () => {
      * @expected
      * - RWTRepoBuilder.addNewUser should throw an exception
      */
-    it(`should throw exception when passed rwtCount as arguement is greater than
+    it(`should throw exception when passed rwtCount as argument is greater than
     available rwtCount`, async () => {
       const wid = '34f2a6bb';
 
@@ -1098,8 +1100,8 @@ describe('RWTRepoBuilder', () => {
 
   describe('removeUser', () => {
     /**
-     * @target RWTRepo.removeUser should removed the item with the passed wid
-     * from this.widPermits, and do the fullowing updates:
+     * @target RWTRepo.removeUser should remove the item with the passed wid
+     * from this.widPermits, and do the following updates:
      * this.rwtCount += rwtCount
      * this.rsnCount -= rsnCount
      * @dependencies
@@ -1129,8 +1131,8 @@ describe('RWTRepoBuilder', () => {
      * - RWTRepoBuilder.lastModifiedWid should have been updated with the passed
      * wid
      */
-    it(`RWTRepo.removeUser should removed the item with the passed wid from
-    this.widPermits, and do the fullowing updates:
+    it(`RWTRepo.removeUser should remove the item with the passed wid from
+    this.widPermits, and do the following updates:
     this.rwtCount += rwtCount
     this.rsnCount -= rsnCount`, async () => {
       const rwtRepo = new RWTRepo(
@@ -1165,7 +1167,7 @@ describe('RWTRepoBuilder', () => {
       ).toEqual(false);
       expect(rwtRepoBuilder['rwtCount']).toEqual(oldRwtCount + rwtCount);
       expect(rwtRepoBuilder['rsnCount']).toEqual(oldRsnCount - rwtCount);
-      expect(rwtRepoBuilder['lastModifiedWid']).toEqual(wid);
+      expect(rwtRepoBuilder['lastModifiedWidIndex']).toEqual(widIndex);
     });
 
     /**

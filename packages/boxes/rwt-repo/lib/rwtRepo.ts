@@ -15,7 +15,7 @@ import { Address, ErgoBox, ErgoTree } from 'ergo-lib-wasm-nodejs';
 import { jsonBigInt, min } from './utils';
 
 export class RWTRepoBuilder {
-  private lastModifiedWid?: string;
+  private lastModifiedWidIndex?: number;
   constructor(
     private repoAddress: string,
     private repoNft: string,
@@ -63,7 +63,7 @@ export class RWTRepoBuilder {
       `added new user with wid=[${wid}] and rwtCount=[${rwtCount}]`
     );
 
-    this.lastModifiedWid = wid;
+    this.lastModifiedWidIndex = this.widPermits.length - 1;
 
     return this;
   }
@@ -79,7 +79,8 @@ export class RWTRepoBuilder {
    * @memberof RWTRepoBuilder
    */
   removeUser = (wid: string): RWTRepoBuilder => {
-    const widIndex = this.widPermits.map((permit) => permit.wid).indexOf(wid);
+    const widIndex = this.indexOfWid(wid);
+
     if (widIndex === -1) {
       throw new Error(`cannot remove user: wid doesn't exist in widPermits`);
     }
@@ -88,10 +89,13 @@ export class RWTRepoBuilder {
     this.rsnCount -= rwtCount;
 
     this.logger.debug(`removed user with wid=[${wid}]`);
-
-    this.lastModifiedWid = wid;
+    this.lastModifiedWidIndex = widIndex;
 
     return this;
+  };
+
+  indexOfWid = (wid: string): number => {
+    return this.widPermits.map((permit) => permit.wid).indexOf(wid);
   };
 }
 
@@ -355,7 +359,7 @@ export class RWTRepo {
     }
 
     this.logger.debug(
-      `creating new RWTRepoBuilder instance with following arguements: repoAddress=[${
+      `creating new RWTRepoBuilder instance with following arguments: repoAddress=[${
         this.repoAddress
       }], repoNft=[${this.repoNft}], rwt=[${
         this.rwt
