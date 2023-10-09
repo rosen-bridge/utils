@@ -109,14 +109,14 @@ export class RWTRepoBuilder {
   /**
    * sets value of this.quorumPercentage
    *
-   * @param {number} watcherQuoromPercentage
+   * @param {number} watcherQuorumPercentage
    * @return {RWTRepoBuilder}
    * @memberof RWTRepoBuilder
    */
-  setWatcherQuoromPercentage = (
-    watcherQuoromPercentage: number
+  setWatcherQuorumPercentage = (
+    watcherQuorumPercentage: number
   ): RWTRepoBuilder => {
-    this.quorumPercentage = watcherQuoromPercentage;
+    this.quorumPercentage = watcherQuorumPercentage;
     return this;
   };
 
@@ -428,7 +428,7 @@ export class RWTRepo {
       !widPermits
     ) {
       throw new Error(
-        `could not create RWTRepoBuilder becudase one of [chainId=${chainId}, quorumPercentage=${quorumPercentage}, approvalOffset=${approvalOffset}, maximumApproval=${maximumApproval}, widPermits=${widPermits}] could not be calculated: ${this.rwtRepoLogDescription} `
+        `could not create RWTRepoBuilder because one of [chainId=${chainId}, quorumPercentage=${quorumPercentage}, approvalOffset=${approvalOffset}, maximumApproval=${maximumApproval}, widPermits=${widPermits}] could not be calculated: ${this.rwtRepoLogDescription} `
       );
     }
 
