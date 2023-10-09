@@ -1192,4 +1192,298 @@ describe('RWTRepoBuilder', () => {
       expect(rwtRepoBuilder['rsnCount']).toEqual(oldRsnCount);
     });
   });
+
+  describe('setCommitmentRwtCount', () => {
+    /**
+     * @target RWTRepoBuilder.setCommitmentRwtCount should set value of
+     * RWTRepoBuilder.commitmentRwtCount and return its RWTRepoBuilder's
+     * instance (this)
+     * @dependencies
+     * - MockedErgoExplorerClientFactory
+     * @scenario
+     * - create an instance of RWTRepo with specific repoAddress and repoNft
+     * - mock RWTRepo.explorerClient to return a client that returns predefined
+     * box info for the repoAddress and repoNft
+     * - call RWTRepo.updateBox to update RWTRepo.box
+     * - call RWTRepo.toBuilder to return an instance of RWTRepoBuilder
+     * - call RWTRepoBuilder.setCommitmentRwtCount
+     * - check return value of RWTRepoBuilder.setCommitmentRwtCount to be the
+     * current instance of RWTRepoBuilder
+     * - check RWTRepoBuilder.commitmentRwtCount to have been set to the correct
+     * value
+     * @expected
+     * - return value of RWTRepoBuilder.setCommitmentRwtCount should be the
+     * current instance of RWTRepoBuilder
+     * - RWTRepoBuilder.commitmentRwtCount should have been set to the correct
+     * value
+     */
+    it(`RWTRepoBuilder.setCommitmentRwtCount should set value of
+    RWTRepoBuilder.commitmentRwtCount and return its RWTRepoBuilder's instance
+    (this)`, async () => {
+      const rwtRepo = new RWTRepo(
+        rwtRepoInfoSample.Address,
+        rwtRepoInfoSample.nft,
+        '',
+        ErgoNetworkType.Explorer,
+        ''
+      );
+
+      rwtRepo['explorerClient'] = mockedErgoExplorerClientFactory(
+        ''
+      ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
+      await rwtRepo.updateBox(false);
+      const rwtRepoBuilder = rwtRepo.toBuilder();
+
+      const newCommitmentRwtCount = 123n;
+      const returnValue = rwtRepoBuilder.setCommitmentRwtCount(
+        newCommitmentRwtCount
+      );
+
+      expect(returnValue).toBe(rwtRepoBuilder);
+      expect(rwtRepoBuilder['commitmentRwtCount']).toEqual(
+        newCommitmentRwtCount
+      );
+    });
+  });
+
+  describe('setWatcherQuorumPercentage', () => {
+    /**
+     * @target RWTRepoBuilder.setWatcherQuorumPercentage should set value of
+     * RWTRepoBuilder.quorumPercentage and return its RWTRepoBuilder's instance
+     * (this)
+     * @dependencies
+     * - MockedErgoExplorerClientFactory
+     * @scenario
+     * - create an instance of RWTRepo with specific repoAddress and repoNft
+     * - mock RWTRepo.explorerClient to return a client that returns predefined
+     * box info for the repoAddress and repoNft
+     * - call RWTRepo.updateBox to update RWTRepo.box
+     * - call RWTRepo.toBuilder to return an instance of RWTRepoBuilder
+     * - call RWTRepoBuilder.setWatcherQuorumPercentage
+     * - check return value of RWTRepoBuilder.setWatcherQuorumPercentage to be
+     * the current instance of RWTRepoBuilder
+     * - check RWTRepoBuilder.quorumPercentage to have been set to the correct
+     * value
+     * @expected
+     * - return value of RWTRepoBuilder.setWatcherQuorumPercentage should be the
+     * current instance of RWTRepoBuilder
+     * - RWTRepoBuilder.quorumPercentage should have been set to the correct
+     * value
+     */
+    it(`RWTRepoBuilder.setWatcherQuorumPercentage should set value of
+    RWTRepoBuilder.quorumPercentage and return its RWTRepoBuilder's instance
+    (this)`, async () => {
+      const rwtRepo = new RWTRepo(
+        rwtRepoInfoSample.Address,
+        rwtRepoInfoSample.nft,
+        '',
+        ErgoNetworkType.Explorer,
+        ''
+      );
+
+      rwtRepo['explorerClient'] = mockedErgoExplorerClientFactory(
+        ''
+      ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
+      await rwtRepo.updateBox(false);
+      const rwtRepoBuilder = rwtRepo.toBuilder();
+
+      const newQuorumPercentage = 83;
+      const returnValue =
+        rwtRepoBuilder.setWatcherQuorumPercentage(newQuorumPercentage);
+
+      expect(returnValue).toBe(rwtRepoBuilder);
+      expect(rwtRepoBuilder['quorumPercentage']).toEqual(newQuorumPercentage);
+    });
+  });
+
+  describe('setApprovalOffset', () => {
+    /**
+     * @target RWTRepoBuilder.setApprovalOffset should set value of
+     * RWTRepoBuilder.approvalOffset and return its RWTRepoBuilder's instance
+     * (this)
+     * @dependencies
+     * - MockedErgoExplorerClientFactory
+     * @scenario
+     * - create an instance of RWTRepo with specific repoAddress and repoNft
+     * - mock RWTRepo.explorerClient to return a client that returns predefined
+     * box info for the repoAddress and repoNft
+     * - call RWTRepo.updateBox to update RWTRepo.box
+     * - call RWTRepo.toBuilder to return an instance of RWTRepoBuilder
+     * - call RWTRepoBuilder.setApprovalOffset
+     * - check return value of RWTRepoBuilder.setApprovalOffset to be the
+     * current instance of RWTRepoBuilder
+     * - check RWTRepoBuilder.approvalOffset to have been set to the correct
+     * value
+     * @expected
+     * - return value of RWTRepoBuilder.setApprovalOffset should be the current
+     * instance of RWTRepoBuilder
+     * - RWTRepoBuilder.approvalOffset should have been set to the correct value
+     */
+    it(`RWTRepoBuilder.setApprovalOffset should set value of
+    RWTRepoBuilder.approvalOffset and return its RWTRepoBuilder's instance
+    (this)`, async () => {
+      const rwtRepo = new RWTRepo(
+        rwtRepoInfoSample.Address,
+        rwtRepoInfoSample.nft,
+        '',
+        ErgoNetworkType.Explorer,
+        ''
+      );
+
+      rwtRepo['explorerClient'] = mockedErgoExplorerClientFactory(
+        ''
+      ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
+      await rwtRepo.updateBox(false);
+      const rwtRepoBuilder = rwtRepo.toBuilder();
+
+      const newApprovalOffset = 5;
+      const returnValue = rwtRepoBuilder.setApprovalOffset(newApprovalOffset);
+
+      expect(returnValue).toBe(rwtRepoBuilder);
+      expect(rwtRepoBuilder['approvalOffset']).toEqual(newApprovalOffset);
+    });
+  });
+
+  describe('setMaximumApproval', () => {
+    /**
+     * @target RWTRepoBuilder.setMaximumApproval should set value of
+     * RWTRepoBuilder.maximumApproval and return its RWTRepoBuilder's instance
+     * (this)
+     * @dependencies
+     * - MockedErgoExplorerClientFactory
+     * @scenario
+     * - create an instance of RWTRepo with specific repoAddress and repoNft
+     * - mock RWTRepo.explorerClient to return a client that returns predefined
+     * box info for the repoAddress and repoNft
+     * - call RWTRepo.updateBox to update RWTRepo.box
+     * - call RWTRepo.toBuilder to return an instance of RWTRepoBuilder
+     * - call RWTRepoBuilder.setMaximumApproval
+     * - check return value of RWTRepoBuilder.setMaximumApproval to be the
+     * current instance of RWTRepoBuilder
+     * - check RWTRepoBuilder.maximumApproval to have been set to the correct
+     * value
+     * @expected
+     * - return value of RWTRepoBuilder.setMaximumApproval should be the current
+     * instance of RWTRepoBuilder
+     * - RWTRepoBuilder.maximumApproval should have been set to the correct
+     * value
+     */
+    it(`RWTRepoBuilder.setMaximumApproval should set value of
+    RWTRepoBuilder.maximumApproval and return its RWTRepoBuilder's instance
+    (this)`, async () => {
+      const rwtRepo = new RWTRepo(
+        rwtRepoInfoSample.Address,
+        rwtRepoInfoSample.nft,
+        '',
+        ErgoNetworkType.Explorer,
+        ''
+      );
+
+      rwtRepo['explorerClient'] = mockedErgoExplorerClientFactory(
+        ''
+      ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
+      await rwtRepo.updateBox(false);
+      const rwtRepoBuilder = rwtRepo.toBuilder();
+
+      const newMaximumApproval = 14;
+      const returnValue = rwtRepoBuilder.setMaximumApproval(newMaximumApproval);
+
+      expect(returnValue).toBe(rwtRepoBuilder);
+      expect(rwtRepoBuilder['maximumApproval']).toEqual(newMaximumApproval);
+    });
+  });
+
+  describe('setErgCollateral', () => {
+    /**
+     * @target RWTRepoBuilder.setErgCollateral should set value of
+     * RWTRepoBuilder.ergCollateral and return its RWTRepoBuilder's instance
+     * (this)
+     * @dependencies
+     * - MockedErgoExplorerClientFactory
+     * @scenario
+     * - create an instance of RWTRepo with specific repoAddress and repoNft
+     * - mock RWTRepo.explorerClient to return a client that returns predefined
+     * box info for the repoAddress and repoNft
+     * - call RWTRepo.updateBox to update RWTRepo.box
+     * - call RWTRepo.toBuilder to return an instance of RWTRepoBuilder
+     * - call RWTRepoBuilder.setErgCollateral
+     * - check return value of RWTRepoBuilder.setErgCollateral to be the current
+     * instance of RWTRepoBuilder
+     * - check RWTRepoBuilder.ergCollateral to have been set to the correct
+     * value
+     * @expected
+     * - return value of RWTRepoBuilder.setErgCollateral should be the current
+     * instance of RWTRepoBuilder
+     * - RWTRepoBuilder.ergCollateral should have been set to the correct value
+     */
+    it(`RWTRepoBuilder.setErgCollateral should set value of
+    RWTRepoBuilder.ergCollateral and return its RWTRepoBuilder's instance (this)`, async () => {
+      const rwtRepo = new RWTRepo(
+        rwtRepoInfoSample.Address,
+        rwtRepoInfoSample.nft,
+        '',
+        ErgoNetworkType.Explorer,
+        ''
+      );
+
+      rwtRepo['explorerClient'] = mockedErgoExplorerClientFactory(
+        ''
+      ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
+      await rwtRepo.updateBox(false);
+      const rwtRepoBuilder = rwtRepo.toBuilder();
+
+      const newErgCollateral = 23n;
+      const returnValue = rwtRepoBuilder.setErgCollateral(newErgCollateral);
+
+      expect(returnValue).toBe(rwtRepoBuilder);
+      expect(rwtRepoBuilder['ergCollateral']).toEqual(newErgCollateral);
+    });
+  });
+
+  describe('setRsnCollateral', () => {
+    /**
+     * @target RWTRepoBuilder.setRsnCollateral should set value of
+     * RWTRepoBuilder.rsnCollateral and return its RWTRepoBuilder's instance
+     * (this)
+     * @dependencies
+     * - MockedErgoExplorerClientFactory
+     * @scenario
+     * - create an instance of RWTRepo with specific repoAddress and repoNft
+     * - mock RWTRepo.explorerClient to return a client that returns predefined
+     * box info for the repoAddress and repoNft
+     * - call RWTRepo.updateBox to update RWTRepo.box
+     * - call RWTRepo.toBuilder to return an instance of RWTRepoBuilder
+     * - call RWTRepoBuilder.setRsnCollateral
+     * - check return value of RWTRepoBuilder.setRsnCollateral to be the current
+     * instance of RWTRepoBuilder
+     * - check RWTRepoBuilder.rsnCollateral to have been set to the correct
+     * value
+     * @expected
+     * - return value of RWTRepoBuilder.setRsnCollateral should be the current
+     * instance of RWTRepoBuilder
+     * - RWTRepoBuilder.rsnCollateral should have been set to the correct value
+     */
+    it(`RWTRepoBuilder.setRsnCollateral should set value of
+    RWTRepoBuilder.rsnCollateral and return its RWTRepoBuilder's instance (this)`, async () => {
+      const rwtRepo = new RWTRepo(
+        rwtRepoInfoSample.Address,
+        rwtRepoInfoSample.nft,
+        '',
+        ErgoNetworkType.Explorer,
+        ''
+      );
+
+      rwtRepo['explorerClient'] = mockedErgoExplorerClientFactory(
+        ''
+      ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
+      await rwtRepo.updateBox(false);
+      const rwtRepoBuilder = rwtRepo.toBuilder();
+
+      const newRsnCollateral = 34n;
+      const returnValue = rwtRepoBuilder.setRsnCollateral(newRsnCollateral);
+
+      expect(returnValue).toBe(rwtRepoBuilder);
+      expect(rwtRepoBuilder['rsnCollateral']).toEqual(newRsnCollateral);
+    });
+  });
 });

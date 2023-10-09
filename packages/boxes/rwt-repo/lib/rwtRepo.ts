@@ -35,8 +35,8 @@ export class RWTRepoBuilder {
   ) {}
 
   /**
-   * adds (wid, rwtCount) pair to this.widPermits. Also stores wid in
-   * this.lastModifiedWid and does the following updates:
+   * adds (wid, rwtCount) pair to this.widPermits. Also stores wid index in
+   * this.lastModifiedWidIndex and does the following updates:
    * this.rwtCount -= rwtCount;
    * this.rsnCount += rwtCount;
    * @param {string} wid
@@ -69,8 +69,8 @@ export class RWTRepoBuilder {
   }
 
   /**
-   * removes (wid, rwtCount) pair from this.widPermits. Also stores wid in
-   * this.lastModifiedWid and does the following updates:
+   * removes (wid, rwtCount) pair from this.widPermits. Also stores wid's index
+   * in this.lastModifiedWidIndex and does the following updates:
    * this.rwtCount += rwtCount;
    * this.rsnCount -= rwtCount;
    *
@@ -91,6 +91,80 @@ export class RWTRepoBuilder {
     this.logger.debug(`removed user with wid=[${wid}]`);
     this.lastModifiedWidIndex = widIndex;
 
+    return this;
+  };
+
+  /**
+   * sets value of this.commitmentRwtCount
+   *
+   * @param {bigint} commitmentRwtCount
+   * @return {RWTRepoBuilder}
+   * @memberof RWTRepoBuilder
+   */
+  setCommitmentRwtCount = (commitmentRwtCount: bigint): RWTRepoBuilder => {
+    this.commitmentRwtCount = commitmentRwtCount;
+    return this;
+  };
+
+  /**
+   * sets value of this.quorumPercentage
+   *
+   * @param {number} watcherQuorumPercentage
+   * @return {RWTRepoBuilder}
+   * @memberof RWTRepoBuilder
+   */
+  setWatcherQuorumPercentage = (
+    watcherQuorumPercentage: number
+  ): RWTRepoBuilder => {
+    this.quorumPercentage = watcherQuorumPercentage;
+    return this;
+  };
+
+  /**
+   * sets value of this.approvalOffset
+   *
+   * @param {number} approvalOffset
+   * @return {RWTRepoBuilder}
+   * @memberof RWTRepoBuilder
+   */
+  setApprovalOffset = (approvalOffset: number): RWTRepoBuilder => {
+    this.approvalOffset = approvalOffset;
+    return this;
+  };
+
+  /**
+   * sets value of this.maximumApproval
+   *
+   * @param {number} maximumApproval
+   * @return {RWTRepoBuilder}
+   * @memberof RWTRepoBuilder
+   */
+  setMaximumApproval = (maximumApproval: number): RWTRepoBuilder => {
+    this.maximumApproval = maximumApproval;
+    return this;
+  };
+
+  /**
+   * sets value of this.ergCollateral
+   *
+   * @param {bigint} ergCollateral
+   * @return {RWTRepoBuilder}
+   * @memberof RWTRepoBuilder
+   */
+  setErgCollateral = (ergCollateral: bigint): RWTRepoBuilder => {
+    this.ergCollateral = ergCollateral;
+    return this;
+  };
+
+  /**
+   * sets value of this.rsnCollateral
+   *
+   * @param {bigint} rsnCollateral
+   * @return {RWTRepoBuilder}
+   * @memberof RWTRepoBuilder
+   */
+  setRsnCollateral = (rsnCollateral: bigint): RWTRepoBuilder => {
+    this.rsnCollateral = rsnCollateral;
     return this;
   };
 
@@ -354,7 +428,7 @@ export class RWTRepo {
       !widPermits
     ) {
       throw new Error(
-        `could not create RWTRepoBuilder becudase one of [chainId=${chainId}, quorumPercentage=${quorumPercentage}, approvalOffset=${approvalOffset}, maximumApproval=${maximumApproval}, widPermits=${widPermits}] could not be calculated: ${this.rwtRepoLogDescription} `
+        `could not create RWTRepoBuilder because one of [chainId=${chainId}, quorumPercentage=${quorumPercentage}, approvalOffset=${approvalOffset}, maximumApproval=${maximumApproval}, widPermits=${widPermits}] could not be calculated: ${this.rwtRepoLogDescription} `
       );
     }
 
