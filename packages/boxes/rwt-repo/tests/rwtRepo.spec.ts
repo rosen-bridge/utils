@@ -1208,12 +1208,12 @@ describe('RWTRepoBuilder', () => {
      * - call RWTRepo.toBuilder to return an instance of RWTRepoBuilder
      * - call RWTRepoBuilder.setCommitmentRwtCount
      * - check return value of RWTRepoBuilder.setCommitmentRwtCount to be the
-     * current instace of RWTRepoBuilder
+     * current instance of RWTRepoBuilder
      * - check RWTRepoBuilder.commitmentRwtCount to have been set to the correct
      * value
      * @expected
      * - return value of RWTRepoBuilder.setCommitmentRwtCount should be the
-     * current instace of RWTRepoBuilder
+     * current instance of RWTRepoBuilder
      * - RWTRepoBuilder.commitmentRwtCount should have been set to the correct
      * value
      */
@@ -1246,9 +1246,9 @@ describe('RWTRepoBuilder', () => {
     });
   });
 
-  describe('setWatcherQuoromPercentage', () => {
+  describe('setWatcherQuorumPercentage', () => {
     /**
-     * @target RWTRepoBuilder.setWatcherQuoromPercentage should set value of
+     * @target RWTRepoBuilder.setWatcherQuorumPercentage should set value of
      * RWTRepoBuilder.quorumPercentage and return its RWTRepoBuilder's instance
      * (this)
      * @dependencies
@@ -1259,18 +1259,18 @@ describe('RWTRepoBuilder', () => {
      * box info for the repoAddress and repoNft
      * - call RWTRepo.updateBox to update RWTRepo.box
      * - call RWTRepo.toBuilder to return an instance of RWTRepoBuilder
-     * - call RWTRepoBuilder.setWatcherQuoromPercentage
-     * - check return value of RWTRepoBuilder.setWatcherQuoromPercentage to be
-     * the current instace of RWTRepoBuilder
+     * - call RWTRepoBuilder.setWatcherQuorumPercentage
+     * - check return value of RWTRepoBuilder.setWatcherQuorumPercentage to be
+     * the current instance of RWTRepoBuilder
      * - check RWTRepoBuilder.quorumPercentage to have been set to the correct
      * value
      * @expected
-     * - return value of RWTRepoBuilder.setWatcherQuoromPercentage should be the
-     * current instace of RWTRepoBuilder
+     * - return value of RWTRepoBuilder.setWatcherQuorumPercentage should be the
+     * current instance of RWTRepoBuilder
      * - RWTRepoBuilder.quorumPercentage should have been set to the correct
      * value
      */
-    it(`RWTRepoBuilder.setWatcherQuoromPercentage should set value of
+    it(`RWTRepoBuilder.setWatcherQuorumPercentage should set value of
     RWTRepoBuilder.quorumPercentage and return its RWTRepoBuilder's instance
     (this)`, async () => {
       const rwtRepo = new RWTRepo(
@@ -1289,7 +1289,7 @@ describe('RWTRepoBuilder', () => {
 
       const newQuorumPercentage = 83;
       const returnValue =
-        rwtRepoBuilder.setWatcherQuoromPercentage(newQuorumPercentage);
+        rwtRepoBuilder.setWatcherQuorumPercentage(newQuorumPercentage);
 
       expect(returnValue).toBe(rwtRepoBuilder);
       expect(rwtRepoBuilder['quorumPercentage']).toEqual(newQuorumPercentage);
@@ -1311,12 +1311,12 @@ describe('RWTRepoBuilder', () => {
      * - call RWTRepo.toBuilder to return an instance of RWTRepoBuilder
      * - call RWTRepoBuilder.setApprovalOffset
      * - check return value of RWTRepoBuilder.setApprovalOffset to be the
-     * current instace of RWTRepoBuilder
+     * current instance of RWTRepoBuilder
      * - check RWTRepoBuilder.approvalOffset to have been set to the correct
      * value
      * @expected
      * - return value of RWTRepoBuilder.setApprovalOffset should be the current
-     * instace of RWTRepoBuilder
+     * instance of RWTRepoBuilder
      * - RWTRepoBuilder.approvalOffset should have been set to the correct value
      */
     it(`RWTRepoBuilder.setApprovalOffset should set value of
@@ -1359,12 +1359,12 @@ describe('RWTRepoBuilder', () => {
      * - call RWTRepo.toBuilder to return an instance of RWTRepoBuilder
      * - call RWTRepoBuilder.setMaximumApproval
      * - check return value of RWTRepoBuilder.setMaximumApproval to be the
-     * current instace of RWTRepoBuilder
+     * current instance of RWTRepoBuilder
      * - check RWTRepoBuilder.maximumApproval to have been set to the correct
      * value
      * @expected
      * - return value of RWTRepoBuilder.setMaximumApproval should be the current
-     * instace of RWTRepoBuilder
+     * instance of RWTRepoBuilder
      * - RWTRepoBuilder.maximumApproval should have been set to the correct
      * value
      */
@@ -1408,12 +1408,12 @@ describe('RWTRepoBuilder', () => {
      * - call RWTRepo.toBuilder to return an instance of RWTRepoBuilder
      * - call RWTRepoBuilder.setErgCollateral
      * - check return value of RWTRepoBuilder.setErgCollateral to be the current
-     * instace of RWTRepoBuilder
+     * instance of RWTRepoBuilder
      * - check RWTRepoBuilder.ergCollateral to have been set to the correct
      * value
      * @expected
      * - return value of RWTRepoBuilder.setErgCollateral should be the current
-     * instace of RWTRepoBuilder
+     * instance of RWTRepoBuilder
      * - RWTRepoBuilder.ergCollateral should have been set to the correct value
      */
     it(`RWTRepoBuilder.setErgCollateral should set value of
@@ -1455,12 +1455,12 @@ describe('RWTRepoBuilder', () => {
      * - call RWTRepo.toBuilder to return an instance of RWTRepoBuilder
      * - call RWTRepoBuilder.setRsnCollateral
      * - check return value of RWTRepoBuilder.setRsnCollateral to be the current
-     * instace of RWTRepoBuilder
+     * instance of RWTRepoBuilder
      * - check RWTRepoBuilder.rsnCollateral to have been set to the correct
      * value
      * @expected
      * - return value of RWTRepoBuilder.setRsnCollateral should be the current
-     * instace of RWTRepoBuilder
+     * instance of RWTRepoBuilder
      * - RWTRepoBuilder.rsnCollateral should have been set to the correct value
      */
     it(`RWTRepoBuilder.setRsnCollateral should set value of
