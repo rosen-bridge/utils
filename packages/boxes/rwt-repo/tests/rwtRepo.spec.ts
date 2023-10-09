@@ -457,7 +457,7 @@ describe('RWTRepo', () => {
   describe('getRequiredCommitmentCount', () => {
     /**
      * @target RWTRepo.getRequiredCommitmentCount should the value of the second
-     * arguement of the following formula, when R6[3] is the greater value:
+     * argument of the following formula, when R6[3] is the greater value:
      * min(R6[3], R6[1] * (len(R4) - 1) / 100 + R6[2])
      * @dependencies
      * - MockedErgoExplorerClientFactory
@@ -471,7 +471,7 @@ describe('RWTRepo', () => {
      * - RWTRepo.getRequiredCommitmentCount() should return the correct value
      */
     it(`RWTRepo.getRequiredCommitmentCount should the value of the second
-    arguement of the following formula, when R6[3] is the greater value:
+    argument of the following formula, when R6[3] is the greater value:
     min(R6[3], R6[1] * (len(R4) - 1) / 100 + R6[2])`, async () => {
       const rwtRepo = new RWTRepo(
         rwtRepoInfoSample.Address,
@@ -861,7 +861,7 @@ describe('RWTRepo', () => {
      * with correct parameters
      * @expected
      * - check RWTRepo.toBuilder() should return an instance of RWTRepoBuilder
-     * - check RWTRepo.toBuilder() shoudd have created the RWTRepoBuilder
+     * - check RWTRepo.toBuilder() should have created the RWTRepoBuilder
      * instance with correct parameters
      */
     it(`RWTRepo.toBuilder should create and return an instance of RWTRepoBuilder
@@ -958,55 +958,55 @@ describe('RWTRepo', () => {
 });
 
 describe('RWTRepoBuilder', () => {
+  let rwtRepoBuilder: RWTRepoBuilder;
+  beforeEach(() => {
+    const boxInfo = rwtRepoInfoSample.boxInfo;
+
+    const r4 = Constant.decode_from_base16(
+      boxInfo.additionalRegisters.R4.serializedValue
+    ).to_coll_coll_byte();
+
+    const r5 = (
+      Constant.decode_from_base16(
+        boxInfo.additionalRegisters.R5.serializedValue
+      ).to_i64_str_array() as string[]
+    ).map(BigInt);
+
+    const r6 = (
+      Constant.decode_from_base16(
+        boxInfo.additionalRegisters.R6.serializedValue
+      ).to_i64_str_array() as string[]
+    ).map(BigInt);
+
+    const widPermits = r4
+      .slice(1)
+      ?.map((wid) => Buffer.from(wid).toString('hex'))
+      .map((wid, i) => {
+        return { wid, rwtCount: r5[i + 1] };
+      });
+
+    rwtRepoBuilder = new RWTRepoBuilder(
+      rwtRepoInfoSample.Address,
+      rwtRepoInfoSample.nft,
+      boxInfo.assets[1].tokenId,
+      BigInt(boxInfo.assets[1].amount),
+      boxInfo.assets[2].tokenId,
+      BigInt(boxInfo.assets[2].amount),
+      Buffer.from(r4[0]).toString(),
+      r6[0],
+      Number(r6[1]),
+      Number(r6[2]),
+      Number(r6[3]),
+      r6[4],
+      r6[5],
+      widPermits
+    );
+  });
+
   describe('addNewUser', () => {
-    let rwtRepoBuilder: RWTRepoBuilder;
-    beforeEach(() => {
-      const boxInfo = rwtRepoInfoSample.boxInfo;
-
-      const r4 = Constant.decode_from_base16(
-        boxInfo.additionalRegisters.R4.serializedValue
-      ).to_coll_coll_byte();
-
-      const r5 = (
-        Constant.decode_from_base16(
-          boxInfo.additionalRegisters.R5.serializedValue
-        ).to_i64_str_array() as string[]
-      ).map(BigInt);
-
-      const r6 = (
-        Constant.decode_from_base16(
-          boxInfo.additionalRegisters.R6.serializedValue
-        ).to_i64_str_array() as string[]
-      ).map(BigInt);
-
-      const widPermits = r4
-        .slice(1)
-        ?.map((wid) => Buffer.from(wid).toString('hex'))
-        .map((wid, i) => {
-          return { wid, rwtCount: r5[i + 1] };
-        });
-
-      rwtRepoBuilder = new RWTRepoBuilder(
-        rwtRepoInfoSample.Address,
-        rwtRepoInfoSample.nft,
-        boxInfo.assets[1].tokenId,
-        BigInt(boxInfo.assets[1].amount),
-        boxInfo.assets[2].tokenId,
-        BigInt(boxInfo.assets[2].amount),
-        Buffer.from(r4[0]).toString(),
-        r6[0],
-        Number(r6[1]),
-        Number(r6[2]),
-        Number(r6[3]),
-        r6[4],
-        r6[5],
-        widPermits
-      );
-    });
-
     /**
-     * @target RWTRepo.addNewUser should add the passed wid, rwtCount arguements
-     * to this.widPermits, and do the fullowing updates:
+     * @target RWTRepo.addNewUser should add the passed wid, rwtCount arguments
+     * to this.widPermits, and do the following updates:
      * this.rwtCount -= rwtCount
      * this.rsnCount += rsnCount
      * @dependencies
@@ -1032,8 +1032,8 @@ describe('RWTRepoBuilder', () => {
      * - RWTRepoBuilder.lastModifiedWid should have been updated with the passed
      * wid
      */
-    it(`should add the passed wid, rwtCount arguements to
-    this.widPermits, and do the fullowing updates:
+    it(`should add the passed wid, rwtCount arguments to
+    this.widPermits, and do the following updates:
     this.rwtCount -= rwtCount
     this.rsnCount += rsnCount`, async () => {
       const wid = '34f2a6bb';
@@ -1053,11 +1053,13 @@ describe('RWTRepoBuilder', () => {
       ).toEqual(wid);
       expect(rwtRepoBuilder['rwtCount']).toEqual(oldRwtCount - rwtCount);
       expect(rwtRepoBuilder['rsnCount']).toEqual(oldRsnCount + rwtCount);
-      expect(rwtRepoBuilder['lastModifiedWid']).toEqual(wid);
+      expect(rwtRepoBuilder['lastModifiedWidIndex']).toEqual(
+        rwtRepoBuilder['widPermits'].length - 1
+      );
     });
 
     /**
-     * @target should throw exception when passed rwtCount as arguement is
+     * @target should throw exception when passed rwtCount as argument is
      * greater than available rwtCount
      * @dependencies
      * - None
@@ -1069,7 +1071,7 @@ describe('RWTRepoBuilder', () => {
      * @expected
      * - RWTRepoBuilder.addNewUser should throw an exception
      */
-    it(`should throw exception when passed rwtCount as arguement is greater than
+    it(`should throw exception when passed rwtCount as argument is greater than
     available rwtCount`, async () => {
       const wid = '34f2a6bb';
 
@@ -1079,7 +1081,7 @@ describe('RWTRepoBuilder', () => {
     });
 
     /**
-     * @target should throw exception adding an existing wid
+     * @target should throw exception when adding an existing wid
      * @dependencies
      * - None
      * @scenario
@@ -1089,10 +1091,105 @@ describe('RWTRepoBuilder', () => {
      * @expected
      * - RWTRepoBuilder.addNewUser should throw an exception
      */
-    it(`should throw exception adding an existing wid`, async () => {
+    it(`should throw exception when adding an existing wid`, async () => {
       expect(() =>
         rwtRepoBuilder.addNewUser(rwtRepoBuilder['widPermits'][0].wid, 1n)
       ).toThrowError();
+    });
+  });
+
+  describe('removeUser', () => {
+    /**
+     * @target RWTRepo.removeUser should remove the item with the passed wid
+     * from this.widPermits, and do the following updates:
+     * this.rwtCount += rwtCount
+     * this.rsnCount -= rsnCount
+     * @dependencies
+     * - MockedErgoExplorerClientFactory
+     * @scenario
+     * - create an instance of RWTRepo with specific repoAddress and repoNft
+     * - mock RWTRepo.explorerClient to return a client that returns predefined
+     * box info for the repoAddress and repoNft
+     * - call RWTRepo.updateBox to update RWTRepo.box
+     * - call RWTRepo.toBuilder to return an instance of RWTRepoBuilder
+     * - call RWTRepoBuilder.removeUser
+     * - check RWTRepoBuilder.widPermits to have contained the passed wid before
+     * calling RWTRepoBuilder.removeUser
+     * - check RWTRepoBuilder.widPermits not to contain the passed wid after
+     * RWTRepoBuilder.removeUser
+     * - check RWTRepoBuilder.rwtCount to have been updated correctly
+     * - check RWTRepoBuilder.rsnCount to have been updated correctly
+     * - check RWTRepoBuilder.lastModifiedWid to have been updated with the
+     * passed wid
+     * @expected
+     * - RWTRepoBuilder.widPermits should have contained the passed wid before
+     * calling RWTRepoBuilder.removeUser
+     * - RWTRepoBuilder.widPermits should not contain the passed wid after
+     * calling RWTRepoBuilder.removeUser
+     * - RWTRepoBuilder.rwtCount should have been updated correctly
+     * - RWTRepoBuilder.rsnCount should have been updated correctly
+     * - RWTRepoBuilder.lastModifiedWid should have been updated with the passed
+     * wid
+     */
+    it(`RWTRepo.removeUser should remove the item with the passed wid from
+    this.widPermits, and do the following updates:
+    this.rwtCount += rwtCount
+    this.rsnCount -= rsnCount`, async () => {
+      const rwtRepo = new RWTRepo(
+        rwtRepoInfoSample.Address,
+        rwtRepoInfoSample.nft,
+        '',
+        ErgoNetworkType.Explorer,
+        ''
+      );
+
+      rwtRepo['explorerClient'] = mockedErgoExplorerClientFactory(
+        ''
+      ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
+
+      await rwtRepo.updateBox(false);
+
+      const rwtRepoBuilder = rwtRepo.toBuilder();
+
+      const widIndex = 2;
+      const { wid, rwtCount } = rwtRepoBuilder['widPermits'][widIndex];
+      const oldWidPermits = [...rwtRepoBuilder['widPermits']];
+      const oldRwtCount = rwtRepoBuilder['rwtCount'];
+      const oldRsnCount = rwtRepoBuilder['rsnCount'];
+
+      rwtRepoBuilder.removeUser(wid);
+
+      expect(oldWidPermits.map((permit) => permit.wid).includes(wid)).toEqual(
+        true
+      );
+      expect(
+        rwtRepoBuilder['widPermits'].map((permit) => permit.wid).includes(wid)
+      ).toEqual(false);
+      expect(rwtRepoBuilder['rwtCount']).toEqual(oldRwtCount + rwtCount);
+      expect(rwtRepoBuilder['rsnCount']).toEqual(oldRsnCount - rwtCount);
+      expect(rwtRepoBuilder['lastModifiedWidIndex']).toEqual(widIndex);
+    });
+
+    /**
+     * @target should throw exception when removing a non-existent wid
+     * @dependencies
+     * - None
+     * @scenario
+     * - create an instance of RWTRepoBuilder
+     * - call RWTRepoBuilder.removeUser with a non-existent wid
+     * - check RWTRepoBuilder.removeUser to throw an exception
+     * @expected
+     * - RWTRepoBuilder.removeUser should throw an exception
+     */
+    it(`should throw exception when removing a non-existent wid`, async () => {
+      const oldWidPermits = [...rwtRepoBuilder['widPermits']];
+      const oldRwtCount = rwtRepoBuilder['rwtCount'];
+      const oldRsnCount = rwtRepoBuilder['rsnCount'];
+
+      expect(() => rwtRepoBuilder.removeUser('abcd')).toThrowError();
+      expect(rwtRepoBuilder['widPermits']).toEqual(oldWidPermits);
+      expect(rwtRepoBuilder['rwtCount']).toEqual(oldRwtCount);
+      expect(rwtRepoBuilder['rsnCount']).toEqual(oldRsnCount);
     });
   });
 });
