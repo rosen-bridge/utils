@@ -861,7 +861,7 @@ describe('RWTRepo', () => {
      * with correct parameters
      * @expected
      * - check RWTRepo.toBuilder() should return an instance of RWTRepoBuilder
-     * - check RWTRepo.toBuilder() shoudd have created the RWTRepoBuilder
+     * - check RWTRepo.toBuilder() should have created the RWTRepoBuilder
      * instance with correct parameters
      */
     it(`RWTRepo.toBuilder should create and return an instance of RWTRepoBuilder
