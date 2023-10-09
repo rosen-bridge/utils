@@ -18,6 +18,14 @@ class ErgoNodeScannerHealthCheck extends AbstractScannerSyncHealthCheckParam {
   }
 
   /**
+   * generates a unique id with network name and type
+   * @returns parameter id
+   */
+  getId = (): string => {
+    return `Ergo Scanner Sync (Node)`;
+  };
+
+  /**
    * @returns last available block in network
    */
   getLastAvailableBlock = async () => {
@@ -38,6 +46,14 @@ class ErgoExplorerScannerHealthCheck extends AbstractScannerSyncHealthCheckParam
     super(dataSource, scannerName, warnDifference, criticalDifference);
     this.explorerApi = ergoExplorerClientFactory(networkUrl);
   }
+
+  /**
+   * generates a unique id with network name and type
+   * @returns parameter id
+   */
+  getId = (): string => {
+    return `Ergo Scanner Sync (Explorer)`;
+  };
 
   /**
    * @returns last available block in network

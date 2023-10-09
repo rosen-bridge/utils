@@ -1,5 +1,5 @@
 import { Communicator } from '../abstract';
-import { DummyLogger } from '@rosen-bridge/logger-interface';
+import { DummyLogger } from '@rosen-bridge/abstract-logger';
 import {
   DetectionApprovePayload,
   GuardDetectionConfig,

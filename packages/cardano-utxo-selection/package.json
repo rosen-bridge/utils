@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/cardano-utxo-selection",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Typescript package to select enough Cardano utxos for required amount of assets",
   "main": "dist/lib/index.js",
   "types": "dist/lib/index.d.ts",
@@ -37,6 +37,6 @@
     "rosen"
   ],
   "dependencies": {
-    "@rosen-bridge/logger-interface": "^0.2.0"
+    "@rosen-bridge/abstract-logger": "^0.3.0"
   }
 }

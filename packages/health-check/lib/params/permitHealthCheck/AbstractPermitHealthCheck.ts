@@ -9,15 +9,17 @@ abstract class AbstractPermitHealthCheckParam extends AbstractHealthCheckParam {
   protected WID: string;
   protected warnThreshold: bigint;
   protected criticalThreshold: bigint;
-  protected RWTCount: bigint;
+  protected reportsCount: bigint;
   protected updateTimeStamp: Date;
+  protected rwtPerCommitment: bigint;
 
   constructor(
     RWT: string,
     permitAddress: string,
     WID: string,
     warnThreshold: bigint,
-    criticalThreshold: bigint
+    criticalThreshold: bigint,
+    rwtPerCommitment: bigint
   ) {
     super();
     this.RWT = RWT;
@@ -25,6 +27,7 @@ abstract class AbstractPermitHealthCheckParam extends AbstractHealthCheckParam {
     this.WID = WID;
     this.warnThreshold = warnThreshold;
     this.criticalThreshold = criticalThreshold;
+    this.rwtPerCommitment = rwtPerCommitment;
   }
 
   /**
@@ -32,7 +35,7 @@ abstract class AbstractPermitHealthCheckParam extends AbstractHealthCheckParam {
    * @returns parameter id
    */
   getId = (): string => {
-    return `Permit Check`;
+    return `Available Reporting Permits`;
   };
 
   /**
@@ -40,15 +43,16 @@ abstract class AbstractPermitHealthCheckParam extends AbstractHealthCheckParam {
    * @returns parameter health description
    */
   getDescription = async (): Promise<string | undefined> => {
-    if (this.RWTCount <= this.criticalThreshold)
+    if (this.reportsCount <= this.criticalThreshold)
       return (
-        `Service has stopped working due insufficient available permits [${this.RWTCount}].\n` +
-        `Permits should be more than [${this.criticalThreshold}] to work properly, please lock more RSN to get more permits.`
+        `Insufficient or critical amount of permit tokens.\n` +
+        `Service may stop working soon. [${this.reportsCount}] report permits is left.` +
+        ` Please lock more RSN to get more report permits.`
       );
-    else if (this.RWTCount <= this.warnThreshold)
+    else if (this.reportsCount <= this.warnThreshold)
       return (
-        `Service may stop working soon. Available permits [${this.RWTCount}] are less than ` +
-        `the recommended amount [${this.warnThreshold}]. Please lock more RSN to get more permits.`
+        `Service may stop working soon. Available report permits [${this.reportsCount}] are less than ` +
+        `the recommended reports [${this.warnThreshold}]. Please lock more RSN to get more report permits.`
       );
     return undefined;
   };
@@ -69,24 +73,19 @@ abstract class AbstractPermitHealthCheckParam extends AbstractHealthCheckParam {
    * @returns asset health status
    */
   getHealthStatus = async (): Promise<HealthStatusLevel> => {
-    if (this.RWTCount <= this.criticalThreshold)
+    if (this.reportsCount <= this.criticalThreshold)
       return HealthStatusLevel.BROKEN;
-    else if (this.RWTCount <= this.warnThreshold)
+    else if (this.reportsCount <= this.warnThreshold)
       return HealthStatusLevel.UNSTABLE;
     return HealthStatusLevel.HEALTHY;
   };
 
   /**
-   * Updates the threshold to adapt to config changes
-   * @param criticalThreshold
-   * @param warnThreshold
+   * Updates the rwtPerCommitment to adapt to config changes
+   * @param rwtPerCommitment
    */
-  updateThresholds = async (
-    warnThreshold: bigint,
-    criticalThreshold: bigint
-  ) => {
-    this.criticalThreshold = criticalThreshold;
-    this.warnThreshold = warnThreshold;
+  updateRwtPerCommitment = async (rwtPerCommitment: bigint) => {
+    this.rwtPerCommitment = rwtPerCommitment;
   };
 }
 

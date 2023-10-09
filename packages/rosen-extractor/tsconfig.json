@@ -6,5 +6,8 @@
   },
   "exclude": ["lib/**/*.spec.ts", "lib/**/*.test.ts", "lib/**/*.mock.ts"],
   "include": ["lib/**/*"],
-  "references": [{ "path": "../tokens" }, { "path": "../logger-interface" }]
+  "references": [
+    { "path": "../tokens" },
+    { "path": "../loggers/abstract-logger" }
+  ]
 }
