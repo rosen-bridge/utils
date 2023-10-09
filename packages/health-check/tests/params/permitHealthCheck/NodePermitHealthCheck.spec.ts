@@ -86,7 +86,7 @@ describe('NodePermitAssetHealthCheckParam', () => {
         100n,
         10n,
         'url',
-        1
+        1n
       );
 
       // update the parameter
