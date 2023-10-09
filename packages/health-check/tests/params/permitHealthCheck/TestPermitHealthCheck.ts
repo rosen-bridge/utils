@@ -17,12 +17,7 @@ class TestPermitHealthCheckParam extends AbstractPermitHealthCheckParam {
   /**
    * @returns the protected critical threshold
    */
-  getCriticalThreshold = () => this.criticalThreshold;
-
-  /**
-   * @returns the protected warning threshold
-   */
-  getWarnThreshold = () => this.warnThreshold;
+  getRwtPerCommitment = () => this.rwtPerCommitment;
 }
 
 export { TestPermitHealthCheckParam };

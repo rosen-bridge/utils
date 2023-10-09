@@ -11,7 +11,7 @@ abstract class AbstractPermitHealthCheckParam extends AbstractHealthCheckParam {
   protected criticalThreshold: bigint;
   protected reportsCount: bigint;
   protected updateTimeStamp: Date;
-  protected rwtPerCommitment: number;
+  protected rwtPerCommitment: bigint;
 
   constructor(
     RWT: string,
@@ -19,7 +19,7 @@ abstract class AbstractPermitHealthCheckParam extends AbstractHealthCheckParam {
     WID: string,
     warnThreshold: bigint,
     criticalThreshold: bigint,
-    rwtPerCommitment: number
+    rwtPerCommitment: bigint
   ) {
     super();
     this.RWT = RWT;
@@ -81,16 +81,11 @@ abstract class AbstractPermitHealthCheckParam extends AbstractHealthCheckParam {
   };
 
   /**
-   * Updates the threshold to adapt to config changes
-   * @param criticalThreshold
-   * @param warnThreshold
+   * Updates the rwtPerCommitment to adapt to config changes
+   * @param rwtPerCommitment
    */
-  updateThresholds = async (
-    warnThreshold: bigint,
-    criticalThreshold: bigint
-  ) => {
-    this.criticalThreshold = criticalThreshold;
-    this.warnThreshold = warnThreshold;
+  updateRwtPerCommitment = async (rwtPerCommitment: bigint) => {
+    this.rwtPerCommitment = rwtPerCommitment;
   };
 }
 

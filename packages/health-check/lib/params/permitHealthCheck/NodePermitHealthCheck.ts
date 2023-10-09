@@ -13,7 +13,7 @@ class NodePermitHealthCheckParam extends AbstractPermitHealthCheckParam {
     warnThreshold: bigint,
     criticalThreshold: bigint,
     networkUrl: string,
-    rwtPerCommitment: number
+    rwtPerCommitment: bigint
   ) {
     super(
       RWT,
@@ -56,7 +56,7 @@ class NodePermitHealthCheckParam extends AbstractPermitHealthCheckParam {
       offset += this.API_REQUEST_LIMIT;
     } while (boxes.length > 0);
 
-    this.reportsCount = RWTCount / BigInt(this.rwtPerCommitment);
+    this.reportsCount = RWTCount / this.rwtPerCommitment;
     this.updateTimeStamp = new Date();
   };
 }

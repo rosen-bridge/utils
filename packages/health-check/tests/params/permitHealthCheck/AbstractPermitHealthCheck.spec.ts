@@ -13,7 +13,7 @@ describe('AbstractPermitHealthCheckParam', () => {
       'WID',
       100n,
       10n,
-      10
+      10n
     );
   });
 
@@ -64,20 +64,19 @@ describe('AbstractPermitHealthCheckParam', () => {
     });
   });
 
-  describe('updateThresholds', () => {
+  describe('rwtPerCommitment', () => {
     /**
-     * @target AbstractPermitHealthCheckParam.updateThresholds should update the thresholds correctly
+     * @target AbstractPermitHealthCheckParam.rwtPerCommitment should update the rwtPerCommitment correctly
      * @dependencies
      * @scenario
-     * - call updateThreshold with new numbers
+     * - call rwtPerCommitment with new param
      * - get health status
      * @expected
-     * - should update the thresholds to 200n and 100n
+     * - should update the rwtPerCommitment to 200n
      */
-    it('should update the thresholds correctly', async () => {
-      permitHealthCheckParam.updateThresholds(200n, 100n);
-      expect(permitHealthCheckParam.getCriticalThreshold()).toEqual(100n);
-      expect(permitHealthCheckParam.getWarnThreshold()).toEqual(200n);
+    it('should update the rwtPerCommitment correctly', async () => {
+      permitHealthCheckParam.updateRwtPerCommitment(200n);
+      expect(permitHealthCheckParam.getRwtPerCommitment()).toEqual(200n);
     });
   });
 });
