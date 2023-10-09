@@ -101,10 +101,10 @@ export class RWTRepoBuilder {
    * @return {RWTRepoBuilder}
    * @memberof RWTRepoBuilder
    */
-  setCommitmentRwtCount(commitmentRwtCount: bigint): RWTRepoBuilder {
+  setCommitmentRwtCount = (commitmentRwtCount: bigint): RWTRepoBuilder => {
     this.commitmentRwtCount = commitmentRwtCount;
     return this;
-  }
+  };
 
   /**
    * sets value of this.quorumPercentage
@@ -113,10 +113,12 @@ export class RWTRepoBuilder {
    * @return {RWTRepoBuilder}
    * @memberof RWTRepoBuilder
    */
-  setWatcherQuoromPercentage(watcherQuoromPercentage: number): RWTRepoBuilder {
+  setWatcherQuoromPercentage = (
+    watcherQuoromPercentage: number
+  ): RWTRepoBuilder => {
     this.quorumPercentage = watcherQuoromPercentage;
     return this;
-  }
+  };
 
   /**
    * sets value of this.approvalOffset
@@ -125,10 +127,10 @@ export class RWTRepoBuilder {
    * @return {RWTRepoBuilder}
    * @memberof RWTRepoBuilder
    */
-  setApprovalOffset(approvalOffset: number): RWTRepoBuilder {
+  setApprovalOffset = (approvalOffset: number): RWTRepoBuilder => {
     this.approvalOffset = approvalOffset;
     return this;
-  }
+  };
 
   /**
    * sets value of this.maximumApproval
@@ -137,10 +139,10 @@ export class RWTRepoBuilder {
    * @return {RWTRepoBuilder}
    * @memberof RWTRepoBuilder
    */
-  setMaximumApproval(maximumApproval: number): RWTRepoBuilder {
+  setMaximumApproval = (maximumApproval: number): RWTRepoBuilder => {
     this.maximumApproval = maximumApproval;
     return this;
-  }
+  };
 
   /**
    * sets value of this.ergCollateral
@@ -149,10 +151,10 @@ export class RWTRepoBuilder {
    * @return {RWTRepoBuilder}
    * @memberof RWTRepoBuilder
    */
-  setErgCollateral(ergCollateral: bigint): RWTRepoBuilder {
+  setErgCollateral = (ergCollateral: bigint): RWTRepoBuilder => {
     this.ergCollateral = ergCollateral;
     return this;
-  }
+  };
 
   /**
    * sets value of this.rsnCollateral
@@ -161,10 +163,10 @@ export class RWTRepoBuilder {
    * @return {RWTRepoBuilder}
    * @memberof RWTRepoBuilder
    */
-  setRsnCollateral(rsnCollateral: bigint): RWTRepoBuilder {
+  setRsnCollateral = (rsnCollateral: bigint): RWTRepoBuilder => {
     this.rsnCollateral = rsnCollateral;
     return this;
-  }
+  };
 
   indexOfWid = (wid: string): number => {
     return this.widPermits.map((permit) => permit.wid).indexOf(wid);
