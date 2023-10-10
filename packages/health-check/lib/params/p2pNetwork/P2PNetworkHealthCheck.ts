@@ -38,7 +38,7 @@ export class P2PNetworkHealthCheck extends AbstractHealthCheckParam {
   /**
    * get health check parameter id
    */
-  getId = () => 'p2p network';
+  getId = () => 'P2P Network';
 
   /**
    * update health status for this param if needed (based on the scenario
@@ -97,12 +97,12 @@ export class P2PNetworkHealthCheck extends AbstractHealthCheckParam {
     }
 
     if (!this.getIsAtLeastOneRelayConnected()) {
-      return 'No relay is connected';
+      return 'Not connected to any relay. Please check the relay address and your connection.';
     }
 
-    return `${this.getConnectedGuards()} of guards are connected which is below or equal to ${
+    return `Connected to only [${this.getConnectedGuards()}] guards. At least [${
       this.connectedGuardsHealthyThreshold
-    } threshold`;
+    }] connections is required. Please check the connection.`;
   };
 
   /**

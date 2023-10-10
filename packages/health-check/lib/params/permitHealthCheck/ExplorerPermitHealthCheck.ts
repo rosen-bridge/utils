@@ -1,6 +1,5 @@
 import ergoExplorerClientFactory from '@rosen-clients/ergo-explorer';
 import * as wasm from 'ergo-lib-wasm-nodejs';
-import { OutputInfo } from '@rosen-clients/ergo-explorer/dist/src/v1/types/outputInfo.d';
 import { AbstractPermitHealthCheckParam } from './AbstractPermitHealthCheck';
 
 class ExplorerPermitHealthCheckParam extends AbstractPermitHealthCheckParam {
@@ -13,9 +12,17 @@ class ExplorerPermitHealthCheckParam extends AbstractPermitHealthCheckParam {
     WID: string,
     warnThreshold: bigint,
     criticalThreshold: bigint,
-    networkUrl: string
+    networkUrl: string,
+    rwtPerCommitment: bigint
   ) {
-    super(RWT, permitAddress, WID, warnThreshold, criticalThreshold);
+    super(
+      RWT,
+      permitAddress,
+      WID,
+      warnThreshold,
+      criticalThreshold,
+      rwtPerCommitment
+    );
     this.explorerApi = ergoExplorerClientFactory(networkUrl);
   }
 
@@ -49,7 +56,7 @@ class ExplorerPermitHealthCheckParam extends AbstractPermitHealthCheckParam {
       total = boxes.total ?? 0n;
       offset += this.API_REQUEST_LIMIT;
     } while (offset < total);
-    this.RWTCount = RWTCount;
+    this.reportsCount = RWTCount / this.rwtPerCommitment;
     this.updateTimeStamp = new Date();
   };
 }

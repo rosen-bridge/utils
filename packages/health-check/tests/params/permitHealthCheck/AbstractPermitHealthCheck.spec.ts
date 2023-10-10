@@ -12,6 +12,7 @@ describe('AbstractPermitHealthCheckParam', () => {
       'permitAddress',
       'WID',
       100n,
+      10n,
       10n
     );
   });
@@ -27,7 +28,7 @@ describe('AbstractPermitHealthCheckParam', () => {
      * - The status should be HEALTHY when permit count is more than warning threshold
      */
     it('should return the healthy status when permit count is more than warning threshold', async () => {
-      permitHealthCheckParam.setRWTAmount(1200n);
+      permitHealthCheckParam.setReportCount(1200n);
       const status = await permitHealthCheckParam.getHealthStatus();
       expect(status).toBe(HealthStatusLevel.HEALTHY);
     });
@@ -42,7 +43,7 @@ describe('AbstractPermitHealthCheckParam', () => {
      * - The status should be UNSTABLE when permit count is less than warning threshold
      */
     it('should return the unstable status when permit count is less than warning threshold', async () => {
-      permitHealthCheckParam.setRWTAmount(90n);
+      permitHealthCheckParam.setReportCount(90n);
       const status = await permitHealthCheckParam.getHealthStatus();
       expect(status).toBe(HealthStatusLevel.UNSTABLE);
     });
@@ -57,26 +58,25 @@ describe('AbstractPermitHealthCheckParam', () => {
      * - The status should be BROKEN when permit count is less than critical threshold'
      */
     it('should return the broken status when permit count is less than critical threshold', async () => {
-      permitHealthCheckParam.setRWTAmount(9n);
+      permitHealthCheckParam.setReportCount(9n);
       const status = await permitHealthCheckParam.getHealthStatus();
       expect(status).toBe(HealthStatusLevel.BROKEN);
     });
   });
 
-  describe('updateThresholds', () => {
+  describe('rwtPerCommitment', () => {
     /**
-     * @target AbstractPermitHealthCheckParam.updateThresholds should update the thresholds correctly
+     * @target AbstractPermitHealthCheckParam.rwtPerCommitment should update the rwtPerCommitment correctly
      * @dependencies
      * @scenario
-     * - call updateThreshold with new numbers
+     * - call rwtPerCommitment with new param
      * - get health status
      * @expected
-     * - should update the thresholds to 200n and 100n
+     * - should update the rwtPerCommitment to 200n
      */
-    it('should update the thresholds correctly', async () => {
-      permitHealthCheckParam.updateThresholds(200n, 100n);
-      expect(permitHealthCheckParam.getCriticalThreshold()).toEqual(100n);
-      expect(permitHealthCheckParam.getWarnThreshold()).toEqual(200n);
+    it('should update the rwtPerCommitment correctly', async () => {
+      permitHealthCheckParam.updateRwtPerCommitment(200n);
+      expect(permitHealthCheckParam.getRwtPerCommitment()).toEqual(200n);
     });
   });
 });

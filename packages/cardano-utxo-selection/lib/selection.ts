@@ -1,5 +1,5 @@
 import { AssetBalance, BoxInfo, CardanoUtxo, CoveringBoxes } from './types';
-import { AbstractLogger, DummyLogger } from '@rosen-bridge/logger-interface';
+import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
 
 /**
  * extracts box id and assets of a utxo
