@@ -182,7 +182,7 @@ export class RWTRepoBuilder {
    * @memberof RWTRepoBuilder
    */
   decrementPermits = (wid: string, rwtCount: bigint): RWTRepoBuilder => {
-    const index = this.widPermits.findIndex((permit) => permit.wid === wid);
+    const index = this.indexOfWid(wid);
     if (index === -1) {
       throw new Error(`wid=[${wid}] not found in widPermits`);
     }
@@ -194,7 +194,7 @@ export class RWTRepoBuilder {
   };
 
   indexOfWid = (wid: string): number => {
-    return this.widPermits.map((permit) => permit.wid).indexOf(wid);
+    return this.widPermits.findIndex((permit) => permit.wid === wid);
   };
 }
 
