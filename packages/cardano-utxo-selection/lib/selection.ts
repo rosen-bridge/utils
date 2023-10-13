@@ -13,7 +13,7 @@ export const getUtxoInfo = (utxo: CardanoUtxo): BoxInfo => {
       nativeToken: BigInt(utxo.value),
       tokens: utxo.assets.map((asset) => ({
         id: `${asset.policyId}.${asset.assetName}`,
-        value: BigInt(asset.quantity),
+        value: asset.quantity,
       })),
     },
   };

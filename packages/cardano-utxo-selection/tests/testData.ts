@@ -5,6 +5,7 @@ export const utxos: CardanoUtxo[] = [
   {
     txId: '6699c2b892da307f8e3bf9329e9b17b397a7aff525f4caa8d05507b73a8392b5',
     index: 0,
+    address: 'address',
     value: 3000000n,
     assets: [
       {
@@ -22,12 +23,14 @@ export const utxos: CardanoUtxo[] = [
   {
     txId: '52600cd0abd9d0cb89b7ef199290c60cb5f0fca3417882fd5166593f7adccaac',
     index: 0,
+    address: 'address',
     value: 10000000n,
     assets: [],
   },
   {
     txId: '6699c2b892da307f8e3bf9329e9b17b397a7aff525f4caa8d05507b73a8392b5',
     index: 1,
+    address: 'address',
     value: 3000000n,
     assets: [
       {
@@ -45,56 +48,66 @@ export const utxos: CardanoUtxo[] = [
   {
     txId: '52600cd0abd9d0cb89b7ef199290c60cb5f0fca3417882fd5166593f7adccaac',
     index: 1,
+    address: 'address',
     value: 10000000n,
     assets: [],
   },
   {
     txId: '52600cd0abd9d0cb89b7ef199290c60cb5f0fca3417882fd5166593f7adccaac',
     index: 2,
+    address: 'address',
     value: 10000000n,
     assets: [],
   },
   {
     txId: '52600cd0abd9d0cb89b7ef199290c60cb5f0fca3417882fd5166593f7adccaac',
     index: 3,
+    address: 'address',
     value: 10000000n,
     assets: [],
   },
   {
     txId: '52600cd0abd9d0cb89b7ef199290c60cb5f0fca3417882fd5166593f7adccaac',
     index: 4,
+    address: 'address',
     value: 10000000n,
     assets: [],
   },
   {
     txId: '52600cd0abd9d0cb89b7ef199290c60cb5f0fca3417882fd5166593f7adccaac',
     index: 5,
+    address: 'address',
     value: 10000000n,
     assets: [],
   },
   {
     txId: '52600cd0abd9d0cb89b7ef199290c60cb5f0fca3417882fd5166593f7adccaac',
     index: 6,
+    address: 'address',
     value: 10000000n,
     assets: [],
   },
   {
     txId: '52600cd0abd9d0cb89b7ef199290c60cb5f0fca3417882fd5166593f7adccaac',
     index: 7,
+    address: 'address',
     value: 10000000n,
     assets: [],
   },
   {
     txId: '52600cd0abd9d0cb89b7ef199290c60cb5f0fca3417882fd5166593f7adccaac',
     index: 8,
+    address: 'address',
     value: 10000000n,
     assets: [],
   },
   {
     txId: '52600cd0abd9d0cb89b7ef199290c60cb5f0fca3417882fd5166593f7adccaac',
     index: 9,
+    address: 'address',
     value: 10000000n,
     assets: [],
   },
 ];
+
 export const emptyMap = new Map<string, CardanoUtxo>();
