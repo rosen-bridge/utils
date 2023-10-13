@@ -670,7 +670,7 @@ class ErgoTestData {
       sourceChainTokenId:
         'f6a69529b12a7e2326acffee8383e0c44408f87a872886fadf410fe8498006d3',
       amount: '2000000',
-      targetChainTokenId: 'lovelace',
+      targetChainTokenId: 'ada',
       sourceTxId:
         'd04fc93dc15a28a1f0e50b0fffc94f360037dcedddaf8a2e25905a892cd48378',
     },
@@ -822,7 +822,7 @@ class ErgoTestData {
   static nodeAssetTransformation = {
     tokenLocked: {
       from: 'f6a69529b12a7e2326acffee8383e0c44408f87a872886fadf410fe8498006d3',
-      to: 'lovelace',
+      to: 'ada',
       amount: 2000000n,
     },
     ergLocked: {
