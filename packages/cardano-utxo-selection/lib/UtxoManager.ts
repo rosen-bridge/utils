@@ -14,6 +14,17 @@ export class UtxoManager<utxoType> {
     this.deserializeUtxo = utxoDeserializer;
   }
 
+  /**
+   * add new utxos to list
+   * @param utxos
+   */
+  extend = (utxos: utxoType[]): void => {
+    this.utxos = this.utxos.concat(utxos);
+  };
+
+  /**
+   * returns next utxo on list
+   */
   next = async (): Promise<CardanoUtxo | undefined> => {
     if (this.index >= this.utxos.length) return undefined;
     this.index++;

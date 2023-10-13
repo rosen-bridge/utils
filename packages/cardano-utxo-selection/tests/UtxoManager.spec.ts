@@ -1,25 +1,8 @@
 import { UtxoManager } from '../lib';
+import { utxoWithOutIndex } from './testData';
 
 describe('UtxoManager', () => {
   describe('next', () => {
-    const mockedUtxo = {
-      txId: '6699c2b892da307f8e3bf9329e9b17b397a7aff525f4caa8d05507b73a8392b5',
-      address: 'address',
-      value: 3000000n,
-      assets: [
-        {
-          policyId: '10bb8374ec0e933f80a684dd32363151cb6051864afb0b0088bba207',
-          assetName: '727074',
-          quantity: 150n,
-        },
-        {
-          policyId: 'bb8374ec0e933f80a684dd32363151cb6051864afb0b0088bba20710',
-          assetName: '72707476',
-          quantity: 200n,
-        },
-      ],
-    };
-
     /**
      * @target UtxoManager.next should return boxes sequentially
      * @dependencies
@@ -36,16 +19,16 @@ describe('UtxoManager', () => {
      */
     it('should return boxes sequentially', async () => {
       const manager = new UtxoManager<number>([2, 4, 6], (num: number) => ({
-        ...mockedUtxo,
+        ...utxoWithOutIndex,
         index: num * 10,
       }));
 
       let res = await manager.next();
-      expect(res).toEqual({ ...mockedUtxo, index: 20 });
+      expect(res).toEqual({ ...utxoWithOutIndex, index: 20 });
       res = await manager.next();
-      expect(res).toEqual({ ...mockedUtxo, index: 40 });
+      expect(res).toEqual({ ...utxoWithOutIndex, index: 40 });
       res = await manager.next();
-      expect(res).toEqual({ ...mockedUtxo, index: 60 });
+      expect(res).toEqual({ ...utxoWithOutIndex, index: 60 });
     });
 
     /**
@@ -65,12 +48,58 @@ describe('UtxoManager', () => {
      */
     it('should return undefined when all elements are returned', async () => {
       const manager = new UtxoManager<number>([2], (num: number) => ({
-        ...mockedUtxo,
+        ...utxoWithOutIndex,
         index: num * 10,
       }));
 
       let res = await manager.next();
-      expect(res).toEqual({ ...mockedUtxo, index: 20 });
+      expect(res).toEqual({ ...utxoWithOutIndex, index: 20 });
+      res = await manager.next();
+      expect(res).toBeUndefined();
+    });
+  });
+
+  describe('extend', () => {
+    /**
+     * @target UtxoManager.next should return elements before and after extend successfully
+     * @dependencies
+     * @scenario
+     * - create a UtxoManager
+     *   - type is number
+     *   - serializer will return a pre generated
+     *     CardanoUtxo with given input as index
+     *   - initial array has 2 elements
+     * - run test
+     *   - call `next` 3 times
+     *   - extend array with two new elements
+     *   - call `next` 3 times
+     * - check returned value for each call
+     * @expected
+     * - two calls should return expected elements
+     * - next call should return undefined
+     * - next two calls should return expected elements
+     * - last call should return undefined
+     */
+    it('should return undefined when all elements are returned', async () => {
+      const manager = new UtxoManager<number>([2, 4], (num: number) => ({
+        ...utxoWithOutIndex,
+        index: num * 10,
+      }));
+
+      // call `next` 3 times
+      let res = await manager.next();
+      expect(res).toEqual({ ...utxoWithOutIndex, index: 20 });
+      res = await manager.next();
+      expect(res).toEqual({ ...utxoWithOutIndex, index: 40 });
+      res = await manager.next();
+      expect(res).toBeUndefined();
+      // extend array with two new elements
+      manager.extend([6, 8]);
+      // call `next` 3 times
+      res = await manager.next();
+      expect(res).toEqual({ ...utxoWithOutIndex, index: 60 });
+      res = await manager.next();
+      expect(res).toEqual({ ...utxoWithOutIndex, index: 80 });
       res = await manager.next();
       expect(res).toBeUndefined();
     });
