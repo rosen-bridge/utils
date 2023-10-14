@@ -1486,4 +1486,76 @@ describe('RWTRepoBuilder', () => {
       expect(rwtRepoBuilder['rsnCollateral']).toEqual(newRsnCollateral);
     });
   });
+
+  describe('decrementPermits', () => {
+    /**
+     * @target RWTRepoBuilder.decrementPermits should decrement rwtCount for a
+     * specific wid in RWTRepoBuilder.widPermits by the specified amount. Also
+     * should store the passed wid in RWTRepoBuilder.lastModifiedWid, return the
+     * current RWTRepoBuilder (this), and do the following updates:
+     * RWTRepoBuilder.rwtCount -= rwtCount
+     * RWTRepoBuilder.rsnCount += rwtCount
+     * @dependencies
+     * - MockedErgoExplorerClientFactory
+     * @scenario
+     * - create an instance of RWTRepo with specific repoAddress and repoNft
+     * - mock RWTRepo.explorerClient to return a client that returns predefined
+     * box info for the repoAddress and repoNft
+     * - call RWTRepo.updateBox to update RWTRepo.box
+     * - call RWTRepo.toBuilder to return an instance of RWTRepoBuilder
+     * - call RWTRepoBuilder.decrementPermits
+     * - check return value of RWTRepoBuilder.decrementPermits to be the current
+     * instance of RWTRepoBuilder
+     * - check RWTRepoBuilder.widPermits to have been updated correctly
+     * - check RWTRepoBuilder.rwtCount to have been updated correctly
+     * - check RWTRepoBuilder.rsnCount to have been updated correctly
+     * - check RWTRepoBuilder.lastModifiedWid to have been updated with the
+     * passed wid
+     * @expected
+     * - return value of RWTRepoBuilder.decrementPermits should be the current
+     * instance of RWTRepoBuilder
+     * - RWTRepoBuilder.widPermits should have been decremented accordingly
+     * - RWTRepoBuilder.rwtCount should have been decremented accordingly
+     * - RWTRepoBuilder.rsnCount should have been incremented accordingly
+     * - RWTRepoBuilder.lastModifiedWid should have been updated with the passed
+     * wid
+     */
+    it(`RWTRepoBuilder.decrementPermits should decrements rwtCount for a
+    specific wid in RWTRepoBuilder.widPermits by the specified amount. Also
+    should store the passed wid in RWTRepoBuilder.lastModifiedWid, return the
+    current RWTRepoBuilder (this), and do the following updates:
+    RWTRepoBuilder.rwtCount -= rwtCount
+    RWTRepoBuilder.rsnCount += rwtCount`, async () => {
+      const rwtRepo = new RWTRepo(
+        rwtRepoInfoSample.Address,
+        rwtRepoInfoSample.nft,
+        '',
+        ErgoNetworkType.Explorer,
+        ''
+      );
+
+      rwtRepo['explorerClient'] = mockedErgoExplorerClientFactory(
+        ''
+      ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
+      await rwtRepo.updateBox(false);
+      const rwtRepoBuilder = rwtRepo.toBuilder();
+
+      const widIndex = 2;
+      const { wid, rwtCount: widOldRwtCount } =
+        rwtRepoBuilder['widPermits'][widIndex];
+      const oldRwtCount = rwtRepoBuilder['rwtCount'];
+      const oldRsnCount = rwtRepoBuilder['rsnCount'];
+
+      const decrement = 45n;
+      const returnValue = rwtRepoBuilder.decrementPermits(wid, decrement);
+
+      expect(returnValue).toBe(rwtRepoBuilder);
+      expect(rwtRepoBuilder['widPermits'][widIndex].rwtCount).toEqual(
+        widOldRwtCount - decrement
+      );
+      expect(rwtRepoBuilder['rwtCount']).toEqual(oldRwtCount - decrement);
+      expect(rwtRepoBuilder['rsnCount']).toEqual(oldRsnCount + decrement);
+      expect(rwtRepoBuilder['lastModifiedWidIndex']).toEqual(widIndex);
+    });
+  });
 });
