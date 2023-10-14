@@ -1627,7 +1627,7 @@ describe('RWTRepoBuilder', () => {
       );
       expect(rwtRepoBuilder['rwtCount']).toEqual(oldRwtCount + increment);
       expect(rwtRepoBuilder['rsnCount']).toEqual(oldRsnCount - increment);
-      expect(rwtRepoBuilder['lastModifiedWid']).toEqual(wid);
+      expect(rwtRepoBuilder['lastModifiedWidIndex']).toEqual(widIndex);
     });
   });
 });
