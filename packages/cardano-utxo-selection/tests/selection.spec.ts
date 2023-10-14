@@ -6,12 +6,8 @@ describe('selectCardanoUtxos', () => {
   const tokenId1 = testData.tokenId1;
   const emptyTrackMap = testData.emptyMap;
 
-  const createMockedGeneratorFunction = (boxes: Array<CardanoUtxo>) => {
-    const mockedGenerator = jest.fn();
-    mockedGenerator.mockResolvedValue(undefined);
-    boxes.forEach((box) => mockedGenerator.mockResolvedValueOnce(box));
-    return mockedGenerator;
-  };
+  const createMockedGeneratorFunction = (boxes: Array<CardanoUtxo>) =>
+    boxes.values();
 
   /**
    * @target selectCardanoUtxos should return enough boxes
