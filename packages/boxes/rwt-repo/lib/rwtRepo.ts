@@ -44,7 +44,7 @@ export class RWTRepoBuilder {
    * @return {RWTRepoBuilder}  {RWTRepoBuilder}
    * @memberof RWTRepoBuilder
    */
-  addNewUser(wid: string, rwtCount: bigint): RWTRepoBuilder {
+  addNewUser = (wid: string, rwtCount: bigint): RWTRepoBuilder => {
     const widExists = this.widPermits.map((permit) => permit.wid).includes(wid);
     if (widExists) {
       throw new Error(`cannot add user: wid already exists in widPermits`);
@@ -66,7 +66,7 @@ export class RWTRepoBuilder {
     this.lastModifiedWidIndex = this.widPermits.length - 1;
 
     return this;
-  }
+  };
 
   /**
    * removes (wid, rwtCount) pair from this.widPermits. Also stores wid's index
@@ -206,7 +206,7 @@ export class RWTRepoBuilder {
    * @return {RWTRepoBuilder}
    * @memberof RWTRepoBuilder
    */
-  incrementPermits(wid: string, rwtCount: bigint): RWTRepoBuilder {
+  incrementPermits = (wid: string, rwtCount: bigint): RWTRepoBuilder => {
     const index = this.widPermits.findIndex((permit) => permit.wid === wid);
     if (index === -1) {
       throw new Error(`wid=[${wid}] not found in widPermits`);
@@ -216,7 +216,7 @@ export class RWTRepoBuilder {
     this.rsnCount -= rwtCount;
     this.lastModifiedWidIndex = index;
     return this;
-  }
+  };
 
   /**
    * finds index of the passed wid in this.widPermits array
