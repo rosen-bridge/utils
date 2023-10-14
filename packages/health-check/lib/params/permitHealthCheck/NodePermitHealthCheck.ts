@@ -12,9 +12,17 @@ class NodePermitHealthCheckParam extends AbstractPermitHealthCheckParam {
     WID: string,
     warnThreshold: bigint,
     criticalThreshold: bigint,
-    networkUrl: string
+    networkUrl: string,
+    rwtPerCommitment: bigint
   ) {
-    super(RWT, permitAddress, WID, warnThreshold, criticalThreshold);
+    super(
+      RWT,
+      permitAddress,
+      WID,
+      warnThreshold,
+      criticalThreshold,
+      rwtPerCommitment
+    );
     this.nodeApi = ergoNodeClientFactory(networkUrl);
   }
 
@@ -48,7 +56,7 @@ class NodePermitHealthCheckParam extends AbstractPermitHealthCheckParam {
       offset += this.API_REQUEST_LIMIT;
     } while (boxes.length > 0);
 
-    this.RWTCount = RWTCount;
+    this.reportsCount = RWTCount / this.rwtPerCommitment;
     this.updateTimeStamp = new Date();
   };
 }

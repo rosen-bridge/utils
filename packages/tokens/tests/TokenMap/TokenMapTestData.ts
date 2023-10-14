@@ -10,7 +10,8 @@ export const firstTokenMap: RosenTokens = {
       ergo: {
         tokenID:
           '1111111111111111111111111111111111111111111111111111111111111111',
-        tokenName: 'test token1',
+        name: 'test token1',
+        decimals: 0,
         metaData: {
           type: 'tokenType',
           residency: 'tokenResidency',
@@ -21,6 +22,8 @@ export const firstTokenMap: RosenTokens = {
         policyID: '22222222222222222222222222222222222222222222222222222222',
         assetID:
           '3333333333333333333333333333333333333333333333333333333333333333333333333333',
+        name: 'asset1',
+        decimals: 0,
         metaData: {
           type: 'tokenType',
           residency: 'tokenResidency',
@@ -31,7 +34,8 @@ export const firstTokenMap: RosenTokens = {
       ergo: {
         tokenID:
           '2222222222222222222222222222222222222222222222222222222222222222',
-        tokenName: 'test token2',
+        name: 'test token2',
+        decimals: 0,
         metaData: {
           type: 'tokenType',
           residency: 'tokenResidency',
@@ -39,6 +43,8 @@ export const firstTokenMap: RosenTokens = {
       },
       binance: {
         id: 'this is a simple ip',
+        name: 'binanceAsset',
+        decimals: 0,
         metaData: {
           type: 'BNBToken',
           residency: 'tokenResidency',
@@ -48,7 +54,8 @@ export const firstTokenMap: RosenTokens = {
     {
       ergo: {
         tokenID: 'tokenId',
-        tokenName: 'test token3',
+        name: 'test token3',
+        decimals: 0,
         metaData: {
           type: 'tokenType',
           residency: 'tokenResidency',
@@ -58,6 +65,8 @@ export const firstTokenMap: RosenTokens = {
         fingerprint: 'asset3fingerprint',
         policyID: 'policyID3',
         assetID: 'assetID3',
+        name: 'asset3',
+        decimals: 0,
         metaData: {
           type: 'tokenType',
           residency: 'tokenResidency',
@@ -75,7 +84,8 @@ export const secondTokenMap: RosenTokens = {
     {
       ergo: {
         tokenID: 'tokenId',
-        tokenName: 'test token3',
+        name: 'test token3',
+        decimals: 0,
         metaData: {
           type: 'tokenType',
           residency: 'tokenResidency',
@@ -85,6 +95,8 @@ export const secondTokenMap: RosenTokens = {
         fingerprint: 'asset3fingerprint',
         policyID: 'policyID3',
         assetID: 'assetID3',
+        name: 'asset3',
+        decimals: 0,
         metaData: {
           type: 'tokenType',
           residency: 'tokenResidency',
@@ -97,7 +109,8 @@ export const secondTokenMap: RosenTokens = {
 export const firstToken = {
   ergo: {
     tokenID: '1111111111111111111111111111111111111111111111111111111111111111',
-    tokenName: 'test token1',
+    name: 'test token1',
+    decimals: 0,
     metaData: {
       type: 'tokenType',
       residency: 'tokenResidency',
@@ -108,6 +121,8 @@ export const firstToken = {
     policyID: '22222222222222222222222222222222222222222222222222222222',
     assetID:
       '3333333333333333333333333333333333333333333333333333333333333333333333333333',
+    name: 'asset1',
+    decimals: 0,
     metaData: {
       type: 'tokenType',
       residency: 'tokenResidency',
@@ -118,7 +133,8 @@ export const firstToken = {
 export const secondToken = {
   ergo: {
     tokenID: 'tokenId',
-    tokenName: 'test token3',
+    name: 'test token3',
+    decimals: 0,
     metaData: {
       type: 'tokenType',
       residency: 'tokenResidency',
@@ -128,6 +144,8 @@ export const secondToken = {
     fingerprint: 'asset3fingerprint',
     policyID: 'policyID3',
     assetID: 'assetID3',
+    name: 'asset3',
+    decimals: 0,
     metaData: {
       type: 'tokenType',
       residency: 'tokenResidency',

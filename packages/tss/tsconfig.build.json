@@ -1,4 +1,5 @@
 {
   "extends": "./tsconfig.json",
-  "exclude": ["tests"]
+  "exclude": ["tests"],
+  "references": [{ "path": "../loggers/abstract-logger" }]
 }

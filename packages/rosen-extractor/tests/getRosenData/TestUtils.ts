@@ -16,6 +16,8 @@ export default class TestUtils {
       {
         [ERGO_CHAIN]: {
           tokenId: ERGO_NATIVE_TOKEN,
+          name: ERGO_NATIVE_TOKEN,
+          decimals: 9,
           metaData: {
             type: 'tokenType',
             residency: 'tokenResidency',
@@ -26,6 +28,8 @@ export default class TestUtils {
             'ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2',
           policyId: 'ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2',
           assetName: '7369676d61',
+          name: 'Wrapped Erg',
+          decimals: 9,
           metaData: {
             type: 'tokenType',
             residency: 'tokenResidency',
@@ -36,6 +40,8 @@ export default class TestUtils {
         [ERGO_CHAIN]: {
           tokenId:
             'f6a69529b12a7e2326acffee8383e0c44408f87a872886fadf410fe8498006d3',
+          name: 'wrapped ada',
+          decimals: 6,
           metaData: {
             type: 'tokenType',
             residency: 'tokenResidency',
@@ -45,6 +51,8 @@ export default class TestUtils {
           fingerprint: CARDANO_NATIVE_TOKEN,
           tokenId: CARDANO_NATIVE_TOKEN,
           id: CARDANO_NATIVE_TOKEN,
+          name: 'ada',
+          decimals: 6,
           metaData: {
             type: 'tokenType',
             residency: 'tokenResidency',
@@ -56,6 +64,7 @@ export default class TestUtils {
           tokenId:
             'b37bfa41c2d9e61b4e478ddfc459a03d25b658a2305ffb428fbc47ad6abbeeaa',
           tokenName: 'RstHoskyVTest2',
+          name: 'RstHoskyVTest2',
           decimals: 0,
           metaData: {
             type: 'EIP-004',
@@ -66,6 +75,7 @@ export default class TestUtils {
           fingerprint: 'asset17q7r59zlc3dgw0venc80pdv566q6yguw03f0d9',
           policyId: 'a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235',
           assetName: '484f534b59',
+          name: 'WrappedHosky',
           decimals: 0,
           metaData: {
             type: 'CIP26',
@@ -86,6 +96,8 @@ export default class TestUtils {
         [ERGO_CHAIN]: {
           tokenId:
             'f6a69529b12a7e2326acffee8383e0c44408f87a872886fadf410fe8498006d3',
+          name: 'Wrapped token',
+          decimals: 0,
           metaData: {
             type: 'tokenType',
             residency: 'tokenResidency',
@@ -96,6 +108,8 @@ export default class TestUtils {
             'ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2',
           policyId: 'ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2',
           assetName: '7369676d61',
+          name: 'Cardano token',
+          decimals: 0,
           metaData: {
             type: 'tokenType',
             residency: 'tokenResidency',

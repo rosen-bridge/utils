@@ -3,7 +3,7 @@ import AbstractRosenDataExtractor from '../abstract/AbstractRosenDataExtractor';
 import { NodeTransaction } from './types';
 import { RosenTokens } from '@rosen-bridge/tokens';
 import { Transaction } from 'ergo-lib-wasm-nodejs';
-import { AbstractLogger } from '@rosen-bridge/logger-interface';
+import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import { ErgoNodeRosenExtractor } from './ErgoNodeRosenExtractor';
 import Utils from '../Utils';
 
