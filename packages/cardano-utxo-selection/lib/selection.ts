@@ -13,7 +13,7 @@ export const getUtxoInfo = (utxo: CardanoUtxo): BoxInfo => {
       nativeToken: BigInt(utxo.value),
       tokens: utxo.assets.map((asset) => ({
         id: `${asset.policyId}.${asset.assetName}`,
-        value: BigInt(asset.quantity),
+        value: asset.quantity,
       })),
     },
   };
@@ -32,7 +32,7 @@ export const selectCardanoUtxos = async (
   requiredAssets: AssetBalance,
   forbiddenBoxIds: Array<string>,
   trackMap: Map<string, CardanoUtxo | undefined>,
-  nextUtxo: () => Promise<CardanoUtxo | undefined>,
+  utxoIterator: Iterator<CardanoUtxo, undefined>,
   logger: AbstractLogger = new DummyLogger()
 ): Promise<CoveringBoxes<CardanoUtxo>> => {
   let uncoveredNativeToken = requiredAssets.nativeToken;
@@ -48,10 +48,11 @@ export const selectCardanoUtxos = async (
 
   // get boxes until requirements are satisfied
   while (isRequirementRemaining()) {
-    const box = await nextUtxo();
+    const iteratorResponse = utxoIterator.next();
 
     // end process if there are no more boxes
-    if (!box) break;
+    if (iteratorResponse.done) break;
+    const box = iteratorResponse.value;
 
     let trackedBox: CardanoUtxo | undefined = box;
     let boxInfo = getUtxoInfo(box);
