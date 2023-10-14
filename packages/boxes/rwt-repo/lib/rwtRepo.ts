@@ -193,6 +193,12 @@ export class RWTRepoBuilder {
     return this;
   };
 
+  /**
+   * finds index of the passed wid in this.widPermits array
+   *
+   * @param {string} wid
+   * @memberof RWTRepoBuilder
+   */
   indexOfWid = (wid: string): number => {
     return this.widPermits.findIndex((permit) => permit.wid === wid);
   };
