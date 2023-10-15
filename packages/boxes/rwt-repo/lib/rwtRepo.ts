@@ -63,8 +63,6 @@ export class RWTRepoBuilder {
       `added new user with wid=[${wid}] and rwtCount=[${rwtCount}]`
     );
 
-    this.lastModifiedWidIndex = this.widPermits.length - 1;
-
     return this;
   };
 

@@ -1053,9 +1053,6 @@ describe('RWTRepoBuilder', () => {
       ).toEqual(wid);
       expect(rwtRepoBuilder['rwtCount']).toEqual(oldRwtCount - rwtCount);
       expect(rwtRepoBuilder['rsnCount']).toEqual(oldRsnCount + rwtCount);
-      expect(rwtRepoBuilder['lastModifiedWidIndex']).toEqual(
-        rwtRepoBuilder['widPermits'].length - 1
-      );
     });
 
     /**
