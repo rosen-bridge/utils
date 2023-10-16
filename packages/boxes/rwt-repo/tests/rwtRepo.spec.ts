@@ -1020,8 +1020,6 @@ describe('RWTRepoBuilder', () => {
      * RWTRepoBuilder.addNewUser as the last item
      * - check RWTRepoBuilder.rwtCount to have been updated correctly
      * - check RWTRepoBuilder.rsnCount to have been updated correctly
-     * - check RWTRepoBuilder.lastModifiedWid to have been updated with the
-     * passed wid
      * @expected
      * - RWTRepoBuilder.widPermits should not have contained the new wid before
      * RWTRepoBuilder.addNewUser
@@ -1029,8 +1027,6 @@ describe('RWTRepoBuilder', () => {
      * RWTRepoBuilder.addNewUser as the last item
      * - RWTRepoBuilder.rwtCount should have been updated correctly
      * - RWTRepoBuilder.rsnCount should have been updated correctly
-     * - RWTRepoBuilder.lastModifiedWid should have been updated with the passed
-     * wid
      */
     it(`should add the passed wid, rwtCount arguments to
     this.widPermits, and do the following updates:
@@ -1490,8 +1486,8 @@ describe('RWTRepoBuilder', () => {
      * specific wid in RWTRepoBuilder.widPermits by the specified amount. Also
      * should store the passed wid in RWTRepoBuilder.lastModifiedWid, return the
      * current RWTRepoBuilder (this), and do the following updates:
-     * RWTRepoBuilder.rwtCount -= rwtCount
-     * RWTRepoBuilder.rsnCount += rwtCount
+     * RWTRepoBuilder.rwtCount += rwtCount
+     * RWTRepoBuilder.rsnCount -= rwtCount
      * @dependencies
      * - MockedErgoExplorerClientFactory
      * @scenario
@@ -1521,8 +1517,8 @@ describe('RWTRepoBuilder', () => {
     specific wid in RWTRepoBuilder.widPermits by the specified amount. Also
     should store the passed wid in RWTRepoBuilder.lastModifiedWid, return the
     current RWTRepoBuilder (this), and do the following updates:
-    RWTRepoBuilder.rwtCount -= rwtCount
-    RWTRepoBuilder.rsnCount += rwtCount`, async () => {
+    RWTRepoBuilder.rwtCount += rwtCount
+    RWTRepoBuilder.rsnCount -= rwtCount`, async () => {
       const rwtRepo = new RWTRepo(
         rwtRepoInfoSample.Address,
         rwtRepoInfoSample.nft,
@@ -1562,8 +1558,8 @@ describe('RWTRepoBuilder', () => {
      * specific wid in RWTRepoBuilder.widPermits by the specified amount. Also
      * should store the passed wid in RWTRepoBuilder.lastModifiedWid, return the
      * current RWTRepoBuilder (this), and do the following updates:
-     * RWTRepoBuilder.rwtCount += rwtCount
-     * RWTRepoBuilder.rsnCount -= rwtCount
+     * RWTRepoBuilder.rwtCount -= rwtCount
+     * RWTRepoBuilder.rsnCount += rwtCount
      * @dependencies
      * - MockedErgoExplorerClientFactory
      * @scenario
@@ -1593,8 +1589,8 @@ describe('RWTRepoBuilder', () => {
     specific wid in RWTRepoBuilder.widPermits by the specified amount. Also
     should store the passed wid in RWTRepoBuilder.lastModifiedWid, return the
     current RWTRepoBuilder (this), and do the following updates:
-    RWTRepoBuilder.rwtCount += rwtCount
-    RWTRepoBuilder.rsnCount -= rwtCount`, async () => {
+    RWTRepoBuilder.rwtCount -= rwtCount
+    RWTRepoBuilder.rsnCount += rwtCount`, async () => {
       const rwtRepo = new RWTRepo(
         rwtRepoInfoSample.Address,
         rwtRepoInfoSample.nft,
