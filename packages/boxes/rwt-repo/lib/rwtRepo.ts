@@ -35,8 +35,8 @@ export class RWTRepoBuilder {
   ) {}
 
   /**
-   * adds (wid, rwtCount) pair to this.widPermits. Also stores wid index in
-   * this.lastModifiedWidIndex and does the following updates:
+   * adds (wid, rwtCount) pair to this.widPermits. Also does the following
+   * updates:
    * this.rwtCount -= rwtCount;
    * this.rsnCount += rwtCount;
    * @param {string} wid
@@ -171,8 +171,8 @@ export class RWTRepoBuilder {
    * specified amount. throws exception if wid not found in
    * RWTRepoBuilder.widPermits array. Also stores the passed wid in
    * RWTRepoBuilder.lastModifiedWid and does the following updates:
-   * RWTRepoBuilder.rwtCount -= rwtCount;
-   * RWTRepoBuilder.rsnCount += rwtCount;
+   * RWTRepoBuilder.rwtCount += rwtCount;
+   * RWTRepoBuilder.rsnCount -= rwtCount;
    *
    * @param {string} wid
    * @param {bigint} rwtCount
@@ -196,8 +196,8 @@ export class RWTRepoBuilder {
    * specified amount. throws exception if wid not found in
    * RWTRepoBuilder.widPermits array. Also stores the passed wid in
    * RWTRepoBuilder.lastModifiedWid and does the following updates:
-   * RWTRepoBuilder.rwtCount += rwtCount;
-   * RWTRepoBuilder.rsnCount -= rwtCount;
+   * RWTRepoBuilder.rwtCount -= rwtCount;
+   * RWTRepoBuilder.rsnCount += rwtCount;
    *
    * @param {string} wid
    * @param {bigint} rwtCount
