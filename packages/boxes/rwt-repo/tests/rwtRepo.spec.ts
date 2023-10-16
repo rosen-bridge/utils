@@ -1550,8 +1550,8 @@ describe('RWTRepoBuilder', () => {
       expect(rwtRepoBuilder['widPermits'][widIndex].rwtCount).toEqual(
         widOldRwtCount - decrement
       );
-      expect(rwtRepoBuilder['rwtCount']).toEqual(oldRwtCount - decrement);
-      expect(rwtRepoBuilder['rsnCount']).toEqual(oldRsnCount + decrement);
+      expect(rwtRepoBuilder['rwtCount']).toEqual(oldRwtCount + decrement);
+      expect(rwtRepoBuilder['rsnCount']).toEqual(oldRsnCount - decrement);
       expect(rwtRepoBuilder['lastModifiedWidIndex']).toEqual(widIndex);
     });
   });
@@ -1622,8 +1622,8 @@ describe('RWTRepoBuilder', () => {
       expect(rwtRepoBuilder['widPermits'][widIndex].rwtCount).toEqual(
         widOldRwtCount + increment
       );
-      expect(rwtRepoBuilder['rwtCount']).toEqual(oldRwtCount + increment);
-      expect(rwtRepoBuilder['rsnCount']).toEqual(oldRsnCount - increment);
+      expect(rwtRepoBuilder['rwtCount']).toEqual(oldRwtCount - increment);
+      expect(rwtRepoBuilder['rsnCount']).toEqual(oldRsnCount + increment);
       expect(rwtRepoBuilder['lastModifiedWidIndex']).toEqual(widIndex);
     });
   });

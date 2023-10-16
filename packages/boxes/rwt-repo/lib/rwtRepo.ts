@@ -185,8 +185,8 @@ export class RWTRepoBuilder {
       throw new Error(`wid=[${wid}] not found in widPermits`);
     }
     this.widPermits[index].rwtCount -= rwtCount;
-    this.rwtCount -= rwtCount;
-    this.rsnCount += rwtCount;
+    this.rwtCount += rwtCount;
+    this.rsnCount -= rwtCount;
     this.lastModifiedWidIndex = index;
     return this;
   };
@@ -210,8 +210,8 @@ export class RWTRepoBuilder {
       throw new Error(`wid=[${wid}] not found in widPermits`);
     }
     this.widPermits[index].rwtCount += rwtCount;
-    this.rwtCount += rwtCount;
-    this.rsnCount -= rwtCount;
+    this.rwtCount -= rwtCount;
+    this.rsnCount += rwtCount;
     this.lastModifiedWidIndex = index;
     return this;
   };
