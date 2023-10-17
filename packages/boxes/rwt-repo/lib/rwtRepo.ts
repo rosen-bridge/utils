@@ -35,8 +35,8 @@ export class RWTRepoBuilder {
   ) {}
 
   /**
-   * adds (wid, rwtCount) pair to this.widPermits. Also stores wid index in
-   * this.lastModifiedWidIndex and does the following updates:
+   * adds (wid, rwtCount) pair to this.widPermits. Also does the following
+   * updates:
    * this.rwtCount -= rwtCount;
    * this.rsnCount += rwtCount;
    * @param {string} wid
@@ -44,7 +44,7 @@ export class RWTRepoBuilder {
    * @return {RWTRepoBuilder}  {RWTRepoBuilder}
    * @memberof RWTRepoBuilder
    */
-  addNewUser(wid: string, rwtCount: bigint): RWTRepoBuilder {
+  addNewUser = (wid: string, rwtCount: bigint): RWTRepoBuilder => {
     const widExists = this.widPermits.map((permit) => permit.wid).includes(wid);
     if (widExists) {
       throw new Error(`cannot add user: wid already exists in widPermits`);
@@ -63,10 +63,8 @@ export class RWTRepoBuilder {
       `added new user with wid=[${wid}] and rwtCount=[${rwtCount}]`
     );
 
-    this.lastModifiedWidIndex = this.widPermits.length - 1;
-
     return this;
-  }
+  };
 
   /**
    * removes (wid, rwtCount) pair from this.widPermits. Also stores wid's index
@@ -173,8 +171,8 @@ export class RWTRepoBuilder {
    * specified amount. throws exception if wid not found in
    * RWTRepoBuilder.widPermits array. Also stores the passed wid in
    * RWTRepoBuilder.lastModifiedWid and does the following updates:
-   * RWTRepoBuilder.rwtCount -= rwtCount;
-   * RWTRepoBuilder.rsnCount += rwtCount;
+   * RWTRepoBuilder.rwtCount += rwtCount;
+   * RWTRepoBuilder.rsnCount -= rwtCount;
    *
    * @param {string} wid
    * @param {bigint} rwtCount
@@ -187,6 +185,31 @@ export class RWTRepoBuilder {
       throw new Error(`wid=[${wid}] not found in widPermits`);
     }
     this.widPermits[index].rwtCount -= rwtCount;
+    this.rwtCount += rwtCount;
+    this.rsnCount -= rwtCount;
+    this.lastModifiedWidIndex = index;
+    return this;
+  };
+
+  /**
+   * increments rwtCount for a specific wid in RWTRepoBuilder.widPermits by the
+   * specified amount. throws exception if wid not found in
+   * RWTRepoBuilder.widPermits array. Also stores the passed wid in
+   * RWTRepoBuilder.lastModifiedWid and does the following updates:
+   * RWTRepoBuilder.rwtCount -= rwtCount;
+   * RWTRepoBuilder.rsnCount += rwtCount;
+   *
+   * @param {string} wid
+   * @param {bigint} rwtCount
+   * @return {RWTRepoBuilder}
+   * @memberof RWTRepoBuilder
+   */
+  incrementPermits = (wid: string, rwtCount: bigint): RWTRepoBuilder => {
+    const index = this.indexOfWid(wid);
+    if (index === -1) {
+      throw new Error(`wid=[${wid}] not found in widPermits`);
+    }
+    this.widPermits[index].rwtCount += rwtCount;
     this.rwtCount -= rwtCount;
     this.rsnCount += rwtCount;
     this.lastModifiedWidIndex = index;
