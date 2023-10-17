@@ -226,7 +226,7 @@ export class RWTRepoBuilder {
    * @return {ergo.ErgoBoxCandidate}
    * @memberof RWTRepoBuilder
    */
-  build(): ergo.ErgoBoxCandidate {
+  build = (): ergo.ErgoBoxCandidate => {
     if (this.value == undefined || this.height == undefined) {
       throw new Error(
         `value and height should be set on the instance in order for box to be created: value=${this.value}, height=${this.height}`
@@ -286,7 +286,7 @@ export class RWTRepoBuilder {
     );
 
     return boxBuilder.build();
-  }
+  };
 
   /**
    * sets value for the box to be built through RWTRepoBuilder.build method
@@ -294,12 +294,12 @@ export class RWTRepoBuilder {
    * @param {bigint} value
    * @memberof RWTRepoBuilder
    */
-  setValue(value: bigint) {
+  setValue = (value: bigint) => {
     if (value < 0n) {
       throw new Error(`box value cannot be negative`);
     }
     this.value = value;
-  }
+  };
 
   /**
    * sets creation height for the box to be built through RWTRepoBuilder.build
@@ -308,12 +308,12 @@ export class RWTRepoBuilder {
    * @param {number} height
    * @memberof RWTRepoBuilder
    */
-  setHeight(height: number) {
+  setHeight = (height: number) => {
     if (height < 1) {
       throw new Error(`height should be a positive number`);
     }
     this.height = height;
-  }
+  };
 
   /**
    * finds index of the passed wid in this.widPermits array
