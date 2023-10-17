@@ -243,7 +243,8 @@ export class RWTRepoBuilder {
 
     const r4 = ergo.Constant.from_coll_coll_byte(
       [this.chainId, ...this.widPermits.map((permit) => permit.wid)].map(
-        (item) => Uint8Array.from(Buffer.from(item, 'hex'))
+        (item, index) =>
+          Uint8Array.from(Buffer.from(item, index === 0 ? undefined : 'hex'))
       )
     );
     boxBuilder.set_register_value(4, r4);
