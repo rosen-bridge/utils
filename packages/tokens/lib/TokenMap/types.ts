@@ -1,10 +1,12 @@
 export type RosenTokens = {
-  idKeys: { [key: string]: string };
-  tokens: Array<{ [key: string]: RosenChainToken }>;
+  idKeys: Record<string, string>;
+  tokens: Array<Record<string, RosenChainToken>>;
 };
 
 export type RosenChainToken = {
   [key: string]: any;
+  name: string;
+  decimals: number;
   metaData: ChainTokenMetadata;
 };
 

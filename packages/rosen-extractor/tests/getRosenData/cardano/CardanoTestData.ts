@@ -452,7 +452,7 @@ export default class CardanoTestData {
       networkFee: '10000',
       fromAddress:
         'addr_test1vzg07d2qp3xje0w77f982zkhqey50gjxrsdqh89yx8r7nasu97hr0',
-      sourceChainTokenId: 'lovelace',
+      sourceChainTokenId: 'ada',
       amount: '1000000000',
       targetChainTokenId:
         'f6a69529b12a7e2326acffee8383e0c44408f87a872886fadf410fe8498006d3',
@@ -546,12 +546,12 @@ export default class CardanoTestData {
       amount: '10',
     },
     adaLocked: {
-      from: 'lovelace',
+      from: 'ada',
       to: 'f6a69529b12a7e2326acffee8383e0c44408f87a872886fadf410fe8498006d3',
       amount: '1000000000',
     },
     wrongAssetLocked: {
-      from: 'lovelace',
+      from: 'ada',
       to: 'f6a69529b12a7e2326acffee8383e0c44408f87a872886fadf410fe8498006d3',
       amount: '10000000',
     },
@@ -986,7 +986,7 @@ export default class CardanoTestData {
       networkFee: '300',
       fromAddress:
         '7bb715ce7d410747beb98cb6fb322a5865894018433eb115d67625c5befb6f61',
-      sourceChainTokenId: 'lovelace',
+      sourceChainTokenId: 'ada',
       amount: '20000000',
       targetChainTokenId:
         'f6a69529b12a7e2326acffee8383e0c44408f87a872886fadf410fe8498006d3',
@@ -1060,12 +1060,12 @@ export default class CardanoTestData {
       amount: '10000',
     },
     adaLocked: {
-      from: 'lovelace',
+      from: 'ada',
       to: 'f6a69529b12a7e2326acffee8383e0c44408f87a872886fadf410fe8498006d3',
       amount: '20000000',
     },
     wrongAssetLocked: {
-      from: 'lovelace',
+      from: 'ada',
       to: 'f6a69529b12a7e2326acffee8383e0c44408f87a872886fadf410fe8498006d3',
       amount: '10000000',
     },
@@ -1340,7 +1340,7 @@ export default class CardanoTestData {
       networkFee: '9000',
       fromAddress:
         'addr1qyhuv6w60yf5twtv9dky7pgxkayxzcygkqfygje2kwqj5ung67rta7rlkn5g0a73c43efpcpznk9j8uhaukpdr9ye3xqk2kgam',
-      sourceChainTokenId: 'lovelace',
+      sourceChainTokenId: 'ada',
       amount: '10000000',
       targetChainTokenId:
         'f6a69529b12a7e2326acffee8383e0c44408f87a872886fadf410fe8498006d3',
@@ -1410,7 +1410,7 @@ export default class CardanoTestData {
       amount: '184272501',
     },
     adaLocked: {
-      from: 'lovelace',
+      from: 'ada',
       to: 'f6a69529b12a7e2326acffee8383e0c44408f87a872886fadf410fe8498006d3',
       amount: '10000000',
     },
