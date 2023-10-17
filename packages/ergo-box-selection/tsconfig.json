@@ -1,9 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "dist",
-    "rootDir": "./"
+    "outDir": "./dist"
   },
-  "include": ["tests", "lib"],
-  "references": [{ "path": "../loggers/abstract-logger" }]
+  "include": ["tests", "lib", "vitest.config.ts"]
 }

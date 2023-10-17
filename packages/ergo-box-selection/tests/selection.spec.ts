@@ -1,3 +1,4 @@
+import { describe, expect, it, vi } from 'vitest';
 import { AssetBalance, ErgoBoxProxy, selectErgoBoxes } from '../lib';
 import * as testData from './testData';
 

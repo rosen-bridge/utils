@@ -7,7 +7,7 @@
 
 ## Introduction
 
-`@rosen-bridge/ergo-box-selection` Typescript package to select enough Ergo boxes for required amount of assets
+`@rosen-bridge/ergo-box-selection` is a Typescript package to select enough Ergo boxes for required amount of assets
 
 ## Installation
 

@@ -1,41 +1,36 @@
 {
   "name": "@rosen-bridge/ergo-box-selection",
-  "version": "1.0.0",
-  "description": "Typescript package to select enough Ergo boxes for required amount of assets",
-  "main": "dist/lib/index.js",
-  "types": "dist/lib/index.d.ts",
-  "type": "module",
-  "scripts": {
-    "prettify": "prettier --write . --ignore-path .gitignore",
-    "lint": "eslint --fix . && npm run prettify",
-    "build": "tsc --build tsconfig.build.json",
-    "type-check": "tsc --noEmit",
-    "test": "jest --runInBand",
-    "coverage": "jest --coverage --runInBand",
-    "release": "npm run test && npm run build && npm publish --access public"
-  },
-  "files": [
-    "dist"
-  ],
+  "version": "0.1.0",
+  "description": "is a Typescript package to select enough Ergo boxes for required amount of assets",
+  "repository": "@rosen-bridge/ergo-box-selection",
   "license": "GPL-3.0",
+  "author": "Rosen Team",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc --build tsconfig.build.json",
+    "coverage": "vitest run --coverage",
+    "lint": "eslint --fix . && npm run prettify",
+    "prettify": "prettier --write . --ignore-path ./.gitignore",
+    "release": "npm run build && npm publish --access public",
+    "test": "NODE_OPTIONS=--experimental-specifier-resolution=node vitest",
+    "type-check": "tsc --noEmit"
+  },
   "devDependencies": {
-    "@types/jest": "^29.5.1",
-    "@types/node": "^18.16.3",
-    "@typescript-eslint/eslint-plugin": "^5.59.1",
-    "@typescript-eslint/parser": "^5.59.1",
-    "eslint": "^8.39.0",
-    "eslint-config-prettier": "^8.8.0",
-    "jest": "^29.5.0",
-    "prettier": "^2.8.8",
-    "typescript": "^5.0.4"
+    "@types/node": "^18.11.18",
+    "@typescript-eslint/eslint-plugin": "^6.7.0",
+    "@typescript-eslint/parser": "^6.7.0",
+    "@vitest/coverage-c8": "^0.26.3",
+    "eslint": "^8.16.0",
+    "eslint-config-prettier": "^8.5.0",
+    "prettier": "2.7.1",
+    "typescript": "^5.0.0",
+    "vitest": "^0.26.2"
   },
-  "directories": {
-    "lib": "lib",
-    "test": "tests"
+  "engines": {
+    "node": ">=18.12.0"
   },
-  "keywords": [
-    "rosen"
-  ],
   "dependencies": {
     "@rosen-bridge/abstract-logger": "^0.3.0"
   }

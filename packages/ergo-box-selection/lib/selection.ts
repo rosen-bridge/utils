@@ -48,12 +48,12 @@ export const selectErgoBoxes = async (
 
   // get boxes until requirements are satisfied
   while (isRequirementRemaining()) {
-    const iteratorResponse = boxIterator.next();
+    const iteratorResult = boxIterator.next();
 
     // end process if there are no more boxes
-    if (iteratorResponse.done) break;
+    if (iteratorResult.done) break;
 
-    let trackedBox: ErgoBoxProxy | undefined = iteratorResponse.value;
+    let trackedBox: ErgoBoxProxy | undefined = iteratorResult.value;
     let boxInfo = getBoxInfo(trackedBox);
     logger.debug(`processing box [${boxInfo.id}] for covering`);
 
