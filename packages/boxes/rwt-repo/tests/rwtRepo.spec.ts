@@ -1671,8 +1671,7 @@ describe('RWTRepoBuilder', () => {
       const ergValue = 7_000_000n;
       const height = 5_000;
       const lastModifiedWidIndex = 2;
-      rwtRepoBuilder['lastModifiedWid'] =
-        rwtRepoBuilder['widPermits'][lastModifiedWidIndex].wid;
+      rwtRepoBuilder['lastModifiedWidIndex'] = lastModifiedWidIndex;
       rwtRepoBuilder.setValue(ergValue);
       rwtRepoBuilder.setHeight(height);
       const candidateBox = rwtRepoBuilder.build();
