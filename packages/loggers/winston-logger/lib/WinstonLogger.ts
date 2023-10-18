@@ -10,9 +10,11 @@ import {
   FileTransportOptions,
   TransportOptions,
   LogTransports,
+  LokiTransportOptions,
 } from './types';
 
 import printf = format.printf;
+import LokiTransport from 'winston-loki';
 
 const logLevels = {
   error: 0,
@@ -46,6 +48,15 @@ const logTransports = {
       maxFiles: transportOptions.maxFiles,
       level: transportOptions.level,
     }),
+  loki: (transportOptions: LokiTransportOptions) =>
+    new LokiTransport({
+      host: transportOptions.host,
+      format: format.json(),
+      json: true,
+      level: transportOptions.level,
+      basicAuth: transportOptions.basicAuth ?? transportOptions.basicAuth,
+      onConnectionError: (err) => console.error(err),
+    }),
 } satisfies LogTransports;
 
 class WinstonLogger extends AbstractLoggerFactory {
@@ -66,6 +77,8 @@ class WinstonLogger extends AbstractLoggerFactory {
               return logTransports.console(transportOptions);
             case 'file':
               return logTransports.file(transportOptions);
+            case 'loki':
+              return logTransports.loki(transportOptions);
           }
         }),
       ],
