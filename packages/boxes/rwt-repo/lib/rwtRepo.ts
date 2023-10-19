@@ -241,6 +241,9 @@ export class RWTRepoBuilder {
       this.height
     );
 
+    this.logger.debug(
+      `using following permits in R4 to build the box: [${this.widPermits}]`
+    );
     const r4 = ergo.Constant.from_coll_coll_byte(
       [this.chainId, ...this.widPermits.map((permit) => permit.wid)].map(
         (item, index) =>
@@ -277,13 +280,24 @@ export class RWTRepoBuilder {
       ergo.TokenId.from_str(this.repoNft),
       ergo.TokenAmount.from_i64(ergo.I64.from_str('1'))
     );
+    this.logger.debug(
+      `add 1 repoNft token to the box with tokenId=[${this.repoNft}]`
+    );
+
     boxBuilder.add_token(
       ergo.TokenId.from_str(this.rwt),
       ergo.TokenAmount.from_i64(ergo.I64.from_str(this.rwtCount.toString()))
     );
+    this.logger.debug(
+      `add ${this.rwtCount} rwt tokens to the box with tokenId=[${this.rwt}]`
+    );
+
     boxBuilder.add_token(
       ergo.TokenId.from_str(this.rsn),
       ergo.TokenAmount.from_i64(ergo.I64.from_str(this.rsnCount.toString()))
+    );
+    this.logger.debug(
+      `add ${this.rsn} rsn tokens to the box with tokenId=[${this.rsn}]`
     );
 
     return boxBuilder.build();
