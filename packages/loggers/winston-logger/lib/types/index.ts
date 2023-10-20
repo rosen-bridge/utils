@@ -15,6 +15,7 @@ export interface FileTransportOptions extends BaseTransportOptions<'file'> {
 export interface LokiTransportOptions extends BaseTransportOptions<'loki'> {
   host: string;
   basicAuth?: string;
+  serviceName?: string;
   level: string;
 }
 

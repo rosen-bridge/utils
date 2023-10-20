@@ -41,7 +41,7 @@ const logTransports = {
     }),
   file: (transportOptions: FileTransportOptions) =>
     new winston.transports.DailyRotateFile({
-      filename: `${transportOptions.path}-%DATE%.log`,
+      filename: `${transportOptions.path}%DATE%.log`,
       datePattern: 'YYYY-MM-DD',
       zippedArchive: true,
       maxSize: transportOptions.maxSize,
@@ -53,6 +53,11 @@ const logTransports = {
       host: transportOptions.host,
       format: format.json(),
       json: true,
+      labels: {
+        serviceName: transportOptions.serviceName
+          ? transportOptions.serviceName
+          : 'rosen',
+      },
       level: transportOptions.level,
       basicAuth: transportOptions.basicAuth ?? transportOptions.basicAuth,
       onConnectionError: (err) => console.error(err),
