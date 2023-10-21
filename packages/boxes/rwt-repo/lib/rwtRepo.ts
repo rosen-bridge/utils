@@ -11,8 +11,7 @@ import ergoNodeClientFactory, {
   IndexedErgoBox,
   Transactions,
 } from '@rosen-clients/ergo-node';
-import * as ergo from 'ergo-lib-wasm-nodejs';
-import { Address, ErgoBox, ErgoTree } from 'ergo-lib-wasm-nodejs';
+import * as ergoLib from 'ergo-lib-wasm-nodejs';
 import { jsonBigInt, min } from './utils';
 
 export class RWTRepoBuilder {
@@ -223,20 +222,20 @@ export class RWTRepoBuilder {
   /**
    * creates a RWTRepo box from the properties of this RWTRepoBuilder instance
    *
-   * @return {ergo.ErgoBoxCandidate}
+   * @return {ergoLib.ErgoBoxCandidate}
    * @memberof RWTRepoBuilder
    */
-  build = (): ergo.ErgoBoxCandidate => {
+  build = (): ergoLib.ErgoBoxCandidate => {
     if (this.value == undefined || this.height == undefined) {
       throw new Error(
         `value and height should be set on the instance in order for box to be created: value=${this.value}, height=${this.height}`
       );
     }
 
-    const boxBuilder = new ergo.ErgoBoxCandidateBuilder(
-      ergo.BoxValue.from_i64(ergo.I64.from_str(this.value.toString())),
-      ergo.Contract.new(
-        ergo.Address.from_base58(this.repoAddress).to_ergo_tree()
+    const boxBuilder = new ergoLib.ErgoBoxCandidateBuilder(
+      ergoLib.BoxValue.from_i64(ergoLib.I64.from_str(this.value.toString())),
+      ergoLib.Contract.new(
+        ergoLib.Address.from_base58(this.repoAddress).to_ergo_tree()
       ),
       this.height
     );
@@ -244,7 +243,7 @@ export class RWTRepoBuilder {
     this.logger.debug(
       `using following permits in R4 to build the box: [${this.widPermits}]`
     );
-    const r4 = ergo.Constant.from_coll_coll_byte(
+    const r4 = ergoLib.Constant.from_coll_coll_byte(
       [this.chainId, ...this.widPermits.map((permit) => permit.wid)].map(
         (item, index) =>
           Uint8Array.from(Buffer.from(item, index === 0 ? undefined : 'hex'))
@@ -252,14 +251,14 @@ export class RWTRepoBuilder {
     );
     boxBuilder.set_register_value(4, r4);
 
-    const r5 = ergo.Constant.from_i64_str_array(
+    const r5 = ergoLib.Constant.from_i64_str_array(
       [0n, ...this.widPermits.map((permit) => permit.rwtCount)].map((item) =>
         item.toString()
       )
     );
     boxBuilder.set_register_value(5, r5);
 
-    const r6 = ergo.Constant.from_i64_str_array(
+    const r6 = ergoLib.Constant.from_i64_str_array(
       [
         this.commitmentRwtCount,
         this.quorumPercentage,
@@ -272,29 +271,33 @@ export class RWTRepoBuilder {
     boxBuilder.set_register_value(6, r6);
 
     if (this.lastModifiedWidIndex != undefined) {
-      const r7 = ergo.Constant.from_i32(this.lastModifiedWidIndex);
+      const r7 = ergoLib.Constant.from_i32(this.lastModifiedWidIndex);
       boxBuilder.set_register_value(7, r7);
     }
 
     boxBuilder.add_token(
-      ergo.TokenId.from_str(this.repoNft),
-      ergo.TokenAmount.from_i64(ergo.I64.from_str('1'))
+      ergoLib.TokenId.from_str(this.repoNft),
+      ergoLib.TokenAmount.from_i64(ergoLib.I64.from_str('1'))
     );
     this.logger.debug(
       `add 1 repoNft token to the box with tokenId=[${this.repoNft}]`
     );
 
     boxBuilder.add_token(
-      ergo.TokenId.from_str(this.rwt),
-      ergo.TokenAmount.from_i64(ergo.I64.from_str(this.rwtCount.toString()))
+      ergoLib.TokenId.from_str(this.rwt),
+      ergoLib.TokenAmount.from_i64(
+        ergoLib.I64.from_str(this.rwtCount.toString())
+      )
     );
     this.logger.debug(
       `add ${this.rwtCount} rwt tokens to the box with tokenId=[${this.rwt}]`
     );
 
     boxBuilder.add_token(
-      ergo.TokenId.from_str(this.rsn),
-      ergo.TokenAmount.from_i64(ergo.I64.from_str(this.rsnCount.toString()))
+      ergoLib.TokenId.from_str(this.rsn),
+      ergoLib.TokenAmount.from_i64(
+        ergoLib.I64.from_str(this.rsnCount.toString())
+      )
     );
     this.logger.debug(
       `add ${this.rsn} rsn tokens to the box with tokenId=[${this.rsn}]`
@@ -342,10 +345,10 @@ export class RWTRepoBuilder {
 }
 
 export class RWTRepo {
-  protected box?: ErgoBox;
+  protected box?: ergoLib.ErgoBox;
   private explorerClient: ReturnType<typeof ergoExplorerClientFactory>;
   private nodeClient: ReturnType<typeof ergoNodeClientFactory>;
-  private repoErgoTree: ErgoTree;
+  private repoErgoTree: ergoLib.ErgoTree;
 
   constructor(
     private repoAddress: string,
@@ -361,7 +364,9 @@ export class RWTRepo {
       this.nodeClient = ergoNodeClientFactory(this.networkUrl);
     }
 
-    this.repoErgoTree = Address.from_base58(this.repoAddress).to_ergo_tree();
+    this.repoErgoTree = ergoLib.Address.from_base58(
+      this.repoAddress
+    ).to_ergo_tree();
 
     this.logger.debug(
       `RWTRepo instance created with repo-address=[${this.repoAddress}] and repo-nft=[${this.repoNft}]`
@@ -503,7 +508,7 @@ export class RWTRepo {
       return undefined;
     }
 
-    const box = ErgoBox.from_json(jsonBigInt.stringify(rwtBoxInfos[0]));
+    const box = ergoLib.ErgoBox.from_json(jsonBigInt.stringify(rwtBoxInfos[0]));
     return box;
   }
 
@@ -546,7 +551,9 @@ export class RWTRepo {
       return undefined;
     }
 
-    const box = ErgoBox.from_json(jsonBigInt.stringify(rwtOutputBoxInfos[0]));
+    const box = ergoLib.ErgoBox.from_json(
+      jsonBigInt.stringify(rwtOutputBoxInfos[0])
+    );
     return box;
   }
 
