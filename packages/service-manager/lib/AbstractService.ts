@@ -87,6 +87,9 @@ export abstract class AbstractService {
           return res;
         })
         .catch((error) => {
+          this.logger.warn(
+            `An error occurred while starting service [${this.name}]: ${error}`
+          );
           release();
           return false;
         });
@@ -122,7 +125,7 @@ export abstract class AbstractService {
           return res;
         })
         .catch((error) => {
-          console.warn(
+          this.logger.warn(
             `An error occurred while stopping service [${this.name}]: ${error}`
           );
           release();
