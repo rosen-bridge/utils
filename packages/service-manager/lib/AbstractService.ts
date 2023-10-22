@@ -70,7 +70,6 @@ export abstract class AbstractService {
       else
         throw Error(`Cannot start service [${this.name}]: Service is stopping`);
     }
-    console.log(`Starting [${this.name}]`);
     return this.actionSemaphore.acquire().then((release) => {
       if (this.getStatus() !== ServiceStatus.dormant) {
         release();
@@ -110,7 +109,6 @@ export abstract class AbstractService {
 
     return this.actionSemaphore.acquire().then((release) => {
       if (this.getStatus() === ServiceStatus.dormant) {
-        console.log(`Service [${this.name}] is already [dormant]`);
         release();
         return true;
       }
