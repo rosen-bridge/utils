@@ -30,5 +30,9 @@
   },
   "engines": {
     "node": ">=18.12.0"
+  },
+  "dependencies": {
+    "@rosen-bridge/abstract-logger": "^0.3.0",
+    "await-semaphore": "^0.1.3"
   }
 }
