@@ -1,14 +1,13 @@
 import { ServiceStatus } from '../lib';
 import { ServiceManager } from '../lib';
 import { sleep } from './testUtils';
-import { X0A, X0B, X0C, X0M } from './testData/hierarchicalStartTestData';
+import { X0A, X0B, X0C, X0M } from './testData/hierarchicalTestData';
 import { X1A, X1B, X1M } from './testData/crashTestData';
 import { OneServiceA } from './testData/oneServiceTestData';
 import { X2A, X2B, X2C, X2D } from './testData/midwayFailureTestData';
 import { X3A, X3B, X3C, X3D } from './testData/diamondTestData';
 import { X4A, X4B, X4C, X4D } from './testData/partialStartTestData';
 import { R1A, R1B } from './testData/simpleRunningTestData';
-import { Y0A, Y0B, Y0C, Y0M } from './testData/hierarchicalStopTestData';
 
 describe('ServiceManager', () => {
   /**
@@ -31,10 +30,10 @@ describe('ServiceManager', () => {
   it('Hierarchical Start Scenario', async () => {
     const serviceManager = new ServiceManager();
 
-    const a = new X0A();
-    const b = new X0B();
-    const m = new X0M();
-    const c = new X0C();
+    const a = new X0A(ServiceStatus.dormant);
+    const b = new X0B(ServiceStatus.dormant);
+    const m = new X0M(ServiceStatus.dormant);
+    const c = new X0C(ServiceStatus.dormant);
     const services = [a, b, m, c];
 
     services.forEach((service) => serviceManager.register(service));
@@ -151,10 +150,10 @@ describe('ServiceManager', () => {
   it('Midway Start Failure Scenario', async () => {
     const serviceManager = new ServiceManager();
 
-    const a = new X2A();
-    const b = new X2B();
-    const c = new X2C();
-    const d = new X2D();
+    const a = new X2A(ServiceStatus.dormant);
+    const b = new X2B(ServiceStatus.dormant);
+    const c = new X2C(ServiceStatus.dormant);
+    const d = new X2D(ServiceStatus.dormant);
     const services = [a, b, c, d];
 
     services.forEach((service) => serviceManager.register(service));
@@ -329,8 +328,8 @@ describe('ServiceManager', () => {
    * @dependencies
    * @scenario
    * - generate test service manager
-   * - generate 4 test services of Y0
-   * - stop service Y0C
+   * - generate 4 test services of X0
+   * - stop service X0C
    * - wait 2.5 seconds
    * - check returned value
    * - check status of all 4 services
@@ -342,10 +341,10 @@ describe('ServiceManager', () => {
   it('Hierarchical Stop Scenario', async () => {
     const serviceManager = new ServiceManager();
 
-    const a = new Y0A();
-    const b = new Y0B();
-    const m = new Y0M();
-    const c = new Y0C();
+    const a = new X0A(ServiceStatus.running);
+    const b = new X0B(ServiceStatus.running);
+    const m = new X0M(ServiceStatus.running);
+    const c = new X0C(ServiceStatus.running);
     const services = [a, b, c, m];
 
     services.forEach((service) => serviceManager.register(service));
@@ -368,4 +367,53 @@ describe('ServiceManager', () => {
       ServiceStatus.running
     );
   }, 3000);
+
+  /**
+   * @target ServiceManager: Midway Stop Failure Scenario
+   * 4 services are depend on each other in hierarchical structure
+   * where a service depends on next service in sequential structure
+   * second service fails to stop
+   * all services except first service (A) should still be running after stopping D
+   * @dependencies
+   * @scenario
+   * - generate test service manager
+   * - generate 4 test services of X2
+   * - stop service X2D
+   * - wait 2.5 seconds
+   * - check returned value
+   * - check status of all 4 services
+   * @expected
+   * - returned value should be false
+   * - 3 services should be in running status
+   * - first service should be in dormant status
+   */
+  it('Midway Stop Failure Scenario', async () => {
+    const serviceManager = new ServiceManager();
+
+    const a = new X2A(ServiceStatus.running);
+    const b = new X2B(ServiceStatus.running);
+    const c = new X2C(ServiceStatus.running);
+    const d = new X2D(ServiceStatus.running);
+    const services = [a, b, c, d];
+
+    services.forEach((service) => serviceManager.register(service));
+
+    const startPromise = serviceManager.stop(d.getName());
+    await sleep(2.5);
+    const res = await startPromise;
+    expect(res).toEqual(false);
+    expect(serviceManager.getStatus(b.getName())).toEqual(
+      ServiceStatus.running
+    );
+    expect(serviceManager.getStatus(c.getName())).toEqual(
+      ServiceStatus.running
+    );
+    expect(serviceManager.getStatus(d.getName())).toEqual(
+      ServiceStatus.running
+    );
+
+    expect(serviceManager.getStatus(a.getName())).toEqual(
+      ServiceStatus.dormant
+    );
+  }, 3500);
 });

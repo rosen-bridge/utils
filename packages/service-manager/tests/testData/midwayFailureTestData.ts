@@ -3,8 +3,8 @@ import { TestAbstractService } from '../TestAbstractService';
 
 export class X2A extends TestAbstractService {
   name = 'X2A';
-  constructor() {
-    super(ServiceStatus.dormant);
+  constructor(initialStatus: ServiceStatus) {
+    super(initialStatus);
   }
 
   protected dependencies: Dependency[] = [
@@ -20,8 +20,8 @@ export class X2A extends TestAbstractService {
 
 export class X2B extends TestAbstractService {
   name = 'X2B';
-  constructor() {
-    super(ServiceStatus.dormant);
+  constructor(initialStatus: ServiceStatus) {
+    super(initialStatus);
   }
 
   protected dependencies: Dependency[] = [
@@ -32,13 +32,18 @@ export class X2B extends TestAbstractService {
   ];
 
   start = (): Promise<boolean> => this.startAfter();
-  stop = (): Promise<boolean> => this.stopAfter();
+  stop = (): Promise<boolean> =>
+    new Promise<boolean>((resolve, reject) => {
+      setTimeout(() => {
+        resolve(false);
+      }, 500);
+    });
 }
 
 export class X2C extends TestAbstractService {
   name = 'X2C';
-  constructor() {
-    super(ServiceStatus.dormant);
+  constructor(initialStatus: ServiceStatus) {
+    super(initialStatus);
   }
 
   protected dependencies: Dependency[] = [
@@ -59,8 +64,8 @@ export class X2C extends TestAbstractService {
 
 export class X2D extends TestAbstractService {
   name = 'X2D';
-  constructor() {
-    super(ServiceStatus.dormant);
+  constructor(initialStatus: ServiceStatus) {
+    super(initialStatus);
   }
 
   protected dependencies: Dependency[] = [];

@@ -1,15 +1,15 @@
 import { Dependency, ServiceStatus } from '../../lib';
 import { TestAbstractService } from '../TestAbstractService';
 
-export class Y0A extends TestAbstractService {
-  name = 'Y0A';
-  constructor() {
-    super(ServiceStatus.running);
+export class X0A extends TestAbstractService {
+  name = 'X0A';
+  constructor(initialStatus: ServiceStatus) {
+    super(initialStatus);
   }
 
   protected dependencies: Dependency[] = [
     {
-      serviceName: 'Y0B',
+      serviceName: 'X0B',
       allowedStatuses: [ServiceStatus.running],
     },
   ];
@@ -18,19 +18,19 @@ export class Y0A extends TestAbstractService {
   stop = (): Promise<boolean> => this.stopAfter();
 }
 
-export class Y0B extends TestAbstractService {
-  name = 'Y0B';
-  constructor() {
-    super(ServiceStatus.running);
+export class X0B extends TestAbstractService {
+  name = 'X0B';
+  constructor(initialStatus: ServiceStatus) {
+    super(initialStatus);
   }
 
   protected dependencies: Dependency[] = [
     {
-      serviceName: 'Y0M',
+      serviceName: 'X0M',
       allowedStatuses: [ServiceStatus.running],
     },
     {
-      serviceName: 'Y0C',
+      serviceName: 'X0C',
       allowedStatuses: [ServiceStatus.running],
     },
   ];
@@ -39,10 +39,10 @@ export class Y0B extends TestAbstractService {
   stop = (): Promise<boolean> => this.stopAfter();
 }
 
-export class Y0C extends TestAbstractService {
-  name = 'Y0C';
-  constructor() {
-    super(ServiceStatus.running);
+export class X0C extends TestAbstractService {
+  name = 'X0C';
+  constructor(initialStatus: ServiceStatus) {
+    super(initialStatus);
   }
 
   protected dependencies: Dependency[] = [];
@@ -51,10 +51,10 @@ export class Y0C extends TestAbstractService {
   stop = (): Promise<boolean> => this.stopAfter();
 }
 
-export class Y0M extends TestAbstractService {
-  name = 'Y0M';
-  constructor() {
-    super(ServiceStatus.running);
+export class X0M extends TestAbstractService {
+  name = 'X0M';
+  constructor(initialStatus: ServiceStatus) {
+    super(initialStatus);
   }
 
   protected dependencies: Dependency[] = [];
