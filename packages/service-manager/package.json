@@ -14,7 +14,7 @@
     "lint": "eslint --fix . && npm run prettify",
     "prettify": "prettier --write . --ignore-path ./.gitignore",
     "release": "npm run build && npm publish --access public",
-    "test": "vitest",
+    "test": "NODE_OPTIONS=--experimental-specifier-resolution=node vitest",
     "type-check": "tsc --noEmit"
   },
   "devDependencies": {
@@ -30,5 +30,9 @@
   },
   "engines": {
     "node": ">=18.12.0"
+  },
+  "dependencies": {
+    "@rosen-bridge/abstract-logger": "^0.3.0",
+    "await-semaphore": "^0.1.3"
   }
 }
