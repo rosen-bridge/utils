@@ -295,8 +295,8 @@ describe('ServiceManager', () => {
   it('Simple Running Scenario', async () => {
     const serviceManager = new ServiceManager();
 
-    const a = new R1A();
-    const b = new R1B();
+    const a = new R1A(ServiceStatus.dormant);
+    const b = new R1B(ServiceStatus.dormant);
     const services = [a, b];
 
     services.forEach((service) => serviceManager.register(service));
@@ -416,4 +416,39 @@ describe('ServiceManager', () => {
       ServiceStatus.dormant
     );
   }, 3500);
+
+  /**
+   * @target ServiceManager: Running Downgrade Scenario
+   * one service depends on another
+   * on downgrading B status from running to started service manager
+   * should stop service A
+   * @dependencies
+   * @scenario
+   * - generate test service manager
+   * - generate 2 test services of R1
+   * - change service R1B status to started
+   * - wait 0.5 seconds
+   * - check status of two services
+   * @expected
+   * - R1A should be in dormant status
+   * - R1B should be in started status
+   */
+  it('Running Downgrade Scenario', async () => {
+    const serviceManager = new ServiceManager();
+
+    const a = new R1A(ServiceStatus.dormant);
+    const b = new R1B(ServiceStatus.dormant);
+    const services = [a, b];
+
+    services.forEach((service) => serviceManager.register(service));
+
+    b.callSetStatus(ServiceStatus.started);
+    await sleep(0.5);
+    expect(serviceManager.getStatus(a.getName())).toEqual(
+      ServiceStatus.dormant
+    );
+    expect(serviceManager.getStatus(b.getName())).toEqual(
+      ServiceStatus.started
+    );
+  }, 2000);
 });

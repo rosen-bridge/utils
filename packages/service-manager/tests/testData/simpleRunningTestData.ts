@@ -3,8 +3,8 @@ import { TestAbstractService } from '../TestAbstractService';
 
 export class R1A extends TestAbstractService {
   name = 'R1A';
-  constructor() {
-    super(ServiceStatus.dormant);
+  constructor(initialStatus: ServiceStatus) {
+    super(initialStatus);
   }
 
   protected dependencies: Dependency[] = [
@@ -20,8 +20,8 @@ export class R1A extends TestAbstractService {
 
 export class R1B extends TestAbstractService {
   name = 'R1B';
-  constructor() {
-    super(ServiceStatus.dormant);
+  constructor(initialStatus: ServiceStatus) {
+    super(initialStatus);
   }
 
   protected dependencies: Dependency[] = [];

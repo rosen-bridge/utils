@@ -6,6 +6,10 @@ export abstract class TestAbstractService extends AbstractService {
     this.setStatus(initialStatus);
   }
 
+  callSetStatus = (status: ServiceStatus): void => {
+    this.setStatus(status);
+  };
+
   startAfter = (seconds = 1) =>
     new Promise<boolean>((resolve, reject) => {
       setTimeout(() => {
