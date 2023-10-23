@@ -1,3 +1,5 @@
+import { AbstractService } from './AbstractService';
+
 export enum ServiceStatus {
   dormant = 'dormant',
   started = 'started',
@@ -24,9 +26,3 @@ export interface Action {
   reject: (reason?: any) => void;
   action: ServiceAction;
 }
-
-export type StatusChangeCallbackFunction = (
-  serviceName: string,
-  previousStatus: ServiceStatus,
-  newStatus: ServiceStatus
-) => unknown;
