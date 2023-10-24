@@ -55,13 +55,13 @@ export class RWTRepo {
    * @return {Promise<void>}
    * @memberof RWTRepo
    */
-  async updateBox(trackMempool: boolean) {
+  updateBox = async (trackMempool: boolean) => {
     this.logger.debug(`box is being updated from ${this.networkType} api`);
     if (trackMempool && (await this.getBoxFromMempool())) {
       return;
     }
     await this.getBox();
-  }
+  };
 
   /**
    * fetches and updates this.box with unspent box info for this.repoAddress and
@@ -72,7 +72,7 @@ export class RWTRepo {
    * @return {Promise<ErgoBox | undefined>}
    * @memberof RWTRepo
    */
-  private async getBox() {
+  private getBox = async () => {
     if (this.box) {
       const currentBoxInfo =
         this.networkType === ErgoNetworkType.Explorer
@@ -113,7 +113,7 @@ export class RWTRepo {
     this.logger.info(`box updated: ${this.rwtRepoLogDescription}`);
 
     return this.box;
-  }
+  };
 
   /**
    * fetches and updates this.box with unspent box info for this.repoAddress and
@@ -124,7 +124,7 @@ export class RWTRepo {
    * @return {Promise<ErgoBox | undefined>}
    * @memberof RWTRepo
    */
-  private async getBoxFromMempool() {
+  private getBoxFromMempool = async () => {
     let mempoolTxs: UTransactionInfo[] | Transactions;
 
     if (this.networkType === ErgoNetworkType.Explorer) {
@@ -152,7 +152,7 @@ export class RWTRepo {
     this.logger.info(`box updated from mempool: ${this.rwtRepoLogDescription}`);
 
     return this.box;
-  }
+  };
 
   /**
    * creates an RWTRepo ErgoBox instance from the corresponding boxInfo in the
@@ -163,7 +163,9 @@ export class RWTRepo {
    * @return {ErgoBox | undefined}
    * @memberof RWTRepo
    */
-  private createBoxFromBoxInfo(boxInfos: IndexedErgoBox[] | OutputInfo[]) {
+  private createBoxFromBoxInfo = (
+    boxInfos: IndexedErgoBox[] | OutputInfo[]
+  ) => {
     const rwtBoxInfos = boxInfos.filter((item) =>
       item.assets?.some((asset) => asset.tokenId === this.repoNft)
     );
@@ -181,7 +183,7 @@ export class RWTRepo {
 
     const box = ergoLib.ErgoBox.from_json(jsonBigInt.stringify(rwtBoxInfos[0]));
     return box;
-  }
+  };
 
   /**
    * creates an RWTRepo ErgoBox instance from the corresponding boxInfo in the
@@ -192,7 +194,7 @@ export class RWTRepo {
    * @return {ErgoBox | undefined}
    * @memberof RWTRepo
    */
-  private createBoxfromTx(txs: Transactions | UTransactionInfo[]) {
+  private createBoxfromTx = (txs: Transactions | UTransactionInfo[]) => {
     const inputBoxIds = txs.flatMap(
       (tx) =>
         tx.inputs?.map((input) => ('id' in input ? input.id : input.boxId)) ||
@@ -226,7 +228,7 @@ export class RWTRepo {
       jsonBigInt.stringify(rwtOutputBoxInfos[0])
     );
     return box;
-  }
+  };
 
   /**
    * creates an instance of RWTRepoBuilder
@@ -234,7 +236,7 @@ export class RWTRepo {
    * @return {RWTRepoBuilder}
    * @memberof RWTRepo
    */
-  toBuilder() {
+  toBuilder = () => {
     if (!this.box) {
       throw new Error(
         `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
@@ -303,7 +305,7 @@ export class RWTRepo {
       widPermits,
       this.logger
     );
-  }
+  };
 
   /**
    * extract the value of ergCollateral from R6[4] of this.box. If this.box is
@@ -312,7 +314,7 @@ export class RWTRepo {
    * @return {bigint}
    * @memberof RWTRepo
    */
-  getErgCollateral() {
+  getErgCollateral = () => {
     if (!this.box) {
       throw new Error(
         `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
@@ -334,7 +336,7 @@ export class RWTRepo {
     );
 
     return BigInt(ergCollateralRegister);
-  }
+  };
 
   /**
    * extract the value of rsnCollateral from R6[5] of this.box. If this.box is
@@ -343,7 +345,7 @@ export class RWTRepo {
    * @return {bigint}
    * @memberof RWTRepo
    */
-  getRsnCollateral() {
+  getRsnCollateral = () => {
     if (!this.box) {
       throw new Error(
         `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
@@ -365,7 +367,7 @@ export class RWTRepo {
     );
 
     return BigInt(rsnCollateralRegister);
-  }
+  };
 
   /**
    * calculates and returns the value of requiredCommitmentCount according to
@@ -374,7 +376,7 @@ export class RWTRepo {
    * @return {bigint}
    * @memberof RWTRepo
    */
-  getRequiredCommitmentCount() {
+  getRequiredCommitmentCount = () => {
     if (!this.box) {
       throw new Error(
         `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
@@ -398,7 +400,7 @@ export class RWTRepo {
     );
 
     return requiredCommitmentCount;
-  }
+  };
 
   /**
    * extract the value of commitmentRwtCount from R6[0] of this.box. If this.box
@@ -407,7 +409,7 @@ export class RWTRepo {
    * @return {bigint}
    * @memberof RWTRepo
    */
-  getCommitmentRwtCount() {
+  getCommitmentRwtCount = () => {
     if (!this.box) {
       throw new Error(
         `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
@@ -427,7 +429,7 @@ export class RWTRepo {
     );
 
     return commitmentRwtCount;
-  }
+  };
 
   /**
    * finds the index wid in R4 register of this.box and returns -1 if not found.
@@ -436,7 +438,7 @@ export class RWTRepo {
    * @return {number}
    * @memberof RWTRepo
    */
-  getWidIndex(wid: string) {
+  getWidIndex = (wid: string) => {
     if (!this.box) {
       throw new Error(
         `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
@@ -463,7 +465,7 @@ export class RWTRepo {
     }
 
     return widIndex;
-  }
+  };
 
   /**
    * gets permitCount for wid by first finding widIndex (index of wid in R4) and
@@ -473,7 +475,7 @@ export class RWTRepo {
    * @return {bigint}
    * @memberof RWTRepo
    */
-  getPermitCount(wid: string) {
+  getPermitCount = (wid: string) => {
     if (!this.box) {
       throw new Error(
         `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
@@ -499,7 +501,7 @@ export class RWTRepo {
     );
 
     return permitCount;
-  }
+  };
 
   /**
    * returns the value at the specified index of the R6 register of this.box as
@@ -510,13 +512,13 @@ export class RWTRepo {
    * @return {bigint | undefined}
    * @memberof RWTRepo
    */
-  private r6At(index: number) {
+  private r6At = (index: number) => {
     const val = (
       this.box?.register_value(6)?.to_i64_str_array() as string[] | undefined
     )?.at(index);
 
     return val ? BigInt(val) : undefined;
-  }
+  };
 
   /**
    * pareses the R4 register of this.box which is a Coll[Coll[SByte]] and
