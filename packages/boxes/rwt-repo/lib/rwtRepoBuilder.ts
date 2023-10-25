@@ -25,14 +25,11 @@ export class RWTRepoBuilder {
   ) {}
 
   /**
-   * adds (wid, rwtCount) pair to this.widPermits. Also does the following
-   * updates:
-   * this.rwtCount -= rwtCount;
-   * this.rsnCount += rwtCount;
+   * adds a new user for the passed wid and rwt amount
+   *
    * @param {string} wid
    * @param {bigint} rwtCount
-   * @return {RWTRepoBuilder}  {RWTRepoBuilder}
-   * @memberof RWTRepoBuilder
+   * @return {RWTRepoBuilder}
    */
   addNewUser = (wid: string, rwtCount: bigint): RWTRepoBuilder => {
     const widExists = this.widPermits.map((permit) => permit.wid).includes(wid);
@@ -57,14 +54,10 @@ export class RWTRepoBuilder {
   };
 
   /**
-   * removes (wid, rwtCount) pair from this.widPermits. Also stores wid's index
-   * in this.lastModifiedWidIndex and does the following updates:
-   * this.rwtCount += rwtCount;
-   * this.rsnCount -= rwtCount;
+   * removes the user corresponding to the passed wid
    *
    * @param {string} wid
-   * @return {RWTRepoBuilder}  {RWTRepoBuilder}
-   * @memberof RWTRepoBuilder
+   * @return {RWTRepoBuilder}
    */
   removeUser = (wid: string): RWTRepoBuilder => {
     const widIndex = this.indexOfWid(wid);
@@ -87,7 +80,6 @@ export class RWTRepoBuilder {
    *
    * @param {bigint} commitmentRwtCount
    * @return {RWTRepoBuilder}
-   * @memberof RWTRepoBuilder
    */
   setCommitmentRwtCount = (commitmentRwtCount: bigint): RWTRepoBuilder => {
     this.commitmentRwtCount = commitmentRwtCount;
@@ -99,7 +91,6 @@ export class RWTRepoBuilder {
    *
    * @param {number} watcherQuorumPercentage
    * @return {RWTRepoBuilder}
-   * @memberof RWTRepoBuilder
    */
   setWatcherQuorumPercentage = (
     watcherQuorumPercentage: number
@@ -113,7 +104,6 @@ export class RWTRepoBuilder {
    *
    * @param {number} approvalOffset
    * @return {RWTRepoBuilder}
-   * @memberof RWTRepoBuilder
    */
   setApprovalOffset = (approvalOffset: number): RWTRepoBuilder => {
     this.approvalOffset = approvalOffset;
@@ -125,7 +115,6 @@ export class RWTRepoBuilder {
    *
    * @param {number} maximumApproval
    * @return {RWTRepoBuilder}
-   * @memberof RWTRepoBuilder
    */
   setMaximumApproval = (maximumApproval: number): RWTRepoBuilder => {
     this.maximumApproval = maximumApproval;
@@ -137,7 +126,6 @@ export class RWTRepoBuilder {
    *
    * @param {bigint} ergCollateral
    * @return {RWTRepoBuilder}
-   * @memberof RWTRepoBuilder
    */
   setErgCollateral = (ergCollateral: bigint): RWTRepoBuilder => {
     this.ergCollateral = ergCollateral;
@@ -149,7 +137,6 @@ export class RWTRepoBuilder {
    *
    * @param {bigint} rsnCollateral
    * @return {RWTRepoBuilder}
-   * @memberof RWTRepoBuilder
    */
   setRsnCollateral = (rsnCollateral: bigint): RWTRepoBuilder => {
     this.rsnCollateral = rsnCollateral;
@@ -157,17 +144,11 @@ export class RWTRepoBuilder {
   };
 
   /**
-   * decrements rwtCount for a specific wid in RWTRepoBuilder.widPermits by the
-   * specified amount. throws exception if wid not found in
-   * RWTRepoBuilder.widPermits array. Also stores the passed wid in
-   * RWTRepoBuilder.lastModifiedWid and does the following updates:
-   * RWTRepoBuilder.rwtCount += rwtCount;
-   * RWTRepoBuilder.rsnCount -= rwtCount;
+   * decrements rwtCount for a specific wid. throws exception if wid not found.
    *
    * @param {string} wid
    * @param {bigint} rwtCount
    * @return {RWTRepoBuilder}
-   * @memberof RWTRepoBuilder
    */
   decrementPermits = (wid: string, rwtCount: bigint): RWTRepoBuilder => {
     const index = this.indexOfWid(wid);
@@ -182,17 +163,11 @@ export class RWTRepoBuilder {
   };
 
   /**
-   * increments rwtCount for a specific wid in RWTRepoBuilder.widPermits by the
-   * specified amount. throws exception if wid not found in
-   * RWTRepoBuilder.widPermits array. Also stores the passed wid in
-   * RWTRepoBuilder.lastModifiedWid and does the following updates:
-   * RWTRepoBuilder.rwtCount -= rwtCount;
-   * RWTRepoBuilder.rsnCount += rwtCount;
+   * increments rwtCount for a specific wid. throws exception if wid not found.
    *
    * @param {string} wid
    * @param {bigint} rwtCount
    * @return {RWTRepoBuilder}
-   * @memberof RWTRepoBuilder
    */
   incrementPermits = (wid: string, rwtCount: bigint): RWTRepoBuilder => {
     const index = this.indexOfWid(wid);
@@ -210,7 +185,6 @@ export class RWTRepoBuilder {
    * creates a RWTRepo box from the properties of this RWTRepoBuilder instance
    *
    * @return {ergoLib.ErgoBoxCandidate}
-   * @memberof RWTRepoBuilder
    */
   build = (): ergoLib.ErgoBoxCandidate => {
     if (this.value == undefined || this.height == undefined) {
@@ -294,10 +268,9 @@ export class RWTRepoBuilder {
   };
 
   /**
-   * sets value for the box to be built through RWTRepoBuilder.build method
+   * sets value for the box that is built by this.build method
    *
    * @param {bigint} value
-   * @memberof RWTRepoBuilder
    */
   setValue = (value: bigint) => {
     if (value < 0n) {
@@ -307,11 +280,9 @@ export class RWTRepoBuilder {
   };
 
   /**
-   * sets creation height for the box to be built through RWTRepoBuilder.build
-   * method
+   * sets creation height for the box that is built by this.build method
    *
    * @param {number} height
-   * @memberof RWTRepoBuilder
    */
   setHeight = (height: number) => {
     if (height < 1) {
@@ -321,10 +292,9 @@ export class RWTRepoBuilder {
   };
 
   /**
-   * finds index of the passed wid in this.widPermits array
+   * finds index of passed wid in this.widPermits array
    *
    * @param {string} wid
-   * @memberof RWTRepoBuilder
    */
   indexOfWid = (wid: string): number => {
     return this.widPermits.findIndex((permit) => permit.wid === wid);

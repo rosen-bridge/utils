@@ -45,15 +45,11 @@ export class RWTRepo {
   }
 
   /**
-   * fetches and updates this.box with unspent box info for this.repoAddress and
-   * this.repoNft values. It uses from explorer or node api depending on
-   * this.networkType value. if trackMempool is set to true then first mempool
-   * is checked.
+   * fetches the unspent RWTRepo box and stores it in this.box
    *
-   * @param {boolean} trackMempool whether first check mempool for the unspent
-   * box info
+   * @param {boolean} trackMempool whether mempool should be checked for box
+   * info first
    * @return {Promise<void>}
-   * @memberof RWTRepo
    */
   updateBox = async (trackMempool: boolean) => {
     this.logger.debug(`box is being updated from ${this.networkType} api`);
@@ -64,13 +60,10 @@ export class RWTRepo {
   };
 
   /**
-   * fetches and updates this.box with unspent box info for this.repoAddress and
-   * this.repoNft values from Ergo chain's set of unspent boxes. returns
-   * undefined if no unspent boxes were found
+   * fetches the unspent RWTRepo box info from explorer or node api and stores
+   * it in this.box
    *
-   * @private
    * @return {Promise<ErgoBox | undefined>}
-   * @memberof RWTRepo
    */
   private getBox = async () => {
     if (this.box) {
@@ -116,13 +109,10 @@ export class RWTRepo {
   };
 
   /**
-   * fetches and updates this.box with unspent box info for this.repoAddress and
-   * this.repoNft values from Ergo chain's mempool. returns undefined if no
-   * unspent boxes were found
+   * fetches the unspent RWTRepo box info from mempool and stores it in
+   * this.box. returns undefined if no box was found.
    *
-   * @private
    * @return {Promise<ErgoBox | undefined>}
-   * @memberof RWTRepo
    */
   private getBoxFromMempool = async () => {
     let mempoolTxs: UTransactionInfo[] | Transactions;
@@ -155,13 +145,11 @@ export class RWTRepo {
   };
 
   /**
-   * creates an RWTRepo ErgoBox instance from the corresponding boxInfo in the
-   * passed boxInfos array
+   * creates an RWTRepo ErgoBox instance for this.repoNft from data in the
+   * passed collection of box info
    *
-   * @private
    * @param {(IndexedErgoBox[] | OutputInfo[])} boxInfos
    * @return {ErgoBox | undefined}
-   * @memberof RWTRepo
    */
   private createBoxFromBoxInfo = (
     boxInfos: IndexedErgoBox[] | OutputInfo[]
@@ -186,13 +174,11 @@ export class RWTRepo {
   };
 
   /**
-   * creates an RWTRepo ErgoBox instance from the corresponding boxInfo in the
-   * passed transactions array
+   * creates an RWTRepo ErgoBox instance for this.repoNft from data in the
+   * passed collection of transactions
    *
-   * @private
    * @param {(Transactions | UTransactionInfo[])} txs
    * @return {ErgoBox | undefined}
-   * @memberof RWTRepo
    */
   private createBoxfromTx = (txs: Transactions | UTransactionInfo[]) => {
     const inputBoxIds = txs.flatMap(
@@ -231,10 +217,9 @@ export class RWTRepo {
   };
 
   /**
-   * creates an instance of RWTRepoBuilder
+   * creates an instance of RWTRepoBuilder using current instance's properties
    *
    * @return {RWTRepoBuilder}
-   * @memberof RWTRepo
    */
   toBuilder = () => {
     if (!this.box) {
@@ -308,11 +293,10 @@ export class RWTRepo {
   };
 
   /**
-   * extract the value of ergCollateral from R6[4] of this.box. If this.box is
-   * undefined an exception is thrown
+   * returns value of ergCollateral for this.box. If this.box is undefined an
+   * exception is thrown
    *
    * @return {bigint}
-   * @memberof RWTRepo
    */
   getErgCollateral = () => {
     if (!this.box) {
@@ -339,11 +323,10 @@ export class RWTRepo {
   };
 
   /**
-   * extract the value of rsnCollateral from R6[5] of this.box. If this.box is
-   * undefined an exception is thrown
+   * returns value of rsnCollateral for this.box. If this.box is undefined an
+   * exception is thrown
    *
    * @return {bigint}
-   * @memberof RWTRepo
    */
   getRsnCollateral = () => {
     if (!this.box) {
@@ -370,11 +353,10 @@ export class RWTRepo {
   };
 
   /**
-   * calculates and returns the value of requiredCommitmentCount according to
-   * this formula: min(R6[3], R6[1] * (len(R4) - 1) / 100 + R6[2])
+   * calculates requiredCommitmentCount according to this formula:
+   * min(R6[3], R6[1] * (len(R4) - 1) / 100 + R6[2])
    *
    * @return {bigint}
-   * @memberof RWTRepo
    */
   getRequiredCommitmentCount = () => {
     if (!this.box) {
@@ -403,11 +385,10 @@ export class RWTRepo {
   };
 
   /**
-   * extract the value of commitmentRwtCount from R6[0] of this.box. If this.box
-   * is undefined an exception is thrown
+   * returns value of commitmentRwtCount for this.box. If this.box is undefined
+   * an exception is thrown.
    *
    * @return {bigint}
-   * @memberof RWTRepo
    */
   getCommitmentRwtCount = () => {
     if (!this.box) {
@@ -432,11 +413,10 @@ export class RWTRepo {
   };
 
   /**
-   * finds the index wid in R4 register of this.box and returns -1 if not found.
+   * finds the index of wid in R4 register of this.box. returns -1 if not found.
    *
    * @param {string} wid - watcher id in hex format
    * @return {number}
-   * @memberof RWTRepo
    */
   getWidIndex = (wid: string) => {
     if (!this.box) {
@@ -468,12 +448,10 @@ export class RWTRepo {
   };
 
   /**
-   * gets permitCount for wid by first finding widIndex (index of wid in R4) and
-   * extracting R5[WidIndex] as permitCount
+   * returns permitCount for passed wid
    *
    * @param {string} wid
    * @return {bigint}
-   * @memberof RWTRepo
    */
   getPermitCount = (wid: string) => {
     if (!this.box) {
@@ -504,13 +482,10 @@ export class RWTRepo {
   };
 
   /**
-   * returns the value at the specified index of the R6 register of this.box as
-   * a bigint
+   * returns value of R6[index] register of this.box
    *
-   * @private
    * @param {number} index
    * @return {bigint | undefined}
-   * @memberof RWTRepo
    */
   private r6At = (index: number) => {
     const val = (
@@ -521,37 +496,35 @@ export class RWTRepo {
   };
 
   /**
-   * pareses the R4 register of this.box which is a Coll[Coll[SByte]] and
-   * returns it as a Uint8Array[].
+   * returns value of R4 register for this.box
    *
    * @readonly
-   * @memberof RWTRepo
+   * @type {(Uint8Array[] | undefined)}
    */
-  get r4() {
+  get r4(): Uint8Array[] | undefined {
     return this.box?.register_value(4)?.to_coll_coll_byte();
   }
 
   /**
-   * parses R5:Coll[SLong] as an array of bigints
+   * returns value of R5 register for this.box
    *
    * @readonly
-   * @memberof RWTRepo
+   * @type {(bigint[] | undefined)}
    */
-  get r5() {
+  get r5(): bigint[] | undefined {
     return (
       this.box?.register_value(5)?.to_i64_str_array() as string[] | undefined
     )?.map(BigInt);
   }
 
   /**
-   * returns a string description of this instance's specs that can be used in
-   * logs.
+   * returns a string description of this instance that can be used in logs.
    *
    * @readonly
    * @private
-   * @memberof RWTRepo
+   * @type {string}
    */
-  private get rwtRepoLogDescription() {
+  private get rwtRepoLogDescription(): string {
     if (this.box) {
       return `boxId=[${this.box?.box_id().to_str()}]`;
     } else {
