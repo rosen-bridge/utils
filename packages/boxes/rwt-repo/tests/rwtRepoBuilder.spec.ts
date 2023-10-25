@@ -3,7 +3,7 @@ import ergoExplorerClientFactory from '@rosen-clients/ergo-explorer';
 import * as ergo from 'ergo-lib-wasm-nodejs';
 import { Constant } from 'ergo-lib-wasm-nodejs';
 import { RWTRepo, RWTRepoBuilder } from '../lib';
-import { mockedErgoExplorerClientFactory } from './rwtRepo.mock';
+import { mockedErgoExplorerClientFactory } from './mocked/ErgoExplorerClient.mock';
 import { rwtRepoInfoSample } from './rwtRepoTestData';
 
 describe('RWTRepoBuilder', () => {

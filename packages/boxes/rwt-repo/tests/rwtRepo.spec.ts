@@ -4,10 +4,9 @@ import ergoNodeClientFactory from '@rosen-clients/ergo-node';
 import { Constant, ErgoBox } from 'ergo-lib-wasm-nodejs';
 import { RWTRepo, RWTRepoBuilder } from '../lib';
 import { jsonBigInt } from '../lib/utils';
-import {
-  mockedErgoExplorerClientFactory,
-  mockedErgoNodeClientFactory,
-} from './rwtRepo.mock';
+
+import { mockedErgoExplorerClientFactory } from './mocked/ErgoExplorerClient.mock';
+import { mockedErgoNodeClientFactory } from './mocked/ergoNodeClient.mock';
 import { rwtRepoInfoSample } from './rwtRepoTestData';
 
 describe('RWTRepo', () => {
