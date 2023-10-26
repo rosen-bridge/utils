@@ -3,17 +3,28 @@ import { Action, Dependency, ServiceAction, ServiceStatus } from './types';
 import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
 
 export class ServiceManager {
+  private static instance: ServiceManager;
   protected services = new Map<string, AbstractService>();
   protected onWatchServices: Array<string> = [];
   protected pendingActions = new Map<string, Action>();
   protected pendingPromises = new Map<string, Promise<boolean>>();
   protected logger: AbstractLogger;
 
-  constructor(logger?: AbstractLogger) {
+  protected constructor(logger?: AbstractLogger) {
     this.logger = logger ?? new DummyLogger();
   }
 
-  static getInstance: () => ServiceManager;
+  /**
+   * generates a ServiceManager object if it doesn't exist
+   * @returns ServiceManager instance
+   */
+  public static getInstance = (): ServiceManager => {
+    if (!ServiceManager.instance) {
+      ServiceManager.instance = new ServiceManager();
+      ServiceManager.instance.logger.debug('ServiceManager instantiated');
+    }
+    return ServiceManager.instance;
+  };
 
   /**
    * handles changing status of a service
@@ -213,8 +224,11 @@ export class ServiceManager {
    * @serviceName
    */
   watch = (serviceName: string): void => {
-    if (!this.onWatchServices.find((s) => s === serviceName))
+    if (!this.onWatchServices.find((s) => s === serviceName)) {
+      this.getService(serviceName);
       this.onWatchServices.push(serviceName);
+      this.logger.debug(`service [${serviceName}] is added to on-watch list`);
+    }
   };
 
   /**

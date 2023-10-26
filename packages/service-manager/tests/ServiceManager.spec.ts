@@ -1,5 +1,5 @@
 import { ServiceStatus } from '../lib';
-import { ServiceManager } from '../lib';
+import { TestServiceManager } from './TestServiceManager';
 import { sleep } from './testUtils';
 import { X0A, X0B, X0C, X0M } from './testData/hierarchicalTestData';
 import { X1A, X1B, X1M } from './testData/crashTestData';
@@ -28,7 +28,7 @@ describe('ServiceManager', () => {
    * - all 4 services should be in running status
    */
   it('Hierarchical Start Scenario', async () => {
-    const serviceManager = new ServiceManager();
+    const serviceManager = new TestServiceManager();
 
     const a = new X0A(ServiceStatus.dormant);
     const b = new X0B(ServiceStatus.dormant);
@@ -75,7 +75,7 @@ describe('ServiceManager', () => {
    * - all 3 services should be in dormant status
    */
   it('Crash After Start Scenario', async () => {
-    const serviceManager = new ServiceManager();
+    const serviceManager = new TestServiceManager();
 
     const a = new X1A();
     const b = new X1B();
@@ -115,7 +115,7 @@ describe('ServiceManager', () => {
    * - service should be in dormant status
    */
   it('One Service Start Failure Scenario', async () => {
-    const serviceManager = new ServiceManager();
+    const serviceManager = new TestServiceManager();
 
     const a = new OneServiceA();
 
@@ -148,7 +148,7 @@ describe('ServiceManager', () => {
    * - last service should be in running status
    */
   it('Midway Start Failure Scenario', async () => {
-    const serviceManager = new ServiceManager();
+    const serviceManager = new TestServiceManager();
 
     const a = new X2A(ServiceStatus.dormant);
     const b = new X2B(ServiceStatus.dormant);
@@ -196,7 +196,7 @@ describe('ServiceManager', () => {
    * - all 4 services should be in running status
    */
   it('Diamond Structure Scenario', async () => {
-    const serviceManager = new ServiceManager();
+    const serviceManager = new TestServiceManager();
 
     const a = new X3A();
     const b = new X3B();
@@ -243,7 +243,7 @@ describe('ServiceManager', () => {
    * - X4B and X4C services should be in dormant status
    */
   it('Partial Start Scenario', async () => {
-    const serviceManager = new ServiceManager();
+    const serviceManager = new TestServiceManager();
 
     const a = new X4A();
     const b = new X4B();
@@ -293,7 +293,7 @@ describe('ServiceManager', () => {
    * - R1A and R1B services should be in running status after second waiting
    */
   it('Simple Running Scenario', async () => {
-    const serviceManager = new ServiceManager();
+    const serviceManager = new TestServiceManager();
 
     const a = new R1A(ServiceStatus.dormant);
     const b = new R1B(ServiceStatus.dormant);
@@ -339,7 +339,7 @@ describe('ServiceManager', () => {
    * - service M should be in running status
    */
   it('Hierarchical Stop Scenario', async () => {
-    const serviceManager = new ServiceManager();
+    const serviceManager = new TestServiceManager();
 
     const a = new X0A(ServiceStatus.running);
     const b = new X0B(ServiceStatus.running);
@@ -388,7 +388,7 @@ describe('ServiceManager', () => {
    * - first service should be in dormant status
    */
   it('Midway Stop Failure Scenario', async () => {
-    const serviceManager = new ServiceManager();
+    const serviceManager = new TestServiceManager();
 
     const a = new X2A(ServiceStatus.running);
     const b = new X2B(ServiceStatus.running);
@@ -434,7 +434,7 @@ describe('ServiceManager', () => {
    * - R1B should be in started status
    */
   it('Running Downgrade Scenario', async () => {
-    const serviceManager = new ServiceManager();
+    const serviceManager = new TestServiceManager();
 
     const a = new R1A(ServiceStatus.dormant);
     const b = new R1B(ServiceStatus.dormant);
