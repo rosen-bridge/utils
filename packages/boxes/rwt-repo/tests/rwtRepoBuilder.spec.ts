@@ -2,6 +2,7 @@ import { ErgoNetworkType } from '@rosen-bridge/scanner';
 import ergoExplorerClientFactory from '@rosen-clients/ergo-explorer';
 import * as ergo from 'ergo-lib-wasm-nodejs';
 import { Constant } from 'ergo-lib-wasm-nodejs';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { RWTRepo, RWTRepoBuilder } from '../lib';
 import { mockedErgoExplorerClientFactory } from './mocked/ErgoExplorerClient.mock';
 import { rwtRepoInfoSample } from './rwtRepoTestData';

@@ -2,9 +2,9 @@ import { ErgoNetworkType } from '@rosen-bridge/scanner';
 import ergoExplorerClientFactory from '@rosen-clients/ergo-explorer';
 import ergoNodeClientFactory from '@rosen-clients/ergo-node';
 import { Constant, ErgoBox } from 'ergo-lib-wasm-nodejs';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { RWTRepo, RWTRepoBuilder } from '../lib';
 import { jsonBigInt } from '../lib/utils';
-
 import { mockedErgoExplorerClientFactory } from './mocked/ErgoExplorerClient.mock';
 import { mockedErgoNodeClientFactory } from './mocked/ergoNodeClient.mock';
 import { rwtRepoInfoSample } from './rwtRepoTestData';
@@ -12,7 +12,7 @@ import { rwtRepoInfoSample } from './rwtRepoTestData';
 describe('RWTRepo', () => {
   describe('updateBox', () => {
     beforeEach(() => {
-      jest.restoreAllMocks();
+      vi.restoreAllMocks();
     });
 
     /**
@@ -50,7 +50,7 @@ describe('RWTRepo', () => {
       const mockedExplorerClient = mockedErgoExplorerClientFactory(
         ''
       ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
-      const spyGetBoxFromExplorer = jest.spyOn(
+      const spyGetBoxFromExplorer = vi.spyOn(
         mockedExplorerClient.v1,
         'getApiV1BoxesUnspentByaddressP1'
       );
@@ -105,7 +105,7 @@ describe('RWTRepo', () => {
       const mockedExplorerClient = mockedErgoExplorerClientFactory(
         ''
       ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
-      const spyGetBoxFromExplorer = jest.spyOn(
+      const spyGetBoxFromExplorer = vi.spyOn(
         mockedExplorerClient.v1,
         'getApiV1BoxesP1'
       );
@@ -155,7 +155,7 @@ describe('RWTRepo', () => {
       const mockedExplorerClient = mockedErgoExplorerClientFactory(
         ''
       ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
-      const spyGetBoxFromExplorerMempool = jest.spyOn(
+      const spyGetBoxFromExplorerMempool = vi.spyOn(
         mockedExplorerClient.v0,
         'getApiV0TransactionsUnconfirmedByaddressP1'
       );
@@ -204,7 +204,7 @@ describe('RWTRepo', () => {
       const mockedNodeClient = mockedErgoNodeClientFactory(
         ''
       ) as unknown as ReturnType<typeof ergoNodeClientFactory>;
-      const spyGetBoxFromNode = jest.spyOn(
+      const spyGetBoxFromNode = vi.spyOn(
         mockedNodeClient,
         'getBoxesByAddressUnspent'
       );
@@ -253,7 +253,7 @@ describe('RWTRepo', () => {
       const mockedNodeClient = mockedErgoNodeClientFactory(
         ''
       ) as unknown as ReturnType<typeof ergoNodeClientFactory>;
-      const spyGetBoxFromNodeMempool = jest.spyOn(
+      const spyGetBoxFromNodeMempool = vi.spyOn(
         mockedNodeClient,
         'getUnconfirmedTransactionsByErgoTree'
       );
@@ -308,7 +308,7 @@ describe('RWTRepo', () => {
       const mockedNodeClient = mockedErgoNodeClientFactory(
         ''
       ) as unknown as ReturnType<typeof ergoNodeClientFactory>;
-      const spyGetBoxFromNode = jest.spyOn(mockedNodeClient, 'getBoxById');
+      const spyGetBoxFromNode = vi.spyOn(mockedNodeClient, 'getBoxById');
       rwtRepo['nodeClient'] = mockedNodeClient;
 
       await rwtRepo.updateBox(false);
