@@ -10,9 +10,17 @@ export class ServiceManager {
   protected pendingPromises = new Map<string, Promise<boolean>>();
   protected logger: AbstractLogger;
 
-  protected constructor(logger?: AbstractLogger) {
-    this.logger = logger ?? new DummyLogger();
+  protected constructor() {
+    this.logger = new DummyLogger();
   }
+
+  /**
+   * initiates ServiceManager logger
+   * @param logger
+   */
+  init = (logger: AbstractLogger) => {
+    this.logger = logger;
+  };
 
   /**
    * generates a ServiceManager object if it doesn't exist
