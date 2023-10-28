@@ -1,5 +1,3 @@
-import { AbstractService } from './AbstractService';
-
 export enum ServiceStatus {
   dormant = 'dormant',
   started = 'started',
