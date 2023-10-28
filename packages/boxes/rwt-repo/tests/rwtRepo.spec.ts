@@ -16,29 +16,23 @@ describe('RWTRepo', () => {
     });
 
     /**
-     * @target updateBox of RWTRepo created with
-     * networkType=ErgoNetworkType.Explorer argument, should update the box
-     * member variable with ErgoBox created from the unspent box info received
-     * from explorer api for the corresponding repoAddress and repoNft set on
-     * this instance
+     * @target should update the this.box with RWTRepo box info received from
+     * explorer api
      * @dependencies
-     * - MockedErgoExplorerClientFactory
+     * - ErgoExplorerClientFactory
      * @scenario
      * - create an instance of RWTRepo with networkType=ErgoNetworkType.Explorer
-     * and specific repoAddress and repoNft
-     * - mock RWTRepo.explorerClient to return a client that returns predefined
-     * box info for the repoAddress and repoNft
-     * - call RWTRepo.updateBox to update RWTRepo.box
-     * - check RWTRepo.box to be populated with correct info
+     *   and specific repoAddress and repoNft
+     * - mock this.explorerClient
+     * - call this.updateBox to update this.box
+     * - check this.box to be populated with correct info
      * - check if Explorer client api has been called
      * @expected
-     * - RWTRepo.box should be populated with correct info
+     * - this.box should be populated with correct info
      * - Explorer client api should have been called
      */
-    it(`updateBox of RWTRepo created with networkType=ErgoNetworkType.Explorer
-    argument, should update the box member variable with ErgoBox created from
-    the unspent box info received from explorer api for the corresponding
-    repoAddress and repoNft set on this instance`, async () => {
+    it(`should update the this.box with RWTRepo box info received from explorer
+    api`, async () => {
       const rwtRepo = new RWTRepo(
         rwtRepoInfoSample.Address,
         rwtRepoInfoSample.nft,
@@ -65,30 +59,27 @@ describe('RWTRepo', () => {
     });
 
     /**
-     * @target updateBox of RWTRepo created with
-     * networkType=ErgoNetworkType.Explorer argument, should not update the box
-     * member variable if it has a value and it's still unspent
+     * @target should not update the box member variable if it has a value and
+     * it's still unspent
      * @dependencies
-     * - MockedErgoExplorerClientFactory
+     * - ErgoExplorerClientFactory
      * @scenario
      * - create an instance of RWTRepo with networkType=ErgoNetworkType.Explorer
-     * and specific repoAddress and repoNft
-     * - assign an ErgoBox to RWTRepo.box
-     * - mock RWTRepo.explorerClient to return a client that returns predefined
-     * box info for the repoAddress and repoNft
-     * - call RWTRepo.updateBox to check if it should update the box
-     * - check RWTRepo.box to be populated with correct info
+     *   and specific repoAddress and repoNft
+     * - assign an ErgoBox to this.box
+     * - mock this.explorerClient
+     * - call this.updateBox
+     * - check this.box to be populated with correct info
      * - check if Explorer client api has been called
-     * - check if RWTRepo.box is not changed and not replaced with a new
-     * instance
+     * - check if this.box is not changed and not replaced with a new instance
      * @expected
-     * - RWTRepo.box should be populated with correct info
+     * - this.box should be populated with correct info
      * - Explorer client api should have been called
-     * - RWTRepo.box should not be changed and not replaced with a new instance
+     * - this.box should not have be changed and not replaced with a new
+     *   instance
      */
-    it(`updateBox of RWTRepo created with networkType=ErgoNetworkType.Explorer
-    argument, should not update the box member variable if it has a value and
-    it's still unspent`, async () => {
+    it(`should not update the box member variable if it has a value and it's
+    still unspent`, async () => {
       const rwtRepo = new RWTRepo(
         rwtRepoInfoSample.Address,
         rwtRepoInfoSample.nft,
@@ -121,29 +112,22 @@ describe('RWTRepo', () => {
     });
 
     /**
-     * @target updateBox(true) of RWTRepo created with
-     * networkType=ErgoNetworkType.Explorer argument, should update the box
-     * member variable with ErgoBox created from the unspent box info received
-     * from explorer mempool api for the corresponding repoAddress and repoNft
-     * set on this instance
+     * @target should update the this.box with RWTRepo box info received from
+     * explorer mempool api when passed true as argument
      * @dependencies
-     * - MockedErgoExplorerClientFactory
+     * - ErgoExplorerClientFactory
      * @scenario
-     * - create an instance of RWTRepo with networkType=ErgoNetworkType.Explorer
-     * and specific repoAddress and repoNft
-     * - mock RWTRepo.explorerClient to return a client that returns predefined
-     * box info for the repoAddress and repoNft
-     * - call RWTRepo.updateBox(true) to update RWTRepo.box from mempool
-     * - check RWTRepo.box to be populated with correct info
+     * - create an instance of RWTRepo with
+     * - mock this.explorerClient
+     * - call this.updateBox(true) to update this.box from mempool
+     * - check this.box to thisbe populated with correct info
      * - check if explorer client mempool api has been called
      * @expected
-     * - RWTRepo.box should be populated with correct info
+     * - this.box should be populated with correct info
      * - explorer client mempool api should have been called
      */
-    it(`updateBox(true) of RWTRepo created with
-    networkType=ErgoNetworkType.Explorer argument, should update the box member
-    variable with ErgoBox created from the unspent box info received from
-    explorer mempool api for the corresponding repoAddress and repoNft set on this instance`, async () => {
+    it(`should update the this.box with RWTRepo box info received from explorer
+    mempool api when passed true as argument`, async () => {
       const rwtRepo = new RWTRepo(
         rwtRepoInfoSample.Address,
         rwtRepoInfoSample.nft,
@@ -170,29 +154,21 @@ describe('RWTRepo', () => {
     });
 
     /**
-     * @target updateBox of RWTRepo created with
-     * networkType=ErgoNetworkType.Node argument, should update the box
-     * member variable with ErgoBox created from the unspent box info received
-     * from node api for the corresponding repoAddress and repoNft set on
-     * this instance
+     * @target it should update this.box with RWTRepo box info received from
+     * node api
      * @dependencies
-     * - mockedErgoNodeClientFactory
+     * - ErgoNodeClientFactory
      * @scenario
      * - create an instance of RWTRepo with networkType=ErgoNetworkType.Node
-     * and specific repoAddress and repoNft
-     * - mock RWTRepo.nodeClient to return a client that returns predefined
-     * box info for the repoAddress and repoNft
-     * - call RWTRepo.updateBox to update RWTRepo.box
-     * - check RWTRepo.box to be populated with correct info
+     * - mock this.nodeClient
+     * - call this.updateBox to update this.box
+     * - check this.box to be populated with correct info
      * - check if node client api has been called
      * @expected
-     * - RWTRepo.box should be populated with correct info
+     * - this.box should be populated with correct info
      * - node client api should have been called
      */
-    it(`updateBox of RWTRepo created with networkType=ErgoNetworkType.Node
-    argument, should update the box member variable with ErgoBox created from
-    the unspent box info received from node api for the corresponding
-    repoAddress and repoNft set on this instance`, async () => {
+    it(`it should update this.box with RWTRepo box info received from node api`, async () => {
       const rwtRepo = new RWTRepo(
         rwtRepoInfoSample.Address,
         rwtRepoInfoSample.nft,
@@ -219,29 +195,22 @@ describe('RWTRepo', () => {
     });
 
     /**
-     * @target updateBox(true) of RWTRepo created with
-     * networkType=ErgoNetworkType.Node argument, should update the box
-     * member variable with ErgoBox created from the unspent box info received
-     * from node mempool api for the corresponding repoAddress and repoNft set
-     * on this instance
+     * @target should update this.box with RWTRepo box info received form node
+     * mempool api
      * @dependencies
-     * - mockedErgoNodeClientFactory
+     * - ErgoNodeClientFactory
      * @scenario
      * - create an instance of RWTRepo with networkType=ErgoNetworkType.Node
-     * and specific repoAddress and repoNft
-     * - mock RWTRepo.nodeClient to return a client that returns predefined
-     * box info for the repoAddress and repoNft
-     * - call RWTRepo.updateBox(true) to update RWTRepo.box from mempool
-     * - check RWTRepo.box to be populated with correct info
-     * - - check if node client mempool api has been called
+     * - mock this.nodeClient
+     * - call this.updateBox(true)
+     * - check this.box to be populated with correct info
+     * - check if node client mempool api has been called
      * @expected
-     * - RWTRepo.box should be populated with correct info
+     * - this.box should be populated with correct info
      * - node client mempool api should have been called
      */
-    it(`updateBox(true) of RWTRepo created with networkType=ErgoNetworkType.Node
-    argument, should update the box member variable with ErgoBox created from
-    the unspent box info received from node mempool api for the corresponding
-    repoAddress and repoNft set on this instance`, async () => {
+    it(`should update this.box with RWTRepo box info received form node mempool
+    api`, async () => {
       const rwtRepo = new RWTRepo(
         rwtRepoInfoSample.Address,
         rwtRepoInfoSample.nft,
@@ -268,30 +237,26 @@ describe('RWTRepo', () => {
     });
 
     /**
-     * @target updateBox of RWTRepo created with
-     * networkType=ErgoNetworkType.Node argument, should not update the box
-     * member variable if it has a value and it's still unspent
+     * @target it should not update the box member variable if it has a value
+     * and it's still unspent (node api version)
      * @dependencies
-     * - mockedErgoNodeClientFactory
+     * - ErgoNodeClientFactory
      * @scenario
      * - create an instance of RWTRepo with networkType=ErgoNetworkType.Node
-     * and specific repoAddress and repoNft
-     * - assign an ErgoBox to RWTRepo.box
-     * - mock RWTRepo.nodeClient to return a client that returns predefined
-     * box info for the repoAddress and repoNft
-     * - call RWTRepo.updateBox to check if it should update the box
-     * - check RWTRepo.box to be populated with correct info
+     * - assign an ErgoBox to this.box
+     * - mock this.nodeClient
+     * - call this.updateBox
+     * - check this.box to be populated with correct info
      * - check if node client api has been called
-     * - check if RWTRepo.box is not changed and not replaced with a new
-     * instance
+     * - check if this.box is not changed and not replaced with a new instance
      * @expected
-     * - RWTRepo.box should be populated with correct info
+     * - this.box should be populated with correct info
      * - node client api should have been called
-     * - RWTRepo.box should not be changed and not replaced with a new instance
+     * - this.box should not have been changed and not replaced with a new
+     *   instance
      */
-    it(`updateBox of RWTRepo created with networkType=ErgoNetworkType.Node
-    argument, should not update the box member variable if it has a value and
-    it's still unspent`, async () => {
+    it(`it should not update the box member variable if it has a value and it's
+    still unspent (node api version)`, async () => {
       const rwtRepo = new RWTRepo(
         rwtRepoInfoSample.Address,
         rwtRepoInfoSample.nft,
@@ -323,21 +288,18 @@ describe('RWTRepo', () => {
 
   describe('getErgCollateral', () => {
     /**
-     * @target RWTRepo.getErgCollateral should return a bigint with the value
-     * stores in R6[4] of RWTRepo.box
+     * @target should return a bigint with the value stored in R6[4] of this.box
      * @dependencies
-     * - MockedErgoExplorerClientFactory
+     * - ErgoExplorerClientFactory
      * @scenario
-     * - create an instance of RWTRepo with specific repoAddress and repoNft
-     * - mock RWTRepo.explorerClient to return a client that returns predefined
-     * box info for the repoAddress and repoNft
-     * - call RWTRepo.updateBox to update RWTRepo.box
-     * - check RWTRepo.getErgCollateral() to return the correct value
+     * - create an instance of RWTRepo
+     * - mock this.explorerClient
+     * - call this.updateBox to update this.box
+     * - check this.getErgCollateral() to return the correct value
      * @expected
-     * - RWTRepo.getErgCollateral() should return the correct value
+     * - this.getErgCollateral() should return the correct value
      */
-    it(`RWTRepo.getErgCollateral should return a bigint with the value stores in
-    R6[4] of RWTRepo.box`, async () => {
+    it(`should return a bigint with the value stored in R6[4] of this.box`, async () => {
       const rwtRepo = new RWTRepo(
         rwtRepoInfoSample.Address,
         rwtRepoInfoSample.nft,
@@ -360,20 +322,18 @@ describe('RWTRepo', () => {
     });
 
     /**
-     * @target RWTRepo.getErgCollateral should throw an exception when
-     * RWTRepo.box is undefined
+     * @target should throw an exception when this.box is undefined
      * @dependencies
      * - None
      * @scenario
-     * - create an instance of RWTRepo with specific repoAddress and repoNft
-     * - check RWTRepo.box to be undefined
-     * - check RWTRepo.getErgCollateral() to throw exception
+     * - create an instance of RWTRepo
+     * - check this.box to be undefined
+     * - check this.getErgCollateral() to throw exception
      * @expected
-     * - RWTRepo.box should be undefined
-     * - RWTRepo.getErgCollateral() should throw exception
+     * - this.box should be undefined
+     * - this.getErgCollateral() should throw exception
      */
-    it(`RWTRepo.getErgCollateral should throw an exception when RWTRepo.box is
-    undefined`, async () => {
+    it(`should throw an exception when this.box is undefined`, async () => {
       const rwtRepo = new RWTRepo(
         rwtRepoInfoSample.Address,
         rwtRepoInfoSample.nft,
@@ -389,21 +349,18 @@ describe('RWTRepo', () => {
 
   describe('getRsnCollateral', () => {
     /**
-     * @target RWTRepo.getRsnCollateral should return a bigint with the value
-     * stored in R6[5] of RWTRepo.box
+     * @target should return a bigint with the value stored in R6[5] of this.box
      * @dependencies
-     * - MockedErgoExplorerClientFactory
+     * - ErgoExplorerClientFactory
      * @scenario
-     * - create an instance of RWTRepo with specific repoAddress and repoNft
-     * - mock RWTRepo.explorerClient to return a client that returns predefined
-     * box info for the repoAddress and repoNft
-     * - call RWTRepo.updateBox to update RWTRepo.box
-     * - check RWTRepo.getRsnCollateral() to return the correct value
+     * - create an instance of RWTRepo
+     * - mock this.explorerClient
+     * - call this.updateBox to update this.box
+     * - check this.getRsnCollateral() to return the correct value
      * @expected
-     * - RWTRepo.getRsnCollateral() should return the correct value
+     * - this.getRsnCollateral() should return the correct value
      */
-    it(`RWTRepo.getRsnCollateral should return a bigint with the value stored in
-    R6[5] of RWTRepo.box`, async () => {
+    it(`should return a bigint with the value stored in R6[5] of this.box`, async () => {
       const rwtRepo = new RWTRepo(
         rwtRepoInfoSample.Address,
         rwtRepoInfoSample.nft,
@@ -426,19 +383,19 @@ describe('RWTRepo', () => {
     });
 
     /**
-     * @target RWTRepo.getRsnCollateral should throw an exception when
-     * RWTRepo.box is undefined
+     * @target this.getRsnCollateral should throw an exception when this.box is
+     * undefined
      * @dependencies
      * - None
      * @scenario
-     * - create an instance of RWTRepo with specific repoAddress and repoNft
-     * - check RWTRepo.box to be undefined
-     * - check RWTRepo.getRsnCollateral() to throw exception
+     * - create an instance of RWTRepo
+     * - check this.box to be undefined
+     * - check this.getRsnCollateral() to throw exception
      * @expected
-     * - RWTRepo.box should be undefined
-     * - RWTRepo.getRsnCollateral() should throw exception
+     * - this.box should be undefined
+     * - this.getRsnCollateral() should throw exception
      */
-    it(`RWTRepo.getRsnCollateral should throw an exception when RWTRepo.box is
+    it(`this.getRsnCollateral should throw an exception when this.box is
     undefined`, async () => {
       const rwtRepo = new RWTRepo(
         rwtRepoInfoSample.Address,
@@ -455,23 +412,20 @@ describe('RWTRepo', () => {
 
   describe('getRequiredCommitmentCount', () => {
     /**
-     * @target RWTRepo.getRequiredCommitmentCount should the value of the second
-     * argument of the following formula, when R6[3] is the greater value:
-     * min(R6[3], R6[1] * (len(R4) - 1) / 100 + R6[2])
+     * @target should return (R6[1] * (len(R4) - 1) / 100 + R6[2]), when it is
+     * less than R6[3]
      * @dependencies
-     * - MockedErgoExplorerClientFactory
+     * - ErgoExplorerClientFactory
      * @scenario
-     * - create an instance of RWTRepo with specific repoAddress and repoNft
-     * - mock RWTRepo.explorerClient to return a client that returns predefined
-     * box info for the repoAddress and repoNft
-     * - call RWTRepo.updateBox to update RWTRepo.box
-     * - check RWTRepo.getRequiredCommitmentCount() to return the correct value
+     * - create an instance of RWTRepo
+     * - mock this.explorerClient
+     * - call this.updateBox
+     * - check this.getRequiredCommitmentCount() to return the correct value
      * @expected
-     * - RWTRepo.getRequiredCommitmentCount() should return the correct value
+     * - this.getRequiredCommitmentCount() should return the correct value
      */
-    it(`RWTRepo.getRequiredCommitmentCount should the value of the second
-    argument of the following formula, when R6[3] is the greater value:
-    min(R6[3], R6[1] * (len(R4) - 1) / 100 + R6[2])`, async () => {
+    it(`should return (R6[1] * (len(R4) - 1) / 100 + R6[2]), when it is less
+    than R6[3]`, async () => {
       const rwtRepo = new RWTRepo(
         rwtRepoInfoSample.Address,
         rwtRepoInfoSample.nft,
@@ -503,22 +457,19 @@ describe('RWTRepo', () => {
 
     /**
      * @target RWTRepo.getRequiredCommitmentCount should return R6[3], when
-     * R6[3] is the lower value in the following formula:
-     * min(R6[3], R6[1] * (len(R4) - 1) / 100 + R6[2])
+     * R6[3] is less than (R6[1] * (len(R4) - 1) / 100 + R6[2])
      * @dependencies
-     * - MockedErgoExplorerClientFactory
+     * - ErgoExplorerClientFactory
      * @scenario
-     * - create an instance of RWTRepo with specific repoAddress and repoNft
-     * - mock RWTRepo.explorerClient to return a client that returns predefined
-     * box info for the repoAddress and repoNft
-     * - call RWTRepo.updateBox to update RWTRepo.box
-     * - check RWTRepo.getRequiredCommitmentCount() to return the correct value
+     * - create an instance of RWTRepo
+     * - mock this.explorerClient
+     * - call this.updateBox
+     * - check this.getRequiredCommitmentCount() to return the correct value
      * @expected
-     * - RWTRepo.getRequiredCommitmentCount() should return the correct value
+     * - this.getRequiredCommitmentCount() should return the correct value
      */
     it(`RWTRepo.getRequiredCommitmentCount should return R6[3], when R6[3] is
-    the lower value in the following formula:
-    min(R6[3], R6[1] * (len(R4) - 1) / 100 + R6[2])`, async () => {
+    less than (R6[1] * (len(R4) - 1) / 100 + R6[2])`, async () => {
       const rwtRepo = new RWTRepo(
         rwtRepoInfoSample.Address,
         rwtRepoInfoSample.nft,
@@ -544,20 +495,18 @@ describe('RWTRepo', () => {
     });
 
     /**
-     * @target RWTRepo.getRequiredCommitmentCount should throw an exception when
-     * RWTRepo.box is undefined
+     * @target should throw an exception when this.box is undefined
      * @dependencies
      * - None
      * @scenario
-     * - create an instance of RWTRepo with specific repoAddress and repoNft
-     * - check RWTRepo.box to be undefined
-     * - check RWTRepo.getRequiredCommitmentCount() to throw exception
+     * - create an instance of RWTRepo
+     * - check this.box to be undefined
+     * - check this.getRequiredCommitmentCount() to throw exception
      * @expected
-     * - RWTRepo.box should be undefined
-     * - RWTRepo.getRequiredCommitmentCount() should throw exception
+     * - this.box should be undefined
+     * - this.getRequiredCommitmentCount() should throw exception
      */
-    it(`RWTRepo.getRequiredCommitmentCount should throw an exception when
-    RWTRepo.box is undefined`, async () => {
+    it(`should throw an exception when this.box is undefined`, async () => {
       const rwtRepo = new RWTRepo(
         rwtRepoInfoSample.Address,
         rwtRepoInfoSample.nft,
@@ -573,21 +522,18 @@ describe('RWTRepo', () => {
 
   describe('getCommitmentRwtCount', () => {
     /**
-     * @target RWTRepo.getCommitmentRwtCount should return a bigint with the
-     * value stored in R6[0] of RWTRepo.box
+     * @target should return a bigint with the value stored in R6[0] of this.box
      * @dependencies
-     * - MockedErgoExplorerClientFactory
+     * - ErgoExplorerClientFactory
      * @scenario
-     * - create an instance of RWTRepo with specific repoAddress and repoNft
-     * - mock RWTRepo.explorerClient to return a client that returns predefined
-     * box info for the repoAddress and repoNft
-     * - call RWTRepo.updateBox to update RWTRepo.box
-     * - check RWTRepo.getCommitmentRwtCount() to return the correct value
+     * - create an instance of RWTRepo
+     * - mock RWTRepo.explorerClient
+     * - call this.updateBox
+     * - check this.getCommitmentRwtCount() to return the correct value
      * @expected
-     * - RWTRepo.getCommitmentRwtCount() should return the correct value
+     * - this.getCommitmentRwtCount() should return the correct value
      */
-    it(`RWTRepo.getCommitmentRwtCount should return a bigint with the value
-    stored in R6[0] of RWTRepo.box`, async () => {
+    it(`should return a bigint with the value stored in R6[0] of this.box`, async () => {
       const rwtRepo = new RWTRepo(
         rwtRepoInfoSample.Address,
         rwtRepoInfoSample.nft,
@@ -612,20 +558,18 @@ describe('RWTRepo', () => {
     });
 
     /**
-     * @target RWTRepo.getCommitmentRwtCount should throw an exception when
-     * RWTRepo.box is undefined
+     * @target should throw an exception when this.box is undefined
      * @dependencies
      * - None
      * @scenario
-     * - create an instance of RWTRepo with specific repoAddress and repoNft
-     * - check RWTRepo.box to be undefined
-     * - check RWTRepo.getCommitmentRwtCount() to throw exception
+     * - create an instance of RWTRepo
+     * - check this.box to be undefined
+     * - check this.getCommitmentRwtCount() to throw exception
      * @expected
-     * - RWTRepo.box should be undefined
-     * - RWTRepo.getCommitmentRwtCount() should throw exception
+     * - this.box should be undefined
+     * - this.getCommitmentRwtCount() should throw exception
      */
-    it(`RWTRepo.getCommitmentRwtCount should throw an exception when RWTRepo.box
-    is undefined`, async () => {
+    it(`should throw an exception when this.box is undefined`, async () => {
       const rwtRepo = new RWTRepo(
         rwtRepoInfoSample.Address,
         rwtRepoInfoSample.nft,
@@ -641,21 +585,18 @@ describe('RWTRepo', () => {
 
   describe('getWidIndex', () => {
     /**
-     * @target RWTRepo.getWidIndex should return index of wid (watcher id) in R4
-     * register of RWTRepo.box
+     * @target should return index of watcher id in R4 register of this.box
      * @dependencies
-     * - MockedErgoExplorerClientFactory
+     * - ErgoExplorerClientFactory
      * @scenario
-     * - create an instance of RWTRepo with specific repoAddress and repoNft
-     * - mock RWTRepo.explorerClient to return a client that returns predefined
-     * box info for the repoAddress and repoNft
-     * - call RWTRepo.updateBox to update RWTRepo.box
-     * - check RWTRepo.getWidIndex() to return the index wid in R4
+     * - create an instance of RWTRepo
+     * - mock this.explorerClient
+     * - call this.updateBox
+     * - check this.getWidIndex() to return the correct index
      * @expected
-     * - RWTRepo.getWidIndex() should return the index wid in R4
+     * - RWTRepo.getWidIndex() should return the correct index
      */
-    it(`RWTRepo.getWidIndex should return index of wid (watcher id) in R4
-    register of RWTRepo.box`, async () => {
+    it(`should return index of watcher id in R4 register of this.box`, async () => {
       const rwtRepo = new RWTRepo(
         rwtRepoInfoSample.Address,
         rwtRepoInfoSample.nft,
@@ -678,21 +619,19 @@ describe('RWTRepo', () => {
     });
 
     /**
-     * @target RWTRepo.getWidIndex should return -1 if wid (watcher id) is not
-     * present in R4 register of RWTRepo.box
+     * @target should return -1 if watcher id is not present in R4 register of
+     * this.box
      * @dependencies
-     * - MockedErgoExplorerClientFactory
+     * - ErgoExplorerClientFactory
      * @scenario
-     * - create an instance of RWTRepo with specific repoAddress and repoNft
-     * - mock RWTRepo.explorerClient to return a client that returns predefined
-     * box info for the repoAddress and repoNft
-     * - call RWTRepo.updateBox to update RWTRepo.box
-     * - check RWTRepo.getWidIndex() to return -1
+     * - create an instance of RWTRepo
+     * - mock this.explorerClient
+     * - call this.updateBox
+     * - check this.getWidIndex() to return -1 for a non-existent watcher id
      * @expected
-     * - RWTRepo.getWidIndex() should return -1
+     * - this.getWidIndex() should return -1 for a non-existent watcher id
      */
-    it(`RWTRepo.getWidIndex should return -1 if wid (watcher id) is not present
-    in R4 register of RWTRepo.box`, async () => {
+    it(`should return -1 if watcher id is not present in R4 register of this.box`, async () => {
       const rwtRepo = new RWTRepo(
         rwtRepoInfoSample.Address,
         rwtRepoInfoSample.nft,
@@ -711,19 +650,17 @@ describe('RWTRepo', () => {
     });
 
     /**
-     * @target RWTRepo.getWidIndex should throw an exception when RWTRepo.box is
-     * undefined
+     * @target should throw an exception when this.box is undefined
      * @dependencies
      * - None
      * @scenario
-     * - create an instance of RWTRepo with specific repoAddress and repoNft
-     * - check RWTRepo.box to be undefined
-     * - check RWTRepo.getWidIndex() to throw exception
+     * - create an instance of RWTRepo
+     * - check this.box to be undefined
+     * - check this.getWidIndex() to throw exception
      * @expected
-     * - RWTRepo.getWidIndex() should throw exception
+     * - this.getWidIndex() should throw exception
      */
-    it(`RWTRepo.getWidIndex should throw an exception when RWTRepo.box is
-    undefined`, async () => {
+    it(`should throw an exception when this.box is undefined`, async () => {
       const rwtRepo = new RWTRepo(
         rwtRepoInfoSample.Address,
         rwtRepoInfoSample.nft,
@@ -738,25 +675,18 @@ describe('RWTRepo', () => {
 
   describe('getPermitCount', () => {
     /**
-     * @target RWTRepo.getPermitCount should return permitCount for a wid which
-     * is equal to RWTRepo.box.R5[widIndex]. widIndex is the index of wid in the
-     * RWTRepo.box.R4 register
+     * @target should return permitCount for a watcher id
      * @dependencies
-     * - MockedErgoExplorerClientFactory
+     * - ErgoExplorerClientFactory
      * @scenario
-     * - create an instance of RWTRepo with specific repoAddress and repoNft
-     * - mock RWTRepo.explorerClient to return a client that returns predefined
-     * box info for the repoAddress and repoNft
-     * - call RWTRepo.updateBox to update RWTRepo.box
-     * - check RWTRepo.getPermitCount() to extract and return correct
-     * permitCount from RWTRepo.box.R5 register
+     * - create an instance of RWTRepo
+     * - mock this.explorerClient
+     * - call this.updateBox
+     * - check this.getPermitCount() to return correct value for permitCount
      * @expected
-     * - RWTRepo.getPermitCount() should extract and return correct permitCount
-     * from RWTRepo.box.R5 register
+     * - RWTRepo.getPermitCount() should return correct value for permitCount
      */
-    it(`RWTRepo.getPermitCount should return permitCount for a wid which is
-    equal to RWTRepo.box.R5[widIndex]. widIndex is the index of wid in the
-    RWTRepo.box.R4 register`, async () => {
+    it(`should return permitCount for a watcher id`, async () => {
       const rwtRepo = new RWTRepo(
         rwtRepoInfoSample.Address,
         rwtRepoInfoSample.nft,
@@ -787,21 +717,18 @@ describe('RWTRepo', () => {
     });
 
     /**
-     * @target RWTRepo.getPermitCount should return 0 for a wid doesn't exist in
-     * RWTRepo.box.R4 register
+     * @target should return 0 for nonexistent watcher id
      * @dependencies
-     * - MockedErgoExplorerClientFactory
+     * - ErgoExplorerClientFactory
      * @scenario
-     * - create an instance of RWTRepo with specific repoAddress and repoNft
-     * - mock RWTRepo.explorerClient to return a client that returns predefined
-     * box info for the repoAddress and repoNft
-     * - call RWTRepo.updateBox to update RWTRepo.box
-     * - check RWTRepo.getPermitCount() to return 0 for a missing wid
+     * - create an instance of RWTRepo
+     * - mock this.explorerClient
+     * - call this.updateBox to update this.box
+     * - check this.getPermitCount() to return 0 for a missing watcher id
      * @expected
-     * - RWTRepo.getPermitCount() should return 0 for a missing wid
+     * - this.getPermitCount() should return 0 for a missing watcher id
      */
-    it(`RWTRepo.getPermitCount should return 0 for a wid doesn't exist in
-    RWTRepo.box.R4 register`, async () => {
+    it(`should return 0 for nonexistent watcher id`, async () => {
       const rwtRepo = new RWTRepo(
         rwtRepoInfoSample.Address,
         rwtRepoInfoSample.nft,
@@ -820,18 +747,16 @@ describe('RWTRepo', () => {
     });
 
     /**
-     * @target RWTRepo.getPermitCount should throw an exception when RWTRepo.box
-     * is undefined
+     * @target should throw an exception when this.box is undefined
      * @dependencies
      * - None
      * @scenario
-     * - create an instance of RWTRepo with specific repoAddress and repoNft
-     * - check RWTRepo.getPermitCount() to throw exception
+     * - create an instance of RWTRepo
+     * - check this.getPermitCount() to throw exception
      * @expected
-     * - RWTRepo.getPermitCount() should throw exception
+     * - this.getPermitCount() should throw exception
      */
-    it(`RWTRepo.getPermitCount should throw an exception when RWTRepo.box is
-    undefined`, async () => {
+    it(`should throw an exception when this.box is undefined`, async () => {
       const rwtRepo = new RWTRepo(
         rwtRepoInfoSample.Address,
         rwtRepoInfoSample.nft,
@@ -846,25 +771,24 @@ describe('RWTRepo', () => {
 
   describe('toBuilder', () => {
     /**
-     * @target RWTRepo.toBuilder should create and return an instance of
-     * RWTRepoBuilder with correct parameters taken from the rwtRepo instance
+     * @target should create and return an instance of RWTRepoBuilder using this
+     * instance's properties
      * @dependencies
-     * - MockedErgoExplorerClientFactory
+     * - ErgoExplorerClientFactory
      * @scenario
-     * - create an instance of RWTRepo with specific repoAddress and repoNft
-     * - mock RWTRepo.explorerClient to return a client that returns predefined
-     * box info for the repoAddress and repoNft
-     * - call RWTRepo.updateBox to update RWTRepo.box
-     * - check RWTRepo.toBuilder() to return an instance of RWTRepoBuilder
-     * - check RWTRepo.toBuilder() to have created the RWTRepoBuilder instance
-     * with correct parameters
+     * - create an instance of RWTRepo
+     * - mock this.explorerClient
+     * - call this.updateBox to update this.box
+     * - check this.toBuilder() to return an instance of RWTRepoBuilder
+     * - check this.toBuilder() to have created the RWTRepoBuilder instance with
+     *   correct properties
      * @expected
-     * - check RWTRepo.toBuilder() should return an instance of RWTRepoBuilder
+     * - check this.toBuilder() should return an instance of RWTRepoBuilder
      * - check RWTRepo.toBuilder() should have created the RWTRepoBuilder
-     * instance with correct parameters
+     *   instance with correct properties
      */
-    it(`RWTRepo.toBuilder should create and return an instance of RWTRepoBuilder
-    with correct parameters taken from the rwtRepo instance`, async () => {
+    it(`should create and return an instance of RWTRepoBuilder using this
+    instance's properties`, async () => {
       const rwtRepo = new RWTRepo(
         rwtRepoInfoSample.Address,
         rwtRepoInfoSample.nft,
@@ -931,18 +855,16 @@ describe('RWTRepo', () => {
     });
 
     /**
-     * @target RWTRepo.toBuilder should throw an exception when RWTRepo.box is
-     * undefined
+     * @target should throw an exception when this.box is undefined
      * @dependencies
      * - None
      * @scenario
-     * - create an instance of RWTRepo with specific repoAddress and repoNft
-     * - check RWTRepo.toBuilder() to throw exception
+     * - create an instance of RWTRepo
+     * - check this.toBuilder() to throw exception
      * @expected
-     * - RWTRepo.toBuilder() should throw exception
+     * - this.toBuilder() should throw exception
      */
-    it(`RWTRepo.toBuilder should throw an exception when RWTRepo.box is
-    undefined`, async () => {
+    it(`should throw an exception when this.box is undefined`, async () => {
       const rwtRepo = new RWTRepo(
         rwtRepoInfoSample.Address,
         rwtRepoInfoSample.nft,

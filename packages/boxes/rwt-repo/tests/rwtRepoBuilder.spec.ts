@@ -55,33 +55,25 @@ describe('RWTRepoBuilder', () => {
 
   describe('addNewUser', () => {
     /**
-     * @target RWTRepo.addNewUser should add the passed wid, rwtCount arguments
-     * to this.widPermits, and do the following updates:
-     * this.rwtCount -= rwtCount
-     * this.rsnCount += rsnCount
+     * @target should add a new user using passed watcher id and rwt token count
      * @dependencies
      * - None
      * @scenario
      * - create an instance of RWTRepoBuilder
-     * - call RWTRepoBuilder.addNewUser
-     * - check RWTRepoBuilder.widPermits to not have contained the new wid
-     * before RWTRepoBuilder.addNewUser
-     * - check RWTRepoBuilder.widPermits to contain the new wid after
-     * RWTRepoBuilder.addNewUser as the last item
-     * - check RWTRepoBuilder.rwtCount to have been updated correctly
-     * - check RWTRepoBuilder.rsnCount to have been updated correctly
+     * - call this.addNewUser
+     * - check this.widPermits not to contain the new watcher id before calling
+     *   this.addNewUser
+     * - check this.widPermits to contain the new watcher id as the last item
+     * - check this.rwtCount to have been updated correctly
+     * - check this.rsnCount to have been updated correctly
      * @expected
-     * - RWTRepoBuilder.widPermits should not have contained the new wid before
-     * RWTRepoBuilder.addNewUser
-     * - RWTRepoBuilder.widPermits should contain the new wid after
-     * RWTRepoBuilder.addNewUser as the last item
-     * - RWTRepoBuilder.rwtCount should have been updated correctly
-     * - RWTRepoBuilder.rsnCount should have been updated correctly
+     * - this.widPermits should not contain the new watcher id before calling
+     *   this.addNewUser
+     * - this.widPermits should contain the new watcher id as the last item
+     * - this.rwtCount should have been updated correctly
+     * - this.rsnCount should have been updated correctly
      */
-    it(`should add the passed wid, rwtCount arguments to
-    this.widPermits, and do the following updates:
-    this.rwtCount -= rwtCount
-    this.rsnCount += rsnCount`, async () => {
+    it(`should add a new user using passed watcher id and rwt token count`, async () => {
       const wid = '34f2a6bb';
       const rwtCount = 2n;
       const oldWidPermits = [...rwtRepoBuilder['widPermits']];
@@ -102,20 +94,19 @@ describe('RWTRepoBuilder', () => {
     });
 
     /**
-     * @target should throw exception when passed rwtCount as argument is
-     * greater than available rwtCount
+     * @target should throw exception when passed rwtCount is greater than
+     * available rwtCount
      * @dependencies
      * - None
      * @scenario
      * - create an instance of RWTRepoBuilder
-     * - call RWTRepoBuilder.addNewUser with a rwtCount greater than
-     * this.rwtCount
-     * - check RWTRepoBuilder.addNewUser to throw an exception
+     * - call this.addNewUser with a value greater than this.rwtCount
+     * - check this.addNewUser to throw an exception
      * @expected
-     * - RWTRepoBuilder.addNewUser should throw an exception
+     * - this.addNewUser should throw an exception
      */
-    it(`should throw exception when passed rwtCount as argument is greater than
-    available rwtCount`, async () => {
+    it(`should throw exception when passed rwtCount is greater than available
+    rwtCount`, async () => {
       const wid = '34f2a6bb';
 
       expect(() =>
@@ -124,17 +115,17 @@ describe('RWTRepoBuilder', () => {
     });
 
     /**
-     * @target should throw exception when adding an existing wid
+     * @target should throw exception when adding an existing watcher id
      * @dependencies
      * - None
      * @scenario
      * - create an instance of RWTRepoBuilder
-     * - call RWTRepoBuilder.addNewUser with an existing wid
-     * - check RWTRepoBuilder.addNewUser to throw an exception
+     * - call this.addNewUser with an existing watcher id
+     * - check this.addNewUser to throw an exception
      * @expected
-     * - RWTRepoBuilder.addNewUser should throw an exception
+     * - this.addNewUser should throw an exception
      */
-    it(`should throw exception when adding an existing wid`, async () => {
+    it(`should throw exception when adding an existing watcher id`, async () => {
       expect(() =>
         rwtRepoBuilder.addNewUser(rwtRepoBuilder['widPermits'][0].wid, 1n)
       ).toThrowError();
@@ -143,41 +134,32 @@ describe('RWTRepoBuilder', () => {
 
   describe('removeUser', () => {
     /**
-     * @target RWTRepo.removeUser should remove the item with the passed wid
-     * from this.widPermits, and do the following updates:
-     * this.rwtCount += rwtCount
-     * this.rsnCount -= rsnCount
+     * @target should remove the user corresponding to passed watcher id
      * @dependencies
-     * - MockedErgoExplorerClientFactory
+     * - ErgoExplorerClientFactory
      * @scenario
-     * - create an instance of RWTRepo with specific repoAddress and repoNft
-     * - mock RWTRepo.explorerClient to return a client that returns predefined
-     * box info for the repoAddress and repoNft
-     * - call RWTRepo.updateBox to update RWTRepo.box
-     * - call RWTRepo.toBuilder to return an instance of RWTRepoBuilder
-     * - call RWTRepoBuilder.removeUser
-     * - check RWTRepoBuilder.widPermits to have contained the passed wid before
-     * calling RWTRepoBuilder.removeUser
-     * - check RWTRepoBuilder.widPermits not to contain the passed wid after
-     * RWTRepoBuilder.removeUser
-     * - check RWTRepoBuilder.rwtCount to have been updated correctly
-     * - check RWTRepoBuilder.rsnCount to have been updated correctly
-     * - check RWTRepoBuilder.lastModifiedWid to have been updated with the
-     * passed wid
+     * - create an instance of RWTRepo
+     * - mock this.explorerClient
+     * - call this.updateBox
+     * - call this.toBuilder to get an instance of RWTRepoBuilder
+     * - call this.removeUser
+     * - check this.widPermits to have contained the passed wid before calling
+     *   this.removeUser
+     * - check this.widPermits not to contain the passed wid after calling
+     *   this.removeUser
+     * - check this.rwtCount to have been updated correctly
+     * - check this.rsnCount to have been updated correctly
+     * - check this.lastModifiedWid to have been updated with the passed wid
      * @expected
-     * - RWTRepoBuilder.widPermits should have contained the passed wid before
-     * calling RWTRepoBuilder.removeUser
-     * - RWTRepoBuilder.widPermits should not contain the passed wid after
-     * calling RWTRepoBuilder.removeUser
-     * - RWTRepoBuilder.rwtCount should have been updated correctly
-     * - RWTRepoBuilder.rsnCount should have been updated correctly
-     * - RWTRepoBuilder.lastModifiedWid should have been updated with the passed
-     * wid
+     * - this.widPermits have contained the passed wid before calling
+     *   this.removeUser
+     * - this.widPermits should not contain the passed wid after calling
+     *   this.removeUser
+     * - this.rwtCount should have been updated correctly
+     * - this.rsnCount should have been updated correctly
+     * - this.lastModifiedWid should have been updated with the passed wid
      */
-    it(`RWTRepo.removeUser should remove the item with the passed wid from
-    this.widPermits, and do the following updates:
-    this.rwtCount += rwtCount
-    this.rsnCount -= rsnCount`, async () => {
+    it(`should remove the user corresponding to passed watcher id`, async () => {
       const rwtRepo = new RWTRepo(
         rwtRepoInfoSample.Address,
         rwtRepoInfoSample.nft,
@@ -214,17 +196,17 @@ describe('RWTRepoBuilder', () => {
     });
 
     /**
-     * @target should throw exception when removing a non-existent wid
+     * @target should throw exception when removing a non-existent watcher id
      * @dependencies
      * - None
      * @scenario
      * - create an instance of RWTRepoBuilder
-     * - call RWTRepoBuilder.removeUser with a non-existent wid
-     * - check RWTRepoBuilder.removeUser to throw an exception
+     * - call this.removeUser with a non-existent wid
+     * - check this.removeUser to throw an exception
      * @expected
-     * - RWTRepoBuilder.removeUser should throw an exception
+     * - this.removeUser should throw an exception
      */
-    it(`should throw exception when removing a non-existent wid`, async () => {
+    it(`should throw exception when removing a non-existent watcher id`, async () => {
       const oldWidPermits = [...rwtRepoBuilder['widPermits']];
       const oldRwtCount = rwtRepoBuilder['rwtCount'];
       const oldRsnCount = rwtRepoBuilder['rsnCount'];
@@ -238,31 +220,24 @@ describe('RWTRepoBuilder', () => {
 
   describe('setCommitmentRwtCount', () => {
     /**
-     * @target RWTRepoBuilder.setCommitmentRwtCount should set value of
-     * RWTRepoBuilder.commitmentRwtCount and return its RWTRepoBuilder's
-     * instance (this)
+     * @target should set value of this.commitmentRwtCount and return this
      * @dependencies
-     * - MockedErgoExplorerClientFactory
+     * - ErgoExplorerClientFactory
      * @scenario
-     * - create an instance of RWTRepo with specific repoAddress and repoNft
-     * - mock RWTRepo.explorerClient to return a client that returns predefined
-     * box info for the repoAddress and repoNft
-     * - call RWTRepo.updateBox to update RWTRepo.box
-     * - call RWTRepo.toBuilder to return an instance of RWTRepoBuilder
-     * - call RWTRepoBuilder.setCommitmentRwtCount
-     * - check return value of RWTRepoBuilder.setCommitmentRwtCount to be the
-     * current instance of RWTRepoBuilder
-     * - check RWTRepoBuilder.commitmentRwtCount to have been set to the correct
-     * value
+     * - create an instance of RWTRepo
+     * - mock this.explorerClient
+     * - call this.updateBox
+     * - call this.toBuilder to get an instance of RWTRepoBuilder
+     * - call this.setCommitmentRwtCount
+     * - check return value of this.setCommitmentRwtCount to be the current
+     *   instance of RWTRepoBuilder
+     * - check this.commitmentRwtCount to have been set correctly
      * @expected
      * - return value of RWTRepoBuilder.setCommitmentRwtCount should be the
-     * current instance of RWTRepoBuilder
-     * - RWTRepoBuilder.commitmentRwtCount should have been set to the correct
-     * value
+     *   current instance of RWTRepoBuilder
+     * - this.commitmentRwtCount should have been set correctly
      */
-    it(`RWTRepoBuilder.setCommitmentRwtCount should set value of
-    RWTRepoBuilder.commitmentRwtCount and return its RWTRepoBuilder's instance
-    (this)`, async () => {
+    it(`should set value of this.commitmentRwtCount and return this`, async () => {
       const rwtRepo = new RWTRepo(
         rwtRepoInfoSample.Address,
         rwtRepoInfoSample.nft,
@@ -291,31 +266,24 @@ describe('RWTRepoBuilder', () => {
 
   describe('setWatcherQuorumPercentage', () => {
     /**
-     * @target RWTRepoBuilder.setWatcherQuorumPercentage should set value of
-     * RWTRepoBuilder.quorumPercentage and return its RWTRepoBuilder's instance
-     * (this)
+     * @target should set value of this.quorumPercentage and return this
      * @dependencies
-     * - MockedErgoExplorerClientFactory
+     * - ErgoExplorerClientFactory
      * @scenario
-     * - create an instance of RWTRepo with specific repoAddress and repoNft
-     * - mock RWTRepo.explorerClient to return a client that returns predefined
-     * box info for the repoAddress and repoNft
-     * - call RWTRepo.updateBox to update RWTRepo.box
-     * - call RWTRepo.toBuilder to return an instance of RWTRepoBuilder
-     * - call RWTRepoBuilder.setWatcherQuorumPercentage
-     * - check return value of RWTRepoBuilder.setWatcherQuorumPercentage to be
-     * the current instance of RWTRepoBuilder
-     * - check RWTRepoBuilder.quorumPercentage to have been set to the correct
-     * value
+     * - create an instance of RWTRepo
+     * - mock this.explorerClient
+     * - call this.updateBox
+     * - call this.toBuilder to get an instance of RWTRepoBuilder
+     * - call this.setWatcherQuorumPercentage
+     * - check return value of this.setWatcherQuorumPercentage to be the current
+     *   instance of RWTRepoBuilder
+     * - check this.quorumPercentage to have been set to the correct value
      * @expected
-     * - return value of RWTRepoBuilder.setWatcherQuorumPercentage should be the
-     * current instance of RWTRepoBuilder
-     * - RWTRepoBuilder.quorumPercentage should have been set to the correct
-     * value
+     * - return value of this.setWatcherQuorumPercentage should be the current
+     *   instance of RWTRepoBuilder
+     * - this.quorumPercentage should have been set to the correct value
      */
-    it(`RWTRepoBuilder.setWatcherQuorumPercentage should set value of
-    RWTRepoBuilder.quorumPercentage and return its RWTRepoBuilder's instance
-    (this)`, async () => {
+    it(`should set value of this.quorumPercentage and return this`, async () => {
       const rwtRepo = new RWTRepo(
         rwtRepoInfoSample.Address,
         rwtRepoInfoSample.nft,
@@ -341,30 +309,24 @@ describe('RWTRepoBuilder', () => {
 
   describe('setApprovalOffset', () => {
     /**
-     * @target RWTRepoBuilder.setApprovalOffset should set value of
-     * RWTRepoBuilder.approvalOffset and return its RWTRepoBuilder's instance
-     * (this)
+     * @target should set value of this.approvalOffset and return this
      * @dependencies
-     * - MockedErgoExplorerClientFactory
+     * - ErgoExplorerClientFactory
      * @scenario
-     * - create an instance of RWTRepo with specific repoAddress and repoNft
-     * - mock RWTRepo.explorerClient to return a client that returns predefined
-     * box info for the repoAddress and repoNft
-     * - call RWTRepo.updateBox to update RWTRepo.box
-     * - call RWTRepo.toBuilder to return an instance of RWTRepoBuilder
-     * - call RWTRepoBuilder.setApprovalOffset
-     * - check return value of RWTRepoBuilder.setApprovalOffset to be the
-     * current instance of RWTRepoBuilder
-     * - check RWTRepoBuilder.approvalOffset to have been set to the correct
-     * value
+     * - create an instance of RWTRepo
+     * - mock RWTRepo.explorerClient
+     * - call this.updateBox
+     * - call this.toBuilder to get an instance of RWTRepoBuilder
+     * - call this.setApprovalOffset
+     * - check return value of this.setApprovalOffset to be the current instance
+     *   of RWTRepoBuilder
+     * - check this.approvalOffset to have been set correctly
      * @expected
-     * - return value of RWTRepoBuilder.setApprovalOffset should be the current
-     * instance of RWTRepoBuilder
-     * - RWTRepoBuilder.approvalOffset should have been set to the correct value
+     * - return value of this.setApprovalOffset should be the current instance
+     *   of RWTRepoBuilder
+     * - this.approvalOffset should have been set correctly
      */
-    it(`RWTRepoBuilder.setApprovalOffset should set value of
-    RWTRepoBuilder.approvalOffset and return its RWTRepoBuilder's instance
-    (this)`, async () => {
+    it(`should set value of this.approvalOffset and return this`, async () => {
       const rwtRepo = new RWTRepo(
         rwtRepoInfoSample.Address,
         rwtRepoInfoSample.nft,
@@ -389,31 +351,24 @@ describe('RWTRepoBuilder', () => {
 
   describe('setMaximumApproval', () => {
     /**
-     * @target RWTRepoBuilder.setMaximumApproval should set value of
-     * RWTRepoBuilder.maximumApproval and return its RWTRepoBuilder's instance
-     * (this)
+     * @target should set value of this.maximumApproval and return this
      * @dependencies
-     * - MockedErgoExplorerClientFactory
+     * - ErgoExplorerClientFactory
      * @scenario
-     * - create an instance of RWTRepo with specific repoAddress and repoNft
-     * - mock RWTRepo.explorerClient to return a client that returns predefined
-     * box info for the repoAddress and repoNft
-     * - call RWTRepo.updateBox to update RWTRepo.box
-     * - call RWTRepo.toBuilder to return an instance of RWTRepoBuilder
-     * - call RWTRepoBuilder.setMaximumApproval
-     * - check return value of RWTRepoBuilder.setMaximumApproval to be the
-     * current instance of RWTRepoBuilder
-     * - check RWTRepoBuilder.maximumApproval to have been set to the correct
-     * value
+     * - create an instance of RWTRepo
+     * - mock this.explorerClient
+     * - call this.updateBox
+     * - call this.toBuilder to get an instance of RWTRepoBuilder
+     * - call this.setMaximumApproval
+     * - check return value of this.setMaximumApproval to be the current
+     *   instance of RWTRepoBuilder
+     * - check this.maximumApproval to have been set correctly
      * @expected
-     * - return value of RWTRepoBuilder.setMaximumApproval should be the current
-     * instance of RWTRepoBuilder
-     * - RWTRepoBuilder.maximumApproval should have been set to the correct
-     * value
+     * - return value of this.setMaximumApproval should be the current instance
+     *   of RWTRepoBuilder
+     * - this.maximumApproval should have been set correctly
      */
-    it(`RWTRepoBuilder.setMaximumApproval should set value of
-    RWTRepoBuilder.maximumApproval and return its RWTRepoBuilder's instance
-    (this)`, async () => {
+    it(`should set value of this.maximumApproval and return this`, async () => {
       const rwtRepo = new RWTRepo(
         rwtRepoInfoSample.Address,
         rwtRepoInfoSample.nft,
@@ -438,29 +393,24 @@ describe('RWTRepoBuilder', () => {
 
   describe('setErgCollateral', () => {
     /**
-     * @target RWTRepoBuilder.setErgCollateral should set value of
-     * RWTRepoBuilder.ergCollateral and return its RWTRepoBuilder's instance
-     * (this)
+     * @target should set value of this.ergCollateral and return this
      * @dependencies
-     * - MockedErgoExplorerClientFactory
+     * - ErgoExplorerClientFactory
      * @scenario
-     * - create an instance of RWTRepo with specific repoAddress and repoNft
-     * - mock RWTRepo.explorerClient to return a client that returns predefined
-     * box info for the repoAddress and repoNft
-     * - call RWTRepo.updateBox to update RWTRepo.box
-     * - call RWTRepo.toBuilder to return an instance of RWTRepoBuilder
-     * - call RWTRepoBuilder.setErgCollateral
-     * - check return value of RWTRepoBuilder.setErgCollateral to be the current
-     * instance of RWTRepoBuilder
-     * - check RWTRepoBuilder.ergCollateral to have been set to the correct
-     * value
+     * - create an instance of RWTRepo
+     * - mock this.explorerClient
+     * - call this.updateBox
+     * - call this.toBuilder to get an instance of RWTRepoBuilder
+     * - call this.setErgCollateral
+     * - check return value of this.setErgCollateral to be the current instance
+     *   of RWTRepoBuilder
+     * - check this.ergCollateral to have been set correctly
      * @expected
-     * - return value of RWTRepoBuilder.setErgCollateral should be the current
-     * instance of RWTRepoBuilder
-     * - RWTRepoBuilder.ergCollateral should have been set to the correct value
+     * - return value of this.setErgCollateral should be the current instance of
+     *   RWTRepoBuilder
+     * - this.ergCollateral should have been set to the correctly
      */
-    it(`RWTRepoBuilder.setErgCollateral should set value of
-    RWTRepoBuilder.ergCollateral and return its RWTRepoBuilder's instance (this)`, async () => {
+    it(`should set value of this.ergCollateral and return this`, async () => {
       const rwtRepo = new RWTRepo(
         rwtRepoInfoSample.Address,
         rwtRepoInfoSample.nft,
@@ -485,29 +435,24 @@ describe('RWTRepoBuilder', () => {
 
   describe('setRsnCollateral', () => {
     /**
-     * @target RWTRepoBuilder.setRsnCollateral should set value of
-     * RWTRepoBuilder.rsnCollateral and return its RWTRepoBuilder's instance
-     * (this)
+     * @target should set value of this.rsnCollateral and return this
      * @dependencies
-     * - MockedErgoExplorerClientFactory
+     * - ErgoExplorerClientFactory
      * @scenario
-     * - create an instance of RWTRepo with specific repoAddress and repoNft
-     * - mock RWTRepo.explorerClient to return a client that returns predefined
-     * box info for the repoAddress and repoNft
-     * - call RWTRepo.updateBox to update RWTRepo.box
-     * - call RWTRepo.toBuilder to return an instance of RWTRepoBuilder
-     * - call RWTRepoBuilder.setRsnCollateral
-     * - check return value of RWTRepoBuilder.setRsnCollateral to be the current
-     * instance of RWTRepoBuilder
-     * - check RWTRepoBuilder.rsnCollateral to have been set to the correct
-     * value
+     * - create an instance of RWTRepo
+     * - mock this.explorerClient
+     * - call this.updateBox
+     * - call this.toBuilder to get an instance of RWTRepoBuilder
+     * - call this.setRsnCollateral
+     * - check return value of this.setRsnCollateral to be the current instance
+     *   of RWTRepoBuilder
+     * - check this.rsnCollateral to have been set correctly
      * @expected
-     * - return value of RWTRepoBuilder.setRsnCollateral should be the current
-     * instance of RWTRepoBuilder
-     * - RWTRepoBuilder.rsnCollateral should have been set to the correct value
+     * - return value of this.setRsnCollateral should be the current instance of
+     *   RWTRepoBuilder
+     * - this.rsnCollateral should have been correctly
      */
-    it(`RWTRepoBuilder.setRsnCollateral should set value of
-    RWTRepoBuilder.rsnCollateral and return its RWTRepoBuilder's instance (this)`, async () => {
+    it(`should set value of this.rsnCollateral and return this`, async () => {
       const rwtRepo = new RWTRepo(
         rwtRepoInfoSample.Address,
         rwtRepoInfoSample.nft,
@@ -532,43 +477,32 @@ describe('RWTRepoBuilder', () => {
 
   describe('decrementPermits', () => {
     /**
-     * @target RWTRepoBuilder.decrementPermits should decrement rwtCount for a
-     * specific wid in RWTRepoBuilder.widPermits by the specified amount. Also
-     * should store the passed wid in RWTRepoBuilder.lastModifiedWid, return the
-     * current RWTRepoBuilder (this), and do the following updates:
-     * RWTRepoBuilder.rwtCount += rwtCount
-     * RWTRepoBuilder.rsnCount -= rwtCount
+     * @target should decrement rwtCount by passed amount for a specific watcher
+     * id and return this
      * @dependencies
-     * - MockedErgoExplorerClientFactory
+     * - ErgoExplorerClientFactory
      * @scenario
-     * - create an instance of RWTRepo with specific repoAddress and repoNft
-     * - mock RWTRepo.explorerClient to return a client that returns predefined
-     * box info for the repoAddress and repoNft
-     * - call RWTRepo.updateBox to update RWTRepo.box
-     * - call RWTRepo.toBuilder to return an instance of RWTRepoBuilder
-     * - call RWTRepoBuilder.decrementPermits
-     * - check return value of RWTRepoBuilder.decrementPermits to be the current
-     * instance of RWTRepoBuilder
-     * - check RWTRepoBuilder.widPermits to have been updated correctly
-     * - check RWTRepoBuilder.rwtCount to have been updated correctly
-     * - check RWTRepoBuilder.rsnCount to have been updated correctly
-     * - check RWTRepoBuilder.lastModifiedWid to have been updated with the
-     * passed wid
+     * - create an instance of RWTRepo
+     * - mock this.explorerClient
+     * - call this.updateBox
+     * - call this.toBuilder to get an instance of RWTRepoBuilder
+     * - call this.decrementPermits
+     * - check return value of this.decrementPermits to be the current instance
+     *   of RWTRepoBuilder
+     * - check this.widPermits to have been updated correctly
+     * - check this.rwtCount to have been updated correctly
+     * - check this.rsnCount to have been updated correctly
+     * - check this.lastModifiedWid to have been updated with the passed wid
      * @expected
-     * - return value of RWTRepoBuilder.decrementPermits should be the current
-     * instance of RWTRepoBuilder
-     * - RWTRepoBuilder.widPermits should have been decremented accordingly
-     * - RWTRepoBuilder.rwtCount should have been decremented accordingly
-     * - RWTRepoBuilder.rsnCount should have been incremented accordingly
-     * - RWTRepoBuilder.lastModifiedWid should have been updated with the passed
-     * wid
+     * - return value of this.decrementPermits should be the current instance of
+     *   RWTRepoBuilder
+     * - this.widPermits should have been decremented correctly
+     * - this.rwtCount should have been decremented correctly
+     * - this.rsnCount should have been incremented correctly
+     * - this.lastModifiedWid should have been updated with the passed wid
      */
-    it(`RWTRepoBuilder.decrementPermits should decrements rwtCount for a
-    specific wid in RWTRepoBuilder.widPermits by the specified amount. Also
-    should store the passed wid in RWTRepoBuilder.lastModifiedWid, return the
-    current RWTRepoBuilder (this), and do the following updates:
-    RWTRepoBuilder.rwtCount += rwtCount
-    RWTRepoBuilder.rsnCount -= rwtCount`, async () => {
+    it(`should decrement rwtCount by passed amount for a specific watcher id and
+    return this`, async () => {
       const rwtRepo = new RWTRepo(
         rwtRepoInfoSample.Address,
         rwtRepoInfoSample.nft,
@@ -604,43 +538,32 @@ describe('RWTRepoBuilder', () => {
 
   describe('incrementPermits', () => {
     /**
-     * @target RWTRepoBuilder.incrementPermits should increment rwtCount for a
-     * specific wid in RWTRepoBuilder.widPermits by the specified amount. Also
-     * should store the passed wid in RWTRepoBuilder.lastModifiedWid, return the
-     * current RWTRepoBuilder (this), and do the following updates:
-     * RWTRepoBuilder.rwtCount -= rwtCount
-     * RWTRepoBuilder.rsnCount += rwtCount
+     * @target should increment rwtCount by passed amount for a specific watcher
+     * id and return this
      * @dependencies
-     * - MockedErgoExplorerClientFactory
+     * - ErgoExplorerClientFactory
      * @scenario
-     * - create an instance of RWTRepo with specific repoAddress and repoNft
-     * - mock RWTRepo.explorerClient to return a client that returns predefined
-     * box info for the repoAddress and repoNft
-     * - call RWTRepo.updateBox to update RWTRepo.box
-     * - call RWTRepo.toBuilder to return an instance of RWTRepoBuilder
-     * - call RWTRepoBuilder.incrementPermits
-     * - check return value of RWTRepoBuilder.incrementPermits to be the current
-     * instance of RWTRepoBuilder
-     * - check RWTRepoBuilder.widPermits to have been updated correctly
-     * - check RWTRepoBuilder.rwtCount to have been updated correctly
-     * - check RWTRepoBuilder.rsnCount to have been updated correctly
-     * - check RWTRepoBuilder.lastModifiedWid to have been updated with the
-     * passed wid
+     * - create an instance of RWTRepo
+     * - mock this.explorerClient
+     * - call this.updateBox
+     * - call this.toBuilder to return an instance of RWTRepoBuilder
+     * - call this.incrementPermits
+     * - check return value of this.incrementPermits to be the current instance
+     *   of RWTRepoBuilder
+     * - check this.widPermits to have been updated correctly
+     * - check this.rwtCount to have been updated correctly
+     * - check this.rsnCount to have been updated correctly
+     * - check this.lastModifiedWid to have been updated with the passed wid
      * @expected
-     * - return value of RWTRepoBuilder.incrementPermits should be the current
-     * instance of RWTRepoBuilder
-     * - RWTRepoBuilder.widPermits should have been incremented accordingly
-     * - RWTRepoBuilder.rwtCount should have been incremented accordingly
-     * - RWTRepoBuilder.rsnCount should have been decremented accordingly
-     * - RWTRepoBuilder.lastModifiedWid should have been updated with the passed
-     * wid
+     * - return value of this.incrementPermits should be the current instance of
+     *   RWTRepoBuilder
+     * - this.widPermits should have been incremented correctly
+     * - this.rwtCount should have been incremented correctly
+     * - this.rsnCount should have been decremented correctly
+     * - this.lastModifiedWid should have been updated with the passed wid
      */
-    it(`RWTRepoBuilder.incrementPermits should increment rwtCount for a
-    specific wid in RWTRepoBuilder.widPermits by the specified amount. Also
-    should store the passed wid in RWTRepoBuilder.lastModifiedWid, return the
-    current RWTRepoBuilder (this), and do the following updates:
-    RWTRepoBuilder.rwtCount -= rwtCount
-    RWTRepoBuilder.rsnCount += rwtCount`, async () => {
+    it(`should increment rwtCount by passed amount for a specific watcher id and
+    return this`, async () => {
       const rwtRepo = new RWTRepo(
         rwtRepoInfoSample.Address,
         rwtRepoInfoSample.nft,
@@ -676,33 +599,30 @@ describe('RWTRepoBuilder', () => {
 
   describe('build', () => {
     /**
-     * @target RWTRepoBuilder.build should create a rwt repo candidate Ergo box
-     * based on data stored in its properties.
+     * @target should create an rwt repo candidate Ergo box using current
+     * instance's properties.
      * @dependencies
-     * - MockedErgoExplorerClientFactory
+     * - ErgoExplorerClientFactory
      * @scenario
-     * - create an instance of RWTRepo with specific repoAddress and repoNft
-     * - mock RWTRepo.explorerClient to return a client that returns predefined
-     * box info for the repoAddress and repoNft
-     * - call RWTRepo.updateBox to update RWTRepo.box
-     * - call RWTRepo.toBuilder to return an instance of RWTRepoBuilder
-     * - call RWTRepoBuilder.setValue to set box Erg value
-     * - call RWTRepoBuilder.setHeight to set box creation height
-     * - call RWTRepoBuilder.build to get an ErgoBoxCandidate instance
-     * - check returned ErgoBoxCandidate to have correct address, value and
-     * height set
-     * - check returned ErgoBoxCandidate to have correct valued for R4, R5, R6
-     * and R7 registers set
-     * - check returned ErgoBoxCandidate to have correct tokenId and values set
+     * - create an instance of RWTRepo
+     * - mock this.explorerClient
+     * - call this.updateBox
+     * - call this.toBuilder to get an instance of RWTRepoBuilder
+     * - call this.setValue to set box Erg value
+     * - call this.setHeight to set box creation height
+     * - call this.build to get an ErgoBoxCandidate instance
+     * - check returned box to have correct address, value and height set
+     * - check returned box to have correct values for R4, R5, R6 and R7
+     *   registers set
+     * - check returned box to have correct tokenId and values set
      * @expected
-     * - returned ErgoBoxCandidate should have correct address, value and height
-     * set
-     * - returned ErgoBoxCandidate should have correct valued for R4, R5, R6 and
-     * R7 registers set
-     * - check returned ErgoBoxCandidate to have correct tokenId and values set
+     * - returned box should have correct address, value and height set
+     * - returned box should have correct values for R4, R5, R6 and R7 registers
+     *   set
+     * - check returned box to have correct tokenId and values set
      */
-    it(`RWTRepoBuilder.build should create a rwt repo candidate Ergo box based
-    on data stored in its properties.`, async () => {
+    it(`should create an rwt repo candidate Ergo box using current instance's
+    properties.`, async () => {
       const rwtRepo = new RWTRepo(
         rwtRepoInfoSample.Address,
         rwtRepoInfoSample.nft,
