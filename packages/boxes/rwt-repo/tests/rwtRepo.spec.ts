@@ -5,7 +5,7 @@ import { Constant, ErgoBox } from 'ergo-lib-wasm-nodejs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { RWTRepo, RWTRepoBuilder } from '../lib';
 import { jsonBigInt } from '../lib/utils';
-import { mockedErgoExplorerClientFactory } from './mocked/ErgoExplorerClient.mock';
+import { mockedErgoExplorerClientFactory } from './mocked/ergoExplorerClient.mock';
 import { mockedErgoNodeClientFactory } from './mocked/ergoNodeClient.mock';
 import { rwtRepoInfoSample } from './rwtRepoTestData';
 
