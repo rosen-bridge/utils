@@ -10,16 +10,18 @@ export class ServiceManager {
   protected pendingPromises = new Map<string, Promise<boolean>>();
   protected logger: AbstractLogger;
 
-  protected constructor() {
-    this.logger = new DummyLogger();
+  protected constructor(logger?: AbstractLogger) {
+    this.logger = logger ?? new DummyLogger();
   }
 
   /**
    * initiates ServiceManager logger
    * @param logger
    */
-  init = (logger: AbstractLogger) => {
-    this.logger = logger;
+  public static setup = (logger?: AbstractLogger): ServiceManager => {
+    ServiceManager.instance = new ServiceManager(logger);
+    ServiceManager.instance.logger.debug('ServiceManager instantiated');
+    return ServiceManager.instance;
   };
 
   /**
@@ -27,10 +29,8 @@ export class ServiceManager {
    * @returns ServiceManager instance
    */
   public static getInstance = (): ServiceManager => {
-    if (!ServiceManager.instance) {
-      ServiceManager.instance = new ServiceManager();
-      ServiceManager.instance.logger.debug('ServiceManager instantiated');
-    }
+    if (!ServiceManager.instance)
+      throw Error(`ServiceManager instance doesn't exist`);
     return ServiceManager.instance;
   };
 
