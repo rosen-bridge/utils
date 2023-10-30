@@ -479,20 +479,25 @@ export class TssSigner extends Communicator {
         sign.signs
       );
       if (approvedGuards.length >= this.threshold.value) {
-        const payload: SignStartPayload = {
-          msg: sign.msg,
-          signs: sign.signs,
-          guards: sign.request.guards,
-        };
-        await this.sendMessage(
-          startMessage,
-          payload,
-          approvedGuards
-            .filter((item) => item.publicKey !== myPk)
-            .map((item) => item.peerId),
-          sign.request.timestamp
-        );
-        await this.startSign(sign.msg, approvedGuards);
+        return await this.signAccessMutex.acquire().then(async (release) => {
+          if (this.getSign(payload.msg)) {
+            const payload: SignStartPayload = {
+              msg: sign.msg,
+              signs: sign.signs,
+              guards: sign.request!.guards,
+            };
+            await this.sendMessage(
+              startMessage,
+              payload,
+              approvedGuards
+                .filter((item) => item.publicKey !== myPk)
+                .map((item) => item.peerId),
+              sign.request!.timestamp
+            );
+            await this.startSign(sign.msg, approvedGuards);
+          }
+          release();
+        });
       } else {
         this.logger.debug(
           `[${approvedGuards.length}] out of required [${this.threshold.value}] guards approved message [${sign.msg}]. Signs are: ${sign.signs}`
@@ -550,7 +555,10 @@ export class TssSigner extends Communicator {
       payload.signs
     );
     if (approvedGuards.length >= this.threshold.value) {
-      await this.startSign(sign.msg, approvedGuards);
+      await this.signAccessMutex.acquire().then(async (release) => {
+        await this.startSign(sign.msg, approvedGuards);
+        release();
+      });
     }
   };
 
@@ -594,37 +602,30 @@ export class TssSigner extends Communicator {
    * @param guards
    */
   startSign = (message: string, guards: Array<ActiveGuard>) => {
-    return this.signAccessMutex.acquire().then((release) => {
-      const sign = this.getSign(message);
-      if (sign) {
-        sign.posted = true;
-        const data = {
-          peers: guards.map((item) => ({
-            shareID: this.shares[this.guardPks.indexOf(item.publicKey)],
-            p2pID: item.peerId,
-          })),
-          message: message,
-          crypto: this.signer.getCrypto(),
-          callBackUrl: this.callbackUrl,
-        };
-        return this.axios
-          .post(signUrl, data)
-          .then((res) => release())
-          .catch((err) => {
-            this.logger.warn('Can not communicate with tss backend');
-            this.logger.debug(err.stack);
-            if (sign.callback) {
-              this.signAccessMutex.acquire().then((release) => {
-                sign.callback(false, err.status_code);
-                this.signs = this.signs.filter((item) => item.msg !== sign.msg);
-                release();
-              });
-            }
+    const sign = this.getSign(message);
+    if (sign) {
+      sign.posted = true;
+      const data = {
+        peers: guards.map((item) => ({
+          shareID: this.shares[this.guardPks.indexOf(item.publicKey)],
+          p2pID: item.peerId,
+        })),
+        message: message,
+        crypto: this.signer.getCrypto(),
+        callBackUrl: this.callbackUrl,
+      };
+      return this.axios.post(signUrl, data).catch((err) => {
+        this.logger.warn('Can not communicate with tss backend');
+        this.logger.debug(err.stack);
+        if (sign.callback) {
+          this.signAccessMutex.acquire().then((release) => {
+            sign.callback(false, err.status_code);
+            this.signs = this.signs.filter((item) => item.msg !== sign.msg);
+            release();
           });
-      } else {
-        release();
-      }
-    });
+        }
+      });
+    }
   };
 
   /**
