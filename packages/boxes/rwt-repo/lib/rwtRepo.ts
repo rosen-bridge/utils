@@ -1,11 +1,9 @@
 import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
 import { ErgoNetworkType } from '@rosen-bridge/scanner';
-import ergoExplorerClientFactory from '@rosen-clients/ergo-explorer';
-import {
-  UOutputInfo,
-  UTransactionInfo,
-} from '@rosen-clients/ergo-explorer/dist/src/v0/types';
-import { OutputInfo } from '@rosen-clients/ergo-explorer/dist/src/v1/types';
+import ergoExplorerClientFactory, {
+  V0,
+  V1,
+} from '@rosen-clients/ergo-explorer';
 import ergoNodeClientFactory, {
   ErgoTransactionOutput,
   IndexedErgoBox,
@@ -81,7 +79,7 @@ export class RWTRepo {
       }
     }
 
-    let boxInfos: OutputInfo[] | IndexedErgoBox[];
+    let boxInfos: V1.OutputInfo[] | IndexedErgoBox[];
 
     if (this.networkType === ErgoNetworkType.Explorer) {
       const explorerUnspentItems =
@@ -115,7 +113,7 @@ export class RWTRepo {
    * @return {Promise<ErgoBox | undefined>}
    */
   private getBoxFromMempool = async () => {
-    let mempoolTxs: UTransactionInfo[] | Transactions;
+    let mempoolTxs: V0.UTransactionInfo[] | Transactions;
 
     if (this.networkType === ErgoNetworkType.Explorer) {
       const explorerMempoolTxs =
@@ -152,7 +150,7 @@ export class RWTRepo {
    * @return {ErgoBox | undefined}
    */
   private createBoxFromBoxInfo = (
-    boxInfos: IndexedErgoBox[] | OutputInfo[]
+    boxInfos: IndexedErgoBox[] | V1.OutputInfo[]
   ) => {
     const rwtBoxInfos = boxInfos.filter((item) =>
       item.assets?.some((asset) => asset.tokenId === this.repoNft)
@@ -180,7 +178,7 @@ export class RWTRepo {
    * @param {(Transactions | UTransactionInfo[])} txs
    * @return {ErgoBox | undefined}
    */
-  private createBoxfromTx = (txs: Transactions | UTransactionInfo[]) => {
+  private createBoxfromTx = (txs: Transactions | V0.UTransactionInfo[]) => {
     const inputBoxIds = txs.flatMap(
       (tx) =>
         tx.inputs?.map((input) => ('id' in input ? input.id : input.boxId)) ||
@@ -194,7 +192,7 @@ export class RWTRepo {
     );
 
     const rwtOutputBoxInfos = txs
-      .flatMap<UOutputInfo | ErgoTransactionOutput>((tx) => tx.outputs || [])
+      .flatMap<V0.UOutputInfo | ErgoTransactionOutput>((tx) => tx.outputs || [])
       .filter(
         (box) =>
           (('id' in box && box.id && !inputBoxIdSet.has(box.id)) ||
