@@ -323,8 +323,6 @@ describe('RWTRepo', () => {
 
     /**
      * @target should throw an exception when this.box is undefined
-     * @dependencies
-     * - None
      * @scenario
      * - create an instance of RWTRepo
      * - check this.box to be undefined
@@ -385,8 +383,6 @@ describe('RWTRepo', () => {
     /**
      * @target this.getRsnCollateral should throw an exception when this.box is
      * undefined
-     * @dependencies
-     * - None
      * @scenario
      * - create an instance of RWTRepo
      * - check this.box to be undefined
@@ -496,8 +492,6 @@ describe('RWTRepo', () => {
 
     /**
      * @target should throw an exception when this.box is undefined
-     * @dependencies
-     * - None
      * @scenario
      * - create an instance of RWTRepo
      * - check this.box to be undefined
@@ -559,8 +553,6 @@ describe('RWTRepo', () => {
 
     /**
      * @target should throw an exception when this.box is undefined
-     * @dependencies
-     * - None
      * @scenario
      * - create an instance of RWTRepo
      * - check this.box to be undefined
@@ -651,8 +643,6 @@ describe('RWTRepo', () => {
 
     /**
      * @target should throw an exception when this.box is undefined
-     * @dependencies
-     * - None
      * @scenario
      * - create an instance of RWTRepo
      * - check this.box to be undefined
@@ -748,8 +738,6 @@ describe('RWTRepo', () => {
 
     /**
      * @target should throw an exception when this.box is undefined
-     * @dependencies
-     * - None
      * @scenario
      * - create an instance of RWTRepo
      * - check this.getPermitCount() to throw exception
@@ -856,8 +844,6 @@ describe('RWTRepo', () => {
 
     /**
      * @target should throw an exception when this.box is undefined
-     * @dependencies
-     * - None
      * @scenario
      * - create an instance of RWTRepo
      * - check this.toBuilder() to throw exception

@@ -56,8 +56,6 @@ describe('RWTRepoBuilder', () => {
   describe('addNewUser', () => {
     /**
      * @target should add a new user using passed watcher id and rwt token count
-     * @dependencies
-     * - None
      * @scenario
      * - create an instance of RWTRepoBuilder
      * - call this.addNewUser
@@ -96,8 +94,6 @@ describe('RWTRepoBuilder', () => {
     /**
      * @target should throw exception when passed rwtCount is greater than
      * available rwtCount
-     * @dependencies
-     * - None
      * @scenario
      * - create an instance of RWTRepoBuilder
      * - call this.addNewUser with a value greater than this.rwtCount
@@ -116,8 +112,6 @@ describe('RWTRepoBuilder', () => {
 
     /**
      * @target should throw exception when adding an existing watcher id
-     * @dependencies
-     * - None
      * @scenario
      * - create an instance of RWTRepoBuilder
      * - call this.addNewUser with an existing watcher id
@@ -197,8 +191,6 @@ describe('RWTRepoBuilder', () => {
 
     /**
      * @target should throw exception when removing a non-existent watcher id
-     * @dependencies
-     * - None
      * @scenario
      * - create an instance of RWTRepoBuilder
      * - call this.removeUser with a non-existent wid
