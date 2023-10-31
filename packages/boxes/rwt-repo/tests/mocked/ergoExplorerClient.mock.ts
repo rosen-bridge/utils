@@ -1,14 +1,14 @@
-import { rwtRepoInfoSample } from '../rwtRepoTestData';
+import { mempoolTxsSample, repoAddress, boxInfo1 } from '../rwtRepoTestData';
 
 export function mockedErgoExplorerClientFactory(
   url: string,
-  boxInfo: any = rwtRepoInfoSample.boxInfo
+  boxInfo: any = boxInfo1
 ) {
   return {
     v0: {
       async getApiV0TransactionsUnconfirmedByaddressP1(address: string) {
-        if (address === rwtRepoInfoSample.Address) {
-          return rwtRepoInfoSample.MempoolTxSample;
+        if (address === repoAddress) {
+          return mempoolTxsSample;
         }
         return {
           items: [],
@@ -18,7 +18,7 @@ export function mockedErgoExplorerClientFactory(
     },
     v1: {
       async getApiV1BoxesUnspentByaddressP1(p1: string) {
-        if (p1 === rwtRepoInfoSample.Address) {
+        if (p1 === repoAddress) {
           return {
             items: [boxInfo],
             total: 1,

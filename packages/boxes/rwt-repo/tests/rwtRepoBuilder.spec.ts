@@ -1,58 +1,38 @@
-import * as ergo from 'ergo-lib-wasm-nodejs';
-import { Constant } from 'ergo-lib-wasm-nodejs';
+import * as ergoLib from 'ergo-lib-wasm-nodejs';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { RWTRepoBuilder } from '../lib';
-import { rwtRepoInfoSample } from './rwtRepoTestData';
+import {
+  boxInfo1,
+  boxInfo1Properties,
+  repoAddress,
+  repoNft,
+} from './rwtRepoTestData';
 
 describe('RWTRepoBuilder', () => {
   let rwtRepoBuilder: RWTRepoBuilder;
   beforeEach(() => {
-    const boxInfo = rwtRepoInfoSample.boxInfo;
-
-    const r4 = Constant.decode_from_base16(
-      boxInfo.additionalRegisters.R4.serializedValue
-    ).to_coll_coll_byte();
-
-    const r5 = (
-      Constant.decode_from_base16(
-        boxInfo.additionalRegisters.R5.serializedValue
-      ).to_i64_str_array() as string[]
-    ).map(BigInt);
-
-    const r6 = (
-      Constant.decode_from_base16(
-        boxInfo.additionalRegisters.R6.serializedValue
-      ).to_i64_str_array() as string[]
-    ).map(BigInt);
-
-    const widPermits = r4
-      .slice(1)
-      ?.map((wid) => Buffer.from(wid).toString('hex'))
-      .map((wid, i) => {
-        return { wid, rwtCount: r5[i + 1] };
-      });
-
     rwtRepoBuilder = new RWTRepoBuilder(
-      rwtRepoInfoSample.Address,
-      rwtRepoInfoSample.nft,
-      boxInfo.assets[1].tokenId,
-      BigInt(boxInfo.assets[1].amount),
-      boxInfo.assets[2].tokenId,
-      BigInt(boxInfo.assets[2].amount),
-      Buffer.from(r4[0]).toString(),
-      r6[0],
-      Number(r6[1]),
-      Number(r6[2]),
-      Number(r6[3]),
-      r6[4],
-      r6[5],
-      widPermits
+      repoAddress,
+      repoNft,
+      boxInfo1.assets[1].tokenId,
+      BigInt(boxInfo1.assets[1].amount),
+      boxInfo1.assets[2].tokenId,
+      BigInt(boxInfo1.assets[2].amount),
+      Buffer.from(boxInfo1Properties.r4[0]).toString(),
+      boxInfo1Properties.r6[0],
+      Number(boxInfo1Properties.r6[1]),
+      Number(boxInfo1Properties.r6[2]),
+      Number(boxInfo1Properties.r6[3]),
+      boxInfo1Properties.r6[4],
+      boxInfo1Properties.r6[5],
+      boxInfo1Properties.widPermits
     );
   });
 
   describe('addNewUser', () => {
     /**
      * @target should add a new user using passed watcher id and rwt token count
+     * @dependencies
      * @scenario
      * - create an instance of RWTRepoBuilder
      * - call this.addNewUser
@@ -91,6 +71,7 @@ describe('RWTRepoBuilder', () => {
     /**
      * @target should throw exception when passed rwtCount is greater than
      * available rwtCount
+     * @dependencies
      * @scenario
      * - create an instance of RWTRepoBuilder
      * - call this.addNewUser with a value greater than this.rwtCount
@@ -109,6 +90,7 @@ describe('RWTRepoBuilder', () => {
 
     /**
      * @target should throw exception when adding an existing watcher id
+     * @dependencies
      * @scenario
      * - create an instance of RWTRepoBuilder
      * - call this.addNewUser with an existing watcher id
@@ -126,6 +108,7 @@ describe('RWTRepoBuilder', () => {
   describe('removeUser', () => {
     /**
      * @target should remove the user corresponding to passed watcher id
+     * @dependencies
      * @scenario
      * - call this.removeUser
      * - check this.widPermits to have contained the passed wid before calling
@@ -166,6 +149,7 @@ describe('RWTRepoBuilder', () => {
 
     /**
      * @target should throw exception when removing a non-existent watcher id
+     * @dependencies
      * @scenario
      * - create an instance of RWTRepoBuilder
      * - call this.removeUser with a non-existent wid
@@ -194,6 +178,7 @@ describe('RWTRepoBuilder', () => {
   describe('setCommitmentRwtCount', () => {
     /**
      * @target should set value of this.commitmentRwtCount and return this
+     * @dependencies
      * @scenario
      * - call this.setCommitmentRwtCount
      * - check return value of this.setCommitmentRwtCount to be the current
@@ -220,6 +205,7 @@ describe('RWTRepoBuilder', () => {
   describe('setWatcherQuorumPercentage', () => {
     /**
      * @target should set value of this.quorumPercentage and return this
+     * @dependencies
      * @scenario
      * - call this.setWatcherQuorumPercentage
      * - check return value of this.setWatcherQuorumPercentage to be the current
@@ -243,6 +229,7 @@ describe('RWTRepoBuilder', () => {
   describe('setApprovalOffset', () => {
     /**
      * @target should set value of this.approvalOffset and return this
+     * @dependencies
      * @scenario
      * - call this.setApprovalOffset
      * - check return value of this.setApprovalOffset to be the current instance
@@ -265,6 +252,7 @@ describe('RWTRepoBuilder', () => {
   describe('setMaximumApproval', () => {
     /**
      * @target should set value of this.maximumApproval and return this
+     * @dependencies
      * @scenario
      * - call this.setMaximumApproval
      * - check return value of this.setMaximumApproval to be the current
@@ -287,6 +275,7 @@ describe('RWTRepoBuilder', () => {
   describe('setErgCollateral', () => {
     /**
      * @target should set value of this.ergCollateral and return this
+     * @dependencies
      * @scenario
      * - call this.setErgCollateral
      * - check return value of this.setErgCollateral to be the current instance
@@ -309,6 +298,7 @@ describe('RWTRepoBuilder', () => {
   describe('setRsnCollateral', () => {
     /**
      * @target should set value of this.rsnCollateral and return this
+     * @dependencies
      * @scenario
      * - call this.setRsnCollateral
      * - check return value of this.setRsnCollateral to be the current instance
@@ -332,6 +322,7 @@ describe('RWTRepoBuilder', () => {
     /**
      * @target should decrement rwtCount by passed amount for a specific watcher
      * id and return this
+     * @dependencies
      * @scenario
      * - call this.decrementPermits
      * - check return value of this.decrementPermits to be the current instance
@@ -373,6 +364,7 @@ describe('RWTRepoBuilder', () => {
     /**
      * @target should increment rwtCount by passed amount for a specific watcher
      * id and return this
+     * @dependencies
      * @scenario
      * - call this.incrementPermits
      * - check return value of this.incrementPermits to be the current instance
@@ -414,6 +406,7 @@ describe('RWTRepoBuilder', () => {
     /**
      * @target should create an rwt repo candidate Ergo box using current
      * instance's properties.
+     * @dependencies
      * @scenario
      * - call this.setValue to set box Erg value
      * - call this.setHeight to set box creation height
@@ -438,20 +431,17 @@ describe('RWTRepoBuilder', () => {
       rwtRepoBuilder.setHeight(height);
       const candidateBox = rwtRepoBuilder.build();
 
-      const r4Serialized =
-        rwtRepoInfoSample.boxInfo.additionalRegisters.R4.serializedValue;
+      const r4Serialized = boxInfo1.additionalRegisters.R4.serializedValue;
 
-      const r5Serialized =
-        rwtRepoInfoSample.boxInfo.additionalRegisters.R5.serializedValue;
+      const r5Serialized = boxInfo1.additionalRegisters.R5.serializedValue;
 
-      const r6Serialized =
-        rwtRepoInfoSample.boxInfo.additionalRegisters.R6.serializedValue;
+      const r6Serialized = boxInfo1.additionalRegisters.R6.serializedValue;
 
       expect(
-        ergo.Address.recreate_from_ergo_tree(
+        ergoLib.Address.recreate_from_ergo_tree(
           candidateBox.ergo_tree()
-        ).to_base58(ergo.NetworkPrefix.Mainnet)
-      ).toEqual(rwtRepoInfoSample.Address);
+        ).to_base58(ergoLib.NetworkPrefix.Mainnet)
+      ).toEqual(repoAddress);
       expect(candidateBox.value().as_i64().to_str()).toEqual(
         ergValue.toString()
       );
@@ -470,25 +460,23 @@ describe('RWTRepoBuilder', () => {
         lastModifiedWidIndex
       );
 
-      expect(candidateBox.tokens().get(0).id().to_str()).toEqual(
-        rwtRepoInfoSample.nft
-      );
+      expect(candidateBox.tokens().get(0).id().to_str()).toEqual(repoNft);
       expect(candidateBox.tokens().get(0).amount().as_i64().to_str()).toEqual(
         '1'
       );
 
       expect(candidateBox.tokens().get(1).id().to_str()).toEqual(
-        rwtRepoInfoSample.boxInfo.assets[1].tokenId
+        boxInfo1.assets[1].tokenId
       );
       expect(candidateBox.tokens().get(1).amount().as_i64().to_str()).toEqual(
-        rwtRepoInfoSample.boxInfo.assets[1].amount.toString()
+        boxInfo1.assets[1].amount.toString()
       );
 
       expect(candidateBox.tokens().get(2).id().to_str()).toEqual(
-        rwtRepoInfoSample.boxInfo.assets[2].tokenId
+        boxInfo1.assets[2].tokenId
       );
       expect(candidateBox.tokens().get(2).amount().as_i64().to_str()).toEqual(
-        rwtRepoInfoSample.boxInfo.assets[2].amount.toString()
+        boxInfo1.assets[2].amount.toString()
       );
     });
   });
