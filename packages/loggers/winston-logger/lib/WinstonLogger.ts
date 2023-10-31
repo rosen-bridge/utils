@@ -53,13 +53,13 @@ const logTransports = {
       host: transportOptions.host,
       format: format.json(),
       json: true,
-      labels: {
-        serviceName: transportOptions.serviceName
-          ? transportOptions.serviceName
-          : 'rosen',
-      },
+      labels: transportOptions.serviceName
+        ? {
+            serviceName: transportOptions.serviceName,
+          }
+        : undefined,
       level: transportOptions.level,
-      basicAuth: transportOptions.basicAuth ?? transportOptions.basicAuth,
+      basicAuth: transportOptions.basicAuth,
       onConnectionError: (err) => console.error(err),
     }),
 } satisfies LogTransports;
