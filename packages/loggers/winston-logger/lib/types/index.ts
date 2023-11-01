@@ -12,9 +12,19 @@ export interface FileTransportOptions extends BaseTransportOptions<'file'> {
   level: string;
 }
 
+export interface LokiTransportOptions extends BaseTransportOptions<'loki'> {
+  host: string;
+  basicAuth?: string;
+  serviceName?: string;
+  level: string;
+}
+
 export type ConsoleTransportOptions = BaseTransportOptions<'console'>;
 
-export type TransportOptions = FileTransportOptions | ConsoleTransportOptions;
+export type TransportOptions =
+  | FileTransportOptions
+  | ConsoleTransportOptions
+  | LokiTransportOptions;
 
 export interface TransportFactory<T extends TransportOptions> {
   (transportOptions: T): winston.transport;
@@ -23,5 +33,6 @@ export interface TransportFactory<T extends TransportOptions> {
 export type LogTransports = {
   [Key in TransportOptions['type']]:
     | TransportFactory<ConsoleTransportOptions>
-    | TransportFactory<FileTransportOptions>;
+    | TransportFactory<FileTransportOptions>
+    | TransportFactory<LokiTransportOptions>;
 };

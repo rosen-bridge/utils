@@ -10,9 +10,11 @@ import {
   FileTransportOptions,
   TransportOptions,
   LogTransports,
+  LokiTransportOptions,
 } from './types';
 
 import printf = format.printf;
+import LokiTransport from 'winston-loki';
 
 const logLevels = {
   error: 0,
@@ -39,12 +41,26 @@ const logTransports = {
     }),
   file: (transportOptions: FileTransportOptions) =>
     new winston.transports.DailyRotateFile({
-      filename: `${transportOptions.path}-%DATE%.log`,
+      filename: `${transportOptions.path}%DATE%.log`,
       datePattern: 'YYYY-MM-DD',
       zippedArchive: true,
       maxSize: transportOptions.maxSize,
       maxFiles: transportOptions.maxFiles,
       level: transportOptions.level,
+    }),
+  loki: (transportOptions: LokiTransportOptions) =>
+    new LokiTransport({
+      host: transportOptions.host,
+      format: format.json(),
+      json: true,
+      labels: transportOptions.serviceName
+        ? {
+            serviceName: transportOptions.serviceName,
+          }
+        : undefined,
+      level: transportOptions.level,
+      basicAuth: transportOptions.basicAuth,
+      onConnectionError: (err) => console.error(err),
     }),
 } satisfies LogTransports;
 
@@ -66,6 +82,8 @@ class WinstonLogger extends AbstractLoggerFactory {
               return logTransports.console(transportOptions);
             case 'file':
               return logTransports.file(transportOptions);
+            case 'loki':
+              return logTransports.loki(transportOptions);
           }
         }),
       ],
