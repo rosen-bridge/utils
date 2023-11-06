@@ -39,3 +39,8 @@ export interface CoveringBoxes<BoxType> {
   covered: boolean;
   boxes: Array<BoxType>;
 }
+
+export type ErgoBoxCandidateProxy = Omit<
+  ErgoBoxProxy,
+  'boxId' | 'transactionId' | 'index'
+>;
