@@ -12,7 +12,8 @@ class CardanoAssetHealthCheckParam extends AbstractAssetHealthCheckParam {
     warnThreshold: bigint,
     criticalThreshold: bigint,
     koiosUrl: string,
-    assetDecimal = 0
+    assetDecimal = 0,
+    authToken?: string
   ) {
     super(
       assetId,
@@ -22,7 +23,7 @@ class CardanoAssetHealthCheckParam extends AbstractAssetHealthCheckParam {
       criticalThreshold,
       assetDecimal
     );
-    this.koiosApi = cardanoKoiosClientFactory(koiosUrl);
+    this.koiosApi = cardanoKoiosClientFactory(koiosUrl, authToken);
   }
 
   /**
@@ -39,9 +40,7 @@ class CardanoAssetHealthCheckParam extends AbstractAssetHealthCheckParam {
       const assets = await this.koiosApi.postAddressAssets({
         _addresses: [this.address],
       });
-      const token = assets[0].asset_list?.find(
-        (token) => token.fingerprint == this.assetId
-      );
+      const token = assets.find((token) => token.fingerprint == this.assetId);
       if (token && token.quantity) tokenAmount = BigInt(token.quantity);
     }
 

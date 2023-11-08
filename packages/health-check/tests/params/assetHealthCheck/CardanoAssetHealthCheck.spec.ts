@@ -21,12 +21,9 @@ describe('CardanoAssetHealthCheck', () => {
       jest.mocked(cardanoKoiosClientFactory).mockReturnValue({
         postAddressAssets: async () => [
           {
-            asset_list: [
-              {
-                fingerprint: 'assetId',
-                quantity: '1200',
-              },
-            ],
+            address: 'address',
+            fingerprint: 'assetId',
+            quantity: '1200',
           },
         ],
       } as any);
