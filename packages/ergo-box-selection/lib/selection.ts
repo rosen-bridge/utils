@@ -134,9 +134,11 @@ export const createChangeBox = (
   height: number,
   inputBoxes: ErgoBoxProxy[],
   outputBoxes: ErgoBoxCandidateProxy[],
-  tokensToBurn: TokenInfo[]
+  tokensToBurn: TokenInfo[],
+  logger: AbstractLogger = new DummyLogger()
 ): ErgoBoxCandidateProxy | undefined => {
   const value = calcChangeValue(inputBoxes, outputBoxes);
+  logger.debug(`change value of change box: [${value}]`);
 
   if (value < 0) {
     throw new Error(
@@ -156,6 +158,9 @@ export const createChangeBox = (
   const tokens = calcTokenChange(inputBoxes, outputBoxes);
   tokensToBurn.forEach((token) =>
     tokens.set(token.id, (tokens.get(token.id) || 0n) - token.value)
+  );
+  logger.debug(
+    `token change values to include in change box: [${[...tokens.entries()]}]`
   );
 
   for (const [id, amount] of tokens.entries()) {
