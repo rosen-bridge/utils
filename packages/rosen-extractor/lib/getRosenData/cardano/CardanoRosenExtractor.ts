@@ -26,8 +26,13 @@ export class CardanoRosenExtractor extends AbstractRosenDataExtractor<string> {
     }
     const baseError = `No rosen data found for tx [${transaction.id}]`;
     const rosenMetadata = transaction.metadata?.['0'];
+    if (!rosenMetadata || typeof rosenMetadata === 'string') {
+      this.logger.debug(
+        baseError + `: Invalid metadata type: ${typeof rosenMetadata}`
+      );
+      return undefined;
+    }
     if (
-      rosenMetadata &&
       'to' in rosenMetadata &&
       'bridgeFee' in rosenMetadata &&
       'networkFee' in rosenMetadata &&
