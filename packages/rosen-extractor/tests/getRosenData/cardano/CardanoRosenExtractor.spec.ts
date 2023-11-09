@@ -113,6 +113,37 @@ describe('CardanoRosenExtractor', () => {
     });
 
     /**
+     * @target: CardanoRosenExtractor.get should return undefined when type of tx metadata is invalid
+     * @dependencies:
+     * @scenario
+     * - mock a transaction with invalid metadata type
+     * - run the test
+     * - check returned value
+     * @expected
+     * - extractor should return undefined
+     */
+    it('should return undefined when type of tx metadata is invalid', () => {
+      //  mock a transaction with invalid metadata type
+      const validADALockTx = CardanoTestData.rosenTransactions.validAdaLock;
+      const invalidMetadataTx = {
+        ...validADALockTx,
+        metadata: {
+          '0': 'invalidMetadataType',
+        },
+      };
+
+      // run the test
+      const extractor = new CardanoRosenExtractor(
+        CardanoTestData.lockAddress,
+        TestUtils.tokens
+      );
+      const result = extractor.get(JSONBigInt.stringify(invalidMetadataTx));
+
+      // check returned value
+      expect(result).toBeUndefined();
+    });
+
+    /**
      * @target: CardanoRosenExtractor.get should return undefined when tx metadata does NOT contain %p
      * @dependencies:
      * @scenario

@@ -14,10 +14,11 @@ class CardanoKoiosScannerHealthCheck extends AbstractScannerSyncHealthCheckParam
     scannerName: string,
     warnDifference: number,
     criticalDifference: number,
-    networkUrl: string
+    networkUrl: string,
+    authToken?: string
   ) {
     super(dataSource, scannerName, warnDifference, criticalDifference);
-    this.koiosApi = cardanoKoiosClientFactory(networkUrl);
+    this.koiosApi = cardanoKoiosClientFactory(networkUrl, authToken);
   }
 
   /**
