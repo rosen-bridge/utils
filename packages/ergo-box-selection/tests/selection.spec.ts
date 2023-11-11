@@ -1,5 +1,13 @@
-import { describe, expect, it, vi } from 'vitest';
-import { AssetBalance, ErgoBoxProxy, selectErgoBoxes } from '../lib';
+import * as ergoLib from 'ergo-lib-wasm-nodejs';
+import { describe, expect, it } from 'vitest';
+import {
+  AssetBalance,
+  ErgoBoxProxy,
+  calcChangeValue,
+  calcTokenChange,
+  createChangeBox,
+  selectErgoBoxes,
+} from '../lib';
 import * as testData from './testData';
 
 describe('selectErgoBoxes', () => {
@@ -379,5 +387,373 @@ describe('selectErgoBoxes', () => {
     // Check returned value
     expect(result.covered).toEqual(false);
     expect(result.boxes).toEqual([]);
+  });
+});
+
+describe('createChangeBox', () => {
+  const height = 2000000;
+
+  /**
+   * @target should return a box with correct Erg value when there is no other
+   * tokens
+   * @dependencies
+   * @scenario
+   * - create input and output boxes with no tokens
+   * - call createChangeBox
+   * - check return value not to be undefined
+   * - check returned box to have correct change value
+   * - check returned box to have no tokens
+   * - check returned box to have the correct change address
+   * @expected
+   * - return value should not be undefined
+   * - returned box should have correct change value
+   * - returned box should have no tokens
+   * - returned box should have the correct change address
+   */
+  it(`should return a box with correct Erg value when there is no other tokens`, async () => {
+    const noTokenBoxes = testData.boxesAscending.filter(
+      (box) => box.assets.length === 0
+    );
+
+    const outputBoxes = noTokenBoxes.slice(0, 2);
+    const inputBoxes = noTokenBoxes.slice(2, 5);
+    const changeValue = calcChangeValue(inputBoxes, outputBoxes);
+
+    const changeBox = createChangeBox(
+      testData.changeAddress,
+      height,
+      inputBoxes,
+      outputBoxes,
+      []
+    );
+
+    expect(changeBox).toBeDefined();
+    expect(BigInt(changeBox!.value)).toEqual(changeValue);
+    expect(changeBox!.assets.length).toEqual(0);
+    expect(
+      ergoLib.Address.recreate_from_ergo_tree(
+        ergoLib.ErgoTree.from_base16_bytes(changeBox!.ergoTree)
+      ).to_base58(ergoLib.NetworkPrefix.Testnet)
+    ).toEqual(testData.changeAddress);
+  });
+
+  /**
+   * @target should return a box with correct Erg value and remaining tokens
+   * @dependencies
+   * @scenario
+   * - create input (with token) and output boxes
+   * - call createChangeBox
+   * - check return value not to be undefined
+   * - check returned box to have correct change value
+   * - check returned box to have correct tokens
+   * - check returned box to have the correct change address
+   * @expected
+   * - return value should not be undefined
+   * - returned box should have correct change value
+   * - returned box should have correct tokens
+   * - returned box should have the correct change address
+   */
+  it(`should return a box with correct Erg value and remaining tokens`, async () => {
+    const noTokenBoxes = testData.boxesAscending.filter(
+      (box) => box.assets.length === 0
+    );
+    const outputBoxes = noTokenBoxes.slice(0, 2);
+    const inputBoxes = noTokenBoxes.slice(2, 5);
+    const boxesWithToken = testData.boxesAscending.filter(
+      (box) => box.assets.length > 0
+    );
+    inputBoxes.push(...boxesWithToken);
+    const changeValue = calcChangeValue(inputBoxes, outputBoxes);
+
+    const changeBox = createChangeBox(
+      testData.changeAddress,
+      height,
+      inputBoxes,
+      outputBoxes,
+      []
+    );
+
+    expect(changeBox).toBeDefined();
+    expect(BigInt(changeBox!.value)).toEqual(changeValue);
+    expect(
+      changeBox!.assets
+        .map((asset) => [asset.tokenId, BigInt(asset.amount)])
+        .sort()
+    ).toEqual([...calcTokenChange(boxesWithToken, []).entries()].sort());
+    expect(
+      ergoLib.Address.recreate_from_ergo_tree(
+        ergoLib.ErgoTree.from_base16_bytes(changeBox!.ergoTree)
+      ).to_base58(ergoLib.NetworkPrefix.Testnet)
+    ).toEqual(testData.changeAddress);
+  });
+
+  /**
+   * @target should throw exception when passed output boxes have more Ergs than
+   * input boxes
+   * @dependencies
+   * @scenario
+   * - create input and output boxes
+   * - call createChangeBox
+   * - check if exception is thrown
+   * @expected
+   * - should throw exception
+   */
+  it(`should throw exception when passed output boxes have more Ergs than input
+  boxes`, async () => {
+    const noTokenBoxes = testData.boxesAscending.filter(
+      (box) => box.assets.length === 0
+    );
+
+    const outputBoxes = noTokenBoxes.slice(0, 3);
+    const inputBoxes = noTokenBoxes.slice(3, 5);
+
+    expect(() =>
+      createChangeBox(
+        testData.changeAddress,
+        height,
+        inputBoxes,
+        outputBoxes,
+        []
+      )
+    ).toThrow();
+  });
+
+  /**
+   * @target should return an exception when outputs have more tokens than
+   * inputs
+   * @dependencies
+   * @scenario
+   * - create input and output (with more tokens) boxes
+   * - call createChangeBox
+   * - check change value to be positive
+   * - check createChangeBox to throw exception
+   * @expected
+   * - change value should be positive
+   * - createChangeBox should throw exception
+   */
+  it(`should return an exception when outputs have more tokens than inputs`, async () => {
+    const noTokenBoxes = testData.boxesAscending.filter(
+      (box) => box.assets.length === 0
+    );
+    const boxesWithToken = testData.boxesAscending.filter(
+      (box) => box.assets.length > 0
+    );
+    const outputBoxes = noTokenBoxes.slice(0, 2);
+    outputBoxes.push(...boxesWithToken);
+    const inputBoxes = noTokenBoxes.slice(2, 6);
+    const changeValue = calcChangeValue(inputBoxes, outputBoxes);
+
+    const safeMinBoxValue = BigInt(
+      ergoLib.BoxValue.SAFE_USER_MIN().as_i64().to_str()
+    );
+    expect(changeValue).toBeGreaterThan(safeMinBoxValue);
+    expect(() =>
+      createChangeBox(
+        testData.changeAddress,
+        height,
+        inputBoxes,
+        outputBoxes,
+        []
+      )
+    ).toThrow();
+  });
+
+  /**
+   * @target should return an exception when change value is zero but there are
+   * tokens with positive change amount
+   * @dependencies
+   * @scenario
+   * - create input (with tokens) and output boxes with equal ergs
+   * - call createChangeBox
+   * - check change value to be zero
+   * - check all tokens to be have non-negative change amount
+   * - check one token with positive change amount to exist
+   * - check createChangeBox to throw exception
+   * @expected
+   * - change value should be zero
+   * - all tokens should have non-negative change amount
+   * - one token with positive change amount should exist
+   * - createChangeBox should throw exception
+   */
+  it(`should return an exception when change value is zero but there are tokens
+  with positive change amount`, async () => {
+    const noTokenBoxes = testData.boxesAscending.filter(
+      (box) => box.assets.length === 0
+    );
+    const boxesWithToken = testData.boxesAscending.filter(
+      (box) => box.assets.length > 0
+    );
+    const outputBoxes = noTokenBoxes.slice(0, 2);
+    outputBoxes[0] = {
+      ...outputBoxes[0],
+      value: (
+        BigInt(outputBoxes[0].value) + BigInt(boxesWithToken[0].value)
+      ).toString(),
+    };
+    const inputBoxes = noTokenBoxes.slice(2, 4);
+    inputBoxes.push(boxesWithToken[0]);
+    const changeValue = calcChangeValue(inputBoxes, outputBoxes);
+
+    const safeMinBoxValue = BigInt(
+      ergoLib.BoxValue.SAFE_USER_MIN().as_i64().to_str()
+    );
+    expect(changeValue).toEqual(0n);
+    expect(
+      [...calcTokenChange(inputBoxes, outputBoxes).entries()].every(
+        ([, amount]) => amount >= 0
+      )
+    ).toBeTruthy();
+    expect(
+      [...calcTokenChange(inputBoxes, outputBoxes).entries()].some(
+        ([, amount]) => amount > 0
+      )
+    ).toBeTruthy();
+    expect(() =>
+      createChangeBox(
+        testData.changeAddress,
+        height,
+        inputBoxes,
+        outputBoxes,
+        []
+      )
+    ).toThrow();
+  });
+
+  /**
+   * @target should return a box with correct Erg value and remaining tokens
+   * after burning specified tokens
+   * @dependencies
+   * @scenario
+   * - create input (with token) and output boxes
+   * - call createChangeBox and pass token list to burn
+   * - check return value not to be undefined
+   * - check returned box to have correct change value
+   * - check returned box to have correct tokens
+   * - check returned box to have the correct change address
+   * @expected
+   * - return value should not be undefined
+   * - returned box should have correct change value
+   * - returned box should have correct tokens
+   * - returned box should have the correct change address
+   */
+  it(`should return a box with correct Erg value and remaining tokens after
+  burning specified tokens`, async () => {
+    const noTokenBoxes = testData.boxesAscending.filter(
+      (box) => box.assets.length === 0
+    );
+    const outputBoxes = noTokenBoxes.slice(0, 2);
+    const inputBoxes = noTokenBoxes.slice(2, 5);
+    const boxesWithToken = testData.boxesAscending.filter(
+      (box) => box.assets.length > 0
+    );
+    inputBoxes.push(...boxesWithToken);
+    const changeValue = calcChangeValue(inputBoxes, outputBoxes);
+
+    const tokenToBurn = {
+      id: boxesWithToken[0].assets[0].tokenId,
+      value: 50n,
+    };
+    const changeBox = createChangeBox(
+      testData.changeAddress,
+      height,
+      inputBoxes,
+      outputBoxes,
+      [tokenToBurn]
+    );
+
+    expect(changeBox).toBeDefined();
+    expect(BigInt(changeBox!.value)).toEqual(changeValue);
+    expect(
+      changeBox!.assets
+        .map((asset) => [asset.tokenId, BigInt(asset.amount)])
+        .sort()
+    ).toEqual(
+      [...calcTokenChange(boxesWithToken, []).entries()]
+        .map(([id, amount]) => [
+          id,
+          id !== tokenToBurn.id ? amount : amount - tokenToBurn.value,
+        ])
+        .sort()
+    );
+    expect(
+      ergoLib.Address.recreate_from_ergo_tree(
+        ergoLib.ErgoTree.from_base16_bytes(changeBox!.ergoTree)
+      ).to_base58(ergoLib.NetworkPrefix.Testnet)
+    ).toEqual(testData.changeAddress);
+  });
+});
+
+describe('calcChangeValue', () => {
+  /**
+   * @target should return the difference between input and output box values
+   * @dependencies
+   * @scenario
+   * - create input and output boxes
+   * - calculate the change value
+   * - call calcChangeValue with input and output boxes
+   * - check returned value to be equal to the calculated change value
+   * @expected
+   * - returned value should be equal to the calculated change value
+   */
+  it(`should return the difference between input and output box values`, async () => {
+    const outputBoxes = testData.boxesAscending.slice(0, 2);
+    const inputBoxes = testData.boxesAscending.slice(2, 5);
+
+    let changeValue = 0n;
+    for (const box of inputBoxes) {
+      changeValue += BigInt(box.value);
+    }
+    for (const box of outputBoxes) {
+      changeValue -= BigInt(box.value);
+    }
+
+    expect(calcChangeValue(inputBoxes, outputBoxes)).toEqual(changeValue);
+  });
+});
+
+describe('calcTokenChange', () => {
+  /**
+   * @target should calculate token amount difference between input and output
+   * boxes
+   * @dependencies
+   * @scenario
+   * - create input and output boxes
+   * - calculate token change values
+   * - call calcTokenChange with input and output boxes
+   * - check returned value to be equal to the calculated token change values
+   * @expected
+   * - returned value should be equal to the calculated token change values
+   */
+  it(`should calculate token amount difference between input and output boxes`, async () => {
+    const outputBoxes = testData.boxesAscending.slice(0, 2);
+    const inputBoxes = testData.boxesAscending.slice(2, 5);
+
+    const tokens: [string, bigint][] = [];
+    tokens.push(
+      ...inputBoxes
+        .flatMap((box) => box.assets)
+        .map<[string, bigint]>((asset) => [asset.tokenId, BigInt(asset.amount)])
+    );
+    tokens.push(
+      ...outputBoxes
+        .flatMap((box) => box.assets)
+        .map<[string, bigint]>((asset) => [
+          asset.tokenId,
+          -BigInt(asset.amount),
+        ])
+    );
+    tokens.sort();
+    const tokensChange: [string, bigint][] = [];
+    for (const [id, amount] of tokens) {
+      if (tokensChange.length === 0 || tokensChange.at(-1)![0] !== id) {
+        tokensChange.push([id, amount]);
+      } else {
+        tokensChange.at(-1)![1] += amount;
+      }
+    }
+
+    expect(
+      [...calcTokenChange(inputBoxes, outputBoxes).entries()].sort()
+    ).toEqual(tokensChange.sort());
   });
 });

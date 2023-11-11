@@ -1,5 +1,13 @@
 import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
-import { AssetBalance, BoxInfo, CoveringBoxes, ErgoBoxProxy } from './types';
+import * as ergoLib from 'ergo-lib-wasm-nodejs';
+import {
+  AssetBalance,
+  BoxInfo,
+  CoveringBoxes,
+  ErgoBoxCandidateProxy,
+  ErgoBoxProxy,
+  TokenInfo,
+} from './types';
 
 /**
  * extracts box id and assets of a box
@@ -107,4 +115,138 @@ export const selectErgoBoxes = async (
     covered: !isRequirementRemaining(),
     boxes: result,
   };
+};
+
+/**
+ * creates a change box with remaining Erg value and token amounts. returns
+ * undefined if remaining value and amounts are zero.
+ *
+ * @param {string} changeAddress
+ * @param {number} height
+ * @param {ErgoBoxProxy[]} inputBoxes
+ * @param {ErgoBoxProxy[]} outputBoxes
+ * @param {TokenInfo[]} tokensToBurn tokens that will be deducted from output
+ * and burnt
+ * @return {(ErgoBoxCandidateProxy | undefined)}
+ */
+export const createChangeBox = (
+  changeAddress: string,
+  height: number,
+  inputBoxes: ErgoBoxProxy[],
+  outputBoxes: ErgoBoxCandidateProxy[],
+  tokensToBurn: TokenInfo[],
+  logger: AbstractLogger = new DummyLogger()
+): ErgoBoxCandidateProxy | undefined => {
+  const value = calcChangeValue(inputBoxes, outputBoxes);
+  logger.debug(`change value of change box: [${value}]`);
+
+  if (value < 0) {
+    throw new Error(
+      `output boxes have ${-value} more nanoErgs than input boxes`
+    );
+  }
+
+  const safeMinBoxValue = BigInt(
+    ergoLib.BoxValue.SAFE_USER_MIN().as_i64().to_str()
+  );
+  if (value > 0 && value < safeMinBoxValue) {
+    throw new Error(
+      `change value is greater than zero but is less than safe value of ${safeMinBoxValue} nanoErgs`
+    );
+  }
+
+  const tokens = calcTokenChange(inputBoxes, outputBoxes);
+  tokensToBurn.forEach((token) =>
+    tokens.set(token.id, (tokens.get(token.id) || 0n) - token.value)
+  );
+  logger.debug(
+    `token change values to include in change box: [${[...tokens.entries()]}]`
+  );
+
+  for (const [id, amount] of tokens.entries()) {
+    if (amount < 0n) {
+      throw new Error(
+        `output boxes have ${-amount} extra tokens with id=[${id}]`
+      );
+    }
+  }
+
+  if (value === 0n && [...tokens.values()].some((amount) => amount > 0n)) {
+    throw new Error(
+      `change value is zero but there are some tokens with amount > 0`
+    );
+  }
+
+  if (value === 0n) {
+    return undefined;
+  }
+
+  return {
+    ergoTree: ergoLib.Contract.pay_to_address(
+      ergoLib.Address.from_base58(changeAddress)
+    )
+      .ergo_tree()
+      .to_base16_bytes(),
+    creationHeight: height,
+    value: value.toString(),
+    assets: [...tokens.entries()]
+      .filter(([, amount]) => amount > 0)
+      .map(([id, amount]) => ({
+        tokenId: id,
+        amount: amount.toString(),
+      })),
+    additionalRegisters: {},
+  };
+};
+
+/**
+ * calculate difference between input and output box values
+ *
+ * @param {ErgoBoxProxy[]} inputBoxes
+ * @param {ErgoBoxCandidateProxy[]} outputBoxes
+ * @return {bigint}
+ */
+export const calcChangeValue = (
+  inputBoxes: ErgoBoxProxy[],
+  outputBoxes: ErgoBoxCandidateProxy[]
+): bigint => {
+  const inputValue = inputBoxes
+    .map((box) => BigInt(box.value))
+    .reduce((sum, val) => sum + val, 0n);
+  const outputValue = outputBoxes
+    .map((box) => BigInt(box.value))
+    .reduce((sum, val) => sum + val, 0n);
+  return inputValue - outputValue;
+};
+
+/**
+ * calculates token amount difference between input and output boxes
+ *
+ * @param {ErgoBoxProxy[]} inputBoxes
+ * @param {ErgoBoxCandidateProxy[]} outputBoxes
+ * @return {Map<string, bigint>}
+ */
+export const calcTokenChange = (
+  inputBoxes: ErgoBoxProxy[],
+  outputBoxes: ErgoBoxCandidateProxy[]
+): Map<string, bigint> => {
+  const tokens = new Map<string, bigint>();
+  inputBoxes
+    .flatMap((box) => box.assets)
+    .forEach((token) =>
+      tokens.set(
+        token.tokenId,
+        BigInt(token.amount) + (tokens.get(token.tokenId) || 0n)
+      )
+    );
+  outputBoxes
+    .flatMap((box) => box.assets)
+    .forEach((token) =>
+      tokens.set(
+        token.tokenId,
+        (tokens.get(token.tokenId) || 0n) - BigInt(token.amount)
+      )
+    );
+
+  return tokens;
 };
