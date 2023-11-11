@@ -391,17 +391,6 @@ describe('selectErgoBoxes', () => {
 });
 
 describe('createChangeBox', () => {
-  const boxesAscending = [...testData.boxes].sort((a, b) => {
-    const diff = BigInt(a.value) - BigInt(b.value);
-    if (diff < 0n) {
-      return -1;
-    }
-    if (diff > 0) {
-      return 1;
-    }
-    return 0;
-  });
-
   const height = 2000000;
 
   /**
@@ -414,13 +403,15 @@ describe('createChangeBox', () => {
    * - check return value not to be undefined
    * - check returned box to have correct change value
    * - check returned box to have no tokens
+   * - check returned box to have the correct change address
    * @expected
    * - return value should not be undefined
    * - returned box should have correct change value
    * - returned box should have no tokens
+   * - returned box should have the correct change address
    */
   it(`should return a box with correct Erg value when there is no other tokens`, async () => {
-    const noTokenBoxes = boxesAscending.filter(
+    const noTokenBoxes = testData.boxesAscending.filter(
       (box) => box.assets.length === 0
     );
 
@@ -439,6 +430,11 @@ describe('createChangeBox', () => {
     expect(changeBox).toBeDefined();
     expect(BigInt(changeBox!.value)).toEqual(changeValue);
     expect(changeBox!.assets.length).toEqual(0);
+    expect(
+      ergoLib.Address.recreate_from_ergo_tree(
+        ergoLib.ErgoTree.from_base16_bytes(changeBox!.ergoTree)
+      ).to_base58(ergoLib.NetworkPrefix.Testnet)
+    ).toEqual(testData.changeAddress);
   });
 
   /**
@@ -450,18 +446,20 @@ describe('createChangeBox', () => {
    * - check return value not to be undefined
    * - check returned box to have correct change value
    * - check returned box to have correct tokens
+   * - check returned box to have the correct change address
    * @expected
    * - return value should not be undefined
    * - returned box should have correct change value
    * - returned box should have correct tokens
+   * - returned box should have the correct change address
    */
   it(`should return a box with correct Erg value and remaining tokens`, async () => {
-    const noTokenBoxes = boxesAscending.filter(
+    const noTokenBoxes = testData.boxesAscending.filter(
       (box) => box.assets.length === 0
     );
     const outputBoxes = noTokenBoxes.slice(0, 2);
     const inputBoxes = noTokenBoxes.slice(2, 5);
-    const boxesWithToken = boxesAscending.filter(
+    const boxesWithToken = testData.boxesAscending.filter(
       (box) => box.assets.length > 0
     );
     inputBoxes.push(...boxesWithToken);
@@ -482,6 +480,11 @@ describe('createChangeBox', () => {
         .map((asset) => [asset.tokenId, BigInt(asset.amount)])
         .sort()
     ).toEqual([...calcTokenChange(boxesWithToken, []).entries()].sort());
+    expect(
+      ergoLib.Address.recreate_from_ergo_tree(
+        ergoLib.ErgoTree.from_base16_bytes(changeBox!.ergoTree)
+      ).to_base58(ergoLib.NetworkPrefix.Testnet)
+    ).toEqual(testData.changeAddress);
   });
 
   /**
@@ -497,7 +500,7 @@ describe('createChangeBox', () => {
    */
   it(`should throw exception when passed output boxes have more Ergs than input
   boxes`, async () => {
-    const noTokenBoxes = boxesAscending.filter(
+    const noTokenBoxes = testData.boxesAscending.filter(
       (box) => box.assets.length === 0
     );
 
@@ -529,10 +532,10 @@ describe('createChangeBox', () => {
    * - createChangeBox should throw exception
    */
   it(`should return an exception when outputs have more tokens than inputs`, async () => {
-    const noTokenBoxes = boxesAscending.filter(
+    const noTokenBoxes = testData.boxesAscending.filter(
       (box) => box.assets.length === 0
     );
-    const boxesWithToken = boxesAscending.filter(
+    const boxesWithToken = testData.boxesAscending.filter(
       (box) => box.assets.length > 0
     );
     const outputBoxes = noTokenBoxes.slice(0, 2);
@@ -574,10 +577,10 @@ describe('createChangeBox', () => {
    */
   it(`should return an exception when change value is zero but there are tokens
   with positive change amount`, async () => {
-    const noTokenBoxes = boxesAscending.filter(
+    const noTokenBoxes = testData.boxesAscending.filter(
       (box) => box.assets.length === 0
     );
-    const boxesWithToken = boxesAscending.filter(
+    const boxesWithToken = testData.boxesAscending.filter(
       (box) => box.assets.length > 0
     );
     const outputBoxes = noTokenBoxes.slice(0, 2);
@@ -626,19 +629,21 @@ describe('createChangeBox', () => {
    * - check return value not to be undefined
    * - check returned box to have correct change value
    * - check returned box to have correct tokens
+   * - check returned box to have the correct change address
    * @expected
    * - return value should not be undefined
    * - returned box should have correct change value
    * - returned box should have correct tokens
+   * - returned box should have the correct change address
    */
   it(`should return a box with correct Erg value and remaining tokens after
   burning specified tokens`, async () => {
-    const noTokenBoxes = boxesAscending.filter(
+    const noTokenBoxes = testData.boxesAscending.filter(
       (box) => box.assets.length === 0
     );
     const outputBoxes = noTokenBoxes.slice(0, 2);
     const inputBoxes = noTokenBoxes.slice(2, 5);
-    const boxesWithToken = boxesAscending.filter(
+    const boxesWithToken = testData.boxesAscending.filter(
       (box) => box.assets.length > 0
     );
     inputBoxes.push(...boxesWithToken);
@@ -670,5 +675,85 @@ describe('createChangeBox', () => {
         ])
         .sort()
     );
+    expect(
+      ergoLib.Address.recreate_from_ergo_tree(
+        ergoLib.ErgoTree.from_base16_bytes(changeBox!.ergoTree)
+      ).to_base58(ergoLib.NetworkPrefix.Testnet)
+    ).toEqual(testData.changeAddress);
+  });
+});
+
+describe('calcChangeValue', () => {
+  /**
+   * @target should return the difference between input and output box values
+   * @dependencies
+   * @scenario
+   * - create input and output boxes
+   * - calculate the change value
+   * - call calcChangeValue with input and output boxes
+   * - check returned value to be equal to the calculated change value
+   * @expected
+   * - returned value should be equal to the calculated change value
+   */
+  it(`should return the difference between input and output box values`, async () => {
+    const outputBoxes = testData.boxesAscending.slice(0, 2);
+    const inputBoxes = testData.boxesAscending.slice(2, 5);
+
+    let changeValue = 0n;
+    for (const box of inputBoxes) {
+      changeValue += BigInt(box.value);
+    }
+    for (const box of outputBoxes) {
+      changeValue -= BigInt(box.value);
+    }
+
+    expect(calcChangeValue(inputBoxes, outputBoxes)).toEqual(changeValue);
+  });
+});
+
+describe('calcTokenChange', () => {
+  /**
+   * @target should calculate token amount difference between input and output
+   * boxes
+   * @dependencies
+   * @scenario
+   * - create input and output boxes
+   * - calculate token change values
+   * - call calcTokenChange with input and output boxes
+   * - check returned value to be equal to the calculated token change values
+   * @expected
+   * - returned value should be equal to the calculated token change values
+   */
+  it(`should calculate token amount difference between input and output boxes`, async () => {
+    const outputBoxes = testData.boxesAscending.slice(0, 2);
+    const inputBoxes = testData.boxesAscending.slice(2, 5);
+
+    const tokens: [string, bigint][] = [];
+    tokens.push(
+      ...inputBoxes
+        .flatMap((box) => box.assets)
+        .map<[string, bigint]>((asset) => [asset.tokenId, BigInt(asset.amount)])
+    );
+    tokens.push(
+      ...outputBoxes
+        .flatMap((box) => box.assets)
+        .map<[string, bigint]>((asset) => [
+          asset.tokenId,
+          -BigInt(asset.amount),
+        ])
+    );
+    tokens.sort();
+    const tokensChange: [string, bigint][] = [];
+    for (const [id, amount] of tokens) {
+      if (tokensChange.length === 0 || tokensChange.at(-1)![0] !== id) {
+        tokensChange.push([id, amount]);
+      } else {
+        tokensChange.at(-1)![1] += amount;
+      }
+    }
+
+    expect(
+      [...calcTokenChange(inputBoxes, outputBoxes).entries()].sort()
+    ).toEqual(tokensChange.sort());
   });
 });
