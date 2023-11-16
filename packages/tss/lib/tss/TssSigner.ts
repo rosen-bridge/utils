@@ -239,7 +239,9 @@ export class TssSigner extends Communicator {
       this.sign(message, (status: boolean, message?: string, args?: string) => {
         if (status && args) resolve(args);
         reject(message);
-      }).then(() => null);
+      })
+        .then(() => null)
+        .catch((e) => reject(e));
     });
   };
 
