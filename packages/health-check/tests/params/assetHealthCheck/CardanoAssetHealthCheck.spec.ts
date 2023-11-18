@@ -22,13 +22,14 @@ describe('CardanoAssetHealthCheck', () => {
         postAddressAssets: async () => [
           {
             address: 'address',
-            fingerprint: 'assetId',
+            policy_id: 'policy_id',
+            asset_name: 'asset_name',
             quantity: '1200',
           },
         ],
       } as any);
       const assetHealthCheckParam = new TestCardanoAssetHealthCheck(
-        'assetId',
+        'policy_id.asset_name',
         'assetName',
         'address',
         100n,
