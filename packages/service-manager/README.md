@@ -29,29 +29,31 @@ yarn add @rosen-bridge/service-manager
 
 ## Implementation Details
 
-Before diving into the implementation details, it is important to understand the concept of actions in this context. In this system, actions refer to the operations of starting and stopping a service. These actions are requested by various components and are stored in a `Map` data structure called `pendingActions`. This map keeps track of the requested actions for each service.
+Before diving into the implementation details, it is important to understand the concept of actions in this context. In this system, actions refer to the operations of starting and stopping a service. These actions are requested by various components and are stored in a `Map` data structure called `pendingActions`. This map keeps track of the requested actions for each service id.
+
+Each action has some requirements which oversees service dependencies or dependants based on the action operation, i.e. "start" action requires service dependencies to be in appropriate state and "stop" requires service dependants to be stopped. For instance, if service A depends on service B, starting A requires service B to be in "running" state.
 
 ### Action Scenario
 
-The process of starting and stopping services in this system follows a hierarchical structure. This means that the start and stop operations of services are performed in a cascading manner, where starting a service triggers the start of its dependent services, and stopping a service also stops its dependants. This document provides an overview of the implementation details for this functionality.
+The process of starting and stopping services in this system follows a hierarchical structure. This means that the start and stop operations of services are performed in a cascading manner, where starting a service triggers the start of its dependent services, and stopping a service also stops its dependants. Service manager checks and behaviors includes:
 
 - Pending Action Check:
 
-  - Before any action is initiated, a check is performed to determine if there are any pending actions for a specific service in the `pendingActions` list.
-  - If no pending actions are found, the new action is added to the action map.
-  - The dependencies of the action are then examined to ensure they are in the appropriate state.
-  - If any dependencies are not in the required state, the necessary steps are taken to change their state accordingly.
-  - Only when all dependencies are in the appropriate state, the action is executed for the target service.
+  - Before any action is initiated, a check is performed to determine if there are any pending actions for the corresponding service in the `pendingActions` map.
+  - If no pending actions are found for the service, the new action is added to the action map.
+  - The action requirements are then examined and the necessary steps are taken to ensure they are satisfied.
+  - Only when all requirements are met, the action is executed for the service.
 
 - Dependency Status Handling:
 
-  - For instance, if Service B depends on Service C and Service M, the status of these two services is checked.
+  - Dependencies are handled through action requirements.
+  - For instance, if Service B depends on Service C and Service M, the status of these two services is checked for the "start" operation.
   - If either Service C or Service M is not in the "running" state, the "start" operation for Service B is prevented.
   - Conversely, when both Service C and Service M reach the appropriate states, the `startService` method is invoked for Service B.
 
-- Duplicate Action Handling:
+- Action Collision Handling:
 
-  - If there is already a pending action for the same service in the `pendingActions` list, an appropriate error is returned to avoid duplicate actions.
+  - If there is already a different pending action for the same service in the `pendingActions` map, an appropriate error is returned to prevent a potential action collision.
 
 - Dependency Resolution:
 
@@ -59,19 +61,15 @@ The process of starting and stopping services in this system follows a hierarchi
   - If all dependencies are in the appropriate state, the action proceeds.
   - If some dependencies are still not ready, the promise stored in the `pendingPromises` for this service is returned.
 
-- Start and Stop Operation Management:
-  - When starting a service, all its dependencies are ensured to be met before initiating the start operation.
-  - Conversely, when stopping a service, its dependents are examined to ensure a proper shutdown sequence.
-
-By following this implementation approach, services are started and stopped in a controlled manner, considering their dependencies and maintaining the integrity of the system.
+By overseeing the functionalities described above, we ensure that the system starts and stops services in a controlled and cascading manner, taking into account their dependencies and maintaining the integrity of the system.
 
 ### Service Status Change
 
-When a service undergoes a status change, the `ServiceManager` becomes aware of it through the `callbackHandler` function. In such cases, depending on the destination status, the following actions should take place:
+ServiceManager works Not only by performing action, but also by changes in service statuses. When a service undergoes a status change, the `ServiceManager` becomes aware of it through the `callbackHandler` function. In such cases, depending on the next status, the following actions should take place:
 
-- If the destination status is "started" or "running," the dependants of the service need to be examined. If they have a pending "start" operation in the `pendingActions` list and all their dependencies are ready, the operation is executed along with resolving or rejecting the current operation.
+- If the next status is "started" or "running," the dependants of the service need to be examined. If they have a pending "start" operation in the `pendingActions` map and all their dependencies are ready, the operation is executed along with resolving or rejecting the current operation.
 
-- If the destination status is "dormant," all dependants of the service must be stopped. Additionally, all dependencies of the service should be checked, and if there are pending "stop" operations in the `pendingActions` list and their dependencies are ready, similar to the previous case, the operations are executed. It is important to note that the responsibility of managing a service that is already stopped and should not be stopped again lies with the `AbstractService` itself.
+- If the next status is "dormant," all dependants of the service must be stopped. Additionally, all dependencies of the service should be checked, and if there are pending "stop" operations in the `pendingActions` map and their requirements are satisfied, `stopService` is invoked. It is important to note that the responsibility of managing a service that is already stopped and should not be stopped again lies with the `AbstractService` itself.
 
 By implementing these actions based on the service status change, we ensure that the dependents are appropriately handled and that the system maintains the desired state and behavior.
 
@@ -99,12 +97,7 @@ class X1A extends AbstractService {
 class X1B extends AbstractService {
   name = 'X1B';
 
-  protected dependencies: Dependency[] = [
-    {
-      serviceName: 'X1M',
-      allowedStatuses: [ServiceStatus.running],
-    },
-  ];
+  protected dependencies: Dependency[] = [];
 
   // implement other required functions
   // ...
