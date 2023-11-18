@@ -89,7 +89,7 @@ export default class TestUtils {
   static noNativeTokens: RosenTokens = {
     idKeys: {
       ergo: 'tokenId',
-      cardano: 'fingerprint',
+      cardano: 'tokenId',
     },
     tokens: [
       {

@@ -2,13 +2,13 @@ import { RosenTokens } from '../../lib';
 
 export const firstTokenMap: RosenTokens = {
   idKeys: {
-    ergo: 'tokenID',
-    cardano: 'fingerprint',
+    ergo: 'tokenId',
+    cardano: 'tokenId',
   },
   tokens: [
     {
       ergo: {
-        tokenID:
+        tokenId:
           '1111111111111111111111111111111111111111111111111111111111111111',
         name: 'test token1',
         decimals: 0,
@@ -18,10 +18,9 @@ export const firstTokenMap: RosenTokens = {
         },
       },
       cardano: {
-        fingerprint: 'asset111111111111111111111111111111111111111',
-        policyID: '22222222222222222222222222222222222222222222222222222222',
-        assetID:
-          '3333333333333333333333333333333333333333333333333333333333333333333333333333',
+        tokenId: 'policyId2.assetName2',
+        policyId: 'policyId2',
+        assetName: 'assetName2',
         name: 'asset1',
         decimals: 0,
         metaData: {
@@ -32,7 +31,7 @@ export const firstTokenMap: RosenTokens = {
     },
     {
       ergo: {
-        tokenID:
+        tokenId:
           '2222222222222222222222222222222222222222222222222222222222222222',
         name: 'test token2',
         decimals: 0,
@@ -53,7 +52,7 @@ export const firstTokenMap: RosenTokens = {
     },
     {
       ergo: {
-        tokenID: 'tokenId',
+        tokenId: 'tokenId',
         name: 'test token3',
         decimals: 0,
         metaData: {
@@ -62,9 +61,9 @@ export const firstTokenMap: RosenTokens = {
         },
       },
       cardano: {
-        fingerprint: 'asset3fingerprint',
-        policyID: 'policyID3',
-        assetID: 'assetID3',
+        tokenId: 'policyId3.assetName3',
+        policyId: 'policyId3',
+        assetName: 'assetName3',
         name: 'asset3',
         decimals: 0,
         metaData: {
@@ -78,12 +77,12 @@ export const firstTokenMap: RosenTokens = {
 
 export const secondTokenMap: RosenTokens = {
   idKeys: {
-    cardano: 'fingerprint',
+    cardano: 'tokenId',
   },
   tokens: [
     {
       ergo: {
-        tokenID: 'tokenId',
+        tokenId: 'tokenId',
         name: 'test token3',
         decimals: 0,
         metaData: {
@@ -92,9 +91,9 @@ export const secondTokenMap: RosenTokens = {
         },
       },
       cardano: {
-        fingerprint: 'asset3fingerprint',
-        policyID: 'policyID3',
-        assetID: 'assetID3',
+        tokenId: 'policyId3.assetName3',
+        policyId: 'policyId3',
+        assetName: 'assetName3',
         name: 'asset3',
         decimals: 0,
         metaData: {
@@ -108,7 +107,7 @@ export const secondTokenMap: RosenTokens = {
 
 export const firstToken = {
   ergo: {
-    tokenID: '1111111111111111111111111111111111111111111111111111111111111111',
+    tokenId: '1111111111111111111111111111111111111111111111111111111111111111',
     name: 'test token1',
     decimals: 0,
     metaData: {
@@ -117,10 +116,9 @@ export const firstToken = {
     },
   },
   cardano: {
-    fingerprint: 'asset111111111111111111111111111111111111111',
-    policyID: '22222222222222222222222222222222222222222222222222222222',
-    assetID:
-      '3333333333333333333333333333333333333333333333333333333333333333333333333333',
+    tokenId: 'policyId2.assetName2',
+    policyId: 'policyId2',
+    assetName: 'assetName2',
     name: 'asset1',
     decimals: 0,
     metaData: {
@@ -132,7 +130,7 @@ export const firstToken = {
 
 export const secondToken = {
   ergo: {
-    tokenID: 'tokenId',
+    tokenId: 'tokenId',
     name: 'test token3',
     decimals: 0,
     metaData: {
@@ -141,9 +139,9 @@ export const secondToken = {
     },
   },
   cardano: {
-    fingerprint: 'asset3fingerprint',
-    policyID: 'policyID3',
-    assetID: 'assetID3',
+    tokenId: 'policyId3.assetName3',
+    policyId: 'policyId3',
+    assetName: 'assetName3',
     name: 'asset3',
     decimals: 0,
     metaData: {

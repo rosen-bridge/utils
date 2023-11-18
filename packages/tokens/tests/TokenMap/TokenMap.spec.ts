@@ -10,40 +10,39 @@ import {
 describe('TokenMap', () => {
   describe('search', () => {
     /**
-     * @target TokenMap.search should return asset with condition on the policyID and assetID
+     * @target TokenMap.search should return asset with condition on the policyId and assetName
      * @dependencies
      * - RosenToken json
      * @scenario
-     * - call search with specific policyID and assetID
+     * - call search with specific policyId and assetName
      * @expected
      * - must return one token
      * - returned token must equal to specified token
      */
-    it('should return asset with condition on the policyID and assetID', () => {
+    it('should return asset with condition on the policyId and assetName', () => {
       const tokenMap = new TokenMap(firstTokenMap);
       const res = tokenMap.search('cardano', {
-        policyID: '22222222222222222222222222222222222222222222222222222222',
-        assetID:
-          '3333333333333333333333333333333333333333333333333333333333333333333333333333',
+        policyId: 'policyId2',
+        assetName: 'assetName2',
       });
       expect(res.length).toEqual(1);
       expect(res[0]).toEqual(firstToken);
     });
 
     /**
-     * @target TokenMap.search should return asset with specific ergo tokenID
+     * @target TokenMap.search should return asset with specific ergo tokenId
      * @dependencies
      * - RosenToken json
      * @scenario
-     * - call search with specific tokenID
+     * - call search with specific tokenId
      * @expected
      * - must return one token
      * - returned token must equal to specified token
      */
-    it('should return asset with specific ergo tokenID', () => {
+    it('should return asset with specific ergo tokenId', () => {
       const tokenMap = new TokenMap(firstTokenMap);
       const res = tokenMap.search('ergo', {
-        tokenID: 'tokenId',
+        tokenId: 'tokenId',
       });
       expect(res.length).toEqual(1);
       expect(res[0]).toEqual(secondToken);
@@ -61,7 +60,7 @@ describe('TokenMap', () => {
     it('should return empty array in case of wrong chain', () => {
       const tokenMap = new TokenMap(firstTokenMap);
       const res = tokenMap.search('bitcoin', {
-        tokenID: 'tokenId',
+        tokenId: 'tokenId',
       });
       expect(res.length).toEqual(0);
     });
@@ -80,7 +79,7 @@ describe('TokenMap', () => {
     it('should return ergo tokenId of tha passed token', () => {
       const tokenMap = new TokenMap(firstTokenMap);
       const res = tokenMap.getID(firstToken, 'ergo');
-      expect(res).toEqual(firstToken.ergo.tokenID);
+      expect(res).toEqual(firstToken.ergo.tokenId);
     });
 
     /**
@@ -95,7 +94,7 @@ describe('TokenMap', () => {
     it('should return cardano fingerprint of tha passed token', () => {
       const tokenMap = new TokenMap(firstTokenMap);
       const res = tokenMap.getID(secondToken, 'cardano');
-      expect(res).toEqual(secondToken.cardano.fingerprint);
+      expect(res).toEqual(secondToken.cardano.tokenId);
     });
 
     /**
@@ -121,11 +120,11 @@ describe('TokenMap', () => {
      * @scenario
      * - call getIdKey for ergo chain
      * @expected
-     * - must return 'tokenID'
+     * - must return 'tokenId'
      */
     it('should return `tokenId`for ergo chain', function () {
       const tokenMap = new TokenMap(firstTokenMap);
-      expect(tokenMap.getIdKey('ergo')).toEqual('tokenID');
+      expect(tokenMap.getIdKey('ergo')).toEqual('tokenId');
     });
 
     /**

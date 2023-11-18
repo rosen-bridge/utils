@@ -62,7 +62,7 @@ export class TokenMap {
    * @param chain
    *  example: "ergo"
    * @param condition
-   *  example: {tokenID:"tokenID"}
+   *  example: {tokenId:"tokenId"}
    */
   search = (chain: string, condition: { [key: string]: string }) => {
     return this.tokensConfig.tokens.filter((token) => {
@@ -99,13 +99,13 @@ export class TokenMap {
    * @param token
    *  example: {
    *       "ergo": {
-   *         "tokenID": "tokenId",
+   *         "tokenId": "tokenId",
    *         "tokenName": "token1"
    *       },
    *       "cardano": {
-   *         "fingerprint": "...",
-   *         "policyID": "policy",
-   *         "assetID": "id"
+   *         "tokenId": "...",
+   *         "policyId": "policy",
+   *         "assetName": "id"
    *       }
    *     }
    * @param chain
