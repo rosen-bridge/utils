@@ -439,7 +439,7 @@ export default class CardanoTestData {
       fromAddress:
         'addr_test1vzg07d2qp3xje0w77f982zkhqey50gjxrsdqh89yx8r7nasu97hr0',
       sourceChainTokenId:
-        'ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2',
+        'ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2.7369676d61',
       amount: '10',
       targetChainTokenId: 'erg',
       sourceTxId:
@@ -541,7 +541,7 @@ export default class CardanoTestData {
 
   static koiosAssetTransformations = {
     tokenLocked: {
-      from: 'ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2',
+      from: 'ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2.7369676d61',
       to: 'erg',
       amount: '10',
     },
@@ -973,7 +973,7 @@ export default class CardanoTestData {
       fromAddress:
         '7bb715ce7d410747beb98cb6fb322a5865894018433eb115d67625c5befb6f61',
       sourceChainTokenId:
-        'ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2',
+        'ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2.7369676d61',
       amount: '10000',
       targetChainTokenId: 'erg',
       sourceTxId:
@@ -1055,7 +1055,7 @@ export default class CardanoTestData {
 
   static ogmiosAssetTransformations = {
     tokenLocked: {
-      from: 'ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2',
+      from: 'ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2.7369676d61',
       to: 'erg',
       amount: '10000',
     },
@@ -1085,7 +1085,6 @@ export default class CardanoTestData {
                 'a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235',
               asset_name: '484f534b59',
               quantity: '184272501',
-              fingerprint: 'asset17q7r59zlc3dgw0venc80pdv566q6yguw03f0d9',
             },
           ],
         },
@@ -1107,7 +1106,6 @@ export default class CardanoTestData {
                 'a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235',
               asset_name: '484f534b59',
               quantity: '184272501',
-              fingerprint: 'asset17q7r59zlc3dgw0venc80pdv566q6yguw03f0d9',
             },
           ],
         },
@@ -1233,7 +1231,6 @@ export default class CardanoTestData {
                 'a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235',
               asset_name: '484f534b59',
               quantity: '184272501',
-              fingerprint: 'asset17q7r59zlc3dgw0venc80pdv566q6yguw03f0d9',
             },
           ],
         },
@@ -1255,7 +1252,6 @@ export default class CardanoTestData {
                 'a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235',
               asset_name: '484f534b59',
               quantity: '184272501',
-              fingerprint: 'asset17q7r59zlc3dgw0venc80pdv566q6yguw03f0d9',
             },
           ],
         },
@@ -1287,7 +1283,6 @@ export default class CardanoTestData {
                 'a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235',
               asset_name: '484f534b59',
               quantity: '184272501',
-              fingerprint: 'asset17q7r59zlc3dgw0venc80pdv566q6yguw03f0d9',
             },
           ],
         },
@@ -1309,7 +1304,6 @@ export default class CardanoTestData {
                 'a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235',
               asset_name: '484f534b59',
               quantity: '184272501',
-              fingerprint: 'asset17q7r59zlc3dgw0venc80pdv566q6yguw03f0d9',
             },
           ],
         },
@@ -1326,7 +1320,8 @@ export default class CardanoTestData {
       networkFee: '175000',
       fromAddress:
         'addr1q9jperhqputlfnfqhteu6eu2xhjwxa9keph08vgrqjg357tthg3xm3n4r6pw85a5p6gdqv9v5zd6vmqdpxvl0jrql2aszjgvaj',
-      sourceChainTokenId: 'asset17q7r59zlc3dgw0venc80pdv566q6yguw03f0d9',
+      sourceChainTokenId:
+        'a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235.484f534b59',
       amount: '184272501',
       targetChainTokenId:
         'b37bfa41c2d9e61b4e478ddfc459a03d25b658a2305ffb428fbc47ad6abbeeaa',
@@ -1359,7 +1354,6 @@ export default class CardanoTestData {
           policy_id: 'a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235',
           asset_name: '484f534b59',
           quantity: '184272501',
-          fingerprint: 'asset17q7r59zlc3dgw0venc80pdv566q6yguw03f0d9',
         },
       ],
     },
@@ -1378,13 +1372,11 @@ export default class CardanoTestData {
           policy_id: 'a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235',
           asset_name: '484f534b50',
           quantity: '184272501',
-          fingerprint: 'asset17q7r59zlc3dgw0venc80pdv566q6yguw03f0d9',
         },
         {
           policy_id: 'a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235',
           asset_name: '484f534b59',
           quantity: '184272501',
-          fingerprint: 'asset17q7r59zlc3dgw0venc80pdv566q6yguw03f0d9',
         },
       ],
     },
@@ -1397,7 +1389,6 @@ export default class CardanoTestData {
           policy_id: 'a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235',
           asset_name: '484f534b50',
           quantity: '184272501',
-          fingerprint: 'asset17q7r59zlc3dgw0venc80pdv566q6yguw03f0d9',
         },
       ],
     },
@@ -1405,7 +1396,7 @@ export default class CardanoTestData {
 
   static rosenAssetTransformations = {
     tokenLocked: {
-      from: 'asset17q7r59zlc3dgw0venc80pdv566q6yguw03f0d9',
+      from: 'a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235.484f534b59',
       to: 'b37bfa41c2d9e61b4e478ddfc459a03d25b658a2305ffb428fbc47ad6abbeeaa',
       amount: '184272501',
     },

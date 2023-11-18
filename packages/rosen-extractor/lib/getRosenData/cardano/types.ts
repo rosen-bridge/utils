@@ -63,7 +63,6 @@ interface CardanoAsset {
   policy_id: string;
   asset_name: string;
   quantity: string;
-  fingerprint: string;
 }
 
 interface CardanoUtxo {
