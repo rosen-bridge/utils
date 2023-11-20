@@ -18,6 +18,7 @@ export interface SignerConfig {
   getPeerId: () => Promise<string>;
   shares: Array<string>;
   thresholdTTL?: number;
+  responseDelay?: number;
 }
 
 export interface Sign {
