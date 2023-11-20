@@ -233,6 +233,39 @@ describe('TssSigner', () => {
     });
 
     /**
+     * @target TssSigner.update should send at most two messages
+     * @dependencies
+     * @scenario
+     * - mock activeGuards to return a list of 7 active guard
+     * - mock `Date.now` to return 1686285600 ( a random timestamp when its this guard turn)
+     * - insert three more messages to signs
+     * - call update twice
+     * @expected
+     * - mocked submitMsg must call twice
+     */
+    it('should send at most two messages', async () => {
+      jest.spyOn(Date, 'now').mockReturnValue(1686285600608);
+      const activeGuards = Array(7)
+        .fill('')
+        .map((item, index) => ({
+          peerId: `peerId-${index}`,
+          publicKey: `publicKey-${index}`,
+        }));
+      jest.spyOn(detection, 'activeGuards').mockResolvedValue(activeGuards);
+      for (let i = 0; i < 3; i++) {
+        signer.getSigns().push({
+          posted: false,
+          msg: `random message ${i}`,
+          callback: jest.fn(),
+          signs: [],
+          addedTime: currentTime + i * 10,
+        });
+      }
+      await signer.update();
+      expect(mockSubmit).toHaveBeenCalledTimes(2);
+    });
+
+    /**
      * @target TssSigner.update should update sings array
      * @dependencies
      * @scenario

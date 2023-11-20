@@ -147,7 +147,7 @@ export class TssSigner extends Communicator {
     if (round !== this.lastUpdateRound) {
       this.lastUpdateRound = round;
       this.logger.debug('processing signs to start');
-      for (const sign of this.signs) {
+      for (const sign of this.signs.slice(0, 2)) {
         if (sign.posted) continue;
         this.logger.debug(`new sign found with [${sign.msg}]`);
         const payload: SignRequestPayload = {
