@@ -8,7 +8,6 @@ import {
   ErgoBoxProxy,
   TokenInfo,
 } from './types';
-import { txFee } from '../tests/testData';
 
 /**
  * extracts box id and assets of a box
