@@ -37,6 +37,7 @@ export class TssSigner extends Communicator {
   private readonly turnDuration: number;
   private readonly turnNoWork: number;
   private readonly timeout: number;
+  private readonly responseDelay: number;
   private lastUpdateRound: number;
   protected signs: Array<Sign>;
   protected pendingSigns: Array<PendingSign>;
@@ -107,6 +108,7 @@ export class TssSigner extends Communicator {
     this.pendingSigns = [];
     this.pendingAccessMutex = new Mutex();
     this.signAccessMutex = new Mutex();
+    this.responseDelay = config.responseDelay ?? 5;
   }
 
   /**
@@ -607,6 +609,7 @@ export class TssSigner extends Communicator {
     const sign = this.getSign(message);
     if (sign) {
       sign.posted = true;
+      const remainingTime = this.timeout - (this.getDate() - sign.addedTime);
       const data = {
         peers: guards.map((item) => ({
           shareID: this.shares[this.guardPks.indexOf(item.publicKey)],
@@ -614,6 +617,7 @@ export class TssSigner extends Communicator {
         })),
         message: message,
         crypto: this.signer.getCrypto(),
+        operationTimeout: remainingTime - this.responseDelay,
         callBackUrl: this.callbackUrl,
       };
       return this.axios.post(signUrl, data).catch((err) => {
