@@ -40,7 +40,9 @@ class CardanoAssetHealthCheckParam extends AbstractAssetHealthCheckParam {
       const assets = await this.koiosApi.postAddressAssets({
         _addresses: [this.address],
       });
-      const token = assets.find((token) => token.fingerprint == this.assetId);
+      const token = assets.find(
+        (token) => `${token.policy_id}.${token.asset_name}` == this.assetId
+      );
       if (token && token.quantity) tokenAmount = BigInt(token.quantity);
     }
 

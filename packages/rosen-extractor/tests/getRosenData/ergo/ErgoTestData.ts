@@ -683,7 +683,7 @@ class ErgoTestData {
       sourceChainTokenId: 'erg',
       amount: '11100000',
       targetChainTokenId:
-        'ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2',
+        'ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2.7369676d61',
       sourceTxId:
         'd04fc93dc15a28a1f0e50b0fffc94f360037dcedddaf8a2e25905a892cd48378',
     },
@@ -827,12 +827,12 @@ class ErgoTestData {
     },
     ergLocked: {
       from: 'erg',
-      to: 'ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2',
+      to: 'ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2.7369676d61',
       amount: 11100000n,
     },
     wrongTokenLocked: {
       from: 'erg',
-      to: 'ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2',
+      to: 'ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2.7369676d61',
       amount: 1100000n,
     },
   };
@@ -857,7 +857,7 @@ class ErgoTestData {
       sourceChainTokenId: 'erg',
       amount: '384284957',
       targetChainTokenId:
-        'ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2',
+        'ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2.7369676d61',
       sourceTxId:
         'ddcde6f5ee25df2d0ff11260b735bcd8d87eb8f4b42b98e9c118bf3cf0285c66',
     },
