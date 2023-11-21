@@ -19,6 +19,7 @@ export interface SignerConfig {
   shares: Array<string>;
   thresholdTTL?: number;
   responseDelay?: number;
+  signPerRoundLimit?: number;
 }
 
 export interface Sign {
