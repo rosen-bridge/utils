@@ -1,6 +1,7 @@
 import { CARDANO_NATIVE_ASSET } from '../../constants';
 import { AbstractAssetHealthCheckParam } from './AbstractAssetHealthCheck';
 import cardanoKoiosClientFactory from '@rosen-clients/cardano-koios';
+import { BlockFrostAPI } from '@blockfrost/blockfrost-js';
 
 class CardanoAssetHealthCheckParam extends AbstractAssetHealthCheckParam {
   private koiosApi;
@@ -51,4 +52,54 @@ class CardanoAssetHealthCheckParam extends AbstractAssetHealthCheckParam {
   };
 }
 
-export { CardanoAssetHealthCheckParam };
+class CardanoBlockFrostAssetHealthCheckParam extends AbstractAssetHealthCheckParam {
+  private blockFrost;
+
+  constructor(
+    assetId: string,
+    assetName: string,
+    address: string,
+    warnThreshold: bigint,
+    criticalThreshold: bigint,
+    projectId: string,
+    assetDecimal = 0,
+    blockFrostUrl?: string
+  ) {
+    super(
+      assetId,
+      assetName,
+      address,
+      warnThreshold,
+      criticalThreshold,
+      assetDecimal
+    );
+    this.blockFrost = new BlockFrostAPI({
+      projectId: projectId,
+      customBackend: blockFrostUrl,
+      network: 'mainnet',
+    });
+  }
+
+  /**
+   * Updates the asset health status and the update timestamp
+   */
+  update = async () => {
+    let tokenAmount = 0n;
+    const assets = await this.blockFrost.addresses(this.address);
+    if (this.assetId == CARDANO_NATIVE_ASSET) {
+      const nativeToken = assets.amount.find(
+        (asset) => asset.unit === 'lovelace'
+      );
+      if (nativeToken) tokenAmount = BigInt(nativeToken.quantity);
+    } else {
+      const unit = this.assetId.split('.').join('');
+      const token = assets.amount.find((asset) => asset.unit === unit);
+      if (token) tokenAmount = BigInt(token.quantity);
+    }
+
+    this.tokenAmount = tokenAmount;
+    this.updateTimeStamp = new Date();
+  };
+}
+
+export { CardanoAssetHealthCheckParam, CardanoBlockFrostAssetHealthCheckParam };

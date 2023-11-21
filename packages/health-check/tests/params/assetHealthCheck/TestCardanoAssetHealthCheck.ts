@@ -1,4 +1,7 @@
-import { CardanoAssetHealthCheckParam } from '../../../lib/params/assetHealthCheck/CardanoAssetHealthCheck';
+import {
+  CardanoAssetHealthCheckParam,
+  CardanoBlockFrostAssetHealthCheckParam,
+} from '../../../lib/params/assetHealthCheck/CardanoAssetHealthCheck';
 
 class TestCardanoAssetHealthCheck extends CardanoAssetHealthCheckParam {
   /**
@@ -9,4 +12,13 @@ class TestCardanoAssetHealthCheck extends CardanoAssetHealthCheckParam {
   };
 }
 
-export { TestCardanoAssetHealthCheck };
+class TestCardanoBlockFrostAssetHealthCheck extends CardanoBlockFrostAssetHealthCheckParam {
+  /**
+   * @returns protected token amount
+   */
+  getTokenAmount = () => {
+    return this.tokenAmount;
+  };
+}
+
+export { TestCardanoAssetHealthCheck, TestCardanoBlockFrostAssetHealthCheck };
