@@ -46,6 +46,7 @@ export class TssSigner extends Communicator {
   private readonly pendingAccessMutex: Mutex;
   private readonly signAccessMutex: Mutex;
   private readonly shares: Array<string>;
+  private readonly signPerRoundLimit: number;
 
   /**
    * get threshold value from tss-api instance if threshold didn't set or expired and set for this and detection
@@ -109,6 +110,7 @@ export class TssSigner extends Communicator {
     this.pendingAccessMutex = new Mutex();
     this.signAccessMutex = new Mutex();
     this.responseDelay = config.responseDelay ?? 5;
+    this.signPerRoundLimit = config.signPerRoundLimit ?? 2;
   }
 
   /**
@@ -149,7 +151,7 @@ export class TssSigner extends Communicator {
     if (round !== this.lastUpdateRound) {
       this.lastUpdateRound = round;
       this.logger.debug('processing signs to start');
-      for (const sign of this.signs.slice(0, 2)) {
+      for (const sign of this.signs.slice(0, this.signPerRoundLimit)) {
         if (sign.posted) continue;
         this.logger.debug(`new sign found with [${sign.msg}]`);
         const payload: SignRequestPayload = {
