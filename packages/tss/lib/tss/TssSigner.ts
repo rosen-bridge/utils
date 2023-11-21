@@ -37,6 +37,7 @@ export class TssSigner extends Communicator {
   private readonly turnDuration: number;
   private readonly turnNoWork: number;
   private readonly timeout: number;
+  private readonly responseDelay: number;
   private lastUpdateRound: number;
   protected signs: Array<Sign>;
   protected pendingSigns: Array<PendingSign>;
@@ -45,6 +46,7 @@ export class TssSigner extends Communicator {
   private readonly pendingAccessMutex: Mutex;
   private readonly signAccessMutex: Mutex;
   private readonly shares: Array<string>;
+  private readonly signPerRoundLimit: number;
 
   /**
    * get threshold value from tss-api instance if threshold didn't set or expired and set for this and detection
@@ -107,6 +109,8 @@ export class TssSigner extends Communicator {
     this.pendingSigns = [];
     this.pendingAccessMutex = new Mutex();
     this.signAccessMutex = new Mutex();
+    this.responseDelay = config.responseDelay ?? 5;
+    this.signPerRoundLimit = config.signPerRoundLimit ?? 2;
   }
 
   /**
@@ -147,7 +151,7 @@ export class TssSigner extends Communicator {
     if (round !== this.lastUpdateRound) {
       this.lastUpdateRound = round;
       this.logger.debug('processing signs to start');
-      for (const sign of this.signs) {
+      for (const sign of this.signs.slice(0, this.signPerRoundLimit)) {
         if (sign.posted) continue;
         this.logger.debug(`new sign found with [${sign.msg}]`);
         const payload: SignRequestPayload = {
@@ -470,41 +474,47 @@ export class TssSigner extends Communicator {
     const myPk = await this.signer.getPk();
 
     if (sign.request && !this.isNoWorkTime()) {
-      sign.signs[guardIndex] = signature;
-      const approvedGuards = await this.getApprovedGuards(
-        sign.request.timestamp,
-        {
-          msg: sign.msg,
-          guards: sign.request.guards,
-          initGuardIndex: await this.getIndex(),
-        },
-        sign.signs
-      );
-      if (approvedGuards.length >= this.threshold.value) {
-        return await this.signAccessMutex.acquire().then(async (release) => {
-          if (this.getSign(payload.msg)) {
-            const payload: SignStartPayload = {
+      return await this.signAccessMutex.acquire().then(async (release) => {
+        try {
+          sign.signs[guardIndex] = signature;
+          const approvedGuards = await this.getApprovedGuards(
+            sign.request!.timestamp,
+            {
               msg: sign.msg,
-              signs: sign.signs,
               guards: sign.request!.guards,
-            };
-            await this.sendMessage(
-              startMessage,
-              payload,
-              approvedGuards
-                .filter((item) => item.publicKey !== myPk)
-                .map((item) => item.peerId),
-              sign.request!.timestamp
+              initGuardIndex: await this.getIndex(),
+            },
+            sign.signs
+          );
+          if (approvedGuards.length >= this.threshold.value) {
+            if (this.getSign(payload.msg)) {
+              const payload: SignStartPayload = {
+                msg: sign.msg,
+                signs: sign.signs,
+                guards: sign.request!.guards,
+              };
+              await this.sendMessage(
+                startMessage,
+                payload,
+                approvedGuards
+                  .filter((item) => item.publicKey !== myPk)
+                  .map((item) => item.peerId),
+                sign.request!.timestamp
+              );
+              await this.startSign(sign.msg, approvedGuards);
+            }
+          } else {
+            this.logger.debug(
+              `[${approvedGuards.length}] out of required [${this.threshold.value}] guards approved message [${sign.msg}]. Signs are: ${sign.signs}`
             );
-            await this.startSign(sign.msg, approvedGuards);
           }
-          release();
-        });
-      } else {
-        this.logger.debug(
-          `[${approvedGuards.length}] out of required [${this.threshold.value}] guards approved message [${sign.msg}]. Signs are: ${sign.signs}`
-        );
-      }
+        } catch (e) {
+          this.logger.warn(
+            `an error occurred while handling approve message: ${e}`
+          );
+        }
+        release();
+      });
     } else {
       this.logger.debug(
         'new message arrived but current guard is in no-work-period'
@@ -607,6 +617,7 @@ export class TssSigner extends Communicator {
     const sign = this.getSign(message);
     if (sign) {
       sign.posted = true;
+      const remainingTime = this.timeout - (this.getDate() - sign.addedTime);
       const data = {
         peers: guards.map((item) => ({
           shareID: this.shares[this.guardPks.indexOf(item.publicKey)],
@@ -614,6 +625,7 @@ export class TssSigner extends Communicator {
         })),
         message: message,
         crypto: this.signer.getCrypto(),
+        operationTimeout: remainingTime - this.responseDelay,
         callBackUrl: this.callbackUrl,
       };
       return this.axios.post(signUrl, data).catch((err) => {
