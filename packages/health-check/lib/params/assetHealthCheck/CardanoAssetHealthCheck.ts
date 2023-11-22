@@ -1,9 +1,9 @@
-import { CARDANO_NATIVE_ASSET } from '../../constants';
+import { CARDANO_NATIVE_ASSET, MAINNET } from '../../constants';
 import { AbstractAssetHealthCheckParam } from './AbstractAssetHealthCheck';
 import cardanoKoiosClientFactory from '@rosen-clients/cardano-koios';
 import { BlockFrostAPI } from '@blockfrost/blockfrost-js';
 
-class CardanoAssetHealthCheckParam extends AbstractAssetHealthCheckParam {
+class CardanoKoiosAssetHealthCheckParam extends AbstractAssetHealthCheckParam {
   private koiosApi;
 
   constructor(
@@ -76,7 +76,7 @@ class CardanoBlockFrostAssetHealthCheckParam extends AbstractAssetHealthCheckPar
     this.blockFrost = new BlockFrostAPI({
       projectId: projectId,
       customBackend: blockFrostUrl,
-      network: 'mainnet',
+      network: MAINNET,
     });
   }
 
@@ -102,4 +102,7 @@ class CardanoBlockFrostAssetHealthCheckParam extends AbstractAssetHealthCheckPar
   };
 }
 
-export { CardanoAssetHealthCheckParam, CardanoBlockFrostAssetHealthCheckParam };
+export {
+  CardanoKoiosAssetHealthCheckParam,
+  CardanoBlockFrostAssetHealthCheckParam,
+};

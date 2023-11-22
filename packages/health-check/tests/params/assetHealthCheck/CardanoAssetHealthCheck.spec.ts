@@ -1,7 +1,7 @@
 import { BlockFrostAPI } from '@blockfrost/blockfrost-js';
 import { CARDANO_NATIVE_ASSET } from '../../../lib/constants';
 import {
-  TestCardanoAssetHealthCheck,
+  TestCardanoKoiosAssetHealthCheck,
   TestCardanoBlockFrostAssetHealthCheck,
 } from './TestCardanoAssetHealthCheck';
 import cardanoKoiosClientFactory from '@rosen-clients/cardano-koios';
@@ -33,7 +33,7 @@ describe('CardanoAssetHealthCheck', () => {
           },
         ],
       } as any);
-      const assetHealthCheckParam = new TestCardanoAssetHealthCheck(
+      const assetHealthCheckParam = new TestCardanoKoiosAssetHealthCheck(
         'policy_id.asset_name',
         'assetName',
         'address',
@@ -65,7 +65,7 @@ describe('CardanoAssetHealthCheck', () => {
           },
         ],
       } as any);
-      const assetHealthCheckParam = new TestCardanoAssetHealthCheck(
+      const assetHealthCheckParam = new TestCardanoKoiosAssetHealthCheck(
         CARDANO_NATIVE_ASSET,
         CARDANO_NATIVE_ASSET,
         'address',

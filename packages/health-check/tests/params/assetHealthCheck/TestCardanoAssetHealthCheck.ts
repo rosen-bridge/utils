@@ -1,9 +1,9 @@
 import {
-  CardanoAssetHealthCheckParam,
+  CardanoKoiosAssetHealthCheckParam,
   CardanoBlockFrostAssetHealthCheckParam,
 } from '../../../lib/params/assetHealthCheck/CardanoAssetHealthCheck';
 
-class TestCardanoAssetHealthCheck extends CardanoAssetHealthCheckParam {
+class TestCardanoKoiosAssetHealthCheck extends CardanoKoiosAssetHealthCheckParam {
   /**
    * @returns protected token amount
    */
@@ -21,4 +21,7 @@ class TestCardanoBlockFrostAssetHealthCheck extends CardanoBlockFrostAssetHealth
   };
 }
 
-export { TestCardanoAssetHealthCheck, TestCardanoBlockFrostAssetHealthCheck };
+export {
+  TestCardanoKoiosAssetHealthCheck,
+  TestCardanoBlockFrostAssetHealthCheck,
+};
