@@ -121,12 +121,14 @@ export const selectErgoBoxes = async (
  * creates a change box with remaining Erg value and token amounts. returns
  * undefined if remaining value and amounts are zero.
  *
+ * @export
  * @param {string} changeAddress
  * @param {number} height
  * @param {ErgoBoxProxy[]} inputBoxes
- * @param {ErgoBoxProxy[]} outputBoxes
- * @param {TokenInfo[]} tokensToBurn tokens that will be deducted from output
- * and burnt
+ * @param {ErgoBoxCandidateProxy[]} outputBoxes
+ * @param {bigint} txFee
+ * @param {TokenInfo[]} tokensToBurn
+ * @param {AbstractLogger} [logger=new DummyLogger()]
  * @return {(ErgoBoxCandidateProxy | undefined)}
  */
 export const createChangeBox = (
@@ -134,10 +136,11 @@ export const createChangeBox = (
   height: number,
   inputBoxes: ErgoBoxProxy[],
   outputBoxes: ErgoBoxCandidateProxy[],
+  txFee: bigint,
   tokensToBurn: TokenInfo[],
   logger: AbstractLogger = new DummyLogger()
 ): ErgoBoxCandidateProxy | undefined => {
-  const value = calcChangeValue(inputBoxes, outputBoxes);
+  const value = calcChangeValue(inputBoxes, outputBoxes, txFee);
   logger.debug(`change value of change box: [${value}]`);
 
   if (value < 0) {
@@ -208,7 +211,8 @@ export const createChangeBox = (
  */
 export const calcChangeValue = (
   inputBoxes: ErgoBoxProxy[],
-  outputBoxes: ErgoBoxCandidateProxy[]
+  outputBoxes: ErgoBoxCandidateProxy[],
+  txFee: bigint
 ): bigint => {
   const inputValue = inputBoxes
     .map((box) => BigInt(box.value))
@@ -216,7 +220,7 @@ export const calcChangeValue = (
   const outputValue = outputBoxes
     .map((box) => BigInt(box.value))
     .reduce((sum, val) => sum + val, 0n);
-  return inputValue - outputValue;
+  return inputValue - outputValue - txFee;
 };
 
 /**

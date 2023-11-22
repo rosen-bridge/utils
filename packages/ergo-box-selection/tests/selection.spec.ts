@@ -417,13 +417,18 @@ describe('createChangeBox', () => {
 
     const outputBoxes = noTokenBoxes.slice(0, 2);
     const inputBoxes = noTokenBoxes.slice(2, 5);
-    const changeValue = calcChangeValue(inputBoxes, outputBoxes);
+    const changeValue = calcChangeValue(
+      inputBoxes,
+      outputBoxes,
+      testData.txFee
+    );
 
     const changeBox = createChangeBox(
       testData.changeAddress,
       height,
       inputBoxes,
       outputBoxes,
+      testData.txFee,
       []
     );
 
@@ -463,13 +468,18 @@ describe('createChangeBox', () => {
       (box) => box.assets.length > 0
     );
     inputBoxes.push(...boxesWithToken);
-    const changeValue = calcChangeValue(inputBoxes, outputBoxes);
+    const changeValue = calcChangeValue(
+      inputBoxes,
+      outputBoxes,
+      testData.txFee
+    );
 
     const changeBox = createChangeBox(
       testData.changeAddress,
       height,
       inputBoxes,
       outputBoxes,
+      testData.txFee,
       []
     );
 
@@ -513,6 +523,7 @@ describe('createChangeBox', () => {
         height,
         inputBoxes,
         outputBoxes,
+        testData.txFee,
         []
       )
     ).toThrow();
@@ -541,7 +552,11 @@ describe('createChangeBox', () => {
     const outputBoxes = noTokenBoxes.slice(0, 2);
     outputBoxes.push(...boxesWithToken);
     const inputBoxes = noTokenBoxes.slice(2, 6);
-    const changeValue = calcChangeValue(inputBoxes, outputBoxes);
+    const changeValue = calcChangeValue(
+      inputBoxes,
+      outputBoxes,
+      testData.txFee
+    );
 
     const safeMinBoxValue = BigInt(
       ergoLib.BoxValue.SAFE_USER_MIN().as_i64().to_str()
@@ -553,6 +568,7 @@ describe('createChangeBox', () => {
         height,
         inputBoxes,
         outputBoxes,
+        testData.txFee,
         []
       )
     ).toThrow();
@@ -592,7 +608,7 @@ describe('createChangeBox', () => {
     };
     const inputBoxes = noTokenBoxes.slice(2, 4);
     inputBoxes.push(boxesWithToken[0]);
-    const changeValue = calcChangeValue(inputBoxes, outputBoxes);
+    const changeValue = calcChangeValue(inputBoxes, outputBoxes, 0n);
 
     const safeMinBoxValue = BigInt(
       ergoLib.BoxValue.SAFE_USER_MIN().as_i64().to_str()
@@ -614,6 +630,7 @@ describe('createChangeBox', () => {
         height,
         inputBoxes,
         outputBoxes,
+        0n,
         []
       )
     ).toThrow();
@@ -647,7 +664,11 @@ describe('createChangeBox', () => {
       (box) => box.assets.length > 0
     );
     inputBoxes.push(...boxesWithToken);
-    const changeValue = calcChangeValue(inputBoxes, outputBoxes);
+    const changeValue = calcChangeValue(
+      inputBoxes,
+      outputBoxes,
+      testData.txFee
+    );
 
     const tokenToBurn = {
       id: boxesWithToken[0].assets[0].tokenId,
@@ -658,6 +679,7 @@ describe('createChangeBox', () => {
       height,
       inputBoxes,
       outputBoxes,
+      testData.txFee,
       [tokenToBurn]
     );
 
@@ -707,7 +729,9 @@ describe('calcChangeValue', () => {
       changeValue -= BigInt(box.value);
     }
 
-    expect(calcChangeValue(inputBoxes, outputBoxes)).toEqual(changeValue);
+    expect(calcChangeValue(inputBoxes, outputBoxes, testData.txFee)).toEqual(
+      changeValue - testData.txFee
+    );
   });
 });
 
