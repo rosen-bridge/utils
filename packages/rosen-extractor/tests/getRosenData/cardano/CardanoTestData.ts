@@ -557,410 +557,227 @@ export default class CardanoTestData {
     },
   };
 
-  static ogmiosAuxiliaryData = {
+  static ogmiosTxMetadata = {
     validEvent: {
-      hash: '1c278913fc51ccef7681929feb60be65b383b741c5ea698bb5f5332c98bd163d',
-      body: {
-        blob: {
-          '0': {
-            map: [
-              {
-                k: {
-                  string: 'to',
-                },
-                v: {
-                  string: 'ergo',
-                },
-              },
-              {
-                k: {
-                  string: 'bridgeFee',
-                },
-                v: {
-                  string: '3000',
-                },
-              },
-              {
-                k: {
-                  string: 'networkFee',
-                },
-                v: {
-                  string: '300',
-                },
-              },
-              {
-                k: {
-                  string: 'toAddress',
-                },
-                v: {
-                  string: '9hZxV3YNSfbCqS6GEses7DhAVSatvaoNtdsiNvkimPGG2c8fzkG',
-                },
-              },
-              {
-                k: {
-                  string: 'fromAddress',
-                },
-                v: {
-                  list: [
-                    {
-                      string:
-                        '7bb715ce7d410747beb98cb6fb322a5865894018433eb115d67625c5befb6f61',
-                    },
-                  ],
-                },
-              },
-            ],
-          },
+      hash: '3f495218cb916d2061b51e393b83204d3efc869498a874dbb9df7a28a51cfa7d',
+      labels: {
+        '0': {
+          json: [
+            {
+              to: 'ergo',
+            },
+            {
+              bridgeFee: '3000',
+            },
+            {
+              networkFee: '300',
+            },
+            {
+              toAddress: '9hZxV3YNSfbCqS6GEses7DhAVSatvaoNtdsiNvkimPGG2c8fzkG',
+            },
+            {
+              fromAddress: [
+                'addr1q8hmp5zjzvv7s7pmgemz3mvrkd2nu7609hwgsqa0auf6h7h3r6x6jn2zrt8',
+                '',
+              ],
+            },
+          ],
         },
-        scripts: [],
-      },
-    },
-    noBlob: {
-      hash: '1c278913fc51ccef7681929feb60be65b383b741c5ea698bb5f5332c98bd163d',
-      body: {
-        scripts: [],
-      },
-    },
-    noBlobZeroKey: {
-      hash: '1c278913fc51ccef7681929feb60be65b383b741c5ea698bb5f5332c98bd163d',
-      body: {
-        blob: {
-          '1': {
-            map: [
-              {
-                k: {
-                  string: 'to',
-                },
-                v: {
-                  string: 'ergo',
-                },
-              },
-              {
-                k: {
-                  string: 'bridgeFee',
-                },
-                v: {
-                  string: '3000',
-                },
-              },
-              {
-                k: {
-                  string: 'networkFee',
-                },
-                v: {
-                  string: '300',
-                },
-              },
-              {
-                k: {
-                  string: 'toAddress',
-                },
-                v: {
-                  string: '9hZxV3YNSfbCqS6GEses7DhAVSatvaoNtdsiNvkimPGG2c8fzkG',
-                },
-              },
-              {
-                k: {
-                  string: 'fromAddress',
-                },
-                v: {
-                  list: [
-                    {
-                      string:
-                        '7bb715ce7d410747beb98cb6fb322a5865894018433eb115d67625c5befb6f61',
-                    },
-                  ],
-                },
-              },
-            ],
-          },
-        },
-        scripts: [],
       },
     },
     invalidType: {
-      hash: '1c278913fc51ccef7681929feb60be65b383b741c5ea698bb5f5332c98bd163d',
-      body: {
-        blob: {
-          '0': {
-            map: [
-              {
-                k: {
-                  string: 'to',
-                },
-                v: {
-                  string: 'ergo',
-                },
-              },
-              {
-                k: {
-                  string: 'bridgeFee',
-                },
-                v: {
-                  string: '3000',
-                },
-              },
-              {
-                k: {
-                  string: 'networkFee',
-                },
-                v: {
-                  string: '300',
-                },
-              },
-              {
-                k: {
-                  string: 'toAddress',
-                },
-                v: {
-                  string: '9hZxV3YNSfbCqS6GEses7DhAVSatvaoNtdsiNvkimPGG2c8fzkG',
-                },
-              },
-              {
-                k: {
-                  string: 'fromAddress',
-                },
-                v: {
-                  string:
-                    '7bb715ce7d410747beb98cb6fb322a5865894018433eb115d67625c5befb6f61',
-                },
-              },
+      hash: '3f495218cb916d2061b51e393b83204d3efc869498a874dbb9df7a28a51cfa7d',
+      labels: {
+        '0': {
+          json: [
+            {
+              to: 'ergo',
+            },
+            {
+              bridgeFee: '3000',
+            },
+            {
+              networkFee: '300',
+            },
+            {
+              toAddress: '9hZxV3YNSfbCqS6GEses7DhAVSatvaoNtdsiNvkimPGG2c8fzkG',
+            },
+            {
+              fromAddress:
+                'addr1q8hmp5zjzvv7s7pmgemz3mvrkd2nu7609hwgsqa0auf6h7h3r6x6jn2zrt8',
+            },
+          ],
+        },
+      },
+    },
+    noLabels: {
+      hash: '3f495218cb916d2061b51e393b83204d3efc869498a874dbb9df7a28a51cfa7d',
+    },
+    noZeroKey: {
+      hash: '035ffd77d4fa243b647f6f5ef56ce96dd2d98784da663dfc35eeb986b01b8b72',
+      labels: {
+        json: [
+          {
+            to: 'ergo',
+          },
+          {
+            bridgeFee: '3000',
+          },
+          {
+            networkFee: '300',
+          },
+          {
+            toAddress: '9hZxV3YNSfbCqS6GEses7DhAVSatvaoNtdsiNvkimPGG2c8fzkG',
+          },
+          {
+            fromAddress: [
+              'addr1q8hmp5zjzvv7s7pmgemz3mvrkd2nu7609hwgsqa0auf6h7h3r6x6jn2zrt8',
+              '',
             ],
           },
-        },
-        scripts: [],
+        ],
       },
     },
     noJson: {
-      hash: '484b3aae1d0a97347e0bc4e3626d96c2e27a507d17bb985e7d8e76415bf73fdf',
-      body: {
-        blob: {
-          '0': {
-            string:
-              'd8799f581ca69d04d52bdc725a9e040a47802ad493799ac3614b3fc2ffeea055',
+      hash: '3f495218cb916d2061b51e393b83204d3efc869498a874dbb9df7a28a51cfa7d',
+      labels: {
+        '0': [
+          {
+            to: 'ergo',
           },
-          '1': {
-            string:
-              '499fd8799fd8799fd8799f581c01a241dad562d18c859814d3df8564453c1404',
+          {
+            bridgeFee: '3000',
           },
-        },
-        scripts: [],
+          {
+            networkFee: '300',
+          },
+          {
+            toAddress: '9hZxV3YNSfbCqS6GEses7DhAVSatvaoNtdsiNvkimPGG2c8fzkG',
+          },
+          {
+            fromAddress: [
+              'addr1q8hmp5zjzvv7s7pmgemz3mvrkd2nu7609hwgsqa0auf6h7h3r6x6jn2zrt8',
+              '',
+            ],
+          },
+        ],
       },
     },
   };
 
-  static ogmiosBaseTransactionBody = {
-    inputs: [
+  static ogmiosTxOutputs = {
+    tokenLock: [
       {
-        txId: '3acfccbb95bafc40ad56b30607635eb4077f21ac97948de38bddeedd3c8703b0',
-        index: 0,
+        address:
+          'addr1qyrgrphdsy7lta2rae2pu8hp5mw2fnpvu8se00rxa6zzmc4sh4gyfkdhpwfq8lnh5l95663d09n3s9crutnc9ywamcvqs5e5m6',
+        value: {
+          ada: {
+            lovelace: 1000000000,
+          },
+        },
+      },
+      {
+        address:
+          'addr_test1vze7yqqlg8cjlyhz7jzvsg0f3fhxpuu6m3llxrajfzqecggw704re',
+        value: {
+          ada: {
+            lovelace: 51891657,
+          },
+          ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2: {
+            '7369676d61': 10000,
+          },
+        },
       },
     ],
-    collaterals: [],
-    references: [],
-    collateralReturn: null,
-    totalCollateral: null,
-    certificates: [],
-    withdrawals: {},
-    fee: BigInt(273377),
-    validityInterval: {
-      invalidBefore: null,
-      invalidHereafter: null,
-    },
-    update: null,
-    mint: {
-      coins: BigInt(0),
-      assets: {},
-    },
-    network: null,
-    scriptIntegrityHash: null,
-    requiredExtraSignatures: [],
-  };
-
-  static ogmiosTransactionBodies = {
-    tokenLock: {
-      ...this.ogmiosBaseTransactionBody,
-      outputs: [
-        {
-          address:
-            'addr_test1vze7yqqlg8cjlyhz7jzvsg0f3fhxpuu6m3llxrajfzqecggw704re',
-          value: {
-            coins: BigInt(1344798),
-            assets: {
-              'ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2.7369676d61':
-                BigInt(10000),
-            },
+    adaLock: [
+      {
+        address:
+          'addr_test1vze7yqqlg8cjlyhz7jzvsg0f3fhxpuu6m3llxrajfzqecggw704re',
+        value: {
+          ada: {
+            lovelace: 20000000,
           },
-          datumHash: null,
-          datum: null,
-          script: null,
         },
-        {
-          address:
-            'addr1qyrgrphdsy7lta2rae2pu8hp5mw2fnpvu8se00rxa6zzmc4sh4gyfkdhpwfq8lnh5l95663d09n3s9crutnc9ywamcvqs5e5m6',
-          value: {
-            coins: BigInt(1344798),
-            assets: {
-              '8e3e19131f96c186335b23bf7983ab00867a987ca900abb27ae0f2b9.52535457':
-                BigInt(90000),
-            },
-          },
-          datumHash: null,
-          datum: null,
-          script: null,
-        },
-        {
-          address:
-            'addr1qyrgrphdsy7lta2rae2pu8hp5mw2fnpvu8se00rxa6zzmc4sh4gyfkdhpwfq8lnh5l95663d09n3s9crutnc9ywamcvqs5e5m6',
-          value: {
-            coins: BigInt(7037027),
-            assets: {},
-          },
-          datumHash: null,
-          datum: null,
-          script: null,
-        },
-      ],
-    },
-    adaLock: {
-      ...this.ogmiosBaseTransactionBody,
-      outputs: [
-        {
-          address:
-            'addr_test1vze7yqqlg8cjlyhz7jzvsg0f3fhxpuu6m3llxrajfzqecggw704re',
-          value: {
-            coins: BigInt(20000000),
-            assets: {},
-          },
-          datumHash: null,
-          datum: null,
-          script: null,
-        },
-        {
-          address:
-            'addr1qyrgrphdsy7lta2rae2pu8hp5mw2fnpvu8se00rxa6zzmc4sh4gyfkdhpwfq8lnh5l95663d09n3s9crutnc9ywamcvqs5e5m6',
-          value: {
-            coins: BigInt(1344798),
-            assets: {
-              '8e3e19131f96c186335b23bf7983ab00867a987ca900abb27ae0f2b9.52535457':
-                BigInt(90000),
-            },
-          },
-          datumHash: null,
-          datum: null,
-          script: null,
-        },
-        {
-          address:
-            'addr1qyrgrphdsy7lta2rae2pu8hp5mw2fnpvu8se00rxa6zzmc4sh4gyfkdhpwfq8lnh5l95663d09n3s9crutnc9ywamcvqs5e5m6',
-          value: {
-            coins: BigInt(7037027),
-            assets: {},
-          },
-          datumHash: null,
-          datum: null,
-          script: null,
-        },
-      ],
-    },
-    noLock: {
-      ...this.ogmiosBaseTransactionBody,
-      outputs: [
-        {
-          address:
-            'addr1qyrgrphdsy7lta2rae2pu8hp5mw2fnpvu8se00rxa6zzmc4sh4gyfkdhpwfq8lnh5l95663d09n3s9crutnc9ywamcvqs5e5m6',
-          value: {
-            coins: BigInt(20000000),
-            assets: {},
-          },
-          datumHash: null,
-          datum: null,
-          script: null,
-        },
-        {
-          address:
-            'addr1qyrgrphdsy7lta2rae2pu8hp5mw2fnpvu8se00rxa6zzmc4sh4gyfkdhpwfq8lnh5l95663d09n3s9crutnc9ywamcvqs5e5m6',
-          value: {
-            coins: BigInt(1344798),
-            assets: {
-              '8e3e19131f96c186335b23bf7983ab00867a987ca900abb27ae0f2b9.52535457':
-                BigInt(90000),
-            },
-          },
-          datumHash: null,
-          datum: null,
-          script: null,
-        },
-        {
-          address:
-            'addr1qyrgrphdsy7lta2rae2pu8hp5mw2fnpvu8se00rxa6zzmc4sh4gyfkdhpwfq8lnh5l95663d09n3s9crutnc9ywamcvqs5e5m6',
-          value: {
-            coins: BigInt(7037027),
-            assets: {},
-          },
-          datumHash: null,
-          datum: null,
-          script: null,
-        },
-      ],
-    },
-  };
-
-  static ogmiosBaseTransaction = {
-    witness: {
-      signatures: {
-        b32aa9008c013f71477787c47ef82dfe170eed2b5a1632ead59018df2b5bb0dc:
-          'Qjnccpi1hDCsNl83/hXI05XhMDe5l+13sv0EhedscQ/h9YZV5rOnSSapZqhSCth7GBAjBPYOpcshCcetPOvWDw==',
       },
-      scripts: {},
-      datums: {},
-      redeemers: {},
-      bootstrap: [],
-    },
-    raw: 'hKQAgYJYIDrPzLuVuvxArVazBgdjXrQHfyGsl5SN44vd7t08hwOwAAGDglgdYcweLWYIZGKlVKTAgTzMLgHAbrNudt1QomirMU+CGgAUhR6hWByOPhkTH5bBhjNbI795g6sAhnqYfKkAq7J64PK5oURSU1RXGScQglg5AQaBhu2BPfX1Q+5UHh7hptykzCzh4Ze8Zu6ELeKwvVBE2bcLkgP+d6fLTWoteWcYFwPi54KR3d4YghoAFIUeoVgcjj4ZEx+WwYYzWyO/eYOrAIZ6mHypAKuyeuDyuaFEUlNUVxoAAV+Qglg5AQaBhu2BPfX1Q+5UHh7hptykzCzh4Ze8Zu6ELeKwvVBE2bcLkgP+d6fLTWoteWcYFwPi54KR3d4YGgBrYGMCGgAEK+EHWCAcJ4kT/FHM73aBkp/rYL5ls4O3QcXqaYu19TMsmL0WPaEAgYJYILMqqQCMAT9xR3eHxH74Lf4XDu0rWhYy6tWQGN8rW7DcWEBCOdxymLWEMKw2Xzf+FcjTleEwN7mX7Xey/QSF52xxD+H1hlXms6dJJqlmqFIK2HsYECME9g6lyyEJx60869YP9aEApWJ0b2RlcmdvaWJyaWRnZUZlZWQzMDAwam5ldHdvcmtGZWVjMzAwaXRvQWRkcmVzc3gzOWhaeFYzWU5TZmJDcVM2R0VzZXM3RGhBVlNhdHZhb050ZHNpTnZraW1QR0cyYzhmemtHb2Zyb21BZGRyZXNzSGFzaHhAN2JiNzE1Y2U3ZDQxMDc0N2JlYjk4Y2I2ZmIzMjJhNTg2NTg5NDAxODQzM2ViMTE1ZDY3NjI1YzViZWZiNmY2MQ==',
-    id: '55ec4f12b1a8656e07bc5e4281af3c12bf7b63bf39811eb5762a2f522be2600f',
-    inputSource: 'inputs',
+      {
+        address:
+          'addr1q8hmp5zjzvv7s7pmgemz3mvrkd2nu7609hwgsqa0auf6h7h3r6x6jn2zrt8xs3enc53f4aqks7v5g5t254fu2n8sz2wsla293a',
+        value: {
+          ada: {
+            lovelace: 5425547,
+          },
+          fca58ef8ba9ef1961e132b611de2f8abcd2f34831e615a6f80c5bb48: {
+            '546f6b656e2d6c6f656e': 162232,
+            '77724552472d6c6f656e': 3745344781,
+            '777252534e2d6c6f656e': 6026968,
+          },
+        },
+      },
+    ],
+    noLock: [
+      {
+        address:
+          'addr1qyhg2enxe357dqdrcqgmh5zqvq9cqrc723dcsj09pfy9a3pm4qtqj29j2eymn393wgszmfcza83pzult2nera7ff7wusys5krp',
+        value: {
+          ada: {
+            lovelace: 1000000000,
+          },
+        },
+      },
+      {
+        address:
+          'addr1qxtsvwcd6kj8mpelxcfmdnkml78fayp5jtgyhmrt6lt3k4d0y6fzu5zhz939uz7lewlh4z88f86qfsf9fypvju9h6jsspr7w5f',
+        value: {
+          ada: {
+            lovelace: 51891657,
+          },
+          a26022096c6a8052987dabbfa94849ab7886cf0bb7840044e017d5be: {
+            '4b756265436f696e': 931878658108,
+          },
+        },
+      },
+    ],
   };
 
   static ogmiosTransactions = {
     validTokenLock: {
-      ...this.ogmiosBaseTransaction,
-      body: this.ogmiosTransactionBodies.tokenLock,
-      metadata: this.ogmiosAuxiliaryData.validEvent,
+      id: '55ec4f12b1a8656e07bc5e4281af3c12bf7b63bf39811eb5762a2f522be2600f',
+      outputs: this.ogmiosTxOutputs.tokenLock,
+      metadata: this.ogmiosTxMetadata.validEvent,
     },
     validAdaLock: {
-      ...this.ogmiosBaseTransaction,
-      body: this.ogmiosTransactionBodies.adaLock,
-      metadata: this.ogmiosAuxiliaryData.validEvent,
+      id: '55ec4f12b1a8656e07bc5e4281af3c12bf7b63bf39811eb5762a2f522be2600f',
+      outputs: this.ogmiosTxOutputs.adaLock,
+      metadata: this.ogmiosTxMetadata.validEvent,
     },
     noLock: {
-      ...this.ogmiosBaseTransaction,
-      body: this.ogmiosTransactionBodies.noLock,
-      metadata: this.ogmiosAuxiliaryData.validEvent,
-    },
-    noBlobMetadata: {
-      ...this.ogmiosBaseTransaction,
-      body: this.ogmiosTransactionBodies.tokenLock,
-      metadata: this.ogmiosAuxiliaryData.noBlob,
-    },
-    noBlobZeroKeyMetadata: {
-      ...this.ogmiosBaseTransaction,
-      body: this.ogmiosTransactionBodies.tokenLock,
-      metadata: this.ogmiosAuxiliaryData.noBlobZeroKey,
-    },
-    invalidTypeMetadata: {
-      ...this.ogmiosBaseTransaction,
-      body: this.ogmiosTransactionBodies.tokenLock,
-      metadata: this.ogmiosAuxiliaryData.invalidType,
-    },
-    noJsonMetadata: {
-      ...this.ogmiosBaseTransaction,
-      body: this.ogmiosTransactionBodies.tokenLock,
-      metadata: this.ogmiosAuxiliaryData.noJson,
+      id: '55ec4f12b1a8656e07bc5e4281af3c12bf7b63bf39811eb5762a2f522be2600f',
+      outputs: this.ogmiosTxOutputs.noLock,
+      metadata: this.ogmiosTxMetadata.validEvent,
     },
     noMetadata: {
-      ...this.ogmiosBaseTransaction,
-      body: this.ogmiosTransactionBodies.tokenLock,
+      id: '55ec4f12b1a8656e07bc5e4281af3c12bf7b63bf39811eb5762a2f522be2600f',
+      outputs: this.ogmiosTxOutputs.tokenLock,
+    },
+    noLabelsMetadata: {
+      id: '55ec4f12b1a8656e07bc5e4281af3c12bf7b63bf39811eb5762a2f522be2600f',
+      outputs: this.ogmiosTxOutputs.tokenLock,
+      metadata: this.ogmiosTxMetadata.noLabels,
+    },
+    noZeroKeyMetadata: {
+      id: '55ec4f12b1a8656e07bc5e4281af3c12bf7b63bf39811eb5762a2f522be2600f',
+      outputs: this.ogmiosTxOutputs.tokenLock,
+      metadata: this.ogmiosTxMetadata.noZeroKey,
+    },
+    noJsonMetadata: {
+      id: '55ec4f12b1a8656e07bc5e4281af3c12bf7b63bf39811eb5762a2f522be2600f',
+      outputs: this.ogmiosTxOutputs.tokenLock,
+      metadata: this.ogmiosTxMetadata.noJson,
+    },
+    invalidTypeMetadata: {
+      id: '55ec4f12b1a8656e07bc5e4281af3c12bf7b63bf39811eb5762a2f522be2600f',
+      outputs: this.ogmiosTxOutputs.tokenLock,
+      metadata: this.ogmiosTxMetadata.invalidType,
     },
   };
 
@@ -971,7 +788,7 @@ export default class CardanoTestData {
       bridgeFee: '3000',
       networkFee: '300',
       fromAddress:
-        '7bb715ce7d410747beb98cb6fb322a5865894018433eb115d67625c5befb6f61',
+        'addr1q8hmp5zjzvv7s7pmgemz3mvrkd2nu7609hwgsqa0auf6h7h3r6x6jn2zrt8',
       sourceChainTokenId:
         'ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2.7369676d61',
       amount: '10000',
@@ -985,7 +802,7 @@ export default class CardanoTestData {
       bridgeFee: '3000',
       networkFee: '300',
       fromAddress:
-        '7bb715ce7d410747beb98cb6fb322a5865894018433eb115d67625c5befb6f61',
+        'addr1q8hmp5zjzvv7s7pmgemz3mvrkd2nu7609hwgsqa0auf6h7h3r6x6jn2zrt8',
       sourceChainTokenId: 'ada',
       amount: '20000000',
       targetChainTokenId:
@@ -1000,56 +817,47 @@ export default class CardanoTestData {
       address:
         'addr_test1vze7yqqlg8cjlyhz7jzvsg0f3fhxpuu6m3llxrajfzqecggw704re',
       value: {
-        coins: BigInt(1344798),
-        assets: {
-          'ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2.7369676d61':
-            BigInt(10000),
+        ada: {
+          lovelace: 51891657n,
+        },
+        ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2: {
+          '7369676d61': 10000n,
         },
       },
-      datumHash: null,
-      datum: null,
-      script: null,
     },
     adaLocked: {
       address:
         'addr_test1vze7yqqlg8cjlyhz7jzvsg0f3fhxpuu6m3llxrajfzqecggw704re',
       value: {
-        coins: BigInt(20000000),
-        assets: {},
+        ada: {
+          lovelace: 20000000n,
+        },
       },
-      datumHash: null,
-      datum: null,
-      script: null,
     },
     secondAssetLocked: {
       address:
         'addr_test1vze7yqqlg8cjlyhz7jzvsg0f3fhxpuu6m3llxrajfzqecggw704re',
       value: {
-        coins: BigInt(1344798),
-        assets: {
-          '8e3e19131f96c186335b23bf7983ab00867a987ca900abb27ae0f2b9.52535457':
-            BigInt(10000),
-          'ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2.7369676d61':
-            BigInt(10000),
+        ada: {
+          lovelace: 51891657n,
+        },
+        ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2: {
+          '52535457': 10000n,
+          '7369676d61': 10000n,
         },
       },
-      datumHash: null,
-      datum: null,
-      script: null,
     },
     wrongAssetLocked: {
       address:
         'addr_test1vze7yqqlg8cjlyhz7jzvsg0f3fhxpuu6m3llxrajfzqecggw704re',
       value: {
-        coins: BigInt(10000000),
-        assets: {
-          '8e3e19131f96c186335b23bf7983ab00867a987ca900abb27ae0f2b9.52535457':
-            BigInt(10000),
+        ada: {
+          lovelace: 51891657n,
+        },
+        '8e3e19131f96c186335b23bf7983ab00867a987ca900abb27ae0f2b9': {
+          '7369676d61': 10000n,
         },
       },
-      datumHash: null,
-      datum: null,
-      script: null,
     },
   };
 
@@ -1067,7 +875,7 @@ export default class CardanoTestData {
     wrongAssetLocked: {
       from: 'ada',
       to: 'f6a69529b12a7e2326acffee8383e0c44408f87a872886fadf410fe8498006d3',
-      amount: '10000000',
+      amount: '51891657',
     },
   };
 

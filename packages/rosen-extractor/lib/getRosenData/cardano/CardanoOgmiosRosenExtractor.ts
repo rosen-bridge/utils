@@ -97,17 +97,18 @@ export class CardanoOgmiosRosenExtractor extends AbstractRosenDataExtractor<Tran
       if (policyId === CARDANO_NATIVE_TOKEN) continue;
       // according to ogmios v6 docs assets are stores as
       //      [policyId]: {[assetName]: amount}
-      const assetName = Object.keys(assets[policyId])[0];
-      const token = this.tokens.search(CARDANO_CHAIN, {
-        policyId: policyId,
-        assetName: assetName,
-      });
-      if (token.length > 0) {
-        return {
-          from: this.tokens.getID(token[0], CARDANO_CHAIN),
-          to: this.tokens.getID(token[0], toChain),
-          amount: assets[policyId][assetName].toString(),
-        };
+      for (const assetName of Object.keys(assets[policyId])) {
+        const token = this.tokens.search(CARDANO_CHAIN, {
+          policyId: policyId,
+          assetName: assetName,
+        });
+        if (token.length > 0) {
+          return {
+            from: this.tokens.getID(token[0], CARDANO_CHAIN),
+            to: this.tokens.getID(token[0], toChain),
+            amount: assets[policyId][assetName].toString(),
+          };
+        }
       }
     }
 

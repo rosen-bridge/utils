@@ -1,9 +1,9 @@
 import { CardanoOgmiosRosenExtractor } from '../../../lib';
 import CardanoTestData from './CardanoTestData';
 import TestUtils from '../TestUtils';
-import { TxBabbage } from '@cardano-ogmios/schema';
-import Utils from '../../../lib/getRosenData/Utils';
+import { Transaction } from '@cardano-ogmios/schema';
 import { ERGO_CHAIN } from '../../../lib/getRosenData/const';
+import JsonBigInt from '@rosen-bridge/json-bigint';
 
 describe('OgmiosRosenExtractor', () => {
   describe('get', () => {
@@ -21,7 +21,7 @@ describe('OgmiosRosenExtractor', () => {
     it('should extract rosenData from token locking tx successfully', () => {
       // generate a transaction with valid rosen data (locking token)
       const validTokenLockTx = CardanoTestData.ogmiosTransactions
-        .validTokenLock as unknown as TxBabbage;
+        .validTokenLock as unknown as Transaction;
 
       // run test
       const extractor = new CardanoOgmiosRosenExtractor(
@@ -50,7 +50,7 @@ describe('OgmiosRosenExtractor', () => {
     it('should extract rosenData from ADA locking tx successfully', () => {
       // generate a transaction with valid rosen data (locking ADA)
       const validAdaLockTx = CardanoTestData.ogmiosTransactions
-        .validAdaLock as unknown as TxBabbage;
+        .validAdaLock as unknown as Transaction;
 
       // run test
       const extractor = new CardanoOgmiosRosenExtractor(
@@ -79,7 +79,7 @@ describe('OgmiosRosenExtractor', () => {
     it('should return undefined when tx locks nothing', () => {
       // generate a transaction with no lock box
       const noLock = CardanoTestData.ogmiosTransactions
-        .noLock as unknown as TxBabbage;
+        .noLock as unknown as Transaction;
 
       // run test
       const extractor = new CardanoOgmiosRosenExtractor(
@@ -107,9 +107,9 @@ describe('OgmiosRosenExtractor', () => {
       'should return undefined when tx metadata does NOT contain %p',
       (key) => {
         // generate a transaction with invalid rosen data (missing fromAddress key)
-        const invalidMetadata = Utils.JsonBI.parse(
-          Utils.JsonBI.stringify(
-            CardanoTestData.ogmiosAuxiliaryData.validEvent
+        const invalidMetadata = JsonBigInt.parse(
+          JsonBigInt.stringify(
+            CardanoTestData.ogmiosTxMetadata.validEvent
           ).replace(key, key + 'Fake')
         );
         const invalidTx = CardanoTestData.ogmiosTransactions.validTokenLock;
@@ -120,7 +120,7 @@ describe('OgmiosRosenExtractor', () => {
           CardanoTestData.lockAddress,
           TestUtils.tokens
         );
-        const result = extractor.get(invalidTx as unknown as TxBabbage);
+        const result = extractor.get(invalidTx as unknown as Transaction);
 
         // check return value
         expect(result).toBeUndefined();
@@ -141,7 +141,7 @@ describe('OgmiosRosenExtractor', () => {
     it('should return undefined when tx does NOT contain metadata', () => {
       // generate a transaction with no rosen data
       const noLock = CardanoTestData.ogmiosTransactions
-        .noMetadata as unknown as TxBabbage;
+        .noMetadata as unknown as Transaction;
 
       // run test
       const extractor = new CardanoOgmiosRosenExtractor(
@@ -168,7 +168,7 @@ describe('OgmiosRosenExtractor', () => {
     it('should return undefined when metadata has no blob', () => {
       // generate a transaction with invalid rosen data (no blob key in metadata)
       const noLock = CardanoTestData.ogmiosTransactions
-        .noBlobMetadata as unknown as TxBabbage;
+        .noLabelsMetadata as unknown as Transaction;
 
       // run test
       const extractor = new CardanoOgmiosRosenExtractor(
@@ -195,7 +195,7 @@ describe('OgmiosRosenExtractor', () => {
     it("should return undefined when metadata blob does NOT contain '0' key", () => {
       // generate a transaction with invalid rosen data (no '0' key in blob)
       const noLock = CardanoTestData.ogmiosTransactions
-        .noBlobZeroKeyMetadata as unknown as TxBabbage;
+        .noZeroKeyMetadata as unknown as Transaction;
 
       // run test
       const extractor = new CardanoOgmiosRosenExtractor(
@@ -222,7 +222,7 @@ describe('OgmiosRosenExtractor', () => {
     it('should return undefined when rosenData contains invalid type for a required key', () => {
       // generate a transaction with invalid rosen data (invalid type metadata)
       const noLock = CardanoTestData.ogmiosTransactions
-        .invalidTypeMetadata as unknown as TxBabbage;
+        .invalidTypeMetadata as unknown as Transaction;
 
       // run test
       const extractor = new CardanoOgmiosRosenExtractor(
@@ -249,7 +249,7 @@ describe('OgmiosRosenExtractor', () => {
     it('should return undefined when metadata is not json', () => {
       // generate a transaction with invalid rosen data (no json in metadata)
       const noLock = CardanoTestData.ogmiosTransactions
-        .noJsonMetadata as unknown as TxBabbage;
+        .noJsonMetadata as unknown as Transaction;
 
       // run test
       const extractor = new CardanoOgmiosRosenExtractor(
