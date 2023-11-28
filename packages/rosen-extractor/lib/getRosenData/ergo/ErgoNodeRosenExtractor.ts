@@ -5,7 +5,7 @@ import { NodeOutputBox, NodeTransaction, TokenTransformation } from './types';
 import { RosenTokens } from '@rosen-bridge/tokens';
 import { Address, Constant } from 'ergo-lib-wasm-nodejs';
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
-import Utils from '../Utils';
+import JsonBigInt from '@rosen-bridge/json-bigint';
 
 export class ErgoNodeRosenExtractor extends AbstractRosenDataExtractor<NodeTransaction> {
   lockErgoTree: string;
@@ -121,7 +121,7 @@ export class ErgoNodeRosenExtractor extends AbstractRosenDataExtractor<NodeTrans
       this.logger.debug(
         `No rosen asset transformation found for box [${
           box.boxId
-        }]: box assets: ${Utils.JsonBI.stringify(box.assets)}`
+        }]: box assets: ${JsonBigInt.stringify(box.assets)}`
       );
       return undefined;
     }
