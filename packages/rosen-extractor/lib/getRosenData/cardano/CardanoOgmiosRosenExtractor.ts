@@ -1,26 +1,28 @@
 import { RosenData } from '../abstract/types';
 import AbstractRosenDataExtractor from '../abstract/AbstractRosenDataExtractor';
 import { CARDANO_CHAIN, CARDANO_NATIVE_TOKEN } from '../const';
-import Utils from '../Utils';
-import { TxBabbage, TxOut } from '@cardano-ogmios/schema';
+import {
+  ArrayMetadatum,
+  Transaction,
+  TransactionOutput,
+} from '@cardano-ogmios/schema';
 import { CardanoMetadataRosenData, TokenTransformation } from './types';
-import { isArray, isString } from 'lodash-es';
+import { isArray, isString, merge, reduce } from 'lodash-es';
+import JsonBigInt from '@rosen-bridge/json-bigint';
 
-export class CardanoOgmiosRosenExtractor extends AbstractRosenDataExtractor<TxBabbage> {
+export class CardanoOgmiosRosenExtractor extends AbstractRosenDataExtractor<Transaction> {
   /**
    * extracts RosenData from given lock transaction in Ogmios format
    * @param transaction the lock transaction in Koios format
    */
-  get = (transaction: TxBabbage): RosenData | undefined => {
+  get = (transaction: Transaction): RosenData | undefined => {
     const baseError = `No rosen data found for tx [${transaction.id}]`;
     const metadata = transaction.metadata;
     try {
-      if (metadata !== null) {
-        const blob = metadata.body.blob;
-        if (blob && blob['0']) {
-          const data = Utils.getDictValue(
-            blob['0']
-          ) as Partial<CardanoMetadataRosenData>;
+      if (metadata) {
+        const blob = metadata.labels;
+        if (blob && blob['0'] && blob['0'].json) {
+          const data = reduce(blob['0'].json as ArrayMetadatum, merge, {});
           if (
             isString(data.to) &&
             isString(data.networkFee) &&
@@ -31,7 +33,7 @@ export class CardanoOgmiosRosenExtractor extends AbstractRosenDataExtractor<TxBa
           ) {
             const rosenData = data as unknown as CardanoMetadataRosenData;
 
-            const lockOutputs = transaction.body.outputs.filter(
+            const lockOutputs = transaction.outputs.filter(
               (output) => output.address === this.lockAddress
             );
             for (const output of lockOutputs) {
@@ -59,15 +61,15 @@ export class CardanoOgmiosRosenExtractor extends AbstractRosenDataExtractor<TxBa
           } else
             this.logger.debug(
               baseError +
-                `: Incomplete metadata: ${Utils.JsonBI.stringify(metadata)}`
+                `: Incomplete metadata: ${JsonBigInt.stringify(metadata)}`
             );
         } else
           this.logger.debug(
-            baseError + `: Invalid blob: ${Utils.JsonBI.stringify(metadata)}`
+            baseError + `: Invalid blob: ${JsonBigInt.stringify(metadata)}`
           );
       } else
         this.logger.debug(
-          baseError + `: Invalid metadata: ${Utils.JsonBI.stringify(metadata)}`
+          baseError + `: Invalid metadata: ${JsonBigInt.stringify(metadata)}`
         );
     } catch (e) {
       this.logger.debug(
@@ -86,33 +88,26 @@ export class CardanoOgmiosRosenExtractor extends AbstractRosenDataExtractor<TxBa
    * @param toChain event target chain
    */
   getAssetTransformation = (
-    box: TxOut,
+    box: TransactionOutput,
     toChain: string
   ): TokenTransformation | undefined => {
     // try to build transformation using locked assets
-    if (box.value.assets) {
-      const assets = Object.keys(box.value.assets);
-      if (assets.length > 0) {
-        for (const tokenKey of assets) {
-          // according to ogmios docs assets are stores as
-          //      [policyId.assetName]: amount
-          //      [policyId]: amount        if assetName not exists.
-          const parts = tokenKey.split('.');
-          // if assetName exists, search token with policyId and asset name
-          // if not, search token with policyId
-          const token = this.tokens.search(
-            CARDANO_CHAIN,
-            tokenKey.indexOf('.') != -1
-              ? { policyId: parts[0].trim(), assetName: parts[1].trim() }
-              : { policyId: tokenKey }
-          );
-          if (token.length > 0) {
-            return {
-              from: this.tokens.getID(token[0], CARDANO_CHAIN),
-              to: this.tokens.getID(token[0], toChain),
-              amount: box.value.assets[tokenKey].toString(),
-            };
-          }
+    const assets = box.value;
+    for (const policyId of Object.keys(assets)) {
+      if (policyId === CARDANO_NATIVE_TOKEN) continue;
+      // according to ogmios v6 docs assets are stores as
+      //      [policyId]: {[assetName]: amount}
+      for (const assetName of Object.keys(assets[policyId])) {
+        const token = this.tokens.search(CARDANO_CHAIN, {
+          policyId: policyId,
+          assetName: assetName,
+        });
+        if (token.length > 0) {
+          return {
+            from: this.tokens.getID(token[0], CARDANO_CHAIN),
+            to: this.tokens.getID(token[0], toChain),
+            amount: assets[policyId][assetName].toString(),
+          };
         }
       }
     }
@@ -125,11 +120,11 @@ export class CardanoOgmiosRosenExtractor extends AbstractRosenDataExtractor<TxBa
       return {
         from: CARDANO_NATIVE_TOKEN,
         to: this.tokens.getID(lovelace[0], toChain),
-        amount: box.value.coins.toString(),
+        amount: assets.ada.lovelace.toString(),
       };
     } else {
       this.logger.debug(
-        `No rosen asset transformation found for Ogmios box with assets: ${Utils.JsonBI.stringify(
+        `No rosen asset transformation found for Ogmios box with assets: ${JsonBigInt.stringify(
           box.value.assets
         )}`
       );

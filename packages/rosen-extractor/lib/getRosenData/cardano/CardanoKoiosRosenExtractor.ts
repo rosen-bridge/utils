@@ -8,7 +8,7 @@ import {
   TokenTransformation,
   Utxo,
 } from './types';
-import Utils from '../Utils';
+import JsonBigInt from '@rosen-bridge/json-bigint';
 
 export class CardanoKoiosRosenExtractor extends AbstractRosenDataExtractor<KoiosTransaction> {
   /**
@@ -61,11 +61,11 @@ export class CardanoKoiosRosenExtractor extends AbstractRosenDataExtractor<Koios
             baseError +
               `: Incomplete metadata. isPlain: ${isPlainObject(
                 data
-              )}, data: ${Utils.JsonBI.stringify(data)}`
+              )}, data: ${JsonBigInt.stringify(data)}`
           );
       } else
         this.logger.debug(
-          baseError + `: Invalid metadata: ${Utils.JsonBI.stringify(metadata)}`
+          baseError + `: Invalid metadata: ${JsonBigInt.stringify(metadata)}`
         );
     } catch (e) {
       this.logger.debug(
@@ -117,7 +117,7 @@ export class CardanoKoiosRosenExtractor extends AbstractRosenDataExtractor<Koios
       this.logger.debug(
         `No rosen asset transformation found for box [${box.tx_hash}.${
           box.tx_index
-        }]: box assets: ${Utils.JsonBI.stringify(box.asset_list)}`
+        }]: box assets: ${JsonBigInt.stringify(box.asset_list)}`
       );
       return undefined;
     }

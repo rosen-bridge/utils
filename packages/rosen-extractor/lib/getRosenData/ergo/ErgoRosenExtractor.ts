@@ -5,7 +5,7 @@ import { RosenTokens } from '@rosen-bridge/tokens';
 import { Transaction } from 'ergo-lib-wasm-nodejs';
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import { ErgoNodeRosenExtractor } from './ErgoNodeRosenExtractor';
-import Utils from '../Utils';
+import JsonBigInt from '@rosen-bridge/json-bigint';
 
 export class ErgoRosenExtractor extends AbstractRosenDataExtractor<string> {
   private nodeExtractor: ErgoNodeRosenExtractor;
@@ -42,7 +42,7 @@ export class ErgoRosenExtractor extends AbstractRosenDataExtractor<string> {
       }
       return undefined;
     }
-    const nodeTx = Utils.JsonBI.parse(transaction.to_json()) as NodeTransaction;
+    const nodeTx = JsonBigInt.parse(transaction.to_json()) as NodeTransaction;
     return this.nodeExtractor.get(nodeTx);
   };
 }

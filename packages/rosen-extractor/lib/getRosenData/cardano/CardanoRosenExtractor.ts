@@ -7,8 +7,7 @@ import {
   TokenTransformation,
 } from './types';
 import { CARDANO_CHAIN, CARDANO_NATIVE_TOKEN } from '../const';
-import * as JSONBigInt from 'json-bigint';
-import Utils from '../Utils';
+import JsonBigInt from '@rosen-bridge/json-bigint';
 
 export class CardanoRosenExtractor extends AbstractRosenDataExtractor<string> {
   /**
@@ -18,7 +17,7 @@ export class CardanoRosenExtractor extends AbstractRosenDataExtractor<string> {
   get = (serializedTransaction: string): RosenData | undefined => {
     let transaction: CardanoTx;
     try {
-      transaction = JSONBigInt.parse(serializedTransaction);
+      transaction = JsonBigInt.parse(serializedTransaction);
     } catch (e) {
       throw new Error(
         `Failed to parse transaction json to CardanoTx format while extracting rosen data: ${e}`
@@ -68,9 +67,7 @@ export class CardanoRosenExtractor extends AbstractRosenDataExtractor<string> {
     } else
       this.logger.debug(
         baseError +
-          `: Incomplete metadata: ${Utils.JsonBI.stringify(
-            transaction.metadata
-          )}`
+          `: Incomplete metadata: ${JsonBigInt.stringify(transaction.metadata)}`
       );
     return undefined;
   };
@@ -112,7 +109,7 @@ export class CardanoRosenExtractor extends AbstractRosenDataExtractor<string> {
       };
     } else {
       this.logger.debug(
-        `No rosen asset transformation found for CardanoBoxCandidate with assets: ${Utils.JsonBI.stringify(
+        `No rosen asset transformation found for CardanoBoxCandidate with assets: ${JsonBigInt.stringify(
           box.assets
         )}`
       );
