@@ -76,16 +76,16 @@ export class Config {
    * @param {ConfigField} field
    */
   private validateSchemaField = (field: ConfigField) => {
-    for (const name of Object.keys(field)) {
+    for (const key of Object.keys(field)) {
       if (
-        !Object.hasOwn(propertyValidators.all, name) &&
+        !Object.hasOwn(propertyValidators.all, key) &&
         !(
           field.type !== 'object' &&
-          Object.hasOwn(propertyValidators.primitive, name)
+          Object.hasOwn(propertyValidators.primitive, key)
         ) &&
-        !Object.hasOwn(propertyValidators[field.type], name)
+        !Object.hasOwn(propertyValidators[field.type], key)
       ) {
-        throw new Error(`schema field has unknown property "${name}"`);
+        throw new Error(`schema field has unknown property "${key}"`);
       }
     }
 
@@ -105,10 +105,10 @@ export class Config {
   };
 
   /**
-   *
+   * returns a field corresponding to a path in schema tree
    *
    * @param {string[]} path
-   * @return {(ConfigField | undefined)}
+   * @return {(ConfigField | undefined)} returns undefined if field is not found
    */
   getSchemaField = (path: string[]): ConfigField | undefined => {
     let subTree: ConfigSchema | undefined = this.schema;
@@ -146,9 +146,13 @@ export class Config {
       },
     ];
 
+    // Traverses the schema object tree depth first
     while (stack.length > 0) {
       const { schema, parentValue, fieldName, children } = stack.at(-1)!;
+
+      // if a subtree's processing is finished go to the previous level
       if (children.length === 0) {
+        // if a subtree is empty (has no values) remove it from the result
         if (
           parentValue != undefined &&
           Object.keys(parentValue[fieldName]).length === 0
@@ -158,10 +162,14 @@ export class Config {
         stack.pop();
         continue;
       }
+
       const childName = children.pop()!;
       const value =
         parentValue != undefined ? parentValue[fieldName] : valueTree;
       const field = schema[childName];
+      // if a node/field is of type object and thus is a subtree, add it both to
+      // value tree and to the stack to be traversed later. Otherwise it's a
+      // leaf and needs no traversal, so add it only to the value tree.
       if (field.type === 'object') {
         value[childName] = Object.create(null);
         stack.push({

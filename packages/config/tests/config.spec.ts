@@ -14,17 +14,18 @@ describe('Config', () => {
      * @expected
      * - correct default value object should have been returned
      */
-    it(`should return default values object for the passed schema`, async () => {
-      testData.defaulTestSamples.forEach(({ schema, defaultVal }) => {
+    it.each(testData.defaulTestSamples)(
+      `should return default values object for the passed schema: %s`,
+      async (_, { schema, defaultVal }) => {
         const config = new Config(<ConfigSchema>schema);
         expect(config.generateDefault()).toEqual(defaultVal);
-      });
-    });
+      }
+    );
   });
 
   describe('validateSchema', () => {
     /**
-     * @target should not throw any exception when a correct schema is passed
+     * @target should not throw any exceptions when a correct schema is passed
      * @dependencies
      * @scenario
      * - create a new instance of Config which calls Config.validateSchema
@@ -33,8 +34,8 @@ describe('Config', () => {
      * - no errors should be thrown
      */
     it.each(testData.correctSchemas)(
-      `should return default values object for the passed schema`,
-      async (schema) => {
+      `should not throw any exceptions when a correct schema is passed: %s`,
+      async (_, schema) => {
         new Config(<ConfigSchema>schema);
       }
     );
@@ -49,8 +50,8 @@ describe('Config', () => {
      * - exception should be thrown
      */
     it.each(testData.incorrectSchemas)(
-      `should return default values object for the passed schema`,
-      async (schema) => {
+      'should throw exception when an incorrect schema is passed: %s',
+      async (_, schema) => {
         expect(() => new Config(<ConfigSchema>schema)).toThrow();
       }
     );
