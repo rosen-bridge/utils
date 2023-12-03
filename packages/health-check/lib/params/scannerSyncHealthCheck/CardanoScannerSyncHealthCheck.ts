@@ -4,7 +4,7 @@ import cardanoKoiosClientFactory from '@rosen-clients/cardano-koios';
 import {
   createInteractionContext,
   InteractionContext,
-  createStateQueryClient,
+  createLedgerStateQueryClient,
 } from '@cardano-ogmios/client';
 class CardanoKoiosScannerHealthCheck extends AbstractScannerSyncHealthCheckParam {
   private koiosApi;
@@ -80,8 +80,8 @@ class CardanoOgmiosScannerHealthCheck extends AbstractScannerSyncHealthCheckPara
         },
       }
     );
-    const ogmiosClient = await createStateQueryClient(context);
-    const height = await ogmiosClient.blockHeight();
+    const ogmiosClient = await createLedgerStateQueryClient(context);
+    const height = await ogmiosClient.networkBlockHeight();
     if (height == 'origin') return 0;
     else return height;
   };
