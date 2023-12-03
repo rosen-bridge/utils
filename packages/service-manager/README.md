@@ -68,7 +68,7 @@ By overseeing the functionalities described above, we ensure that the system sta
 
 ### Service Status Change
 
-ServiceManager works not only by performing actions, but also by changes in service statuses. When a service undergoes a status change, the `ServiceManager` becomes aware of it through the `callbackHandler` function. In such cases, depending on the next status, the following actions should take place:
+ServiceManager works not only by performing actions, but also by changes in service statuses. When a service undergoes a status change, the ServiceManager becomes aware of it through the `callbackHandler` function. In such cases, depending on the next status, the following actions should take place:
 
 - If the next status is "started" or "running," the dependants of the service need to be examined. If they have a pending "start" operation in the `pendingActions` map and all their dependencies are ready, the operation is executed along with resolving or rejecting the pending action.
 
