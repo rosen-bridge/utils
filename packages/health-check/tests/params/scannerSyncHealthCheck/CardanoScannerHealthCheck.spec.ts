@@ -4,7 +4,7 @@ import {
   CardanoKoiosScannerHealthCheck,
   CardanoOgmiosScannerHealthCheck,
 } from '../../../lib';
-import { createStateQueryClient } from '@cardano-ogmios/client';
+import { createLedgerStateQueryClient } from '@cardano-ogmios/client';
 
 jest.mock('@cardano-ogmios/client');
 jest.mock('@rosen-clients/cardano-koios');
@@ -57,9 +57,9 @@ describe('CardanoScannerHealthCheck', () => {
      * - The block height should be correct
      */
     it('Should return the last available block in network', async () => {
-      jest.mocked(createStateQueryClient).mockImplementation(async () => {
+      jest.mocked(createLedgerStateQueryClient).mockImplementation(async () => {
         return {
-          blockHeight: async () => 1115,
+          networkBlockHeight: async () => 1115,
         } as any;
       });
 
