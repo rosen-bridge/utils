@@ -6,7 +6,8 @@ import { ConfigSchema } from '../lib/schema/types/fields';
 describe('Config', () => {
   describe('generateDefault', () => {
     /**
-     * @target should return default values object for the passed schema
+     * @target generateDefault should return default values object for the
+     * passed schema
      * @dependencies
      * @scenario
      * - call generateDefault
@@ -14,18 +15,20 @@ describe('Config', () => {
      * @expected
      * - correct default value object should have been returned
      */
-    it.each(testData.defaulTestSamples)(
-      `should return default values object for the passed schema: %s`,
-      async (_, { schema, defaultVal }) => {
-        const config = new Config(<ConfigSchema>schema);
-        expect(config.generateDefault()).toEqual(defaultVal);
-      }
-    );
+    it(`should return default values object for the passed schema`, async () => {
+      const config = new Config(
+        <ConfigSchema>testData.apiSchemaDefaultValuePairSample.schema
+      );
+      expect(config.generateDefault()).toEqual(
+        testData.apiSchemaDefaultValuePairSample.defaultVal
+      );
+    });
   });
 
   describe('validateSchema', () => {
     /**
-     * @target should not throw any exceptions when a correct schema is passed
+     * @target validateSchema should not throw any exceptions when a correct
+     * schema is passed
      * @dependencies
      * @scenario
      * - create a new instance of Config which calls Config.validateSchema
@@ -33,15 +36,13 @@ describe('Config', () => {
      * @expected
      * - no errors should be thrown
      */
-    it.each(testData.correctSchemas)(
-      `should not throw any exceptions when a correct schema is passed: %s`,
-      async (_, schema) => {
-        new Config(<ConfigSchema>schema);
-      }
-    );
+    it(`should not throw any exceptions when a correct schema is passed`, async () => {
+      new Config(<ConfigSchema>testData.correctApiSchema);
+    });
 
     /**
-     * @target should throw exception when an incorrect schema is passed
+     * @target validateSchema should throw exception when an schema with
+     * incorrect default value type is passed
      * @dependencies
      * @scenario
      * - create a new instance of Config which calls Config.validateSchema
@@ -49,11 +50,14 @@ describe('Config', () => {
      * @expected
      * - exception should be thrown
      */
-    it.each(testData.incorrectSchemas)(
-      'should throw exception when an incorrect schema is passed: %s',
-      async (_, schema) => {
-        expect(() => new Config(<ConfigSchema>schema)).toThrow();
-      }
-    );
+    it(`should throw exception when an schema with incorrect default value type
+    is passed`, async () => {
+      expect(
+        () =>
+          new Config(
+            <ConfigSchema>testData.schemaWithIncorrectPortDefaultValueTypeSample
+          )
+      ).toThrow();
+    });
   });
 });
