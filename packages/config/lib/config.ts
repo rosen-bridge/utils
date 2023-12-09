@@ -127,14 +127,14 @@ export class Config {
   /**
    * extracts default values from a schema
    *
-   * @return {{ [index: string]: any }} object of default values
+   * @return {Record<string, any>} object of default values
    */
-  generateDefault = (): { [index: string]: any } => {
-    const valueTree: { [index: string]: any } = Object.create(null);
+  generateDefault = (): Record<string, any> => {
+    const valueTree: Record<string, any> = Object.create(null);
 
     const stack: {
       schema: ConfigSchema;
-      parentValue: { [index: string]: any } | undefined;
+      parentValue: Record<string, any> | undefined;
       fieldName: string;
       children: string[];
     }[] = [

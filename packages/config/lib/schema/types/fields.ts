@@ -1,4 +1,4 @@
-import { VBoolean, VGeneric, VNumeric, VString } from './validations';
+import { VBoolean, VNumeric, VString } from './validations';
 
 export type ConfigSchema = Record<string, ConfigField>;
 

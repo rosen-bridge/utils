@@ -41,7 +41,7 @@ describe('Config', () => {
     });
 
     /**
-     * @target validateSchema should throw exception when an schema with
+     * @target validateSchema should throw exception when a schema with
      * incorrect default value type is passed
      * @dependencies
      * @scenario
@@ -50,7 +50,7 @@ describe('Config', () => {
      * @expected
      * - exception should be thrown
      */
-    it(`should throw exception when an schema with incorrect default value type
+    it(`should throw exception when a schema with incorrect default value type
     is passed`, async () => {
       expect(
         () =>
