@@ -134,6 +134,7 @@ describe('P2PNetworkHealthCheck', () => {
      * @dependencies
      * @scenario
      * - run a healthy fixture
+     * - run update to update status to health
      * - mock `getConnectedGuards` to return a broken count
      * - update health check
      * - wait equal to half of time window
@@ -146,6 +147,7 @@ describe('P2PNetworkHealthCheck', () => {
       const healthCheck = runHealthyFixture({
         getConnectedGuards,
       });
+      healthCheck.update();
 
       getConnectedGuards.mockReturnValue(GUARDS_BROKEN_COUNT);
       healthCheck.update();
@@ -199,11 +201,13 @@ describe('P2PNetworkHealthCheck', () => {
      * @dependencies
      * @scenario
      * - run a healthy fixture
+     * - run update to update status to health
      * @expected
      * - health check description should equal `undefined`
      */
     it('should return `undefined` if status is healthy', async () => {
       const healthCheck = runHealthyFixture();
+      healthCheck.update();
 
       expect(await healthCheck.getDescription()).toBeUndefined();
     });

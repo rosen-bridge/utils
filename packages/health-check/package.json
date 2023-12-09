@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/health-check",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Typescript library to check healthy status of rosen services",
   "author": "Rosen Team",
   "license": "GPL-3.0",
