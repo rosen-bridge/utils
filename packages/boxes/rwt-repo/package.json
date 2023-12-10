@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/rwt-repo",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "a package to manage RWT Repo box",
   "main": "dist/index.js",
   "type": "module",

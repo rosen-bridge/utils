@@ -55,7 +55,7 @@ describe('RWTRepo', () => {
 
       await rwtRepoWithExplorer.updateBox(false);
 
-      expect(rwtRepoWithExplorer['box']?.box_id().to_str()).toEqual(
+      expect(rwtRepoWithExplorer.box?.box_id().to_str()).toEqual(
         boxInfo1.boxId
       );
       expect(spyGetBoxFromExplorer).toHaveBeenCalled();
@@ -84,7 +84,7 @@ describe('RWTRepo', () => {
     it(`should not update the box member variable if it has a value and it's
     still unspent`, async () => {
       const currentBox = ErgoBox.from_json(jsonBigInt.stringify(boxInfo1));
-      rwtRepoWithExplorer['box'] = currentBox;
+      rwtRepoWithExplorer['_box'] = currentBox;
 
       const mockedExplorerClient = mockedErgoExplorerClientFactory(
         ''
@@ -97,11 +97,11 @@ describe('RWTRepo', () => {
 
       await rwtRepoWithExplorer.updateBox(false);
 
-      expect(rwtRepoWithExplorer['box']?.box_id().to_str()).toEqual(
+      expect(rwtRepoWithExplorer.box?.box_id().to_str()).toEqual(
         boxInfo1.boxId
       );
       expect(spyGetBoxFromExplorer).toHaveBeenCalled();
-      expect(rwtRepoWithExplorer['box']).toBe(currentBox);
+      expect(rwtRepoWithExplorer.box).toBe(currentBox);
     });
 
     /**
@@ -132,7 +132,7 @@ describe('RWTRepo', () => {
 
       await rwtRepoWithExplorer.updateBox(true);
 
-      expect(rwtRepoWithExplorer['box']?.box_id().to_str()).toEqual(
+      expect(rwtRepoWithExplorer.box?.box_id().to_str()).toEqual(
         boxInfo1.boxId
       );
       expect(spyGetBoxFromExplorerMempool).toHaveBeenCalled();
@@ -173,7 +173,7 @@ describe('RWTRepo', () => {
 
       await rwtRepo.updateBox(false);
 
-      expect(rwtRepo['box']?.box_id().to_str()).toEqual(boxInfo1.boxId);
+      expect(rwtRepo.box?.box_id().to_str()).toEqual(boxInfo1.boxId);
       expect(spyGetBoxFromNode).toHaveBeenCalled();
     });
 
@@ -213,7 +213,7 @@ describe('RWTRepo', () => {
 
       await rwtRepo.updateBox(true);
 
-      expect(rwtRepo['box']?.box_id().to_str()).toEqual(boxInfo1.boxId);
+      expect(rwtRepo.box?.box_id().to_str()).toEqual(boxInfo1.boxId);
       expect(spyGetBoxFromNodeMempool).toHaveBeenCalled();
     });
 
@@ -247,7 +247,7 @@ describe('RWTRepo', () => {
       );
 
       const currentBox = ErgoBox.from_json(jsonBigInt.stringify(boxInfo1));
-      rwtRepo['box'] = currentBox;
+      rwtRepo['_box'] = currentBox;
 
       const mockedNodeClient = mockedErgoNodeClientFactory(
         ''
@@ -257,9 +257,9 @@ describe('RWTRepo', () => {
 
       await rwtRepo.updateBox(false);
 
-      expect(rwtRepo['box']?.box_id().to_str()).toEqual(boxInfo1.boxId);
+      expect(rwtRepo.box?.box_id().to_str()).toEqual(boxInfo1.boxId);
       expect(spyGetBoxFromNode).toHaveBeenCalled();
-      expect(rwtRepo['box']).toBe(currentBox);
+      expect(rwtRepo.box).toBe(currentBox);
     });
   });
 
@@ -300,7 +300,7 @@ describe('RWTRepo', () => {
      * - this.getErgCollateral() should throw exception
      */
     it(`should throw an exception when this.box is undefined`, async () => {
-      expect(rwtRepoWithExplorer['box']).toBeUndefined();
+      expect(rwtRepoWithExplorer.box).toBeUndefined();
       expect(() => rwtRepoWithExplorer.getErgCollateral()).toThrowError();
     });
   });
@@ -344,7 +344,7 @@ describe('RWTRepo', () => {
      */
     it(`this.getRsnCollateral should throw an exception when this.box is
     undefined`, async () => {
-      expect(rwtRepoWithExplorer['box']).toBeUndefined();
+      expect(rwtRepoWithExplorer.box).toBeUndefined();
       expect(() => rwtRepoWithExplorer.getRsnCollateral()).toThrowError();
     });
   });
@@ -429,7 +429,7 @@ describe('RWTRepo', () => {
      * - this.getRequiredCommitmentCount() should throw exception
      */
     it(`should throw an exception when this.box is undefined`, async () => {
-      expect(rwtRepoWithExplorer['box']).toBeUndefined();
+      expect(rwtRepoWithExplorer.box).toBeUndefined();
       expect(() =>
         rwtRepoWithExplorer.getRequiredCommitmentCount()
       ).toThrowError();
@@ -477,7 +477,7 @@ describe('RWTRepo', () => {
      * - this.getCommitmentRwtCount() should throw exception
      */
     it(`should throw an exception when this.box is undefined`, async () => {
-      expect(rwtRepoWithExplorer['box']).toBeUndefined();
+      expect(rwtRepoWithExplorer.box).toBeUndefined();
       expect(() => rwtRepoWithExplorer.getCommitmentRwtCount()).toThrowError();
     });
   });

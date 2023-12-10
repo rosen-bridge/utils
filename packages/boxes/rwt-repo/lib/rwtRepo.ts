@@ -14,7 +14,7 @@ import { RWTRepoBuilder } from './rwtRepoBuilder';
 import { jsonBigInt, min } from './utils';
 
 export class RWTRepo {
-  protected box?: ergoLib.ErgoBox;
+  protected _box?: ergoLib.ErgoBox;
   private explorerClient: ReturnType<typeof ergoExplorerClientFactory>;
   private nodeClient: ReturnType<typeof ergoNodeClientFactory>;
   private repoErgoTree: ergoLib.ErgoTree;
@@ -64,18 +64,18 @@ export class RWTRepo {
    * @return {Promise<ErgoBox | undefined>}
    */
   private getBox = async () => {
-    if (this.box) {
+    if (this._box) {
       const currentBoxInfo =
         this.networkType === ErgoNetworkType.Explorer
           ? await this.explorerClient.v1.getApiV1BoxesP1(
-              this.box.box_id().to_str()
+              this._box.box_id().to_str()
             )
-          : await this.nodeClient.getBoxById(this.box.box_id().to_str());
+          : await this.nodeClient.getBoxById(this._box.box_id().to_str());
       if (!currentBoxInfo.spentTransactionId) {
         this.logger.debug(
           `box is still unspent and didn't need to be updated: ${this.rwtRepoLogDescription}`
         );
-        return this.box;
+        return this._box;
       }
     }
 
@@ -89,7 +89,7 @@ export class RWTRepo {
 
       if (explorerUnspentItems.items == undefined) {
         this.logger.info(`no unspent box found: ${this.rwtRepoLogDescription}`);
-        this.box = undefined;
+        this._box = undefined;
         return undefined;
       }
 
@@ -100,10 +100,10 @@ export class RWTRepo {
       );
     }
 
-    this.box = this.createBoxFromBoxInfo(boxInfos);
+    this._box = this.createBoxFromBoxInfo(boxInfos);
     this.logger.info(`box updated: ${this.rwtRepoLogDescription}`);
 
-    return this.box;
+    return this._box;
   };
 
   /**
@@ -122,11 +122,11 @@ export class RWTRepo {
         );
 
       if (explorerMempoolTxs.items == undefined) {
-        this.box = undefined;
+        this._box = undefined;
         this.logger.debug(
           `no box found in mempool: ${this.rwtRepoLogDescription}`
         );
-        return this.box;
+        return this._box;
       }
 
       mempoolTxs = explorerMempoolTxs.items;
@@ -136,10 +136,10 @@ export class RWTRepo {
       );
     }
 
-    this.box = this.createBoxfromTx(mempoolTxs);
+    this._box = this.createBoxfromTx(mempoolTxs);
     this.logger.info(`box updated from mempool: ${this.rwtRepoLogDescription}`);
 
-    return this.box;
+    return this._box;
   };
 
   /**
@@ -220,19 +220,19 @@ export class RWTRepo {
    * @return {RWTRepoBuilder}
    */
   toBuilder = () => {
-    if (!this.box) {
+    if (!this._box) {
       throw new Error(
         `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
       );
     }
 
     const rwtCount = BigInt(
-      this.box.tokens().get(1).amount().as_i64().to_str()
+      this._box.tokens().get(1).amount().as_i64().to_str()
     );
 
-    const rsn = this.box.tokens().get(2).id().to_str();
+    const rsn = this._box.tokens().get(2).id().to_str();
     const rsnCount = BigInt(
-      this.box.tokens().get(2).amount().as_i64().to_str()
+      this._box.tokens().get(2).amount().as_i64().to_str()
     );
 
     const chainIdBytes = this.r4?.at(0);
@@ -297,14 +297,14 @@ export class RWTRepo {
    * @return {bigint}
    */
   getErgCollateral = () => {
-    if (!this.box) {
+    if (!this._box) {
       throw new Error(
         `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
       );
     }
 
     const ergCollateralRegister = (
-      this.box.register_value(6)?.to_i64_str_array() as string[] | undefined
+      this._box.register_value(6)?.to_i64_str_array() as string[] | undefined
     )?.at(4);
 
     if (!ergCollateralRegister) {
@@ -327,14 +327,14 @@ export class RWTRepo {
    * @return {bigint}
    */
   getRsnCollateral = () => {
-    if (!this.box) {
+    if (!this._box) {
       throw new Error(
         `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
       );
     }
 
     const rsnCollateralRegister = (
-      this.box.register_value(6)?.to_i64_str_array() as string[] | undefined
+      this._box.register_value(6)?.to_i64_str_array() as string[] | undefined
     )?.at(5);
 
     if (!rsnCollateralRegister) {
@@ -357,7 +357,7 @@ export class RWTRepo {
    * @return {bigint}
    */
   getRequiredCommitmentCount = () => {
-    if (!this.box) {
+    if (!this._box) {
       throw new Error(
         `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
       );
@@ -389,7 +389,7 @@ export class RWTRepo {
    * @return {bigint}
    */
   getCommitmentRwtCount = () => {
-    if (!this.box) {
+    if (!this._box) {
       throw new Error(
         `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
       );
@@ -417,7 +417,7 @@ export class RWTRepo {
    * @return {number}
    */
   getWidIndex = (wid: string) => {
-    if (!this.box) {
+    if (!this._box) {
       throw new Error(
         `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
       );
@@ -452,7 +452,7 @@ export class RWTRepo {
    * @return {bigint}
    */
   getPermitCount = (wid: string) => {
-    if (!this.box) {
+    if (!this._box) {
       throw new Error(
         `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
       );
@@ -487,7 +487,7 @@ export class RWTRepo {
    */
   private r6At = (index: number) => {
     const val = (
-      this.box?.register_value(6)?.to_i64_str_array() as string[] | undefined
+      this._box?.register_value(6)?.to_i64_str_array() as string[] | undefined
     )?.at(index);
 
     return val ? BigInt(val) : undefined;
@@ -500,7 +500,7 @@ export class RWTRepo {
    * @type {(Uint8Array[] | undefined)}
    */
   get r4(): Uint8Array[] | undefined {
-    return this.box?.register_value(4)?.to_coll_coll_byte();
+    return this._box?.register_value(4)?.to_coll_coll_byte();
   }
 
   /**
@@ -511,7 +511,7 @@ export class RWTRepo {
    */
   get r5(): bigint[] | undefined {
     return (
-      this.box?.register_value(5)?.to_i64_str_array() as string[] | undefined
+      this._box?.register_value(5)?.to_i64_str_array() as string[] | undefined
     )?.map(BigInt);
   }
 
@@ -523,10 +523,20 @@ export class RWTRepo {
    * @type {string}
    */
   private get rwtRepoLogDescription(): string {
-    if (this.box) {
-      return `boxId=[${this.box?.box_id().to_str()}]`;
+    if (this._box) {
+      return `boxId=[${this._box?.box_id().to_str()}]`;
     } else {
       return `no boxes stored yet!`;
     }
+  }
+
+  /**
+   * returns this instances RWTRepo box
+   *
+   * @readonly
+   * @type {(ergoLib.ErgoBox | undefined)}
+   */
+  public get box(): ergoLib.ErgoBox | undefined {
+    return this._box;
   }
 }
