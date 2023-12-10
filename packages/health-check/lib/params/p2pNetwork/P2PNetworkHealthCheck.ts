@@ -21,6 +21,9 @@ export class P2PNetworkHealthCheck extends AbstractHealthCheckParam {
   private lastUpdatedTime: Date | undefined; // the last time `update` was called
   private lastDefectTimestamp: number | undefined; // the last time a defect (relay disconnection or insufficient connected guards) was detected
 
+  protected connectedGuards: number;
+  protected isAtLeastOneRelayConnected: boolean;
+
   constructor({
     defectConfirmationTimeWindow,
     connectedGuardsHealthyThreshold,
@@ -49,12 +52,12 @@ export class P2PNetworkHealthCheck extends AbstractHealthCheckParam {
     const nowTimestamp = now.getTime();
     this.lastUpdatedTime = now;
 
-    const connectedGuardsPercent = this.getConnectedGuards();
-    const isAtLeastOneRelayConnected = this.getIsAtLeastOneRelayConnected();
+    this.connectedGuards = this.getConnectedGuards();
+    this.isAtLeastOneRelayConnected = this.getIsAtLeastOneRelayConnected();
 
     const guardsPercentCheckPassed =
-      connectedGuardsPercent >= this.connectedGuardsHealthyThreshold;
-    const relayConnectionCheckPassed = isAtLeastOneRelayConnected;
+      this.connectedGuards >= this.connectedGuardsHealthyThreshold;
+    const relayConnectionCheckPassed = this.isAtLeastOneRelayConnected;
 
     // if everything is ok, reset all state to normal and return
     if (guardsPercentCheckPassed && relayConnectionCheckPassed) {
@@ -96,13 +99,11 @@ export class P2PNetworkHealthCheck extends AbstractHealthCheckParam {
       return undefined;
     }
 
-    if (!this.getIsAtLeastOneRelayConnected()) {
+    if (!this.isAtLeastOneRelayConnected) {
       return 'Not connected to any relay. Please check the relay address and your connection.';
     }
 
-    return `Connected to only [${this.getConnectedGuards()}] guards. At least [${
-      this.connectedGuardsHealthyThreshold
-    }] connections is required. Please check the connection.`;
+    return `Connected to only [${this.connectedGuards}] guards. At least [${this.connectedGuardsHealthyThreshold}] connections is required. Please check the connection.`;
   };
 
   /**
