@@ -88,11 +88,6 @@ export class P2PNetworkHealthCheck extends AbstractHealthCheckParam {
    * get health status for this param
    */
   getHealthStatus = async () => {
-    if (
-      this.getConnectedGuards() >= this.connectedGuardsHealthyThreshold &&
-      this.getIsAtLeastOneRelayConnected()
-    )
-      return HealthStatusLevel.HEALTHY;
     return this.status;
   };
 
@@ -100,14 +95,7 @@ export class P2PNetworkHealthCheck extends AbstractHealthCheckParam {
    * get health description for this param or undefined if status is healthy
    */
   getDescription = async () => {
-    const guardsPercentCheckPassed =
-      this.connectedGuards >= this.connectedGuardsHealthyThreshold;
-
-    if (
-      this.status === HealthStatusLevel.HEALTHY ||
-      (this.getConnectedGuards() >= this.connectedGuardsHealthyThreshold &&
-        this.getIsAtLeastOneRelayConnected())
-    ) {
+    if (this.status === HealthStatusLevel.HEALTHY) {
       return undefined;
     }
 
