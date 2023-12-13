@@ -14,7 +14,7 @@ import { RWTRepoBuilder } from './rwtRepoBuilder';
 import { jsonBigInt, min } from './utils';
 
 export class RWTRepo {
-  protected _box?: ergoLib.ErgoBox;
+  protected box?: ergoLib.ErgoBox;
   private explorerClient: ReturnType<typeof ergoExplorerClientFactory>;
   private nodeClient: ReturnType<typeof ergoNodeClientFactory>;
   private repoErgoTree: ergoLib.ErgoTree;
@@ -47,14 +47,19 @@ export class RWTRepo {
    *
    * @param {boolean} trackMempool whether mempool should be checked for box
    * info first
-   * @return {Promise<void>}
+   * @return {(Promise<ergoLib.ErgoBox | undefined>)}
    */
-  updateBox = async (trackMempool: boolean) => {
+  updateAndGetBox = async (
+    trackMempool: boolean
+  ): Promise<ergoLib.ErgoBox | undefined> => {
     this.logger.debug(`box is being updated from ${this.networkType} api`);
-    if (trackMempool && (await this.getBoxFromMempool())) {
-      return;
+    if (trackMempool) {
+      const box = await this.getBoxFromMempool();
+      if (box) {
+        return box;
+      }
     }
-    await this.getBox();
+    return await this.getBox();
   };
 
   /**
@@ -64,18 +69,18 @@ export class RWTRepo {
    * @return {Promise<ErgoBox | undefined>}
    */
   private getBox = async () => {
-    if (this._box) {
+    if (this.box) {
       const currentBoxInfo =
         this.networkType === ErgoNetworkType.Explorer
           ? await this.explorerClient.v1.getApiV1BoxesP1(
-              this._box.box_id().to_str()
+              this.box.box_id().to_str()
             )
-          : await this.nodeClient.getBoxById(this._box.box_id().to_str());
+          : await this.nodeClient.getBoxById(this.box.box_id().to_str());
       if (!currentBoxInfo.spentTransactionId) {
         this.logger.debug(
           `box is still unspent and didn't need to be updated: ${this.rwtRepoLogDescription}`
         );
-        return this._box;
+        return this.box;
       }
     }
 
@@ -89,7 +94,7 @@ export class RWTRepo {
 
       if (explorerUnspentItems.items == undefined) {
         this.logger.info(`no unspent box found: ${this.rwtRepoLogDescription}`);
-        this._box = undefined;
+        this.box = undefined;
         return undefined;
       }
 
@@ -100,10 +105,10 @@ export class RWTRepo {
       );
     }
 
-    this._box = this.createBoxFromBoxInfo(boxInfos);
+    this.box = this.createBoxFromBoxInfo(boxInfos);
     this.logger.info(`box updated: ${this.rwtRepoLogDescription}`);
 
-    return this._box;
+    return this.box;
   };
 
   /**
@@ -122,11 +127,11 @@ export class RWTRepo {
         );
 
       if (explorerMempoolTxs.items == undefined) {
-        this._box = undefined;
+        this.box = undefined;
         this.logger.debug(
           `no box found in mempool: ${this.rwtRepoLogDescription}`
         );
-        return this._box;
+        return this.box;
       }
 
       mempoolTxs = explorerMempoolTxs.items;
@@ -136,10 +141,10 @@ export class RWTRepo {
       );
     }
 
-    this._box = this.createBoxfromTx(mempoolTxs);
+    this.box = this.createBoxfromTx(mempoolTxs);
     this.logger.info(`box updated from mempool: ${this.rwtRepoLogDescription}`);
 
-    return this._box;
+    return this.box;
   };
 
   /**
@@ -220,19 +225,19 @@ export class RWTRepo {
    * @return {RWTRepoBuilder}
    */
   toBuilder = () => {
-    if (!this._box) {
+    if (!this.box) {
       throw new Error(
         `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
       );
     }
 
     const rwtCount = BigInt(
-      this._box.tokens().get(1).amount().as_i64().to_str()
+      this.box.tokens().get(1).amount().as_i64().to_str()
     );
 
-    const rsn = this._box.tokens().get(2).id().to_str();
+    const rsn = this.box.tokens().get(2).id().to_str();
     const rsnCount = BigInt(
-      this._box.tokens().get(2).amount().as_i64().to_str()
+      this.box.tokens().get(2).amount().as_i64().to_str()
     );
 
     const chainIdBytes = this.r4?.at(0);
@@ -297,14 +302,14 @@ export class RWTRepo {
    * @return {bigint}
    */
   getErgCollateral = () => {
-    if (!this._box) {
+    if (!this.box) {
       throw new Error(
         `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
       );
     }
 
     const ergCollateralRegister = (
-      this._box.register_value(6)?.to_i64_str_array() as string[] | undefined
+      this.box.register_value(6)?.to_i64_str_array() as string[] | undefined
     )?.at(4);
 
     if (!ergCollateralRegister) {
@@ -327,14 +332,14 @@ export class RWTRepo {
    * @return {bigint}
    */
   getRsnCollateral = () => {
-    if (!this._box) {
+    if (!this.box) {
       throw new Error(
         `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
       );
     }
 
     const rsnCollateralRegister = (
-      this._box.register_value(6)?.to_i64_str_array() as string[] | undefined
+      this.box.register_value(6)?.to_i64_str_array() as string[] | undefined
     )?.at(5);
 
     if (!rsnCollateralRegister) {
@@ -357,7 +362,7 @@ export class RWTRepo {
    * @return {bigint}
    */
   getRequiredCommitmentCount = () => {
-    if (!this._box) {
+    if (!this.box) {
       throw new Error(
         `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
       );
@@ -389,7 +394,7 @@ export class RWTRepo {
    * @return {bigint}
    */
   getCommitmentRwtCount = () => {
-    if (!this._box) {
+    if (!this.box) {
       throw new Error(
         `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
       );
@@ -417,7 +422,7 @@ export class RWTRepo {
    * @return {number}
    */
   getWidIndex = (wid: string) => {
-    if (!this._box) {
+    if (!this.box) {
       throw new Error(
         `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
       );
@@ -452,7 +457,7 @@ export class RWTRepo {
    * @return {bigint}
    */
   getPermitCount = (wid: string) => {
-    if (!this._box) {
+    if (!this.box) {
       throw new Error(
         `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
       );
@@ -487,7 +492,7 @@ export class RWTRepo {
    */
   private r6At = (index: number) => {
     const val = (
-      this._box?.register_value(6)?.to_i64_str_array() as string[] | undefined
+      this.box?.register_value(6)?.to_i64_str_array() as string[] | undefined
     )?.at(index);
 
     return val ? BigInt(val) : undefined;
@@ -500,7 +505,7 @@ export class RWTRepo {
    * @type {(Uint8Array[] | undefined)}
    */
   get r4(): Uint8Array[] | undefined {
-    return this._box?.register_value(4)?.to_coll_coll_byte();
+    return this.box?.register_value(4)?.to_coll_coll_byte();
   }
 
   /**
@@ -511,7 +516,7 @@ export class RWTRepo {
    */
   get r5(): bigint[] | undefined {
     return (
-      this._box?.register_value(5)?.to_i64_str_array() as string[] | undefined
+      this.box?.register_value(5)?.to_i64_str_array() as string[] | undefined
     )?.map(BigInt);
   }
 
@@ -523,20 +528,10 @@ export class RWTRepo {
    * @type {string}
    */
   private get rwtRepoLogDescription(): string {
-    if (this._box) {
-      return `boxId=[${this._box?.box_id().to_str()}]`;
+    if (this.box) {
+      return `boxId=[${this.box?.box_id().to_str()}]`;
     } else {
       return `no boxes stored yet!`;
     }
-  }
-
-  /**
-   * returns this instances RWTRepo box
-   *
-   * @readonly
-   * @type {(ergoLib.ErgoBox | undefined)}
-   */
-  public get box(): ergoLib.ErgoBox | undefined {
-    return this._box;
   }
 }

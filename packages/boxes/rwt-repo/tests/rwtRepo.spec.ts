@@ -21,7 +21,7 @@ describe('RWTRepo', () => {
     );
   });
 
-  describe('updateBox', () => {
+  describe('updateAndGetBox', () => {
     beforeEach(() => {
       vi.restoreAllMocks();
     });
@@ -35,7 +35,7 @@ describe('RWTRepo', () => {
      * - create an instance of RWTRepo with networkType=ErgoNetworkType.Explorer
      *   and specific repoAddress and repoNft
      * - mock this.explorerClient
-     * - call this.updateBox to update this.box
+     * - call this.updateAndGetBox to update this.box
      * - check this.box to be populated with correct info
      * - check if Explorer client api has been called
      * @expected
@@ -53,7 +53,7 @@ describe('RWTRepo', () => {
       );
       rwtRepoWithExplorer['explorerClient'] = mockedExplorerClient;
 
-      await rwtRepoWithExplorer.updateBox(false);
+      await rwtRepoWithExplorer.updateAndGetBox(false);
 
       expect(rwtRepoWithExplorer.box?.box_id().to_str()).toEqual(
         boxInfo1.boxId
@@ -71,7 +71,7 @@ describe('RWTRepo', () => {
      *   and specific repoAddress and repoNft
      * - assign an ErgoBox to this.box
      * - mock this.explorerClient
-     * - call this.updateBox
+     * - call this.updateAndGetBox
      * - check this.box to be populated with correct info
      * - check if Explorer client api has been called
      * - check if this.box is not changed and not replaced with a new instance
@@ -84,7 +84,7 @@ describe('RWTRepo', () => {
     it(`should not update the box member variable if it has a value and it's
     still unspent`, async () => {
       const currentBox = ErgoBox.from_json(jsonBigInt.stringify(boxInfo1));
-      rwtRepoWithExplorer['_box'] = currentBox;
+      rwtRepoWithExplorer['box'] = currentBox;
 
       const mockedExplorerClient = mockedErgoExplorerClientFactory(
         ''
@@ -95,7 +95,7 @@ describe('RWTRepo', () => {
       );
       rwtRepoWithExplorer['explorerClient'] = mockedExplorerClient;
 
-      await rwtRepoWithExplorer.updateBox(false);
+      await rwtRepoWithExplorer.updateAndGetBox(false);
 
       expect(rwtRepoWithExplorer.box?.box_id().to_str()).toEqual(
         boxInfo1.boxId
@@ -112,7 +112,7 @@ describe('RWTRepo', () => {
      * @scenario
      * - create an instance of RWTRepo with
      * - mock this.explorerClient
-     * - call this.updateBox(true) to update this.box from mempool
+     * - call this.updateAndGetBox(true) to update this.box from mempool
      * - check this.box to thisbe populated with correct info
      * - check if explorer client mempool api has been called
      * @expected
@@ -130,7 +130,7 @@ describe('RWTRepo', () => {
       );
       rwtRepoWithExplorer['explorerClient'] = mockedExplorerClient;
 
-      await rwtRepoWithExplorer.updateBox(true);
+      await rwtRepoWithExplorer.updateAndGetBox(true);
 
       expect(rwtRepoWithExplorer.box?.box_id().to_str()).toEqual(
         boxInfo1.boxId
@@ -146,7 +146,7 @@ describe('RWTRepo', () => {
      * @scenario
      * - create an instance of RWTRepo with networkType=ErgoNetworkType.Node
      * - mock this.nodeClient
-     * - call this.updateBox to update this.box
+     * - call this.updateAndGetBox to update this.box
      * - check this.box to be populated with correct info
      * - check if node client api has been called
      * @expected
@@ -171,9 +171,9 @@ describe('RWTRepo', () => {
       );
       rwtRepo['nodeClient'] = mockedNodeClient;
 
-      await rwtRepo.updateBox(false);
+      await rwtRepo.updateAndGetBox(false);
 
-      expect(rwtRepo.box?.box_id().to_str()).toEqual(boxInfo1.boxId);
+      expect(rwtRepo['box']?.box_id().to_str()).toEqual(boxInfo1.boxId);
       expect(spyGetBoxFromNode).toHaveBeenCalled();
     });
 
@@ -185,7 +185,7 @@ describe('RWTRepo', () => {
      * @scenario
      * - create an instance of RWTRepo with networkType=ErgoNetworkType.Node
      * - mock this.nodeClient
-     * - call this.updateBox(true)
+     * - call this.updateAndGetBox(true)
      * - check this.box to be populated with correct info
      * - check if node client mempool api has been called
      * @expected
@@ -211,9 +211,9 @@ describe('RWTRepo', () => {
       );
       rwtRepo['nodeClient'] = mockedNodeClient;
 
-      await rwtRepo.updateBox(true);
+      await rwtRepo.updateAndGetBox(true);
 
-      expect(rwtRepo.box?.box_id().to_str()).toEqual(boxInfo1.boxId);
+      expect(rwtRepo['box']?.box_id().to_str()).toEqual(boxInfo1.boxId);
       expect(spyGetBoxFromNodeMempool).toHaveBeenCalled();
     });
 
@@ -226,7 +226,7 @@ describe('RWTRepo', () => {
      * - create an instance of RWTRepo with networkType=ErgoNetworkType.Node
      * - assign an ErgoBox to this.box
      * - mock this.nodeClient
-     * - call this.updateBox
+     * - call this.updateAndGetBox
      * - check this.box to be populated with correct info
      * - check if node client api has been called
      * - check if this.box is not changed and not replaced with a new instance
@@ -247,7 +247,7 @@ describe('RWTRepo', () => {
       );
 
       const currentBox = ErgoBox.from_json(jsonBigInt.stringify(boxInfo1));
-      rwtRepo['_box'] = currentBox;
+      rwtRepo['box'] = currentBox;
 
       const mockedNodeClient = mockedErgoNodeClientFactory(
         ''
@@ -255,11 +255,11 @@ describe('RWTRepo', () => {
       const spyGetBoxFromNode = vi.spyOn(mockedNodeClient, 'getBoxById');
       rwtRepo['nodeClient'] = mockedNodeClient;
 
-      await rwtRepo.updateBox(false);
+      await rwtRepo.updateAndGetBox(false);
 
-      expect(rwtRepo.box?.box_id().to_str()).toEqual(boxInfo1.boxId);
+      expect(rwtRepo['box']?.box_id().to_str()).toEqual(boxInfo1.boxId);
       expect(spyGetBoxFromNode).toHaveBeenCalled();
-      expect(rwtRepo.box).toBe(currentBox);
+      expect(rwtRepo['box']).toBe(currentBox);
     });
   });
 
@@ -271,7 +271,7 @@ describe('RWTRepo', () => {
      * @scenario
      * - create an instance of RWTRepo
      * - mock this.explorerClient
-     * - call this.updateBox to update this.box
+     * - call this.updateAndGetBox to update this.box
      * - check this.getErgCollateral() to return the correct value
      * @expected
      * - this.getErgCollateral() should return the correct value
@@ -281,7 +281,7 @@ describe('RWTRepo', () => {
         ''
       ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
 
-      await rwtRepoWithExplorer.updateBox(false);
+      await rwtRepoWithExplorer.updateAndGetBox(false);
 
       expect(rwtRepoWithExplorer.getErgCollateral()).toEqual(
         jsonBigInt.parse(boxInfo1.additionalRegisters.R6.renderedValue)[4]
@@ -313,7 +313,7 @@ describe('RWTRepo', () => {
      * @scenario
      * - create an instance of RWTRepo
      * - mock this.explorerClient
-     * - call this.updateBox to update this.box
+     * - call this.updateAndGetBox to update this.box
      * - check this.getRsnCollateral() to return the correct value
      * @expected
      * - this.getRsnCollateral() should return the correct value
@@ -323,7 +323,7 @@ describe('RWTRepo', () => {
         ''
       ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
 
-      await rwtRepoWithExplorer.updateBox(false);
+      await rwtRepoWithExplorer.updateAndGetBox(false);
 
       expect(rwtRepoWithExplorer.getRsnCollateral()).toEqual(
         jsonBigInt.parse(boxInfo1.additionalRegisters.R6.renderedValue)[5]
@@ -358,7 +358,7 @@ describe('RWTRepo', () => {
      * @scenario
      * - create an instance of RWTRepo
      * - mock this.explorerClient
-     * - call this.updateBox
+     * - call this.updateAndGetBox
      * - check this.getRequiredCommitmentCount() to return the correct value
      * @expected
      * - this.getRequiredCommitmentCount() should return the correct value
@@ -372,7 +372,7 @@ describe('RWTRepo', () => {
         boxInfo
       ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
 
-      await rwtRepoWithExplorer.updateBox(false);
+      await rwtRepoWithExplorer.updateAndGetBox(false);
 
       const r6 = Constant.decode_from_base16(boxInfo.additionalRegisters.R6)
         .to_i64_str_array()
@@ -394,7 +394,7 @@ describe('RWTRepo', () => {
      * @scenario
      * - create an instance of RWTRepo
      * - mock this.explorerClient
-     * - call this.updateBox
+     * - call this.updateAndGetBox
      * - check this.getRequiredCommitmentCount() to return the correct value
      * @expected
      * - this.getRequiredCommitmentCount() should return the correct value
@@ -405,7 +405,7 @@ describe('RWTRepo', () => {
         ''
       ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
 
-      await rwtRepoWithExplorer.updateBox(false);
+      await rwtRepoWithExplorer.updateAndGetBox(false);
 
       const boxInfo = boxInfo1;
       const r6 = Constant.decode_from_base16(
@@ -444,7 +444,7 @@ describe('RWTRepo', () => {
      * @scenario
      * - create an instance of RWTRepo
      * - mock RWTRepo.explorerClient
-     * - call this.updateBox
+     * - call this.updateAndGetBox
      * - check this.getCommitmentRwtCount() to return the correct value
      * @expected
      * - this.getCommitmentRwtCount() should return the correct value
@@ -454,7 +454,7 @@ describe('RWTRepo', () => {
         ''
       ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
 
-      await rwtRepoWithExplorer.updateBox(false);
+      await rwtRepoWithExplorer.updateAndGetBox(false);
 
       const r6 = Constant.decode_from_base16(
         boxInfo1.additionalRegisters.R6.serializedValue
@@ -490,7 +490,7 @@ describe('RWTRepo', () => {
      * @scenario
      * - create an instance of RWTRepo
      * - mock this.explorerClient
-     * - call this.updateBox
+     * - call this.updateAndGetBox
      * - check this.getWidIndex() to return the correct index
      * @expected
      * - RWTRepo.getWidIndex() should return the correct index
@@ -500,7 +500,7 @@ describe('RWTRepo', () => {
         ''
       ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
 
-      await rwtRepoWithExplorer.updateBox(false);
+      await rwtRepoWithExplorer.updateAndGetBox(false);
 
       const r4_2 = Constant.decode_from_base16(
         boxInfo1.additionalRegisters.R4.serializedValue
@@ -519,7 +519,7 @@ describe('RWTRepo', () => {
      * @scenario
      * - create an instance of RWTRepo
      * - mock this.explorerClient
-     * - call this.updateBox
+     * - call this.updateAndGetBox
      * - check this.getWidIndex() to return -1 for a non-existent watcher id
      * @expected
      * - this.getWidIndex() should return -1 for a non-existent watcher id
@@ -529,7 +529,7 @@ describe('RWTRepo', () => {
         ''
       ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
 
-      await rwtRepoWithExplorer.updateBox(false);
+      await rwtRepoWithExplorer.updateAndGetBox(false);
 
       expect(rwtRepoWithExplorer.getWidIndex('ff4a5b')).toEqual(-1);
     });
@@ -557,7 +557,7 @@ describe('RWTRepo', () => {
      * @scenario
      * - create an instance of RWTRepo
      * - mock this.explorerClient
-     * - call this.updateBox
+     * - call this.updateAndGetBox
      * - check this.getPermitCount() to return correct value for permitCount
      * @expected
      * - RWTRepo.getPermitCount() should return correct value for permitCount
@@ -567,7 +567,7 @@ describe('RWTRepo', () => {
         ''
       ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
 
-      await rwtRepoWithExplorer.updateBox(false);
+      await rwtRepoWithExplorer.updateAndGetBox(false);
 
       const r4_2 = Constant.decode_from_base16(
         boxInfo1.additionalRegisters.R4.serializedValue
@@ -591,7 +591,7 @@ describe('RWTRepo', () => {
      * @scenario
      * - create an instance of RWTRepo
      * - mock this.explorerClient
-     * - call this.updateBox to update this.box
+     * - call this.updateAndGetBox to update this.box
      * - check this.getPermitCount() to return 0 for a missing watcher id
      * @expected
      * - this.getPermitCount() should return 0 for a missing watcher id
@@ -601,7 +601,7 @@ describe('RWTRepo', () => {
         ''
       ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
 
-      await rwtRepoWithExplorer.updateBox(false);
+      await rwtRepoWithExplorer.updateAndGetBox(false);
 
       expect(rwtRepoWithExplorer.getPermitCount('ff4a5b')).toEqual(0n);
     });
@@ -629,7 +629,7 @@ describe('RWTRepo', () => {
      * @scenario
      * - create an instance of RWTRepo
      * - mock this.explorerClient
-     * - call this.updateBox to update this.box
+     * - call this.updateAndGetBox to update this.box
      * - check this.toBuilder() to return an instance of RWTRepoBuilder
      * - check this.toBuilder() to have created the RWTRepoBuilder instance with
      *   correct properties
@@ -644,7 +644,7 @@ describe('RWTRepo', () => {
         ''
       ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
 
-      await rwtRepoWithExplorer.updateBox(false);
+      await rwtRepoWithExplorer.updateAndGetBox(false);
 
       const rwtRepoBuilder = rwtRepoWithExplorer.toBuilder();
 
