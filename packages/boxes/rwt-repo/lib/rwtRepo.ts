@@ -47,14 +47,19 @@ export class RWTRepo {
    *
    * @param {boolean} trackMempool whether mempool should be checked for box
    * info first
-   * @return {Promise<void>}
+   * @return {(Promise<ergoLib.ErgoBox | undefined>)}
    */
-  updateBox = async (trackMempool: boolean) => {
+  updateAndGetBox = async (
+    trackMempool: boolean
+  ): Promise<ergoLib.ErgoBox | undefined> => {
     this.logger.debug(`box is being updated from ${this.networkType} api`);
-    if (trackMempool && (await this.getBoxFromMempool())) {
-      return;
+    if (trackMempool) {
+      const box = await this.getBoxFromMempool();
+      if (box) {
+        return box;
+      }
     }
-    await this.getBox();
+    return await this.getBox();
   };
 
   /**
