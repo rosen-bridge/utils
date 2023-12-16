@@ -66,7 +66,7 @@ describe('BlockFrostRosenExtractor', () => {
      *  run test
      *  check return value
      * Expected:
-     *  function returns rosenData object
+     *  function returns undefined
      */
     it('should return undefined when tx locks nothing', () => {
       // generate a transaction with no lock box
@@ -125,7 +125,7 @@ describe('BlockFrostRosenExtractor', () => {
      *  run test
      *  check return value
      * Expected:
-     *  function returns rosenData object
+     *  function returns undefined
      */
     it('should return undefined when tx does NOT contain metadata', () => {
       // generate a transaction with no rosen data
@@ -151,7 +151,7 @@ describe('BlockFrostRosenExtractor', () => {
      *  run test
      *  check return value
      * Expected:
-     *  function returns rosenData object
+     *  function returns undefined
      */
     it("should return undefined when metadata does NOT contain '0' key", () => {
       // generate a transaction with invalid rosen data (no '0' key in metadata)
@@ -178,7 +178,7 @@ describe('BlockFrostRosenExtractor', () => {
      *  run test
      *  check return value
      * Expected:
-     *  function returns rosenData object
+     *  function returns undefined
      */
     it('should return undefined when metadata is string', () => {
       // generate a transaction with invalid rosen data (metadata value is string)
