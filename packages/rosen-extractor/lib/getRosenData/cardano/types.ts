@@ -98,6 +98,56 @@ interface BlockFrostTransaction {
 type BlockFrostOutputBox =
   components['schemas']['tx_content_utxo']['outputs'][0];
 
+type GraphQLBlockTxsQuery = {
+  __typename?: 'Query';
+  blocks: Array<{
+    __typename?: 'Block';
+    transactions: Array<{
+      __typename?: 'Transaction';
+      hash: any;
+      fee: any;
+      inputs: Array<{
+        __typename?: 'TransactionInput';
+        sourceTxIndex: number;
+        sourceTxHash: any;
+        value: any;
+        tokens: Array<{
+          __typename?: 'Token';
+          quantity: string;
+          asset: {
+            __typename?: 'Asset';
+            assetName?: any | null;
+            policyId: any;
+          };
+        } | null>;
+      }>;
+      outputs: Array<{
+        __typename?: 'TransactionOutput';
+        address: string;
+        value: any;
+        tokens: Array<{
+          __typename?: 'Token';
+          quantity: string;
+          asset: {
+            __typename?: 'Asset';
+            assetName?: any | null;
+            policyId: any;
+          };
+        }>;
+      } | null>;
+      metadata?: Array<{
+        __typename?: 'TransactionMetadata';
+        key: string;
+        value: any;
+      } | null> | null;
+    } | null>;
+  } | null>;
+};
+type GraphQLTransaction = NonNullable<
+  NonNullable<GraphQLBlockTxsQuery['blocks'][0]>['transactions'][0]
+>;
+type GraphQLTxOutput = NonNullable<GraphQLTransaction['outputs'][0]>;
+
 export {
   Utxo,
   KoiosTransaction,
@@ -114,4 +164,6 @@ export {
   CardanoBoxCandidate,
   BlockFrostTransaction,
   BlockFrostOutputBox,
+  GraphQLTransaction,
+  GraphQLTxOutput,
 };
