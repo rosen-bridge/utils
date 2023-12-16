@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/rosen-extractor",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "this project contains methods to get rosen data from blockchain",
   "main": "dist/lib/index.js",
   "types": "dist/lib/index.d.ts",
@@ -23,6 +23,7 @@
   ],
   "license": "GPL-3.0",
   "dependencies": {
+    "@blockfrost/blockfrost-js": "^5.4.0",
     "@cardano-ogmios/schema": "^6.0.0",
     "@rosen-bridge/abstract-logger": "^0.3.0",
     "@rosen-bridge/json-bigint": "^0.1.0",

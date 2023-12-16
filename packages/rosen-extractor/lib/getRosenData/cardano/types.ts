@@ -1,3 +1,5 @@
+import { components } from '@blockfrost/openapi';
+
 interface PaymentAddr {
   bech32: string;
   cred: string;
@@ -88,6 +90,14 @@ interface CardanoTx {
   metadata?: CardanoMetadata;
 }
 
+interface BlockFrostTransaction {
+  utxos: components['schemas']['tx_content_utxo'];
+  metadata: components['schemas']['tx_content_metadata'];
+}
+
+type BlockFrostOutputBox =
+  components['schemas']['tx_content_utxo']['outputs'][0];
+
 export {
   Utxo,
   KoiosTransaction,
@@ -102,4 +112,6 @@ export {
   CardanoMetadata,
   CardanoTx,
   CardanoBoxCandidate,
+  BlockFrostTransaction,
+  BlockFrostOutputBox,
 };
