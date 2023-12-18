@@ -3,6 +3,7 @@ export { CardanoKoiosRosenExtractor } from './getRosenData/cardano/CardanoKoiosR
 export { CardanoOgmiosRosenExtractor } from './getRosenData/cardano/CardanoOgmiosRosenExtractor';
 export { CardanoRosenExtractor } from './getRosenData/cardano/CardanoRosenExtractor';
 export { CardanoBlockFrostRosenExtractor } from './getRosenData/cardano/CardanoBlockFrostRosenExtractor';
+export { CardanoGraphQLRosenExtractor } from './getRosenData/cardano/CardanoGraphQLRosenExtractor';
 export { ErgoRosenExtractor } from './getRosenData/ergo/ErgoRosenExtractor';
 export { ErgoNodeRosenExtractor } from './getRosenData/ergo/ErgoNodeRosenExtractor';
 export { RosenData } from './getRosenData/abstract/types';
