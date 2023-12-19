@@ -40,7 +40,7 @@ export const createPermit = (
   );
   boxBuilder.set_register_value(
     5,
-    ergoLib.Constant.from_coll_coll_byte([Buffer.from('00', 'hex')])
+    ergoLib.Constant.from_coll_coll_byte([hexToUint8Array('00')])
   );
 
   return boxBuilder.build();
