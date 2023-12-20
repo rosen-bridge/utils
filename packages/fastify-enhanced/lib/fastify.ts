@@ -1,4 +1,4 @@
-import swagger from '@fastify/swagger';
+import swagger, { SwaggerOptions } from '@fastify/swagger';
 import swaggerUi from '@fastify/swagger-ui';
 import Fastify, { FastifyBaseLogger, FastifyInstance } from 'fastify';
 import {
@@ -10,6 +10,7 @@ import type { FastifySerializerCompiler } from 'fastify/types/schema';
 import * as http from 'http';
 import JsonBigIntFactory from 'json-bigint';
 import type { ZodAny } from 'zod';
+import { FastifyWithZod, SwaggerOpts } from './types';
 
 /**
  * creates an instance of Fastify with Zod validation library as validator and
@@ -32,21 +33,18 @@ import type { ZodAny } from 'zod';
  * >}
  */
 export const createFastify = async (
-  swaggerPath = '/swagger',
+  swaggerOpts: SwaggerOpts = {
+    path: '/swagger',
+    title: '',
+    description: '',
+    version: '0.0.1',
+  },
   opts = { logger: true },
   jsonHandler = JsonBigIntFactory({
     alwaysParseAsBig: false,
     useNativeBigInt: true,
   })
-): Promise<
-  FastifyInstance<
-    http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>,
-    http.IncomingMessage,
-    http.ServerResponse<http.IncomingMessage>,
-    FastifyBaseLogger,
-    ZodTypeProvider
-  >
-> => {
+): Promise<FastifyWithZod> => {
   const fastify = Fastify(opts).withTypeProvider<ZodTypeProvider>();
   fastify.setValidatorCompiler(validatorCompiler);
 
@@ -67,7 +65,7 @@ export const createFastify = async (
     }
   );
 
-  await addSwaggerRoute(fastify, swaggerPath);
+  await addSwaggerRoute(fastify, swaggerOpts);
   return fastify;
 };
 
@@ -98,9 +96,15 @@ const getSerializerCompiler = (
     return Object.prototype.hasOwnProperty.call(obj, prop);
   };
 
-  const resolveSchema = (
+  /**
+   * resolve the right schema to be used
+   *
+   * @param {(ZodAny | { properties: ZodAny })} maybeSchema
+   * @return {Pick<ZodAny, 'safeParse'>}
+   */
+  function resolveSchema(
     maybeSchema: ZodAny | { properties: ZodAny }
-  ): Pick<ZodAny, 'safeParse'> => {
+  ): Pick<ZodAny, 'safeParse'> {
     if (hasOwnProperty(maybeSchema, 'safeParse')) {
       return maybeSchema;
     }
@@ -108,7 +112,7 @@ const getSerializerCompiler = (
       return maybeSchema.properties;
     }
     throw new Error(`Invalid schema passed: ${JSON.stringify(maybeSchema)}`);
-  };
+  }
 
   class ResponseValidationError extends Error {
     public details: Record<string, any>;
@@ -144,16 +148,13 @@ const getSerializerCompiler = (
  * @param {Awaited<ReturnType<typeof createFastify>>} fastify
  * @param {string} path
  */
-const addSwaggerRoute = async (
-  fastify: Awaited<ReturnType<typeof createFastify>>,
-  path: string
-) => {
+const addSwaggerRoute = async (fastify: FastifyWithZod, opts: SwaggerOpts) => {
   fastify.register(swagger, {
     openapi: {
       info: {
-        title: 'SampleApi',
-        description: 'Sample backend service',
-        version: '1.0.0',
+        title: opts.title,
+        description: opts.description,
+        version: opts.version,
       },
       servers: [],
     },
@@ -161,7 +162,7 @@ const addSwaggerRoute = async (
   });
 
   fastify.register(swaggerUi, {
-    routePrefix: path,
+    routePrefix: opts.path,
     uiConfig: {
       docExpansion: 'full',
       deepLinking: false,
