@@ -1,13 +1,140 @@
+import { stringify } from 'querystring';
 import {
   propertyValidators,
   supportedTypes,
 } from './schema/Validators/fieldProperties';
 import { ConfigField, ConfigSchema } from './schema/types/fields';
+import { valueValidations, valueValidators } from './value/validators';
+import { VString, When } from './schema/types/validations';
 
-export class Config {
+export class ConfigValidator {
   constructor(private schema: ConfigSchema) {
     this.validateSchema();
   }
+
+  /**
+   * validates the passed config against the instance's schema
+   *
+   * @param {Record<string, any>} config
+   */
+  public validateConfig(config: Record<string, any>) {
+    const errorPreamble = (path: Array<string>) =>
+      `config validation failed for "${path.join('.')}" field`;
+
+    const stack: Array<{
+      subSchema: ConfigSchema;
+      subConfig: Record<string, any> | undefined;
+      parentPath: Array<string>;
+    }> = [
+      {
+        subSchema: this.schema,
+        subConfig: config,
+        parentPath: [],
+      },
+    ];
+
+    this.validateValue(
+      config,
+      { type: 'object', children: this.schema },
+      config
+    );
+    while (stack.length > 0) {
+      const { subSchema, subConfig, parentPath } = stack.pop()!;
+      for (const name of Object.keys(subSchema)) {
+        const path = parentPath.concat([name]);
+        try {
+          const field = subSchema[name];
+          let value = undefined;
+          if (subConfig != undefined && Object.hasOwn(subConfig, name)) {
+            value = subConfig[name];
+          }
+
+          this.validateValue(value, field, config);
+
+          if (field.type === 'object') {
+            stack.push({
+              subSchema: field.children,
+              subConfig: value,
+              parentPath: path,
+            });
+          }
+        } catch (error: any) {
+          throw new Error(`${errorPreamble(path)}: ${error.message}`);
+        }
+      }
+    }
+  }
+
+  /**
+   * validates a value in config object
+   *
+   * @private
+   * @param {*} value
+   * @param {ConfigField} field the field specification in schema
+   * @param {Record<string, any>} config the config object
+   */
+  private validateValue = (
+    value: any,
+    field: ConfigField,
+    config: Record<string, any>
+  ) => {
+    if (value != undefined) {
+      valueValidators[field.type](value, field);
+    }
+
+    if (field.type != 'object' && field.validations) {
+      for (const validation of field.validations) {
+        const name = Object.keys(validation).filter(
+          (key) => key !== 'when' && key !== 'error'
+        )[0];
+        if (Object.hasOwn(valueValidations[field.type], name)) {
+          try {
+            valueValidations[field.type][name](value, validation, config, this);
+          } catch (error: any) {
+            if (validation.error != undefined) {
+              throw new Error(validation.error);
+            }
+            throw error;
+          }
+        }
+      }
+    }
+  };
+
+  /**
+   * determines if a when clause in validations section of a schema field is
+   * satisfied
+   *
+   * @param {When} when
+   * @param {Record<string, any>} config
+   * @return {boolean}
+   */
+  public isWhenTrue = (when: When, config: Record<string, any>): boolean => {
+    const pathParts = when.path.split('.');
+    const value = ConfigValidator.valueAt(config, pathParts);
+    return value != undefined && value === when.value;
+  };
+
+  /**
+   * returns the value at specified path in config object
+   *
+   * @static
+   * @param {Record<string, any>} config
+   * @param {string[]} path
+   * @return {*}
+   */
+  static valueAt = (config: Record<string, any>, path: string[]) => {
+    let value: any = config;
+    for (const key of path) {
+      if (value != undefined && Object.hasOwn(value, key)) {
+        value = value[key];
+      } else {
+        break;
+      }
+    }
+
+    return value;
+  };
 
   /**
    * validates this.schema and throws exception if any errors found

@@ -1,10 +1,10 @@
-import { Config } from '../../config';
+import { ConfigValidator } from '../../config';
 import * as types from '../types/fields';
 import { VAll, VNumeric, VString } from '../types/validations';
 
 export const propertyValidators = {
   all: {
-    type: (field: types.ConfigField, config: Config) => {
+    type: (field: types.ConfigField, config: ConfigValidator) => {
       if (!Object.hasOwn(field, 'type') || typeof field.type !== 'string') {
         throw new Error(
           `every schema field must have a "type" property of type "string"`
@@ -15,12 +15,12 @@ export const propertyValidators = {
         throw new Error(`unsupported field type "${field.type}"`);
       }
     },
-    label: (field: types.ConfigField, config: Config) => {
+    label: (field: types.ConfigField, config: ConfigValidator) => {
       if (Object.hasOwn(field, 'label') && typeof field.label !== 'string') {
         throw new Error(`"label" property should be a "string"`);
       }
     },
-    description: (field: types.ConfigField, config: Config) => {
+    description: (field: types.ConfigField, config: ConfigValidator) => {
       if (
         Object.hasOwn(field, 'description') &&
         typeof field.description !== 'string'
@@ -30,7 +30,7 @@ export const propertyValidators = {
     },
   },
   primitive: {
-    validations: (field: types.PrimitiveField, config: Config) => {
+    validations: (field: types.PrimitiveField, config: ConfigValidator) => {
       if (!Object.hasOwn(field, 'validations')) {
         return;
       }
@@ -101,12 +101,12 @@ export const propertyValidators = {
     },
   },
   object: {
-    children: (field: types.ObjectField, config: Config) => {
+    children: (field: types.ObjectField, config: ConfigValidator) => {
       return;
     },
   },
   string: {
-    default: (field: types.StringField, config: Config) => {
+    default: (field: types.StringField, config: ConfigValidator) => {
       if (
         Object.hasOwn(field, 'default') &&
         typeof field.default !== 'string'
@@ -118,7 +118,7 @@ export const propertyValidators = {
     },
   },
   boolean: {
-    default: (field: types.BooleanField, config: Config) => {
+    default: (field: types.BooleanField, config: ConfigValidator) => {
       if (
         Object.hasOwn(field, 'default') &&
         typeof field.default !== 'boolean'
@@ -130,7 +130,7 @@ export const propertyValidators = {
     },
   },
   number: {
-    default: (field: types.NumberField, config: Config) => {
+    default: (field: types.NumberField, config: ConfigValidator) => {
       if (
         Object.hasOwn(field, 'default') &&
         typeof field.default !== 'number'
@@ -142,7 +142,7 @@ export const propertyValidators = {
     },
   },
   bigint: {
-    default: (field: types.BigIntField, config: Config) => {
+    default: (field: types.BigIntField, config: ConfigValidator) => {
       if (
         Object.hasOwn(field, 'default') &&
         typeof field.default !== 'bigint'
