@@ -1,4 +1,4 @@
-import swagger, { SwaggerOptions } from '@fastify/swagger';
+import swagger from '@fastify/swagger';
 import swaggerUi from '@fastify/swagger-ui';
 import Fastify, { FastifyBaseLogger, FastifyInstance } from 'fastify';
 import {
@@ -59,7 +59,6 @@ export const createFastify = async (
         const json = jsonHandler.parse(body);
         done(null, json);
       } catch (err: any) {
-        err.statusCode = 400;
         done(err, undefined);
       }
     }
@@ -124,6 +123,11 @@ const getSerializerCompiler = (
     }
   }
 
+  /**
+   * creates a serializer compiler based on Zod library
+   *
+   * @param { schema: maybeSchema }
+   */
   const serializerCompiler: FastifySerializerCompiler<
     ZodAny | { properties: ZodAny }
   > =
