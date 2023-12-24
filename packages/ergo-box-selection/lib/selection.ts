@@ -4,7 +4,6 @@ import {
   AssetBalance,
   BoxInfo,
   CoveringBoxes,
-  ErgoBoxCandidateProxy,
   ErgoBoxProxy,
   TokenInfo,
 } from './types';
@@ -125,21 +124,21 @@ export const selectErgoBoxes = async (
  * @param {string} changeAddress
  * @param {number} height
  * @param {ErgoBoxProxy[]} inputBoxes
- * @param {ErgoBoxCandidateProxy[]} outputBoxes
+ * @param {ergoLib.ErgoBoxCandidate[]} outputBoxes
  * @param {bigint} txFee
  * @param {TokenInfo[]} tokensToBurn
  * @param {AbstractLogger} [logger=new DummyLogger()]
- * @return {(ErgoBoxCandidateProxy | undefined)}
+ * @return {(ergoLib.ErgoBoxCandidate | undefined)}
  */
 export const createChangeBox = (
   changeAddress: string,
   height: number,
   inputBoxes: ErgoBoxProxy[],
-  outputBoxes: ErgoBoxCandidateProxy[],
+  outputBoxes: ergoLib.ErgoBoxCandidate[],
   txFee: bigint,
   tokensToBurn: TokenInfo[],
   logger: AbstractLogger = new DummyLogger()
-): ErgoBoxCandidateProxy | undefined => {
+): ergoLib.ErgoBoxCandidate | undefined => {
   const value = calcChangeValue(inputBoxes, outputBoxes, txFee);
   logger.debug(`change value of change box: [${value}]`);
 
@@ -184,41 +183,45 @@ export const createChangeBox = (
     return undefined;
   }
 
-  return {
-    ergoTree: ergoLib.Contract.pay_to_address(
-      ergoLib.Address.from_base58(changeAddress)
-    )
-      .ergo_tree()
-      .to_base16_bytes(),
-    creationHeight: height,
-    value: value.toString(),
-    assets: [...tokens.entries()]
-      .filter(([, amount]) => amount > 0)
-      .map(([id, amount]) => ({
-        tokenId: id,
-        amount: amount.toString(),
-      })),
-    additionalRegisters: {},
-  };
+  const boxBuilder = new ergoLib.ErgoBoxCandidateBuilder(
+    ergoLib.BoxValue.from_i64(ergoLib.I64.from_str(value.toString())),
+    ergoLib.Contract.pay_to_address(ergoLib.Address.from_base58(changeAddress)),
+    height
+  );
+
+  tokens.forEach((amount, id) => {
+    if (amount > 0) {
+      boxBuilder.add_token(
+        ergoLib.TokenId.from_str(id),
+        ergoLib.TokenAmount.from_i64(ergoLib.I64.from_str(amount.toString()))
+      );
+    } else if (amount < 0) {
+      throw new Error(
+        `there is ${-amount} more tokens with id=${id} in outputs than inputs`
+      );
+    }
+  });
+
+  return boxBuilder.build();
 };
 
 /**
  * calculate difference between input and output box values
  *
  * @param {ErgoBoxProxy[]} inputBoxes
- * @param {ErgoBoxCandidateProxy[]} outputBoxes
+ * @param {ergoLib.ErgoBoxCandidate[]} outputBoxes
  * @return {bigint}
  */
 export const calcChangeValue = (
   inputBoxes: ErgoBoxProxy[],
-  outputBoxes: ErgoBoxCandidateProxy[],
+  outputBoxes: ergoLib.ErgoBoxCandidate[],
   txFee: bigint
 ): bigint => {
   const inputValue = inputBoxes
     .map((box) => BigInt(box.value))
     .reduce((sum, val) => sum + val, 0n);
   const outputValue = outputBoxes
-    .map((box) => BigInt(box.value))
+    .map((box) => BigInt(box.value().as_i64().to_str()))
     .reduce((sum, val) => sum + val, 0n);
   return inputValue - outputValue - txFee;
 };
@@ -227,12 +230,12 @@ export const calcChangeValue = (
  * calculates token amount difference between input and output boxes
  *
  * @param {ErgoBoxProxy[]} inputBoxes
- * @param {ErgoBoxCandidateProxy[]} outputBoxes
+ * @param {ergoLib.ErgoBoxCandidate[]} outputBoxes
  * @return {Map<string, bigint>}
  */
 export const calcTokenChange = (
   inputBoxes: ErgoBoxProxy[],
-  outputBoxes: ErgoBoxCandidateProxy[]
+  outputBoxes: ergoLib.ErgoBoxCandidate[]
 ): Map<string, bigint> => {
   const tokens = new Map<string, bigint>();
   inputBoxes
@@ -243,14 +246,20 @@ export const calcTokenChange = (
         BigInt(token.amount) + (tokens.get(token.tokenId) || 0n)
       )
     );
-  outputBoxes
-    .flatMap((box) => box.assets)
-    .forEach((token) =>
-      tokens.set(
-        token.tokenId,
-        (tokens.get(token.tokenId) || 0n) - BigInt(token.amount)
-      )
-    );
+
+  const outputTokens: Array<{ id: string; amount: bigint }> = [];
+  outputBoxes.forEach((box) => {
+    for (let i = 0; i < box.tokens().len(); i++) {
+      const token = box.tokens().get(i);
+      outputTokens.push({
+        id: token.id().to_str(),
+        amount: BigInt(token.amount().as_i64().to_str()),
+      });
+    }
+  });
+  outputTokens.forEach((token) =>
+    tokens.set(token.id, (tokens.get(token.id) || 0n) - token.amount)
+  );
 
   return tokens;
 };
