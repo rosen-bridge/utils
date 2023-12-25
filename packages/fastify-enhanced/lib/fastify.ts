@@ -58,8 +58,16 @@ export const createFastify = async (
       try {
         const json = jsonHandler.parse(body);
         done(null, json);
-      } catch (err: any) {
-        done(err, undefined);
+      } catch (err) {
+        if (err instanceof Error || err === null) {
+          done(err, undefined);
+        } else {
+          const wrappedErr = new Error(
+            `An unexpected error occurred while trying to parse request body`,
+            { cause: err }
+          );
+          done(wrappedErr, undefined);
+        }
       }
     }
   );
