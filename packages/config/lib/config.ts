@@ -38,8 +38,12 @@ export class ConfigValidator {
       { type: 'object', children: this.schema },
       config
     );
+
+    // Traverses the schema object tree depth first in coordination with config
+    // object tree and validate config using the schema
     while (stack.length > 0) {
       const { subSchema, subConfig, parentPath } = stack.pop()!;
+      // Process children of current field
       for (const name of Object.keys(subSchema)) {
         const path = parentPath.concat([name]);
         try {
@@ -51,6 +55,8 @@ export class ConfigValidator {
 
           this.validateValue(value, field, config);
 
+          // if a node/field is of type object and thus is a subtree, add it to
+          // the stack to be traversed later
           if (field.type === 'object') {
             stack.push({
               subSchema: field.children,
@@ -153,8 +159,11 @@ export class ConfigValidator {
       },
     ];
 
+    // Traverses the schema object tree depth first and validate fields
     while (stack.length > 0) {
       const { subSchema, parentPath } = stack.pop()!;
+
+      // process children of current object field
       for (const name of Object.keys(subSchema).reverse()) {
         const path = parentPath.concat([name]);
         try {
@@ -173,6 +182,8 @@ export class ConfigValidator {
 
           this.validateSchemaField(field);
 
+          // if the child is an object field itself add it to stack for
+          // processing
           if (field.type === 'object') {
             stack.push({
               subSchema: field.children,

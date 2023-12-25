@@ -72,8 +72,7 @@ describe('ConfigValidator', () => {
      * @expected
      * - no errors should be thrown
      */
-    it(`validateConfig should not throw any exceptions when a correct config is
-    passed`, async () => {
+    it(`should not throw any exceptions when a correct config is passed`, async () => {
       const confValidator = new ConfigValidator(
         <ConfigSchema>testData.apiSchemaConfigPair.schema
       );
@@ -81,7 +80,7 @@ describe('ConfigValidator', () => {
     });
 
     /**
-     * @target validateSchema should throw exception when a config violating
+     * @target validateConfig should throw exception when a config violating
      * choices constraint is passed
      * @dependencies
      * @scenario
@@ -90,8 +89,8 @@ describe('ConfigValidator', () => {
      * @expected
      * - exception should be thrown
      */
-    it(`validateSchema should throw exception when a config violating choices
-    constraint is passed`, async () => {
+    it(`should throw exception when a config violating choices constraint is
+    passed`, async () => {
       const confValidator = new ConfigValidator(
         <ConfigSchema>testData.apiSchemaConfigPairWrongChoice.schema
       );
@@ -113,8 +112,8 @@ describe('ConfigValidator', () => {
      * @expected
      * - exception should be thrown
      */
-    it(`validateSchema should throw exception when a config violating regex
-    constraint is passed`, async () => {
+    it(`should throw exception when a config violating regex constraint is
+    passed`, async () => {
       const confValidator = new ConfigValidator(
         <ConfigSchema>testData.apiSchemaConfigPairWrongRegex.schema
       );
@@ -136,8 +135,8 @@ describe('ConfigValidator', () => {
      * @expected
      * - exception should be thrown
      */
-    it(`validateSchema should throw exception when a config violating the
-    "required" constraint is passed`, async () => {
+    it(`should throw exception when a config violating the "required" constraint
+    is passed`, async () => {
       const confValidator = new ConfigValidator(
         <ConfigSchema>testData.apiSchemaConfigPairWrongRequired.schema
       );
@@ -159,8 +158,7 @@ describe('ConfigValidator', () => {
      * @expected
      * - exception should be thrown
      */
-    it(`validateSchema should throw exception when a config violating the value
-    type is passed`, async () => {
+    it(`should throw exception when a config violating the value type is passed`, async () => {
       const confValidator = new ConfigValidator(
         <ConfigSchema>testData.apiSchemaConfigPairWrongPortType.schema
       );
@@ -182,8 +180,8 @@ describe('ConfigValidator', () => {
      * @expected
      * - exception should be thrown
      */
-    it(`validateSchema should throw exception when a config violating the
-    "greater than" constraint, is passed`, async () => {
+    it(`should throw exception when a config violating the "greater than"
+    constraint, is passed`, async () => {
       const confValidator = new ConfigValidator(
         <ConfigSchema>testData.apiSchemaConfigPairWrongGreater.schema
       );
@@ -193,6 +191,356 @@ describe('ConfigValidator', () => {
           testData.apiSchemaConfigPairWrongGreater.config
         )
       ).toThrow();
+    });
+
+    /**
+     * @target validateSchema should throw exception when a config violating the
+     * "greater than or equal" constraint, is passed
+     * @dependencies
+     * @scenario
+     * - call validateConfig with the config
+     * - check if any exception is thrown
+     * @expected
+     * - exception should be thrown
+     */
+    it(`should throw exception when a config violating the
+    "greater than or equal" constraint, is passed`, async () => {
+      const confValidator = new ConfigValidator(
+        <ConfigSchema>testData.apiSchemaConfigPairWrongGreaterEqual.schema
+      );
+
+      expect(() =>
+        confValidator.validateConfig(
+          testData.apiSchemaConfigPairWrongGreaterEqual.config
+        )
+      ).toThrow();
+    });
+
+    /**
+     * @target validateSchema should throw exception when a config violating the
+     * "less than" constraint, is passed
+     * @dependencies
+     * @scenario
+     * - call validateConfig with the config
+     * - check if any exception is thrown
+     * @expected
+     * - exception should be thrown
+     */
+    it(`should throw exception when a config violating the "less than"
+    constraint, is passed`, async () => {
+      const confValidator = new ConfigValidator(
+        <ConfigSchema>testData.apiSchemaConfigPairWrongLess.schema
+      );
+
+      expect(() =>
+        confValidator.validateConfig(
+          testData.apiSchemaConfigPairWrongLess.config
+        )
+      ).toThrow();
+    });
+
+    /**
+     * @target validateSchema should throw exception when a config violating the
+     * "less than or equal" constraint, is passed
+     * @dependencies
+     * @scenario
+     * - call validateConfig with the config
+     * - check if any exception is thrown
+     * @expected
+     * - exception should be thrown
+     */
+    it(`should throw exception when a config violating the "less than or equal"
+    constraint, is passed`, async () => {
+      const confValidator = new ConfigValidator(
+        <ConfigSchema>testData.apiSchemaConfigPairWrongLessEqual.schema
+      );
+
+      expect(() =>
+        confValidator.validateConfig(
+          testData.apiSchemaConfigPairWrongLessEqual.config
+        )
+      ).toThrow();
+    });
+
+    /**
+     * @target validateSchema should throw exception when a config violating the
+     * "greater than for bigint" constraint, is passed
+     * @dependencies
+     * @scenario
+     * - call validateConfig with the config
+     * - check if any exception is thrown
+     * @expected
+     * - exception should be thrown
+     */
+    it(`should throw exception when a config violating the
+    "greater than for bigint" constraint, is passed`, async () => {
+      const confValidator = new ConfigValidator(
+        <ConfigSchema>testData.apiSchemaConfigPairWrongGreaterBigInt.schema
+      );
+
+      expect(() =>
+        confValidator.validateConfig(
+          testData.apiSchemaConfigPairWrongGreaterBigInt.config
+        )
+      ).toThrow();
+    });
+
+    /**
+     * @target validateSchema should throw exception when a config violating the
+     * "greater than or equal for bigint" constraint, is passed
+     * @dependencies
+     * @scenario
+     * - call validateConfig with the config
+     * - check if any exception is thrown
+     * @expected
+     * - exception should be thrown
+     */
+    it(`should throw exception when a config violating the
+    "greater than or equal for bigint" constraint, is passed`, async () => {
+      const confValidator = new ConfigValidator(
+        <ConfigSchema>testData.apiSchemaConfigPairWrongGreaterEqualBigInt.schema
+      );
+
+      expect(() =>
+        confValidator.validateConfig(
+          testData.apiSchemaConfigPairWrongGreaterEqualBigInt.config
+        )
+      ).toThrow();
+    });
+
+    /**
+     * @target validateSchema should throw exception when a config violating the
+     * "less than for bigint" constraint, is passed
+     * @dependencies
+     * @scenario
+     * - call validateConfig with the config
+     * - check if any exception is thrown
+     * @expected
+     * - exception should be thrown
+     */
+    it(`should throw exception when a config violating the
+    "less than for bigint" constraint, is passed`, async () => {
+      const confValidator = new ConfigValidator(
+        <ConfigSchema>testData.apiSchemaConfigPairWrongLessBigInt.schema
+      );
+
+      expect(() =>
+        confValidator.validateConfig(
+          testData.apiSchemaConfigPairWrongLessBigInt.config
+        )
+      ).toThrow();
+    });
+
+    /**
+     * @target validateSchema should throw exception when a config violating the
+     * "less than or equal for bigint" constraint, is passed
+     * @dependencies
+     * @scenario
+     * - call validateConfig with the config
+     * - check if any exception is thrown
+     * @expected
+     * - exception should be thrown
+     */
+    it(`should throw exception when a config violating the
+    "less than or equal for bigint" constraint, is passed`, async () => {
+      const confValidator = new ConfigValidator(
+        <ConfigSchema>testData.apiSchemaConfigPairWrongLessEqualBigInt.schema
+      );
+
+      expect(() =>
+        confValidator.validateConfig(
+          testData.apiSchemaConfigPairWrongLessEqualBigInt.config
+        )
+      ).toThrow();
+    });
+
+    /**
+     * @target validateSchema should not throw exception when config violates
+     * "regex" validation but the "when" clause is false
+     * @dependencies
+     * @scenario
+     * - call validateConfig with the config
+     * - check if any exception is thrown
+     * @expected
+     * - exception should be thrown
+     */
+    it(`should not throw exception when config violates "regex" validation but
+    the "when" clause is false`, async () => {
+      const confValidator = new ConfigValidator(
+        <ConfigSchema>testData.apiSchemaConfigPairWrongRegexFalseWhen.schema
+      );
+
+      confValidator.validateConfig(
+        testData.apiSchemaConfigPairWrongRegexFalseWhen.config
+      );
+    });
+
+    /**
+     * @target validateSchema should not throw exception when config violates
+     * "choices" validation but the "when" clause is false
+     * @dependencies
+     * @scenario
+     * - call validateConfig with the config
+     * - check if any exception is thrown
+     * @expected
+     * - exception should be thrown
+     */
+    it(`should not throw exception when config violates "choices" validation but
+    the "when" clause is false`, async () => {
+      const confValidator = new ConfigValidator(
+        <ConfigSchema>testData.apiSchemaConfigPairWrongChoiceFalseWhen.schema
+      );
+
+      confValidator.validateConfig(
+        testData.apiSchemaConfigPairWrongChoiceFalseWhen.config
+      );
+    });
+
+    /**
+     * @target validateSchema should not throw exception when config violates
+     * "gt" validation but the "when" clause is false
+     * @dependencies
+     * @scenario
+     * - call validateConfig with the config
+     * - check if any exception is thrown
+     * @expected
+     * - exception should be thrown
+     */
+    it(`should not throw exception when config violates "gt" validation but the
+    "when" clause is false`, async () => {
+      const confValidator = new ConfigValidator(
+        <ConfigSchema>testData.apiSchemaConfigPairWrongGreaterFalseWhen.schema
+      );
+
+      confValidator.validateConfig(
+        testData.apiSchemaConfigPairWrongGreaterFalseWhen.config
+      );
+    });
+
+    /**
+     * @target validateSchema should not throw exception when config violates
+     * "gte" validation but the "when" clause is false
+     * @dependencies
+     * @scenario
+     * - call validateConfig with the config
+     * - check if any exception is thrown
+     * @expected
+     * - exception should be thrown
+     */
+    it(`should not throw exception when config violates "gte" validation but
+     the "when" clause is false`, async () => {
+      const confValidator = new ConfigValidator(
+        <ConfigSchema>(
+          testData.apiSchemaConfigPairWrongGreaterEqualFalseWhen.schema
+        )
+      );
+
+      confValidator.validateConfig(
+        testData.apiSchemaConfigPairWrongGreaterEqualFalseWhen.config
+      );
+    });
+
+    /**
+     * @target validateSchema should not throw exception when config violates
+     * "lt" validation but the "when" clause is false
+     * @dependencies
+     * @scenario
+     * - call validateConfig with the config
+     * - check if any exception is thrown
+     * @expected
+     * - exception should be thrown
+     */
+    it(`should not throw exception when config violates "lt" validation but the
+    "when" clause is false`, async () => {
+      const confValidator = new ConfigValidator(
+        <ConfigSchema>testData.apiSchemaConfigPairWrongLessFalseWhen.schema
+      );
+
+      confValidator.validateConfig(
+        testData.apiSchemaConfigPairWrongLessFalseWhen.config
+      );
+    });
+
+    /**
+     * @target validateSchema should not throw exception when config violates
+     * "lte" validation but the "when" clause is false
+     * @dependencies
+     * @scenario
+     * - call validateConfig with the config
+     * - check if any exception is thrown
+     * @expected
+     * - exception should be thrown
+     */
+    it(`should not throw exception when config violates "lte" validation but the
+    "when" clause is false`, async () => {
+      const confValidator = new ConfigValidator(
+        <ConfigSchema>testData.apiSchemaConfigPairWrongLessEqualFalseWhen.schema
+      );
+
+      confValidator.validateConfig(
+        testData.apiSchemaConfigPairWrongLessEqualFalseWhen.config
+      );
+    });
+
+    /**
+     * @target validateSchema should throw exception using the custom message
+     * when the validation has error property set
+     * @dependencies
+     * @scenario
+     * - call validateConfig with the config
+     * - check if any exception is thrown with the right message
+     * @expected
+     * - exception should be thrown with the right message
+     */
+    it(`should throw exception using the custom message when the validation has
+    error property set`, async () => {
+      const confValidator = new ConfigValidator(
+        <ConfigSchema>testData.apiSchemaConfigPairWrongChoiceCustomError.schema
+      );
+
+      expect(() =>
+        confValidator.validateConfig(
+          testData.apiSchemaConfigPairWrongChoiceCustomError.config
+        )
+      ).toThrow(
+        testData.apiSchemaConfigPairWrongChoiceCustomError.schema.apiType
+          .validations[0].error
+      );
+    });
+  });
+
+  describe('valueAt', () => {
+    /**
+     * @target valueAt should return the value at specified path in config
+     * object
+     * @dependencies
+     * @scenario
+     * - call valueAt with the config and path
+     * - check if correct value is returned
+     * @expected
+     * - correct value should be returned
+     */
+    it(`should return the value at specified path in config object`, async () => {
+      const configObject = {
+        apiType: 'explorer',
+        servers: {
+          url: 'node256.mydomain.net',
+        },
+        apis: {
+          explorer: {
+            url: 'example.com',
+            port: 600,
+          },
+        },
+      };
+
+      const value = ConfigValidator.valueAt(configObject, [
+        'apis',
+        'explorer',
+        'url',
+      ]);
+
+      expect(value).toEqual('example.com');
     });
   });
 });

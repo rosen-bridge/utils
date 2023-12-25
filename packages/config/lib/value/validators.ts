@@ -11,7 +11,7 @@ import {
 } from '../schema/types/validations';
 
 export const valueValidators: Record<string, any> = {
-  object: (value: any, field: types.ObjectField) => {
+  object: (value: Record<string, any>, field: types.ObjectField) => {
     if (typeof value !== 'object') {
       throw new Error(`value must be of object type`);
     }
@@ -43,6 +43,21 @@ export const valueValidators: Record<string, any> = {
       throw new Error(`value must be of bigint type`);
     }
   },
+};
+
+const required = (
+  value: any,
+  validation: VRequired,
+  config: Record<string, any>,
+  configValidator: ConfigValidator
+) => {
+  if (validation.when && !configValidator.isWhenTrue(validation.when, config)) {
+    return;
+  }
+
+  if (validation.required && value == undefined) {
+    throw new Error('value is required but not found in config');
+  }
 };
 
 export const valueValidations: Record<string, Record<string, any>> = {
@@ -251,18 +266,3 @@ export const valueValidations: Record<string, Record<string, any>> = {
     },
   },
 };
-
-function required(
-  value: any,
-  validation: VRequired,
-  config: Record<string, any>,
-  configValidator: ConfigValidator
-) {
-  if (validation.when && !configValidator.isWhenTrue(validation.when, config)) {
-    return;
-  }
-
-  if (validation.required && value == undefined) {
-    throw new Error('value is required but not found in config');
-  }
-}
