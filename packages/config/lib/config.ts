@@ -135,7 +135,7 @@ export class ConfigValidator {
       if (value != undefined && Object.hasOwn(value, key)) {
         value = value[key];
       } else {
-        break;
+        return undefined;
       }
     }
 

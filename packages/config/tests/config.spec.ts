@@ -356,6 +356,27 @@ describe('ConfigValidator', () => {
 
     /**
      * @target validateSchema should not throw exception when config violates
+     * "required" validation but the "when" clause is false
+     * @dependencies
+     * @scenario
+     * - call validateConfig with the config
+     * - check if any exception is thrown
+     * @expected
+     * - exception should be thrown
+     */
+    it(`should not throw exception when config violates "required" validation
+    but the "when" clause is false`, async () => {
+      const confValidator = new ConfigValidator(
+        <ConfigSchema>testData.apiSchemaConfigPairWrongRequiredFalseWhen.schema
+      );
+
+      confValidator.validateConfig(
+        testData.apiSchemaConfigPairWrongRequiredFalseWhen.config
+      );
+    });
+
+    /**
+     * @target validateSchema should not throw exception when config violates
      * "regex" validation but the "when" clause is false
      * @dependencies
      * @scenario
@@ -483,6 +504,98 @@ describe('ConfigValidator', () => {
     });
 
     /**
+     * @target validateSchema should not throw exception when config violates
+     * "bigint gt" validation but the "when" clause is false
+     * @dependencies
+     * @scenario
+     * - call validateConfig with the config
+     * - check if any exception is thrown
+     * @expected
+     * - exception should be thrown
+     */
+    it(`should not throw exception when config violates "bigint gt" validation
+     but the "when" clause is false`, async () => {
+      const confValidator = new ConfigValidator(
+        <ConfigSchema>(
+          testData.apiSchemaConfigPairWrongBigIntGreaterFalseWhen.schema
+        )
+      );
+
+      confValidator.validateConfig(
+        testData.apiSchemaConfigPairWrongBigIntGreaterFalseWhen.config
+      );
+    });
+
+    /**
+     * @target validateSchema should not throw exception when config violates
+     * "bigint gte" validation but the "when" clause is false
+     * @dependencies
+     * @scenario
+     * - call validateConfig with the config
+     * - check if any exception is thrown
+     * @expected
+     * - exception should be thrown
+     */
+    it(`should not throw exception when config violates "bigint gte" validation
+    but the "when" clause is false`, async () => {
+      const confValidator = new ConfigValidator(
+        <ConfigSchema>(
+          testData.apiSchemaConfigPairWrongBigIntGreaterEqualFalseWhen.schema
+        )
+      );
+
+      confValidator.validateConfig(
+        testData.apiSchemaConfigPairWrongBigIntGreaterEqualFalseWhen.config
+      );
+    });
+
+    /**
+     * @target validateSchema should not throw exception when config violates
+     * "bigint lt" validation but the "when" clause is false
+     * @dependencies
+     * @scenario
+     * - call validateConfig with the config
+     * - check if any exception is thrown
+     * @expected
+     * - exception should be thrown
+     */
+    it(`should not throw exception when config violates "bigint lt" validation
+    but the "when" clause is false`, async () => {
+      const confValidator = new ConfigValidator(
+        <ConfigSchema>(
+          testData.apiSchemaConfigPairWrongBigIntLessFalseWhen.schema
+        )
+      );
+
+      confValidator.validateConfig(
+        testData.apiSchemaConfigPairWrongBigIntLessFalseWhen.config
+      );
+    });
+
+    /**
+     * @target validateSchema should not throw exception when config violates
+     * "bigint lte" validation but the "when" clause is false
+     * @dependencies
+     * @scenario
+     * - call validateConfig with the config
+     * - check if any exception is thrown
+     * @expected
+     * - exception should be thrown
+     */
+    it(`should not throw exception when config violates "bigint lte" validation
+    but the "when" clause is false`, async () => {
+      const confValidator = new ConfigValidator(
+        <ConfigSchema>(
+          testData.apiSchemaConfigPairWrongBigIntLessEqualFalseWhen.schema
+        )
+      );
+
+      confValidator.validateConfig(
+        testData.apiSchemaConfigPairWrongBigIntLessEqualFalseWhen.config
+      );
+    });
+
+    /**
      * @target validateSchema should throw exception using the custom message
      * when the validation has error property set
      * @dependencies
@@ -541,6 +654,38 @@ describe('ConfigValidator', () => {
       ]);
 
       expect(value).toEqual('example.com');
+    });
+
+    /**
+     * @target valueAt should return undefined when invalid path is passed
+     * @dependencies
+     * @scenario
+     * - call valueAt with the config and path
+     * - check if undefined is returned
+     * @expected
+     * - undefined should be returned
+     */
+    it(`should return undefined when invalid path is passed`, async () => {
+      const configObject = {
+        apiType: 'explorer',
+        servers: {
+          url: 'node256.mydomain.net',
+        },
+        apis: {
+          explorer: {
+            url: 'example.com',
+            port: 600,
+          },
+        },
+      };
+
+      const value = ConfigValidator.valueAt(configObject, [
+        'apis',
+        'node',
+        'url',
+      ]);
+
+      expect(value).toEqual(undefined);
     });
   });
 });
