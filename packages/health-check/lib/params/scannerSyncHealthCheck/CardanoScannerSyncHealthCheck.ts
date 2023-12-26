@@ -6,6 +6,10 @@ import {
   InteractionContext,
   createLedgerStateQueryClient,
 } from '@cardano-ogmios/client';
+import { ApolloClient, InMemoryCache } from '@apollo/client/core';
+import { CurrentHeightQuery, currentHeightQuery } from './graphQLTypes';
+import { BlockFrostAPI } from '@blockfrost/blockfrost-js';
+
 class CardanoKoiosScannerHealthCheck extends AbstractScannerSyncHealthCheckParam {
   private koiosApi;
 
@@ -87,4 +91,87 @@ class CardanoOgmiosScannerHealthCheck extends AbstractScannerSyncHealthCheckPara
   };
 }
 
-export { CardanoKoiosScannerHealthCheck, CardanoOgmiosScannerHealthCheck };
+class CardanoBlockFrostScannerHealthCheck extends AbstractScannerSyncHealthCheckParam {
+  protected client;
+
+  constructor(
+    dataSource: DataSource,
+    scannerName: string,
+    warnDifference: number,
+    criticalDifference: number,
+    projectId: string,
+    url?: string
+  ) {
+    super(dataSource, scannerName, warnDifference, criticalDifference);
+    this.client = new BlockFrostAPI({
+      projectId: projectId,
+      customBackend: url,
+      network: 'mainnet',
+    });
+  }
+
+  /**
+   * generates a unique id with network name and type
+   * @returns parameter id
+   */
+  getId = (): string => {
+    return `Cardano Scanner Sync (BlockFrost)`;
+  };
+
+  /**
+   * @returns last available block in network
+   */
+  getLastAvailableBlock = () => {
+    return this.client.blocksLatest().then((block) => {
+      const height = block.height;
+      return height ?? 0;
+    });
+  };
+}
+
+class CardanoGraphQLScannerHealthCheck extends AbstractScannerSyncHealthCheckParam {
+  protected client;
+
+  constructor(
+    dataSource: DataSource,
+    scannerName: string,
+    warnDifference: number,
+    criticalDifference: number,
+    graphqlUri: string
+  ) {
+    super(dataSource, scannerName, warnDifference, criticalDifference);
+    this.client = new ApolloClient({
+      cache: new InMemoryCache(),
+      uri: graphqlUri,
+    });
+  }
+
+  /**
+   * generates a unique id with network name and type
+   * @returns parameter id
+   */
+  getId = (): string => {
+    return `Cardano Scanner Sync (GraphQL)`;
+  };
+
+  /**
+   * @returns last available block in network
+   */
+  getLastAvailableBlock = () => {
+    return this.client
+      .query<CurrentHeightQuery>({
+        query: currentHeightQuery,
+      })
+      .then((res) => {
+        const height = res.data.cardano.tip.number;
+        return height ?? 0;
+      });
+  };
+}
+
+export {
+  CardanoKoiosScannerHealthCheck,
+  CardanoOgmiosScannerHealthCheck,
+  CardanoBlockFrostScannerHealthCheck,
+  CardanoGraphQLScannerHealthCheck,
+};
