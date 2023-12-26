@@ -7,7 +7,7 @@ import {
   addressAssetsQuery,
   addressQueryVariables,
 } from './graphQLTypes';
-import { ApolloClient, InMemoryCache } from '@apollo/client/core';
+import { ApolloClient, InMemoryCache, HttpLink } from '@apollo/client/core';
 
 class CardanoKoiosAssetHealthCheckParam extends AbstractAssetHealthCheckParam {
   private koiosApi;
@@ -130,7 +130,7 @@ class CardanoGraphQLAssetHealthCheckParam extends AbstractAssetHealthCheckParam 
     );
     this.client = new ApolloClient({
       cache: new InMemoryCache(),
-      uri: graphqlUri,
+      link: new HttpLink({ uri: graphqlUri, fetch }),
     });
   }
 

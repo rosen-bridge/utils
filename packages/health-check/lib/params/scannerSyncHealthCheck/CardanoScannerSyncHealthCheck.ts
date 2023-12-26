@@ -6,7 +6,7 @@ import {
   InteractionContext,
   createLedgerStateQueryClient,
 } from '@cardano-ogmios/client';
-import { ApolloClient, InMemoryCache } from '@apollo/client/core';
+import { ApolloClient, InMemoryCache, HttpLink } from '@apollo/client/core';
 import { CurrentHeightQuery, currentHeightQuery } from './graphQLTypes';
 import { BlockFrostAPI } from '@blockfrost/blockfrost-js';
 
@@ -142,7 +142,7 @@ class CardanoGraphQLScannerHealthCheck extends AbstractScannerSyncHealthCheckPar
     super(dataSource, scannerName, warnDifference, criticalDifference);
     this.client = new ApolloClient({
       cache: new InMemoryCache(),
-      uri: graphqlUri,
+      link: new HttpLink({ uri: graphqlUri, fetch }),
     });
   }
 
