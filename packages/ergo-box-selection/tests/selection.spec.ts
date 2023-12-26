@@ -394,8 +394,10 @@ describe('createChangeBox', () => {
   const height = 2000000;
   const candidateBoxTokensToArray = (box: ergoLib.ErgoBoxCandidate) => {
     const changeBoxTokens: Array<[string, bigint]> = [];
-    for (let i = 0; i < box!.tokens().len(); i++) {
-      const token = box!.tokens().get(i);
+    const tokens = box!.tokens();
+    const tokenCount = tokens.len();
+    for (let i = 0; i < tokenCount; i++) {
+      const token = tokens.get(i);
       changeBoxTokens.push([
         token.id().to_str(),
         BigInt(token.amount().as_i64().to_str()),

@@ -249,8 +249,10 @@ export const calcTokenChange = (
 
   const outputTokens: Array<{ id: string; amount: bigint }> = [];
   outputBoxes.forEach((box) => {
-    for (let i = 0; i < box.tokens().len(); i++) {
-      const token = box.tokens().get(i);
+    const tokens = box.tokens();
+    const tokenCount = tokens.len();
+    for (let i = 0; i < tokenCount; i++) {
+      const token = tokens.get(i);
       outputTokens.push({
         id: token.id().to_str(),
         amount: BigInt(token.amount().as_i64().to_str()),
