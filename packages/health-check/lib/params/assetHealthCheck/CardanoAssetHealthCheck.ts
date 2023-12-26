@@ -8,6 +8,7 @@ import {
   addressQueryVariables,
 } from './graphQLTypes';
 import { ApolloClient, InMemoryCache, HttpLink } from '@apollo/client/core';
+import fetch from 'cross-fetch';
 
 class CardanoKoiosAssetHealthCheckParam extends AbstractAssetHealthCheckParam {
   private koiosApi;

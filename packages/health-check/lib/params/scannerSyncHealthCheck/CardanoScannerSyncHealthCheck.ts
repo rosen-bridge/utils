@@ -9,6 +9,7 @@ import {
 import { ApolloClient, InMemoryCache, HttpLink } from '@apollo/client/core';
 import { CurrentHeightQuery, currentHeightQuery } from './graphQLTypes';
 import { BlockFrostAPI } from '@blockfrost/blockfrost-js';
+import fetch from 'cross-fetch';
 
 class CardanoKoiosScannerHealthCheck extends AbstractScannerSyncHealthCheckParam {
   private koiosApi;
