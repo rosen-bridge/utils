@@ -86,7 +86,7 @@ describe('CardanoScannerHealthCheck', () => {
     /**
      * @target CardanoBlockFrostScannerHealthCheck.update should return the last available block in network
      * @dependencies
-     * - cardanoBlockFrostClientFactory
+     * - BlockFrostAPI
      * @scenario
      * - mock return value of blockfrost last block info
      * - create new instance of CardanoBlockFrostScannerHealthCheck
@@ -116,7 +116,7 @@ describe('CardanoScannerHealthCheck', () => {
     /**
      * @target CardanoGraphQLScannerHealthCheck.update should return the last available block in network
      * @dependencies
-     * - cardanoGraphQLClientFactory
+     * - ApolloClient
      * @scenario
      * - mock return value of graphql last block info
      * - create new instance of CardanoGraphQLScannerHealthCheck

@@ -113,7 +113,7 @@ describe('CardanoBlockFrostAssetHealthCheckParam', () => {
     /**
      * @target CardanoBlockFrostAssetHealthCheckParam.update should update the token amount using blockfrost api
      * @dependencies
-     * - cardanoKoiosClientFactory
+     * - BlockFrostAPI
      * @scenario
      * - mock return value of blockfrost address info
      * - create new instance of CardanoBlockFrostAssetHealthCheckParam
@@ -138,7 +138,7 @@ describe('CardanoBlockFrostAssetHealthCheckParam', () => {
     /**
      * @target CardanoBlockFrostAssetHealthCheckParam.update should update the ada amount using blockfrost api
      * @dependencies
-     * - cardanoKoiosClientFactory
+     * - BlockFrostAPI
      * @scenario
      * - mock return value of blockfrost address info
      * - create new instance of CardanoBlockFrostAssetHealthCheckParam
@@ -174,7 +174,7 @@ describe('CardanoGraphQLAssetHealthCheckParam', () => {
     /**
      * @target CardanoGraphQLAssetHealthCheckParam.update should update the token amount using koios api
      * @dependencies
-     * - cardanoKoiosClientFactory
+     * - ApolloClient
      * @scenario
      * - create new instance of CardanoGraphQLAssetHealthCheckParam
      * - mock return value of graphql address assets
@@ -200,7 +200,7 @@ describe('CardanoGraphQLAssetHealthCheckParam', () => {
     /**
      * @target CardanoGraphQLAssetHealthCheckParam.update should update the ada amount using graphql api
      * @dependencies
-     * - cardanoKoiosClientFactory
+     * - ApolloClient
      * @scenario
      * - create new instance of CardanoGraphQLAssetHealthCheckParam
      * - mock return value of graphql address assets
