@@ -9,15 +9,15 @@ import cardanoKoiosClientFactory from '@rosen-clients/cardano-koios';
 jest.mock('@rosen-clients/cardano-koios');
 jest.mock('@blockfrost/blockfrost-js');
 
-describe('CardanoAssetHealthCheck', () => {
+describe('CardanoKoiosAssetHealthCheck', () => {
   describe('update', () => {
     /**
-     * @target CardanoAssetHealthCheck.update Should update the token amount using koios api
+     * @target CardanoKoiosAssetHealthCheck.update Should update the token amount using koios api
      * @dependencies
      * - cardanoKoiosClientFactory
      * @scenario
      * - mock return value of koios token amount
-     * - create new instance of CardanoAssetHealthCheck
+     * - create new instance of CardanoKoiosAssetHealthCheck
      * - update the parameter
      * @expected
      * - The token amount should update successfully using koios api
@@ -47,12 +47,12 @@ describe('CardanoAssetHealthCheck', () => {
     });
 
     /**
-     * @target CardanoAssetHealthCheck.update Should update the ada amount using koios api
+     * @target CardanoKoiosAssetHealthCheck.update Should update the ada amount using koios api
      * @dependencies
      * - cardanoKoiosClientFactory
      * @scenario
      * - mock return value of koios ada balance
-     * - create new instance of CardanoAssetHealthCheck
+     * - create new instance of CardanoKoiosAssetHealthCheck
      * - update the parameter
      * @expected
      * - The native cardano asset amount should update successfully using koios api
@@ -110,7 +110,7 @@ describe('CardanoBlockFrostAssetHealthCheckParam', () => {
     /**
      * @target CardanoBlockFrostAssetHealthCheckParam.update should update the token amount using blockfrost api
      * @dependencies
-     * - cardanoKoiosClientFactory
+     * - BlockFrostAPI
      * @scenario
      * - mock return value of blockfrost address info
      * - create new instance of CardanoBlockFrostAssetHealthCheckParam
@@ -135,7 +135,7 @@ describe('CardanoBlockFrostAssetHealthCheckParam', () => {
     /**
      * @target CardanoBlockFrostAssetHealthCheckParam.update should update the ada amount using blockfrost api
      * @dependencies
-     * - cardanoKoiosClientFactory
+     * - BlockFrostAPI
      * @scenario
      * - mock return value of blockfrost address info
      * - create new instance of CardanoBlockFrostAssetHealthCheckParam

@@ -6,6 +6,7 @@ import {
   InteractionContext,
   createLedgerStateQueryClient,
 } from '@cardano-ogmios/client';
+
 class CardanoKoiosScannerHealthCheck extends AbstractScannerSyncHealthCheckParam {
   private koiosApi;
 

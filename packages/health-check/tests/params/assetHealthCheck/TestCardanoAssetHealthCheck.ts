@@ -1,7 +1,8 @@
 import {
   CardanoKoiosAssetHealthCheckParam,
   CardanoBlockFrostAssetHealthCheckParam,
-} from '../../../lib/params/assetHealthCheck/CardanoAssetHealthCheck';
+  CardanoGraphQLAssetHealthCheckParam,
+} from '../../../lib';
 
 class TestCardanoKoiosAssetHealthCheck extends CardanoKoiosAssetHealthCheckParam {
   /**
@@ -21,7 +22,22 @@ class TestCardanoBlockFrostAssetHealthCheck extends CardanoBlockFrostAssetHealth
   };
 }
 
+class TestCardanoGraphQLAssetHealthCheck extends CardanoGraphQLAssetHealthCheckParam {
+  /**
+   * @returns protected token amount
+   */
+  getTokenAmount = () => {
+    return this.tokenAmount;
+  };
+
+  /**
+   * @returns the apollo client
+   */
+  getClient = () => this.client;
+}
+
 export {
   TestCardanoKoiosAssetHealthCheck,
   TestCardanoBlockFrostAssetHealthCheck,
+  TestCardanoGraphQLAssetHealthCheck,
 };
