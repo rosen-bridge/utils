@@ -392,6 +392,19 @@ describe('selectErgoBoxes', () => {
 
 describe('createChangeBox', () => {
   const height = 2000000;
+  const candidateBoxTokensToArray = (box: ergoLib.ErgoBoxCandidate) => {
+    const changeBoxTokens: Array<[string, bigint]> = [];
+    const tokens = box!.tokens();
+    const tokenCount = tokens.len();
+    for (let i = 0; i < tokenCount; i++) {
+      const token = tokens.get(i);
+      changeBoxTokens.push([
+        token.id().to_str(),
+        BigInt(token.amount().as_i64().to_str()),
+      ]);
+    }
+    return changeBoxTokens;
+  };
 
   /**
    * @target should return a box with correct Erg value when there is no other
@@ -419,7 +432,7 @@ describe('createChangeBox', () => {
     const inputBoxes = noTokenBoxes.slice(2, 5);
     const changeValue = calcChangeValue(
       inputBoxes,
-      outputBoxes,
+      outputBoxes.map(testData.fromErgoBoxCandidateProxy),
       testData.txFee
     );
 
@@ -427,18 +440,20 @@ describe('createChangeBox', () => {
       testData.changeAddress,
       height,
       inputBoxes,
-      outputBoxes,
+      outputBoxes.map(testData.fromErgoBoxCandidateProxy),
       testData.txFee,
       []
     );
 
     expect(changeBox).toBeDefined();
-    expect(BigInt(changeBox!.value)).toEqual(changeValue);
-    expect(changeBox!.assets.length).toEqual(0);
+    expect(changeBox!.value().as_i64().to_str()).toEqual(
+      changeValue.toString()
+    );
+    expect(changeBox!.tokens().len()).toEqual(0);
     expect(
-      ergoLib.Address.recreate_from_ergo_tree(
-        ergoLib.ErgoTree.from_base16_bytes(changeBox!.ergoTree)
-      ).to_base58(ergoLib.NetworkPrefix.Testnet)
+      ergoLib.Address.recreate_from_ergo_tree(changeBox!.ergo_tree()).to_base58(
+        ergoLib.NetworkPrefix.Testnet
+      )
     ).toEqual(testData.changeAddress);
   });
 
@@ -470,7 +485,7 @@ describe('createChangeBox', () => {
     inputBoxes.push(...boxesWithToken);
     const changeValue = calcChangeValue(
       inputBoxes,
-      outputBoxes,
+      outputBoxes.map(testData.fromErgoBoxCandidateProxy),
       testData.txFee
     );
 
@@ -478,22 +493,21 @@ describe('createChangeBox', () => {
       testData.changeAddress,
       height,
       inputBoxes,
-      outputBoxes,
+      outputBoxes.map(testData.fromErgoBoxCandidateProxy),
       testData.txFee,
       []
     );
+    const changeBoxTokens = candidateBoxTokensToArray(changeBox!);
 
     expect(changeBox).toBeDefined();
-    expect(BigInt(changeBox!.value)).toEqual(changeValue);
+    expect(BigInt(changeBox!.value().as_i64().to_str())).toEqual(changeValue);
+    expect(changeBoxTokens.sort()).toEqual(
+      [...calcTokenChange(boxesWithToken, []).entries()].sort()
+    );
     expect(
-      changeBox!.assets
-        .map((asset) => [asset.tokenId, BigInt(asset.amount)])
-        .sort()
-    ).toEqual([...calcTokenChange(boxesWithToken, []).entries()].sort());
-    expect(
-      ergoLib.Address.recreate_from_ergo_tree(
-        ergoLib.ErgoTree.from_base16_bytes(changeBox!.ergoTree)
-      ).to_base58(ergoLib.NetworkPrefix.Testnet)
+      ergoLib.Address.recreate_from_ergo_tree(changeBox!.ergo_tree()).to_base58(
+        ergoLib.NetworkPrefix.Testnet
+      )
     ).toEqual(testData.changeAddress);
   });
 
@@ -522,7 +536,7 @@ describe('createChangeBox', () => {
         testData.changeAddress,
         height,
         inputBoxes,
-        outputBoxes,
+        outputBoxes.map(testData.fromErgoBoxCandidateProxy),
         testData.txFee,
         []
       )
@@ -554,7 +568,7 @@ describe('createChangeBox', () => {
     const inputBoxes = noTokenBoxes.slice(2, 6);
     const changeValue = calcChangeValue(
       inputBoxes,
-      outputBoxes,
+      outputBoxes.map(testData.fromErgoBoxCandidateProxy),
       testData.txFee
     );
 
@@ -567,7 +581,7 @@ describe('createChangeBox', () => {
         testData.changeAddress,
         height,
         inputBoxes,
-        outputBoxes,
+        outputBoxes.map(testData.fromErgoBoxCandidateProxy),
         testData.txFee,
         []
       )
@@ -608,28 +622,38 @@ describe('createChangeBox', () => {
     };
     const inputBoxes = noTokenBoxes.slice(2, 4);
     inputBoxes.push(boxesWithToken[0]);
-    const changeValue = calcChangeValue(inputBoxes, outputBoxes, 0n);
+    const changeValue = calcChangeValue(
+      inputBoxes,
+      outputBoxes.map(testData.fromErgoBoxCandidateProxy),
+      0n
+    );
 
     const safeMinBoxValue = BigInt(
       ergoLib.BoxValue.SAFE_USER_MIN().as_i64().to_str()
     );
     expect(changeValue).toEqual(0n);
     expect(
-      [...calcTokenChange(inputBoxes, outputBoxes).entries()].every(
-        ([, amount]) => amount >= 0
-      )
+      [
+        ...calcTokenChange(
+          inputBoxes,
+          outputBoxes.map(testData.fromErgoBoxCandidateProxy)
+        ).entries(),
+      ].every(([, amount]) => amount >= 0)
     ).toBeTruthy();
     expect(
-      [...calcTokenChange(inputBoxes, outputBoxes).entries()].some(
-        ([, amount]) => amount > 0
-      )
+      [
+        ...calcTokenChange(
+          inputBoxes,
+          outputBoxes.map(testData.fromErgoBoxCandidateProxy)
+        ).entries(),
+      ].some(([, amount]) => amount > 0)
     ).toBeTruthy();
     expect(() =>
       createChangeBox(
         testData.changeAddress,
         height,
         inputBoxes,
-        outputBoxes,
+        outputBoxes.map(testData.fromErgoBoxCandidateProxy),
         0n,
         []
       )
@@ -666,7 +690,7 @@ describe('createChangeBox', () => {
     inputBoxes.push(...boxesWithToken);
     const changeValue = calcChangeValue(
       inputBoxes,
-      outputBoxes,
+      outputBoxes.map(testData.fromErgoBoxCandidateProxy),
       testData.txFee
     );
 
@@ -678,18 +702,15 @@ describe('createChangeBox', () => {
       testData.changeAddress,
       height,
       inputBoxes,
-      outputBoxes,
+      outputBoxes.map(testData.fromErgoBoxCandidateProxy),
       testData.txFee,
       [tokenToBurn]
     );
+    const changeBoxTokens = candidateBoxTokensToArray(changeBox!);
 
     expect(changeBox).toBeDefined();
-    expect(BigInt(changeBox!.value)).toEqual(changeValue);
-    expect(
-      changeBox!.assets
-        .map((asset) => [asset.tokenId, BigInt(asset.amount)])
-        .sort()
-    ).toEqual(
+    expect(BigInt(changeBox!.value().as_i64().to_str())).toEqual(changeValue);
+    expect(changeBoxTokens.sort()).toEqual(
       [...calcTokenChange(boxesWithToken, []).entries()]
         .map(([id, amount]) => [
           id,
@@ -698,9 +719,9 @@ describe('createChangeBox', () => {
         .sort()
     );
     expect(
-      ergoLib.Address.recreate_from_ergo_tree(
-        ergoLib.ErgoTree.from_base16_bytes(changeBox!.ergoTree)
-      ).to_base58(ergoLib.NetworkPrefix.Testnet)
+      ergoLib.Address.recreate_from_ergo_tree(changeBox!.ergo_tree()).to_base58(
+        ergoLib.NetworkPrefix.Testnet
+      )
     ).toEqual(testData.changeAddress);
   });
 });
@@ -729,9 +750,13 @@ describe('calcChangeValue', () => {
       changeValue -= BigInt(box.value);
     }
 
-    expect(calcChangeValue(inputBoxes, outputBoxes, testData.txFee)).toEqual(
-      changeValue - testData.txFee
-    );
+    expect(
+      calcChangeValue(
+        inputBoxes,
+        outputBoxes.map(testData.fromErgoBoxCandidateProxy),
+        testData.txFee
+      )
+    ).toEqual(changeValue - testData.txFee);
   });
 });
 
@@ -777,7 +802,12 @@ describe('calcTokenChange', () => {
     }
 
     expect(
-      [...calcTokenChange(inputBoxes, outputBoxes).entries()].sort()
+      [
+        ...calcTokenChange(
+          inputBoxes,
+          outputBoxes.map(testData.fromErgoBoxCandidateProxy)
+        ).entries(),
+      ].sort()
     ).toEqual(tokensChange.sort());
   });
 });
