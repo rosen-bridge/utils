@@ -608,16 +608,16 @@ describe('ConfigValidator', () => {
     it(`should throw exception using the custom message when the validation has
     error property set`, async () => {
       const confValidator = new ConfigValidator(
-        <ConfigSchema>testData.apiSchemaConfigPairWrongChoiceCustomError.schema
+        <ConfigSchema>testData.apiSchemaConfigPairWrongChoice.schema
       );
 
       expect(() =>
         confValidator.validateConfig(
-          testData.apiSchemaConfigPairWrongChoiceCustomError.config
+          testData.apiSchemaConfigPairWrongChoice.config
         )
       ).toThrow(
-        testData.apiSchemaConfigPairWrongChoiceCustomError.schema.apiType
-          .validations[0].error
+        testData.apiSchemaConfigPairWrongChoice.schema.apiType.validations[1]
+          .error
       );
     });
   });

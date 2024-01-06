@@ -216,209 +216,39 @@ export const apiSchemaConfigPairWrongChoice = {
           required: true,
           error: 'error message when value not validated',
         },
-        { choices: ['node', 'explorer'] },
-      ],
-    },
-    servers: {
-      type: 'object',
-      children: {
-        url: {
-          type: 'string',
-          validations: [
-            {
-              required: true,
-            },
-            { regex: 'node[1-9]*.mydomain.(com|net)' },
-          ],
-        },
-        port: {
-          type: 'number',
-        },
-      },
-    },
-    apis: {
-      type: 'object',
-      children: {
-        explorer: {
-          type: 'object',
-          children: {
-            url: {
-              type: 'string',
-              default: 'example.com',
-            },
-            port: {
-              type: 'number',
-              default: 443,
-              validations: [{ gt: 500 }],
-            },
-          },
-        },
-      },
-    },
-  },
-  config: {
-    apiType: 'scanner',
-    servers: {
-      url: 'node256.mydomain.net',
-    },
-    apis: {
-      explorer: {
-        url: 'example.com',
-        port: 501,
-      },
-    },
-  },
-};
-
-export const apiSchemaConfigPairWrongChoiceCustomError = {
-  schema: {
-    apiType: {
-      type: 'string',
-      default: 'explorer',
-      description: 'type of api to use',
-      label: 'api type',
-      validations: [
-        {
-          required: true,
-        },
         {
           choices: ['node', 'explorer'],
           error: 'you did not use one of the valid options',
         },
       ],
     },
-    servers: {
-      type: 'object',
-      children: {
-        url: {
-          type: 'string',
-          validations: [
-            {
-              required: true,
-            },
-            { regex: 'node[1-9]*.mydomain.(com|net)' },
-          ],
-        },
-        port: {
-          type: 'number',
-        },
-      },
-    },
-    apis: {
-      type: 'object',
-      children: {
-        explorer: {
-          type: 'object',
-          children: {
-            url: {
-              type: 'string',
-              default: 'example.com',
-            },
-            port: {
-              type: 'number',
-              default: 443,
-              validations: [{ gt: 500 }],
-            },
-          },
-        },
-      },
-    },
   },
   config: {
     apiType: 'scanner',
-    servers: {
-      url: 'node256.mydomain.net',
-    },
-    apis: {
-      explorer: {
-        url: 'example.com',
-        port: 501,
-      },
-    },
   },
 };
 
 export const apiSchemaConfigPairWrongRegex = {
   schema: {
-    apiType: {
-      type: 'string',
-      default: 'explorer',
-      description: 'type of api to use',
-      label: 'api type',
-      validations: [
-        {
-          required: true,
-          error: 'error message when value not validated',
-        },
-        { choices: ['node', 'explorer'] },
-      ],
-    },
     servers: {
       type: 'object',
       children: {
         url: {
           type: 'string',
-          validations: [
-            {
-              required: true,
-            },
-            { regex: 'node[1-9]*.mydomain.(com|net)' },
-          ],
-        },
-        port: {
-          type: 'number',
-        },
-      },
-    },
-    apis: {
-      type: 'object',
-      children: {
-        explorer: {
-          type: 'object',
-          children: {
-            url: {
-              type: 'string',
-              default: 'example.com',
-            },
-            port: {
-              type: 'number',
-              default: 443,
-              validations: [{ gt: 500 }],
-            },
-          },
+          validations: [{ regex: 'node[1-9]*.mydomain.(com|net)' }],
         },
       },
     },
   },
   config: {
-    apiType: 'explorer',
     servers: {
       url: 'node2506.mydomain.com',
-    },
-    apis: {
-      explorer: {
-        url: 'example.com',
-        port: 501,
-      },
     },
   },
 };
 
 export const apiSchemaConfigPairWrongRequired = {
   schema: {
-    apiType: {
-      type: 'string',
-      default: 'explorer',
-      description: 'type of api to use',
-      label: 'api type',
-      validations: [
-        {
-          required: true,
-          error: 'error message when value not validated',
-        },
-        { choices: ['node', 'explorer'] },
-      ],
-    },
     servers: {
       type: 'object',
       children: {
@@ -428,91 +258,24 @@ export const apiSchemaConfigPairWrongRequired = {
             {
               required: true,
             },
-            { regex: 'node[1-9]*.mydomain.(com|net)' },
           ],
         },
-        port: {
-          type: 'number',
-        },
-      },
-    },
-    apis: {
-      type: 'object',
-      children: {
-        explorer: {
-          type: 'object',
-          children: {
-            url: {
-              type: 'string',
-              default: 'example.com',
-            },
-            port: {
-              type: 'number',
-              default: 443,
-              validations: [{ gt: 500 }],
-            },
-          },
-        },
       },
     },
   },
-  config: {
-    apiType: 'explorer',
-    apis: {
-      explorer: {
-        url: 'example.com',
-        port: 501,
-      },
-    },
-  },
+  config: {},
 };
 
 export const apiSchemaConfigPairWrongPortType = {
   schema: {
-    apiType: {
-      type: 'string',
-      default: 'explorer',
-      description: 'type of api to use',
-      label: 'api type',
-      validations: [
-        {
-          required: true,
-          error: 'error message when value not validated',
-        },
-        { choices: ['node', 'explorer'] },
-      ],
-    },
-    servers: {
-      type: 'object',
-      children: {
-        url: {
-          type: 'string',
-          validations: [
-            {
-              required: true,
-            },
-            { regex: 'node[1-9]*.mydomain.(com|net)' },
-          ],
-        },
-        port: {
-          type: 'number',
-        },
-      },
-    },
     apis: {
       type: 'object',
       children: {
         explorer: {
           type: 'object',
           children: {
-            url: {
-              type: 'string',
-              default: 'example.com',
-            },
             port: {
               type: 'number',
-              default: 443,
-              validations: [{ gt: 500 }],
             },
           },
         },
@@ -520,65 +283,25 @@ export const apiSchemaConfigPairWrongPortType = {
     },
   },
   config: {
-    apiType: 'explorer',
-    servers: {
-      url: 'node256.mydomain.net',
-    },
     apis: {
       explorer: {
-        url: 'example.com',
         port: '501',
       },
     },
   },
 };
 
-export const apiSchemaConfigPairWrongGreater = {
+export const baseSchemaConfigPairComparison = {
   schema: {
-    apiType: {
-      type: 'string',
-      default: 'explorer',
-      description: 'type of api to use',
-      label: 'api type',
-      validations: [
-        {
-          required: true,
-          error: 'error message when value not validated',
-        },
-        { choices: ['node', 'explorer'] },
-      ],
-    },
-    servers: {
-      type: 'object',
-      children: {
-        url: {
-          type: 'string',
-          validations: [
-            {
-              required: true,
-            },
-            { regex: 'node[1-9]*.mydomain.(com|net)' },
-          ],
-        },
-        port: {
-          type: 'number',
-        },
-      },
-    },
     apis: {
       type: 'object',
       children: {
         explorer: {
           type: 'object',
           children: {
-            url: {
-              type: 'string',
-              default: 'example.com',
-            },
             port: {
               type: 'number',
-              default: 443,
-              validations: [{ gt: 500 }],
+              validations: [] as any[],
             },
           },
         },
@@ -586,263 +309,57 @@ export const apiSchemaConfigPairWrongGreater = {
     },
   },
   config: {
-    apiType: 'explorer',
-    servers: {
-      url: 'node256.mydomain.net',
-    },
     apis: {
       explorer: {
-        url: 'example.com',
         port: 443,
       },
     },
   },
 };
 
-export const apiSchemaConfigPairWrongLess = {
-  schema: {
-    apiType: {
-      type: 'string',
-      default: 'explorer',
-      description: 'type of api to use',
-      label: 'api type',
-      validations: [
-        {
-          required: true,
-          error: 'error message when value not validated',
-        },
-        { choices: ['node', 'explorer'] },
-      ],
-    },
-    servers: {
-      type: 'object',
-      children: {
-        url: {
-          type: 'string',
-          validations: [
-            {
-              required: true,
-            },
-            { regex: 'node[1-9]*.mydomain.(com|net)' },
-          ],
-        },
-        port: {
-          type: 'number',
-        },
-      },
-    },
-    apis: {
-      type: 'object',
-      children: {
-        explorer: {
-          type: 'object',
-          children: {
-            url: {
-              type: 'string',
-              default: 'example.com',
-            },
-            port: {
-              type: 'number',
-              default: 443,
-              validations: [{ lt: 500 }],
-            },
-          },
-        },
-      },
-    },
-  },
-  config: {
-    apiType: 'explorer',
-    servers: {
-      url: 'node256.mydomain.net',
-    },
-    apis: {
-      explorer: {
-        url: 'example.com',
-        port: 700,
-      },
-    },
-  },
-};
+export const apiSchemaConfigPairWrongGreater = structuredClone(
+  baseSchemaConfigPairComparison
+);
+apiSchemaConfigPairWrongGreater.schema.apis.children.explorer.children.port.validations.push(
+  { gt: 500 }
+);
+apiSchemaConfigPairWrongGreater.config.apis.explorer.port = 443;
 
-export const apiSchemaConfigPairWrongGreaterEqual = {
-  schema: {
-    apiType: {
-      type: 'string',
-      default: 'explorer',
-      description: 'type of api to use',
-      label: 'api type',
-      validations: [
-        {
-          required: true,
-          error: 'error message when value not validated',
-        },
-        { choices: ['node', 'explorer'] },
-      ],
-    },
-    servers: {
-      type: 'object',
-      children: {
-        url: {
-          type: 'string',
-          validations: [
-            {
-              required: true,
-            },
-            { regex: 'node[1-9]*.mydomain.(com|net)' },
-          ],
-        },
-        port: {
-          type: 'number',
-        },
-      },
-    },
-    apis: {
-      type: 'object',
-      children: {
-        explorer: {
-          type: 'object',
-          children: {
-            url: {
-              type: 'string',
-              default: 'example.com',
-            },
-            port: {
-              type: 'number',
-              default: 443,
-              validations: [{ gte: 500 }],
-            },
-          },
-        },
-      },
-    },
-  },
-  config: {
-    apiType: 'explorer',
-    servers: {
-      url: 'node256.mydomain.net',
-    },
-    apis: {
-      explorer: {
-        url: 'example.com',
-        port: 443,
-      },
-    },
-  },
-};
+export const apiSchemaConfigPairWrongLess = structuredClone(
+  baseSchemaConfigPairComparison
+);
+apiSchemaConfigPairWrongLess.schema.apis.children.explorer.children.port.validations.push(
+  { lt: 500 }
+);
+apiSchemaConfigPairWrongLess.config.apis.explorer.port = 700;
 
-export const apiSchemaConfigPairWrongLessEqual = {
-  schema: {
-    apiType: {
-      type: 'string',
-      default: 'explorer',
-      description: 'type of api to use',
-      label: 'api type',
-      validations: [
-        {
-          required: true,
-          error: 'error message when value not validated',
-        },
-        { choices: ['node', 'explorer'] },
-      ],
-    },
-    servers: {
-      type: 'object',
-      children: {
-        url: {
-          type: 'string',
-          validations: [
-            {
-              required: true,
-            },
-            { regex: 'node[1-9]*.mydomain.(com|net)' },
-          ],
-        },
-        port: {
-          type: 'number',
-        },
-      },
-    },
-    apis: {
-      type: 'object',
-      children: {
-        explorer: {
-          type: 'object',
-          children: {
-            url: {
-              type: 'string',
-              default: 'example.com',
-            },
-            port: {
-              type: 'number',
-              default: 443,
-              validations: [{ lte: 500 }],
-            },
-          },
-        },
-      },
-    },
-  },
-  config: {
-    apiType: 'explorer',
-    servers: {
-      url: 'node256.mydomain.net',
-    },
-    apis: {
-      explorer: {
-        url: 'example.com',
-        port: 700,
-      },
-    },
-  },
-};
+export const apiSchemaConfigPairWrongGreaterEqual = structuredClone(
+  baseSchemaConfigPairComparison
+);
+apiSchemaConfigPairWrongGreaterEqual.schema.apis.children.explorer.children.port.validations.push(
+  { gte: 500 }
+);
+apiSchemaConfigPairWrongGreaterEqual.config.apis.explorer.port = 443;
 
-export const apiSchemaConfigPairWrongGreaterBigInt = {
+export const apiSchemaConfigPairWrongLessEqual = structuredClone(
+  baseSchemaConfigPairComparison
+);
+apiSchemaConfigPairWrongLessEqual.schema.apis.children.explorer.children.port.validations.push(
+  { lte: 500 }
+);
+apiSchemaConfigPairWrongLessEqual.config.apis.explorer.port = 600;
+
+const baseSchemaConfigPairComparisonBigInt = {
   schema: {
-    apiType: {
-      type: 'string',
-      default: 'explorer',
-      description: 'type of api to use',
-      label: 'api type',
-      validations: [
-        {
-          required: true,
-          error: 'error message when value not validated',
-        },
-        { choices: ['node', 'explorer'] },
-      ],
-    },
-    servers: {
-      type: 'object',
-      children: {
-        url: {
-          type: 'string',
-          validations: [
-            {
-              required: true,
-            },
-            { regex: 'node[1-9]*.mydomain.(com|net)' },
-          ],
-        },
-        port: {
-          type: 'number',
-        },
-      },
-    },
     apis: {
       type: 'object',
       children: {
         explorer: {
           type: 'object',
           children: {
-            url: {
-              type: 'string',
-              default: 'example.com',
-            },
             port: {
               type: 'bigint',
-              default: 443n,
-              validations: [{ gt: 500n }],
+              validations: [] as any[],
             },
           },
         },
@@ -850,251 +367,57 @@ export const apiSchemaConfigPairWrongGreaterBigInt = {
     },
   },
   config: {
-    apiType: 'explorer',
-    servers: {
-      url: 'node256.mydomain.net',
-    },
     apis: {
       explorer: {
-        url: 'example.com',
-        port: 400n,
+        port: 443n,
       },
     },
   },
 };
 
-export const apiSchemaConfigPairWrongGreaterEqualBigInt = {
-  schema: {
-    apiType: {
-      type: 'string',
-      default: 'explorer',
-      description: 'type of api to use',
-      label: 'api type',
-      validations: [
-        {
-          required: true,
-          error: 'error message when value not validated',
-        },
-        { choices: ['node', 'explorer'] },
-      ],
-    },
-    servers: {
-      type: 'object',
-      children: {
-        url: {
-          type: 'string',
-          validations: [
-            {
-              required: true,
-            },
-            { regex: 'node[1-9]*.mydomain.(com|net)' },
-          ],
-        },
-        port: {
-          type: 'number',
-        },
-      },
-    },
-    apis: {
-      type: 'object',
-      children: {
-        explorer: {
-          type: 'object',
-          children: {
-            url: {
-              type: 'string',
-              default: 'example.com',
-            },
-            port: {
-              type: 'bigint',
-              default: 443n,
-              validations: [{ gte: 500n }],
-            },
-          },
-        },
-      },
-    },
-  },
-  config: {
-    apiType: 'explorer',
-    servers: {
-      url: 'node256.mydomain.net',
-    },
-    apis: {
-      explorer: {
-        url: 'example.com',
-        port: 400n,
-      },
-    },
-  },
-};
+export const apiSchemaConfigPairWrongGreaterBigInt = structuredClone(
+  baseSchemaConfigPairComparisonBigInt
+);
+apiSchemaConfigPairWrongGreaterBigInt.schema.apis.children.explorer.children.port.validations.push(
+  { gt: 500n }
+);
+apiSchemaConfigPairWrongGreaterBigInt.config.apis.explorer.port = 400n;
 
-export const apiSchemaConfigPairWrongLessBigInt = {
-  schema: {
-    apiType: {
-      type: 'string',
-      default: 'explorer',
-      description: 'type of api to use',
-      label: 'api type',
-      validations: [
-        {
-          required: true,
-          error: 'error message when value not validated',
-        },
-        { choices: ['node', 'explorer'] },
-      ],
-    },
-    servers: {
-      type: 'object',
-      children: {
-        url: {
-          type: 'string',
-          validations: [
-            {
-              required: true,
-            },
-            { regex: 'node[1-9]*.mydomain.(com|net)' },
-          ],
-        },
-        port: {
-          type: 'number',
-        },
-      },
-    },
-    apis: {
-      type: 'object',
-      children: {
-        explorer: {
-          type: 'object',
-          children: {
-            url: {
-              type: 'string',
-              default: 'example.com',
-            },
-            port: {
-              type: 'bigint',
-              default: 443n,
-              validations: [{ lt: 500n }],
-            },
-          },
-        },
-      },
-    },
-  },
-  config: {
-    apiType: 'explorer',
-    servers: {
-      url: 'node256.mydomain.net',
-    },
-    apis: {
-      explorer: {
-        url: 'example.com',
-        port: 700n,
-      },
-    },
-  },
-};
+export const apiSchemaConfigPairWrongGreaterEqualBigInt = structuredClone(
+  baseSchemaConfigPairComparisonBigInt
+);
+apiSchemaConfigPairWrongGreaterEqualBigInt.schema.apis.children.explorer.children.port.validations.push(
+  { gte: 500n }
+);
+apiSchemaConfigPairWrongGreaterEqualBigInt.config.apis.explorer.port = 400n;
 
-export const apiSchemaConfigPairWrongLessEqualBigInt = {
-  schema: {
-    apiType: {
-      type: 'string',
-      default: 'explorer',
-      description: 'type of api to use',
-      label: 'api type',
-      validations: [
-        {
-          required: true,
-          error: 'error message when value not validated',
-        },
-        { choices: ['node', 'explorer'] },
-      ],
-    },
-    servers: {
-      type: 'object',
-      children: {
-        url: {
-          type: 'string',
-          validations: [
-            {
-              required: true,
-            },
-            { regex: 'node[1-9]*.mydomain.(com|net)' },
-          ],
-        },
-        port: {
-          type: 'number',
-        },
-      },
-    },
-    apis: {
-      type: 'object',
-      children: {
-        explorer: {
-          type: 'object',
-          children: {
-            url: {
-              type: 'string',
-              default: 'example.com',
-            },
-            port: {
-              type: 'bigint',
-              default: 443n,
-              validations: [{ lte: 500n }],
-            },
-          },
-        },
-      },
-    },
-  },
-  config: {
-    apiType: 'explorer',
-    servers: {
-      url: 'node256.mydomain.net',
-    },
-    apis: {
-      explorer: {
-        url: 'example.com',
-        port: 700n,
-      },
-    },
-  },
-};
+export const apiSchemaConfigPairWrongLessBigInt = structuredClone(
+  baseSchemaConfigPairComparisonBigInt
+);
+apiSchemaConfigPairWrongLessBigInt.schema.apis.children.explorer.children.port.validations.push(
+  { lt: 500n }
+);
+apiSchemaConfigPairWrongLessBigInt.config.apis.explorer.port = 900n;
+
+export const apiSchemaConfigPairWrongLessEqualBigInt = structuredClone(
+  baseSchemaConfigPairComparisonBigInt
+);
+apiSchemaConfigPairWrongLessEqualBigInt.schema.apis.children.explorer.children.port.validations.push(
+  { lte: 500n }
+);
+apiSchemaConfigPairWrongLessEqualBigInt.config.apis.explorer.port = 900n;
 
 export const apiSchemaConfigPairWrongRequiredFalseWhen = {
   schema: {
     apiType: {
       type: 'string',
-      default: 'explorer',
-      description: 'type of api to use',
-      label: 'api type',
       validations: [
         {
           required: true,
           error: 'error message when value not validated',
           when: { path: 'apis.explorer.port', value: 8000 },
         },
-        { choices: ['node', 'explorer'] },
       ],
-    },
-    servers: {
-      type: 'object',
-      children: {
-        url: {
-          type: 'string',
-          validations: [
-            {
-              required: true,
-            },
-            {
-              regex: 'node[1-9]*.mydomain.(com|net)',
-            },
-          ],
-        },
-        port: {
-          type: 'number',
-        },
-      },
     },
     apis: {
       type: 'object',
@@ -1102,14 +425,8 @@ export const apiSchemaConfigPairWrongRequiredFalseWhen = {
         explorer: {
           type: 'object',
           children: {
-            url: {
-              type: 'string',
-              default: 'node256.mydomain.net',
-            },
             port: {
               type: 'number',
-              default: 443,
-              validations: [{ gt: 500 }],
             },
           },
         },
@@ -1118,12 +435,8 @@ export const apiSchemaConfigPairWrongRequiredFalseWhen = {
   },
   config: {
     apiType: 'explorer',
-    servers: {
-      url: 'node256.mydomain.com',
-    },
     apis: {
       explorer: {
-        url: 'example.com',
         port: 501,
       },
     },
@@ -1132,19 +445,6 @@ export const apiSchemaConfigPairWrongRequiredFalseWhen = {
 
 export const apiSchemaConfigPairWrongRegexFalseWhen = {
   schema: {
-    apiType: {
-      type: 'string',
-      default: 'explorer',
-      description: 'type of api to use',
-      label: 'api type',
-      validations: [
-        {
-          required: true,
-          error: 'error message when value not validated',
-        },
-        { choices: ['node', 'explorer'] },
-      ],
-    },
     servers: {
       type: 'object',
       children: {
@@ -1152,16 +452,10 @@ export const apiSchemaConfigPairWrongRegexFalseWhen = {
           type: 'string',
           validations: [
             {
-              required: true,
-            },
-            {
               regex: 'node[1-9]*.mydomain.(com|net)',
               when: { path: 'apis.explorer.port', value: 8000 },
             },
           ],
-        },
-        port: {
-          type: 'number',
         },
       },
     },
@@ -1171,14 +465,8 @@ export const apiSchemaConfigPairWrongRegexFalseWhen = {
         explorer: {
           type: 'object',
           children: {
-            url: {
-              type: 'string',
-              default: 'example.com',
-            },
             port: {
               type: 'number',
-              default: 443,
-              validations: [{ gt: 500 }],
             },
           },
         },
@@ -1186,13 +474,11 @@ export const apiSchemaConfigPairWrongRegexFalseWhen = {
     },
   },
   config: {
-    apiType: 'explorer',
     servers: {
       url: 'node2506.mydomain.org',
     },
     apis: {
       explorer: {
-        url: 'example.com',
         port: 501,
       },
     },
@@ -1203,36 +489,12 @@ export const apiSchemaConfigPairWrongChoiceFalseWhen = {
   schema: {
     apiType: {
       type: 'string',
-      default: 'explorer',
-      description: 'type of api to use',
-      label: 'api type',
       validations: [
-        {
-          required: true,
-          error: 'error message when value not validated',
-        },
         {
           choices: ['node', 'explorer'],
           when: { path: 'apis.explorer.port', value: 5000 },
         },
       ],
-    },
-    servers: {
-      type: 'object',
-      children: {
-        url: {
-          type: 'string',
-          validations: [
-            {
-              required: true,
-            },
-            { regex: 'node[1-9]*.mydomain.(com|net)' },
-          ],
-        },
-        port: {
-          type: 'number',
-        },
-      },
     },
     apis: {
       type: 'object',
@@ -1240,14 +502,8 @@ export const apiSchemaConfigPairWrongChoiceFalseWhen = {
         explorer: {
           type: 'object',
           children: {
-            url: {
-              type: 'string',
-              default: 'example.com',
-            },
             port: {
               type: 'number',
-              default: 443,
-              validations: [{ gt: 500 }],
             },
           },
         },
@@ -1256,12 +512,8 @@ export const apiSchemaConfigPairWrongChoiceFalseWhen = {
   },
   config: {
     apiType: 'scanner',
-    servers: {
-      url: 'node256.mydomain.net',
-    },
     apis: {
       explorer: {
-        url: 'example.com',
         port: 501,
       },
     },
@@ -1272,33 +524,6 @@ export const apiSchemaConfigPairWrongBigIntGreaterFalseWhen = {
   schema: {
     apiType: {
       type: 'string',
-      default: 'explorer',
-      description: 'type of api to use',
-      label: 'api type',
-      validations: [
-        {
-          required: true,
-          error: 'error message when value not validated',
-        },
-        { choices: ['node', 'explorer'] },
-      ],
-    },
-    servers: {
-      type: 'object',
-      children: {
-        url: {
-          type: 'string',
-          validations: [
-            {
-              required: true,
-            },
-            { regex: 'node[1-9]*.mydomain.(com|net)' },
-          ],
-        },
-        port: {
-          type: 'number',
-        },
-      },
     },
     apis: {
       type: 'object',
@@ -1306,13 +531,8 @@ export const apiSchemaConfigPairWrongBigIntGreaterFalseWhen = {
         explorer: {
           type: 'object',
           children: {
-            url: {
-              type: 'string',
-              default: 'example.com',
-            },
             port: {
               type: 'bigint',
-              default: 443n,
               validations: [
                 { gt: 500n, when: { path: 'apiType', value: 'explorer' } },
               ],
@@ -1324,12 +544,8 @@ export const apiSchemaConfigPairWrongBigIntGreaterFalseWhen = {
   },
   config: {
     apiType: 'node',
-    servers: {
-      url: 'node256.mydomain.net',
-    },
     apis: {
       explorer: {
-        url: 'example.com',
         port: 443n,
       },
     },
@@ -1340,33 +556,6 @@ export const apiSchemaConfigPairWrongBigIntGreaterEqualFalseWhen = {
   schema: {
     apiType: {
       type: 'string',
-      default: 'explorer',
-      description: 'type of api to use',
-      label: 'api type',
-      validations: [
-        {
-          required: true,
-          error: 'error message when value not validated',
-        },
-        { choices: ['node', 'explorer'] },
-      ],
-    },
-    servers: {
-      type: 'object',
-      children: {
-        url: {
-          type: 'string',
-          validations: [
-            {
-              required: true,
-            },
-            { regex: 'node[1-9]*.mydomain.(com|net)' },
-          ],
-        },
-        port: {
-          type: 'number',
-        },
-      },
     },
     apis: {
       type: 'object',
@@ -1374,13 +563,8 @@ export const apiSchemaConfigPairWrongBigIntGreaterEqualFalseWhen = {
         explorer: {
           type: 'object',
           children: {
-            url: {
-              type: 'string',
-              default: 'example.com',
-            },
             port: {
               type: 'bigint',
-              default: 443n,
               validations: [
                 { gte: 500n, when: { path: 'apiType', value: 'node' } },
               ],
@@ -1392,12 +576,8 @@ export const apiSchemaConfigPairWrongBigIntGreaterEqualFalseWhen = {
   },
   config: {
     apiType: 'explorer',
-    servers: {
-      url: 'node256.mydomain.net',
-    },
     apis: {
       explorer: {
-        url: 'example.com',
         port: 443n,
       },
     },
@@ -1408,33 +588,6 @@ export const apiSchemaConfigPairWrongBigIntLessFalseWhen = {
   schema: {
     apiType: {
       type: 'string',
-      default: 'explorer',
-      description: 'type of api to use',
-      label: 'api type',
-      validations: [
-        {
-          required: true,
-          error: 'error message when value not validated',
-        },
-        { choices: ['node', 'explorer'] },
-      ],
-    },
-    servers: {
-      type: 'object',
-      children: {
-        url: {
-          type: 'string',
-          validations: [
-            {
-              required: true,
-            },
-            { regex: 'node[1-9]*.mydomain.(com|net)' },
-          ],
-        },
-        port: {
-          type: 'number',
-        },
-      },
     },
     apis: {
       type: 'object',
@@ -1442,13 +595,8 @@ export const apiSchemaConfigPairWrongBigIntLessFalseWhen = {
         explorer: {
           type: 'object',
           children: {
-            url: {
-              type: 'string',
-              default: 'example.com',
-            },
             port: {
               type: 'bigint',
-              default: 443n,
               validations: [
                 { lt: 500n, when: { path: 'apiType', value: 'node' } },
               ],
@@ -1460,12 +608,8 @@ export const apiSchemaConfigPairWrongBigIntLessFalseWhen = {
   },
   config: {
     apiType: 'explorer',
-    servers: {
-      url: 'node256.mydomain.net',
-    },
     apis: {
       explorer: {
-        url: 'example.com',
         port: 600n,
       },
     },
@@ -1476,33 +620,6 @@ export const apiSchemaConfigPairWrongBigIntLessEqualFalseWhen = {
   schema: {
     apiType: {
       type: 'string',
-      default: 'explorer',
-      description: 'type of api to use',
-      label: 'api type',
-      validations: [
-        {
-          required: true,
-          error: 'error message when value not validated',
-        },
-        { choices: ['node', 'explorer'] },
-      ],
-    },
-    servers: {
-      type: 'object',
-      children: {
-        url: {
-          type: 'string',
-          validations: [
-            {
-              required: true,
-            },
-            { regex: 'node[1-9]*.mydomain.(com|net)' },
-          ],
-        },
-        port: {
-          type: 'number',
-        },
-      },
     },
     apis: {
       type: 'object',
@@ -1510,13 +627,8 @@ export const apiSchemaConfigPairWrongBigIntLessEqualFalseWhen = {
         explorer: {
           type: 'object',
           children: {
-            url: {
-              type: 'string',
-              default: 'example.com',
-            },
             port: {
               type: 'bigint',
-              default: 443n,
               validations: [
                 { lte: 500n, when: { path: 'apiType', value: 'node' } },
               ],
@@ -1528,12 +640,8 @@ export const apiSchemaConfigPairWrongBigIntLessEqualFalseWhen = {
   },
   config: {
     apiType: 'explorer',
-    servers: {
-      url: 'node256.mydomain.net',
-    },
     apis: {
       explorer: {
-        url: 'example.com',
         port: 600n,
       },
     },
@@ -1544,33 +652,6 @@ export const apiSchemaConfigPairWrongGreaterFalseWhen = {
   schema: {
     apiType: {
       type: 'string',
-      default: 'explorer',
-      description: 'type of api to use',
-      label: 'api type',
-      validations: [
-        {
-          required: true,
-          error: 'error message when value not validated',
-        },
-        { choices: ['node', 'explorer'] },
-      ],
-    },
-    servers: {
-      type: 'object',
-      children: {
-        url: {
-          type: 'string',
-          validations: [
-            {
-              required: true,
-            },
-            { regex: 'node[1-9]*.mydomain.(com|net)' },
-          ],
-        },
-        port: {
-          type: 'number',
-        },
-      },
     },
     apis: {
       type: 'object',
@@ -1578,13 +659,8 @@ export const apiSchemaConfigPairWrongGreaterFalseWhen = {
         explorer: {
           type: 'object',
           children: {
-            url: {
-              type: 'string',
-              default: 'example.com',
-            },
             port: {
               type: 'number',
-              default: 443,
               validations: [
                 { gt: 500, when: { path: 'apiType', value: 'explorer' } },
               ],
@@ -1596,12 +672,8 @@ export const apiSchemaConfigPairWrongGreaterFalseWhen = {
   },
   config: {
     apiType: 'node',
-    servers: {
-      url: 'node256.mydomain.net',
-    },
     apis: {
       explorer: {
-        url: 'example.com',
         port: 443,
       },
     },
@@ -1612,33 +684,6 @@ export const apiSchemaConfigPairWrongGreaterEqualFalseWhen = {
   schema: {
     apiType: {
       type: 'string',
-      default: 'explorer',
-      description: 'type of api to use',
-      label: 'api type',
-      validations: [
-        {
-          required: true,
-          error: 'error message when value not validated',
-        },
-        { choices: ['node', 'explorer'] },
-      ],
-    },
-    servers: {
-      type: 'object',
-      children: {
-        url: {
-          type: 'string',
-          validations: [
-            {
-              required: true,
-            },
-            { regex: 'node[1-9]*.mydomain.(com|net)' },
-          ],
-        },
-        port: {
-          type: 'number',
-        },
-      },
     },
     apis: {
       type: 'object',
@@ -1646,13 +691,8 @@ export const apiSchemaConfigPairWrongGreaterEqualFalseWhen = {
         explorer: {
           type: 'object',
           children: {
-            url: {
-              type: 'string',
-              default: 'example.com',
-            },
             port: {
               type: 'number',
-              default: 443,
               validations: [
                 { gte: 500, when: { path: 'apiType', value: 'node' } },
               ],
@@ -1664,12 +704,8 @@ export const apiSchemaConfigPairWrongGreaterEqualFalseWhen = {
   },
   config: {
     apiType: 'explorer',
-    servers: {
-      url: 'node256.mydomain.net',
-    },
     apis: {
       explorer: {
-        url: 'example.com',
         port: 443,
       },
     },
@@ -1680,33 +716,6 @@ export const apiSchemaConfigPairWrongLessFalseWhen = {
   schema: {
     apiType: {
       type: 'string',
-      default: 'explorer',
-      description: 'type of api to use',
-      label: 'api type',
-      validations: [
-        {
-          required: true,
-          error: 'error message when value not validated',
-        },
-        { choices: ['node', 'explorer'] },
-      ],
-    },
-    servers: {
-      type: 'object',
-      children: {
-        url: {
-          type: 'string',
-          validations: [
-            {
-              required: true,
-            },
-            { regex: 'node[1-9]*.mydomain.(com|net)' },
-          ],
-        },
-        port: {
-          type: 'number',
-        },
-      },
     },
     apis: {
       type: 'object',
@@ -1714,13 +723,8 @@ export const apiSchemaConfigPairWrongLessFalseWhen = {
         explorer: {
           type: 'object',
           children: {
-            url: {
-              type: 'string',
-              default: 'example.com',
-            },
             port: {
               type: 'number',
-              default: 443,
               validations: [
                 { lt: 500, when: { path: 'apiType', value: 'node' } },
               ],
@@ -1732,12 +736,8 @@ export const apiSchemaConfigPairWrongLessFalseWhen = {
   },
   config: {
     apiType: 'explorer',
-    servers: {
-      url: 'node256.mydomain.net',
-    },
     apis: {
       explorer: {
-        url: 'example.com',
         port: 600,
       },
     },
@@ -1748,33 +748,6 @@ export const apiSchemaConfigPairWrongLessEqualFalseWhen = {
   schema: {
     apiType: {
       type: 'string',
-      default: 'explorer',
-      description: 'type of api to use',
-      label: 'api type',
-      validations: [
-        {
-          required: true,
-          error: 'error message when value not validated',
-        },
-        { choices: ['node', 'explorer'] },
-      ],
-    },
-    servers: {
-      type: 'object',
-      children: {
-        url: {
-          type: 'string',
-          validations: [
-            {
-              required: true,
-            },
-            { regex: 'node[1-9]*.mydomain.(com|net)' },
-          ],
-        },
-        port: {
-          type: 'number',
-        },
-      },
     },
     apis: {
       type: 'object',
@@ -1782,13 +755,8 @@ export const apiSchemaConfigPairWrongLessEqualFalseWhen = {
         explorer: {
           type: 'object',
           children: {
-            url: {
-              type: 'string',
-              default: 'example.com',
-            },
             port: {
               type: 'number',
-              default: 443,
               validations: [
                 { lte: 500, when: { path: 'apiType', value: 'node' } },
               ],
@@ -1800,12 +768,8 @@ export const apiSchemaConfigPairWrongLessEqualFalseWhen = {
   },
   config: {
     apiType: 'explorer',
-    servers: {
-      url: 'node256.mydomain.net',
-    },
     apis: {
       explorer: {
-        url: 'example.com',
         port: 600,
       },
     },
