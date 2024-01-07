@@ -388,6 +388,47 @@ describe('selectErgoBoxes', () => {
     expect(result.covered).toEqual(false);
     expect(result.boxes).toEqual([]);
   });
+
+  /**
+   * @target selectErgoBoxes should return all boxes as
+   * NOT covered when two boxes are tracked to same box
+   * @dependencies
+   * @scenario
+   * - mock a function to return 2 boxes
+   * - mock a Map to track both boxes to a box
+   * - mock an AssetBalance object with assets more than tracked box assets
+   * - run test
+   * - check returned value
+   * @expected
+   * - it should return single tracked box
+   */
+  it('should return all boxes as NOT covered when two boxes are tracked to same box', async () => {
+    // Mock a function to return 2 boxes
+    const nextUtxo = createMockedGeneratorFunction(boxes.slice(0, 2));
+
+    // Mock a Map to track both boxes to a box
+    const trackMap = new Map<string, ErgoBoxProxy | undefined>();
+    trackMap.set(boxes[0].boxId, boxes[2]);
+    trackMap.set(boxes[1].boxId, boxes[2]);
+
+    // Mock an AssetBalance object with assets more than tracked box assets
+    const requiredAssets: AssetBalance = {
+      nativeToken: 4000000n,
+      tokens: [],
+    };
+
+    // Run test
+    const result = await selectErgoBoxes(
+      requiredAssets,
+      [],
+      trackMap,
+      nextUtxo
+    );
+
+    // Check returned value
+    expect(result.covered).toEqual(false);
+    expect(result.boxes).toEqual([boxes[2]]);
+  });
 });
 
 describe('createChangeBox', () => {
