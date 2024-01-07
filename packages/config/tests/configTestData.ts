@@ -1,3 +1,5 @@
+import { cloneDeep } from 'lodash-es';
+
 export const apiSchemaDefaultValuePairSample = {
   schema: {
     apiType: {
@@ -317,7 +319,7 @@ export const baseSchemaConfigPairComparison = {
   },
 };
 
-export const apiSchemaConfigPairWrongGreater = structuredClone(
+export const apiSchemaConfigPairWrongGreater = cloneDeep(
   baseSchemaConfigPairComparison
 );
 apiSchemaConfigPairWrongGreater.schema.apis.children.explorer.children.port.validations.push(
@@ -325,7 +327,7 @@ apiSchemaConfigPairWrongGreater.schema.apis.children.explorer.children.port.vali
 );
 apiSchemaConfigPairWrongGreater.config.apis.explorer.port = 443;
 
-export const apiSchemaConfigPairWrongLess = structuredClone(
+export const apiSchemaConfigPairWrongLess = cloneDeep(
   baseSchemaConfigPairComparison
 );
 apiSchemaConfigPairWrongLess.schema.apis.children.explorer.children.port.validations.push(
@@ -333,7 +335,7 @@ apiSchemaConfigPairWrongLess.schema.apis.children.explorer.children.port.validat
 );
 apiSchemaConfigPairWrongLess.config.apis.explorer.port = 700;
 
-export const apiSchemaConfigPairWrongGreaterEqual = structuredClone(
+export const apiSchemaConfigPairWrongGreaterEqual = cloneDeep(
   baseSchemaConfigPairComparison
 );
 apiSchemaConfigPairWrongGreaterEqual.schema.apis.children.explorer.children.port.validations.push(
@@ -341,7 +343,7 @@ apiSchemaConfigPairWrongGreaterEqual.schema.apis.children.explorer.children.port
 );
 apiSchemaConfigPairWrongGreaterEqual.config.apis.explorer.port = 443;
 
-export const apiSchemaConfigPairWrongLessEqual = structuredClone(
+export const apiSchemaConfigPairWrongLessEqual = cloneDeep(
   baseSchemaConfigPairComparison
 );
 apiSchemaConfigPairWrongLessEqual.schema.apis.children.explorer.children.port.validations.push(
@@ -375,7 +377,7 @@ const baseSchemaConfigPairComparisonBigInt = {
   },
 };
 
-export const apiSchemaConfigPairWrongGreaterBigInt = structuredClone(
+export const apiSchemaConfigPairWrongGreaterBigInt = cloneDeep(
   baseSchemaConfigPairComparisonBigInt
 );
 apiSchemaConfigPairWrongGreaterBigInt.schema.apis.children.explorer.children.port.validations.push(
@@ -383,7 +385,7 @@ apiSchemaConfigPairWrongGreaterBigInt.schema.apis.children.explorer.children.por
 );
 apiSchemaConfigPairWrongGreaterBigInt.config.apis.explorer.port = 400n;
 
-export const apiSchemaConfigPairWrongGreaterEqualBigInt = structuredClone(
+export const apiSchemaConfigPairWrongGreaterEqualBigInt = cloneDeep(
   baseSchemaConfigPairComparisonBigInt
 );
 apiSchemaConfigPairWrongGreaterEqualBigInt.schema.apis.children.explorer.children.port.validations.push(
@@ -391,7 +393,7 @@ apiSchemaConfigPairWrongGreaterEqualBigInt.schema.apis.children.explorer.childre
 );
 apiSchemaConfigPairWrongGreaterEqualBigInt.config.apis.explorer.port = 400n;
 
-export const apiSchemaConfigPairWrongLessBigInt = structuredClone(
+export const apiSchemaConfigPairWrongLessBigInt = cloneDeep(
   baseSchemaConfigPairComparisonBigInt
 );
 apiSchemaConfigPairWrongLessBigInt.schema.apis.children.explorer.children.port.validations.push(
@@ -399,7 +401,7 @@ apiSchemaConfigPairWrongLessBigInt.schema.apis.children.explorer.children.port.v
 );
 apiSchemaConfigPairWrongLessBigInt.config.apis.explorer.port = 900n;
 
-export const apiSchemaConfigPairWrongLessEqualBigInt = structuredClone(
+export const apiSchemaConfigPairWrongLessEqualBigInt = cloneDeep(
   baseSchemaConfigPairComparisonBigInt
 );
 apiSchemaConfigPairWrongLessEqualBigInt.schema.apis.children.explorer.children.port.validations.push(
