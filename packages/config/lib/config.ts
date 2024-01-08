@@ -1,13 +1,146 @@
+import { stringify } from 'querystring';
 import {
   propertyValidators,
   supportedTypes,
 } from './schema/Validators/fieldProperties';
 import { ConfigField, ConfigSchema } from './schema/types/fields';
+import { valueValidations, valueValidators } from './value/validators';
+import { VString, When } from './schema/types/validations';
 
-export class Config {
+export class ConfigValidator {
   constructor(private schema: ConfigSchema) {
     this.validateSchema();
   }
+
+  /**
+   * validates the passed config against the instance's schema
+   *
+   * @param {Record<string, any>} config
+   */
+  public validateConfig(config: Record<string, any>) {
+    const errorPreamble = (path: Array<string>) =>
+      `config validation failed for "${path.join('.')}" field`;
+
+    const stack: Array<{
+      subSchema: ConfigSchema;
+      subConfig: Record<string, any> | undefined;
+      parentPath: Array<string>;
+    }> = [
+      {
+        subSchema: this.schema,
+        subConfig: config,
+        parentPath: [],
+      },
+    ];
+
+    this.validateValue(
+      config,
+      { type: 'object', children: this.schema },
+      config
+    );
+
+    // Traverses the schema object tree depth first in coordination with config
+    // object tree and validate config using the schema
+    while (stack.length > 0) {
+      const { subSchema, subConfig, parentPath } = stack.pop()!;
+      // Process children of current field
+      for (const name of Object.keys(subSchema)) {
+        const path = parentPath.concat([name]);
+        try {
+          const field = subSchema[name];
+          let value = undefined;
+          if (subConfig != undefined && Object.hasOwn(subConfig, name)) {
+            value = subConfig[name];
+          }
+
+          this.validateValue(value, field, config);
+
+          // if a node/field is of type object and thus is a subtree, add it to
+          // the stack to be traversed later
+          if (field.type === 'object') {
+            stack.push({
+              subSchema: field.children,
+              subConfig: value,
+              parentPath: path,
+            });
+          }
+        } catch (error: any) {
+          throw new Error(`${errorPreamble(path)}: ${error.message}`);
+        }
+      }
+    }
+  }
+
+  /**
+   * validates a value in config object
+   *
+   * @private
+   * @param {*} value
+   * @param {ConfigField} field the field specification in schema
+   * @param {Record<string, any>} config the config object
+   */
+  private validateValue = (
+    value: any,
+    field: ConfigField,
+    config: Record<string, any>
+  ) => {
+    if (value != undefined) {
+      valueValidators[field.type](value, field);
+    }
+
+    if (field.type != 'object' && field.validations) {
+      for (const validation of field.validations) {
+        const name = Object.keys(validation).filter(
+          (key) => key !== 'when' && key !== 'error'
+        )[0];
+        if (Object.hasOwn(valueValidations[field.type], name)) {
+          try {
+            valueValidations[field.type][name](value, validation, config, this);
+          } catch (error: any) {
+            if (validation.error != undefined) {
+              throw new Error(validation.error);
+            }
+            throw error;
+          }
+        }
+      }
+    }
+  };
+
+  /**
+   * determines if a when clause in validations section of a schema field is
+   * satisfied
+   *
+   * @param {When} when
+   * @param {Record<string, any>} config
+   * @return {boolean}
+   */
+  public isWhenTrue = (when: When, config: Record<string, any>): boolean => {
+    const pathParts = when.path.split('.');
+    const value = ConfigValidator.valueAt(config, pathParts);
+    return value != undefined && value === when.value;
+  };
+
+  /**
+   * returns the value at specified path in config object
+   *
+   * @static
+   * @param {Record<string, any>} config
+   * @param {string[]} path
+   * @return {*}
+   */
+  static valueAt = (config: Record<string, any>, path: string[]) => {
+    let value: any = config;
+    for (const key of path) {
+      if (value != undefined && Object.hasOwn(value, key)) {
+        value = value[key];
+      } else {
+        return undefined;
+      }
+    }
+
+    return value;
+  };
 
   /**
    * validates this.schema and throws exception if any errors found
@@ -26,8 +159,11 @@ export class Config {
       },
     ];
 
+    // Traverses the schema object tree depth first and validate fields
     while (stack.length > 0) {
       const { subSchema, parentPath } = stack.pop()!;
+
+      // process children of current object field
       for (const name of Object.keys(subSchema).reverse()) {
         const path = parentPath.concat([name]);
         try {
@@ -46,6 +182,8 @@ export class Config {
 
           this.validateSchemaField(field);
 
+          // if the child is an object field itself add it to stack for
+          // processing
           if (field.type === 'object') {
             stack.push({
               subSchema: field.children,

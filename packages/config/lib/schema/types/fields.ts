@@ -1,5 +1,7 @@
 import { VBoolean, VNumeric, VString } from './validations';
 
+export type PrimitiveValue = string | boolean | number | bigint;
+
 export type ConfigSchema = Record<string, ConfigField>;
 
 export type ConfigField = ObjectField | PrimitiveField;
@@ -9,8 +11,6 @@ export type PrimitiveField =
   | NumberField
   | BigIntField
   | BooleanField;
-
-export type PrimitiveValue = string | boolean | number | bigint;
 
 export interface ObjectField {
   type: 'object';

@@ -7,26 +7,31 @@ export type Validation =
   | VNumeric<number>
   | VNumeric<bigint>;
 
+export interface When {
+  path: string;
+  value: PrimitiveValue;
+}
+
 export interface VGeneric {
   error?: string;
-  when?: { path: string; value: PrimitiveValue };
+  when?: When;
 }
 
 // validators for all types
 export type VAll = VRequired;
 
-interface VRequired extends VGeneric {
+export interface VRequired extends VGeneric {
   required: boolean;
 }
 
 // string validators
 export type VString = VAll | VRegex | VChoices;
 
-interface VRegex extends VGeneric {
+export interface VRegex extends VGeneric {
   regex: string;
 }
 
-interface VChoices extends VGeneric {
+export interface VChoices extends VGeneric {
   choices: string[];
 }
 
