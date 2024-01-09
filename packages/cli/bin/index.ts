@@ -1,4 +1,4 @@
-#!/usr/bin/env node --experimental-specifier-resolution=node
+#!/usr/bin/env -S node --experimental-specifier-resolution=node
 
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
@@ -6,13 +6,15 @@ import chalk from 'chalk';
 import ora from 'ora';
 
 import { downloadRosenAssets } from '@rosen-bridge/utils';
+import { EdDSA } from '@rosen-bridge/tss';
+import { blake2b } from 'blakejs';
 
-const argv = yargs(hideBin(process.argv))
+yargs(hideBin(process.argv))
   .command(
     'download-assets',
     'download required Rosen assets (addresses and tokens files) from github',
-    (argv) =>
-      argv
+    (yargs) =>
+      yargs
         .option('chain-type', {
           alias: 'c',
           demandOption: true,
@@ -36,23 +38,54 @@ const argv = yargs(hideBin(process.argv))
           alias: 's',
           description: 'a suffix to be appended to all downloaded file names',
           type: 'string',
-        })
+        }),
+    async (argv) => {
+      const spinner = ora();
+      spinner.start(
+        `downloading Rosen assets for "${argv.chainType}" chain type`
+      );
+
+      await downloadRosenAssets(
+        argv.chainType,
+        argv.out,
+        argv.includePrereleases,
+        argv.suffix
+      );
+
+      spinner.succeed(
+        chalk.green(
+          `downloaded Rosen assets for "${argv.chainType}" chain type successfully`
+        )
+      );
+    }
+  )
+  .command(
+    'tss-secret-generate',
+    'generate EdDSA Tss publicKey/secret',
+    async () => {
+      const secret = await EdDSA.randomKey();
+      const eddsa = new EdDSA(secret);
+
+      console.log(`SECRET: ${secret}`);
+      console.log(`PK: ${await eddsa.getPk()}`);
+    }
+  )
+  .command(
+    'blake2b-hash [input]',
+    'blake2b hash of specified input',
+    (yargs) => {
+      return yargs.positional('input', {
+        type: 'string',
+        demandOption: 'true',
+      });
+    },
+    (argv) => {
+      console.log(
+        `HASH: ${Buffer.from(blake2b(argv.input, undefined, 32)).toString(
+          'hex'
+        )}`
+      );
+    }
   )
   .demandCommand(1)
-  .parseSync();
-
-const spinner = ora();
-spinner.start(`downloading Rosen assets for "${argv.chainType}" chain type`);
-
-await downloadRosenAssets(
-  argv.chainType,
-  argv.out,
-  argv.includePrereleases,
-  argv.suffix
-);
-
-spinner.succeed(
-  chalk.green(
-    `downloaded Rosen assets for "${argv.chainType}" chain type successfully`
-  )
-);
+  .parse();
