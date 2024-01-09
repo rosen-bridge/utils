@@ -27,8 +27,7 @@ yarn add @rosen-bridge/cli
 
 ## Usage
 
-The cli can be used through `npx`. Currently there is only one command available
-in the cli.
+The cli can be used through `npx`.
 
 ```sh
 npx @rosen-bridge/cli --help
@@ -52,10 +51,52 @@ Download assets for mainnet into a `rosen` directory.
 npx @rosen-bridge/cli download-assets --chain-type mainnet --out rosen
 ```
 
+docker solution:
+
+```shell
+docker run -it --rm -v "$PWD"/rosen:/usr/src/app/rosen -w /usr/src/app node:18.16 npx --yes @rosen-bridge/cli download-assets --chain-type mainnet --out rosen
+```
+
 Download assets for testnet into a `rosen` directory. If some pre-releases are
 available for testnet, download them. Add suffix `foo` to all downloaded asset
 names.
 
 ```sh
 npx @rosen-bridge/cli download-assets -c testnet -o rosen --include-prereleases --suffix foo
+```
+
+### `tss-secret-generate`
+
+Generate Tss publicKey/secret
+
+```sh
+npx @rosen-bridge/cli tss-secret-generate
+```
+
+docker solution:
+
+```shell
+docker run -it --rm node:18.16 npx --yes @rosen-bridge/cli tss-secret-genrate
+```
+
+### `blake2b-hash`
+
+blake2b hash of specified input
+
+```sh
+npx @rosen-bridge/cli blake2b-hash [input]
+```
+
+#### Examples
+
+Get blake2b hash from `hello`
+
+```sh
+npx @rosen-bridge/cli blake2b-hash hello
+```
+
+docker solution:
+
+```shell
+docker run -it --rm node:18.16 npx --yes @rosen-bridge/cli blake2b-hash hello
 ```
