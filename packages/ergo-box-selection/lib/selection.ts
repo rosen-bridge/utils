@@ -45,12 +45,12 @@ export const selectErgoBoxes = async (
   const uncoveredTokens = requiredAssets.tokens.filter(
     (info) => info.value > 0n
   );
+  const selectedBoxes: Array<string> = [];
 
   const isRequirementRemaining = () => {
     return uncoveredTokens.length > 0 || uncoveredNativeToken > 0n;
   };
 
-  const offset = 0;
   const result: Array<ErgoBoxProxy> = [];
 
   // get boxes until requirements are satisfied
@@ -79,7 +79,11 @@ export const selectErgoBoxes = async (
     }
 
     // if tracked to no box or forbidden box, skip it
-    if (skipBox || forbiddenBoxIds.includes(boxInfo.id)) {
+    if (
+      skipBox ||
+      forbiddenBoxIds.includes(boxInfo.id) ||
+      selectedBoxes.includes(boxInfo.id)
+    ) {
       logger.debug(`box [${boxInfo.id}] is skipped`);
       continue;
     }
@@ -106,6 +110,7 @@ export const selectErgoBoxes = async (
           ? boxInfo.assets.nativeToken
           : uncoveredNativeToken;
       result.push(trackedBox!);
+      selectedBoxes.push(boxInfo.id);
       logger.debug(`box [${boxInfo.id}] is selected`);
     } else logger.debug(`box [${boxInfo.id}] is ignored`);
   }

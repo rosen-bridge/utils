@@ -379,4 +379,45 @@ describe('selectCardanoUtxos', () => {
     expect(result.covered).toEqual(false);
     expect(result.boxes).toEqual([]);
   });
+
+  /**
+   * @target selectCardanoUtxos should return all boxes as
+   * NOT covered when two boxes are tracked to same box
+   * @dependencies
+   * @scenario
+   * - mock a function to return 2 boxes
+   * - mock a Map to track both boxes to a box
+   * - mock an AssetBalance object with assets more than tracked box assets
+   * - run test
+   * - check returned value
+   * @expected
+   * - it should return single tracked box
+   */
+  it('should return all boxes as NOT covered when two boxes are tracked to same box', async () => {
+    // Mock a function to return 2 boxes
+    const nextUtxo = createMockedGeneratorFunction(utxos.slice(0, 2));
+
+    // Mock a Map to track both boxes to a box
+    const trackMap = new Map<string, CardanoUtxo | undefined>();
+    trackMap.set(`${utxos[0].txId}.${utxos[0].index}`, utxos[2]);
+    trackMap.set(`${utxos[1].txId}.${utxos[1].index}`, utxos[2]);
+
+    // Mock an AssetBalance object with assets more than tracked box assets
+    const requiredAssets: AssetBalance = {
+      nativeToken: 4000000n,
+      tokens: [],
+    };
+
+    // Run test
+    const result = await selectCardanoUtxos(
+      requiredAssets,
+      [],
+      trackMap,
+      nextUtxo
+    );
+
+    // Check returned value
+    expect(result.covered).toEqual(false);
+    expect(result.boxes).toEqual([utxos[2]]);
+  });
 });

@@ -39,6 +39,7 @@ export const selectCardanoUtxos = async (
   const uncoveredTokens = requiredAssets.tokens.filter(
     (info) => info.value > 0n
   );
+  const selectedUtxos: Array<string> = [];
 
   const isRequirementRemaining = () => {
     return uncoveredTokens.length > 0 || uncoveredNativeToken > 0n;
@@ -73,7 +74,11 @@ export const selectCardanoUtxos = async (
     }
 
     // if tracked to no box or forbidden box, skip it
-    if (skipBox || forbiddenBoxIds.includes(boxInfo.id)) {
+    if (
+      skipBox ||
+      forbiddenBoxIds.includes(boxInfo.id) ||
+      selectedUtxos.includes(boxInfo.id)
+    ) {
       logger.debug(`box [${boxInfo.id}] is skipped`);
       continue;
     }
@@ -100,6 +105,7 @@ export const selectCardanoUtxos = async (
           ? boxInfo.assets.nativeToken
           : uncoveredNativeToken;
       result.push(trackedBox!);
+      selectedUtxos.push(boxInfo.id);
       logger.debug(`box [${boxInfo.id}] is selected`);
     } else logger.debug(`box [${boxInfo.id}] is ignored`);
 
