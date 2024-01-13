@@ -1,11 +1,10 @@
-import { stringify } from 'querystring';
 import {
   propertyValidators,
   supportedTypes,
 } from './schema/Validators/fieldProperties';
 import { ConfigField, ConfigSchema } from './schema/types/fields';
+import { When } from './schema/types/validations';
 import { valueValidations, valueValidators } from './value/validators';
-import { VString, When } from './schema/types/validations';
 
 export class ConfigValidator {
   constructor(private schema: ConfigSchema) {
@@ -322,5 +321,101 @@ export class ConfigValidator {
     }
 
     return valueTree;
+  };
+
+  /**
+   * generates compatible TypeScript interface for this instance's schema
+   *
+   * @param {string} name the name of root type
+   * @return {string}
+   */
+  generateTSTypes = (name: string): string => {
+    const errorPreamble = (path: Array<string>) =>
+      `TypeScript type generation failed for "${path.join('.')}" field`;
+
+    const types: Array<string> = [];
+
+    const typeNames: Map<string, bigint> = new Map<string, bigint>();
+    typeNames.set(name, 1n);
+
+    const stack: Array<{
+      subSchema: ConfigSchema;
+      children: string[];
+      parentPath: Array<string>;
+      typeName: string;
+      attributes: Array<[string, string]>;
+    }> = [
+      {
+        subSchema: this.schema,
+        children: Object.keys(this.schema),
+        parentPath: [],
+        typeName: name,
+        attributes: [],
+      },
+    ];
+
+    // Traverses the schema object tree depth first
+    while (stack.length > 0) {
+      const { subSchema, children, parentPath, typeName, attributes } =
+        stack.at(-1)!;
+      const path = parentPath.concat([name]);
+      try {
+        // if a subtree's processing is finished go to the previous level
+        if (children.length == 0) {
+          types.push(this.genTSInterface(typeName, attributes));
+          stack.pop();
+          continue;
+        }
+
+        const childName = children.pop()!;
+        const field = subSchema[childName];
+
+        // if a node/field is of type object and thus is a subtree, add it to
+        // the stack to be traversed later. Otherwise it's a leaf and needs no
+        // traversal.
+        if (field.type === 'object') {
+          let childTypeName = `${childName[0].toUpperCase()}${childName.substring(
+            1
+          )}`;
+          const typeNameCount = typeNames.get(childTypeName);
+          typeNames.set(childTypeName, (typeNames.get(childName) || 0n) + 1n);
+          if (typeNameCount) {
+            childTypeName += typeNameCount.toString();
+          }
+
+          stack.push({
+            subSchema: field.children,
+            children: Object.keys(field.children).reverse(),
+            parentPath: path,
+            typeName: childTypeName,
+            attributes: [],
+          });
+
+          attributes.push([childName, childTypeName]);
+        } else {
+          attributes.push([childName, field.type]);
+        }
+      } catch (error: any) {
+        throw new Error(`${errorPreamble(path)}: ${error.message}`);
+      }
+    }
+
+    return types.reverse().join('\n\n');
+  };
+
+  /**
+   * generates a TypeScript interface definition for passed name and attributes
+   *
+   * @param {string} name
+   * @param {Array<[string, string]>} attributes
+   * @return {string}
+   */
+  private genTSInterface = (
+    name: string,
+    attributes: Array<[string, string]>
+  ): string => {
+    return `interface ${name} {
+  ${attributes.map((attr) => `${attr[0]}: ${attr[1]};`).join('\n  ')}
+}`;
   };
 }
