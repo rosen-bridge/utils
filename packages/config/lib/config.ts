@@ -400,7 +400,7 @@ export class ConfigValidator {
       }
     }
 
-    return types.reverse().join('\n\n');
+    return types.reverse().join('\n\n') + '\n';
   };
 
   /**
