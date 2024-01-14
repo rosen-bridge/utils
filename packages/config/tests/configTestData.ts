@@ -846,5 +846,6 @@ interface Apis {
 interface Explorer {
   url: string;
   port: number;
-}`,
+}
+`,
 };
