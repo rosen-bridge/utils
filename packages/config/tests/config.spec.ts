@@ -688,4 +688,24 @@ describe('ConfigValidator', () => {
       expect(value).toEqual(undefined);
     });
   });
+
+  describe('generateTSTypes', () => {
+    /**
+     * @target generateTSTypes should return TypeScript interfaces for
+     * this.schema
+     * @dependencies
+     * @scenario
+     * - call generateTSTypes
+     * - check if correct types string is returned
+     * @expected
+     * - correct types string should be returned
+     */
+    it(`should return TypeScript interfaces for this.schema`, async () => {
+      const confValidator = new ConfigValidator(
+        <ConfigSchema>testData.schemaTypeScriptTypesPair.schema
+      );
+      const types = confValidator.generateTSTypes('Infrastructure');
+      expect(types).toEqual(testData.schemaTypeScriptTypesPair.types);
+    });
+  });
 });

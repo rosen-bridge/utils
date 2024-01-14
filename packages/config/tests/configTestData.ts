@@ -777,3 +777,75 @@ export const apiSchemaConfigPairWrongLessEqualFalseWhen = {
     },
   },
 };
+
+export const schemaTypeScriptTypesPair = {
+  schema: {
+    apiType: {
+      type: 'string',
+    },
+    explorer: {
+      type: 'object',
+      children: {
+        domain: {
+          type: 'string',
+        },
+        path: {
+          type: 'string',
+        },
+      },
+    },
+    server: {
+      type: 'object',
+      children: {
+        url: {
+          type: 'string',
+        },
+        port: {
+          type: 'number',
+        },
+      },
+    },
+    apis: {
+      type: 'object',
+      children: {
+        explorer: {
+          type: 'object',
+          children: {
+            url: {
+              type: 'string',
+            },
+            port: {
+              type: 'number',
+            },
+          },
+        },
+      },
+    },
+  },
+  types: `interface Infrastructure {
+  apis: Apis;
+  server: Server;
+  explorer: Explorer1;
+  apiType: string;
+}
+
+interface Explorer1 {
+  domain: string;
+  path: string;
+}
+
+interface Server {
+  url: string;
+  port: number;
+}
+
+interface Apis {
+  explorer: Explorer;
+}
+
+interface Explorer {
+  url: string;
+  port: number;
+}
+`,
+};
