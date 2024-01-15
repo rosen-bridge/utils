@@ -37,7 +37,7 @@ yargs(hideBin(process.argv))
           demandOption: true,
           description: 'generated default values output path',
           choices: ['json', 'yaml'],
-          default: 'json',
+          default: 'yaml',
           type: 'string',
         }),
     async (argv) => {
