@@ -21,16 +21,19 @@ yargs(hideBin(process.argv))
     (yargs) =>
       yargs
         .option('schema', {
+          alias: 's',
           demandOption: true,
           description: 'input schema file path which should be in json format',
           type: 'string',
         })
         .option('output', {
+          alias: 'o',
           demandOption: true,
           description: 'generated default values output path',
           type: 'string',
         })
         .option('format', {
+          alias: 'f',
           demandOption: true,
           description: 'generated default values output path',
           choices: ['json', 'yaml'],
@@ -72,17 +75,19 @@ yargs(hideBin(process.argv))
     (yargs) =>
       yargs
         .option('schema', {
+          alias: 's',
           demandOption: true,
           description: 'input schema file path which should be in json format',
           type: 'string',
         })
         .option('output', {
+          alias: 'o',
           demandOption: true,
           description: 'generated TypeScript interfaces',
           type: 'string',
         })
-        .option('rootType', {
-          alias: 'root-type',
+        .option('root-type', {
+          alias: 'r',
           demandOption: true,
           description: 'Name of top root interface',
           type: 'string',
