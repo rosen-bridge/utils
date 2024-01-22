@@ -849,3 +849,93 @@ interface Explorer {
 }
 `,
 };
+
+export const schemaConfigCharPair = {
+  schema: {
+    apiType: {
+      type: 'string',
+      default: 'explorer',
+      description: 'type of api to use',
+      label: 'api type',
+      validations: [
+        {
+          required: true,
+          error: 'error message when value not validated',
+        },
+        { choices: ['node', 'explorer'] },
+      ],
+    },
+    servers: {
+      type: 'object',
+      children: {
+        url: {
+          type: 'string',
+        },
+        port: {
+          type: 'number',
+        },
+      },
+    },
+    apis: {
+      type: 'object',
+      children: {
+        explorer: {
+          type: 'object',
+          children: {
+            url: {
+              type: 'string',
+              default: 'example.com',
+            },
+            port: {
+              type: 'number',
+              default: 443,
+            },
+          },
+        },
+      },
+    },
+  },
+  characteristic: {
+    apiType: {
+      default: 'explorer',
+      label: 'api type',
+      description: 'type of api to use',
+      value: 'explorer',
+      level: 'lower',
+    },
+    servers: {
+      url: {
+        default: null,
+        label: null,
+        description: null,
+        value: 'example.org',
+        level: 'higher',
+      },
+      port: {
+        default: null,
+        label: null,
+        description: null,
+        value: '777',
+        level: 'higher',
+      },
+    },
+    apis: {
+      explorer: {
+        url: {
+          default: 'example.com',
+          label: null,
+          description: null,
+          value: 'example.com',
+          level: 'lower',
+        },
+        port: {
+          default: 443,
+          label: null,
+          description: null,
+          value: 443,
+          level: 'lower',
+        },
+      },
+    },
+  },
+};

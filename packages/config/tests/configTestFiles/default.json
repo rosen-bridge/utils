@@ -1,0 +1,9 @@
+{
+  "apiType": "explorer",
+  "apis": {
+    "explorer": {
+      "url": "example.com",
+      "port": 443
+    }
+  }
+}

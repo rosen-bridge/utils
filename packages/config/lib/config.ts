@@ -1,9 +1,11 @@
+import { IConfig } from 'config';
 import {
   propertyValidators,
   supportedTypes,
 } from './schema/Validators/fieldProperties';
 import { ConfigField, ConfigSchema } from './schema/types/fields';
 import { When } from './schema/types/validations';
+import { getSourceName, getValue } from './utils';
 import { valueValidations, valueValidators } from './value/validators';
 
 export class ConfigValidator {
@@ -417,5 +419,183 @@ export class ConfigValidator {
     return `interface ${name} {
   ${attributes.map((attr) => `${attr[0]}: ${attr[1]};`).join('\n  ')}
 }`;
+  };
+
+  /**
+   * returns a characteristic object for values at a specific node config level
+   *
+   * @param {IConfig} config
+   * @param {string} level
+   * @return {Record<string, any>}
+   */
+  getConfigForLevel(config: IConfig, level: string): Record<string, any> {
+    const confOrder = ConfigValidator.getNodeConfigOrder(config);
+    const levelIndex = confOrder.indexOf(level);
+    if (levelIndex === -1) {
+      throw new Error(
+        `The "${level}" level not found in the current configuration levels`
+      );
+    }
+    const higherLevels = config.util
+      .getConfigSources()
+      .filter(
+        (source) => confOrder.indexOf(getSourceName(source)) > levelIndex
+      );
+    const currentLevel = config.util
+      .getConfigSources()
+      .filter((source) => getSourceName(source) === level)
+      .at(0);
+
+    const valueTree: Record<string, any> = Object.create(null);
+
+    const stack: {
+      schema: ConfigSchema;
+      parentValue: Record<string, any> | undefined;
+      parentPath: string[];
+      name: string;
+      children: string[];
+    }[] = [
+      {
+        schema: this.schema,
+        parentValue: undefined,
+        parentPath: [],
+        name: '',
+        children: Object.keys(this.schema).reverse(),
+      },
+    ];
+
+    // Traverses the schema object tree depth first
+    while (stack.length > 0) {
+      const { schema, parentValue, parentPath, name, children } = stack.at(-1)!;
+
+      // if a subtree's processing is finished go to the previous level
+      if (children.length === 0) {
+        // if a subtree is empty (has no values) remove it from the result
+        if (
+          parentValue != undefined &&
+          Object.keys(parentValue[name]).length === 0
+        ) {
+          delete parentValue[name];
+        }
+        stack.pop();
+        continue;
+      }
+
+      const childName = children.pop()!;
+      const childPath = parentPath.concat([childName]);
+      const value = parentValue != undefined ? parentValue[name] : valueTree;
+      const field = schema[childName];
+      // if a field is of type object and thus is a subtree, add it to the stack
+      // to be traversed later. Otherwise it's a leaf and needs no traversal.
+      value[childName] = Object.create(null);
+      if (field.type === 'object') {
+        stack.push({
+          schema: field.children,
+          parentValue: value,
+          parentPath: childPath,
+          name: childName,
+          children: Object.keys(field.children).reverse(),
+        });
+      } else {
+        value[childName]['default'] =
+          field.default != undefined ? field.default : null;
+        value[childName]['label'] =
+          field.label != undefined ? field.label : null;
+        value[childName]['description'] =
+          field.description != undefined ? field.description : null;
+
+        value[childName]['value'] = config.has(childPath.join('.'))
+          ? config.get(childPath.join('.'))
+          : null;
+
+        if (!config.has(childPath.join('.'))) {
+          value[childName]['level'] = 'undefined';
+        } else if (
+          higherLevels.some((l) => {
+            if (getSourceName(l) === 'custom-environment-variables') {
+              const { value: envVar, defined } = getValue(l.parsed, childPath);
+              if (defined) {
+                const value = process.env[envVar];
+                return value != undefined;
+              }
+            } else {
+              return getValue(l.parsed, childPath).defined;
+            }
+            return false;
+          })
+        ) {
+          value[childName]['level'] = 'higher';
+        } else if (
+          currentLevel &&
+          getValue(currentLevel.parsed, childPath).defined
+        ) {
+          value[childName]['level'] = 'current';
+        } else {
+          value[childName]['level'] = 'lower';
+        }
+      }
+    }
+
+    return valueTree;
+  }
+
+  /**
+   * returns a list of config sources used by node config package, ordered from
+   * the lowest to the highest priority
+   *
+   * @static
+   * @param {IConfig} config
+   * @return  {string[]}
+   */
+  private static getNodeConfigOrder = (config: IConfig): string[] => {
+    const instance = config.util.getEnv('NODE_APP_INSTANCE');
+    let deployment = config.util.getEnv('NODE_ENV');
+    deployment = config.util.getEnv('NODE_CONFIG_ENV');
+    const fullHostname = config.util.getEnv('HOSTNAME');
+    const shortHostname =
+      fullHostname != undefined ? fullHostname.split('.')[0] : undefined;
+
+    const configOrder = [
+      'default',
+      ...(instance != undefined ? [`default-${instance}`] : []),
+      ...(deployment != undefined ? [`${deployment}`] : []),
+      ...(instance != undefined && deployment != undefined
+        ? [`${deployment}-${instance}`]
+        : []),
+      ...(shortHostname != undefined ? [`${shortHostname}`] : []),
+      ...(shortHostname != undefined && instance != undefined
+        ? [`${shortHostname}-${instance}`]
+        : []),
+      ...(shortHostname != undefined && deployment != undefined
+        ? [`${shortHostname}-${deployment}`]
+        : []),
+      ...(shortHostname != undefined &&
+      deployment != undefined &&
+      instance != undefined
+        ? [`${shortHostname}-${deployment}-${instance}`]
+        : []),
+      ...(fullHostname != undefined ? [`${fullHostname}`] : []),
+      ...(fullHostname != undefined && instance != undefined
+        ? [`${fullHostname}-${instance}`]
+        : []),
+      ...(fullHostname != undefined && deployment != undefined
+        ? [`${fullHostname}-${deployment}`]
+        : []),
+      ...(fullHostname != undefined &&
+      deployment != undefined &&
+      instance != undefined
+        ? [`${fullHostname}-${deployment}-${instance}`]
+        : []),
+      `local`,
+      ...(instance != undefined ? [`local-${instance}`] : []),
+      ...(deployment != undefined ? [`local-${deployment}`] : []),
+      ...(deployment != undefined && instance != undefined
+        ? [`local-${deployment}-${instance}`]
+        : []),
+      '$NODE_CONFIG',
+      'custom-environment-variables',
+    ];
+
+    return configOrder;
   };
 }

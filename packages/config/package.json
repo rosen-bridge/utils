@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/config",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "a package to manage configs of rosen bridge projects",
   "repository": "git+https://github.com/rosen-bridge/utils.git",
   "license": "GPL-3.0",
@@ -19,6 +19,7 @@
     "type-check": "tsc --noEmit"
   },
   "devDependencies": {
+    "@types/config": "^3.3.3",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^18.11.18",
     "@typescript-eslint/eslint-plugin": "^6.7.0",
@@ -36,6 +37,7 @@
   },
   "dependencies": {
     "chalk": "^5.3.0",
+    "config": "^3.3.10",
     "js-yaml": "^4.1.0",
     "json-bigint": "^1.0.0",
     "ora": "^8.0.1",
