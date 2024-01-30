@@ -36,3 +36,33 @@ export const getSourceName = (source: IConfigSource): string => {
     ? source.name
     : path.parse(source.name).name;
 };
+
+/**
+ * returns a config key from the highest level source in an array of sources
+ *
+ * @param {IConfigSource[]} sources
+ * @param {string[]} path
+ * @return {*}
+ */
+export const getValueFromConfigSources = (
+  sources: IConfigSource[],
+  path: string[]
+) => {
+  for (let i = sources.length - 1; i >= 0; i--) {
+    const source = sources[i];
+    if (getSourceName(source) === 'custom-environment-variables') {
+      const { value: envVar, defined } = getValue(source.parsed, path);
+      if (defined) {
+        if (process.env[envVar] != undefined) {
+          return process.env[envVar];
+        }
+      }
+    } else {
+      const { value, defined } = getValue(source.parsed, path);
+      if (defined) {
+        return value;
+      }
+    }
+  }
+  return null;
+};

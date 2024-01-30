@@ -5,7 +5,7 @@ import {
 } from './schema/Validators/fieldProperties';
 import { ConfigField, ConfigSchema } from './schema/types/fields';
 import { When } from './schema/types/validations';
-import { getSourceName, getValue } from './utils';
+import { getSourceName, getValue, getValueFromConfigSources } from './utils';
 import { valueValidations, valueValidators } from './value/validators';
 
 export class ConfigValidator {
@@ -429,22 +429,27 @@ export class ConfigValidator {
    * @return {Record<string, any>}
    */
   getConfigForLevel(config: IConfig, level: string): Record<string, any> {
-    const confOrder = ConfigValidator.getNodeConfigOrder(config);
-    const levelIndex = confOrder.indexOf(level);
+    const confLevels = ConfigValidator.getNodeConfigLevels(config);
+    const levelIndex = confLevels.indexOf(level);
     if (levelIndex === -1) {
       throw new Error(
-        `The "${level}" level not found in the current configuration levels`
+        `The "${level}" level not found in the current system configuration levels`
       );
     }
-    const higherLevels = config.util
+    const higherLevelSources = config.util
       .getConfigSources()
       .filter(
-        (source) => confOrder.indexOf(getSourceName(source)) > levelIndex
+        (source) => confLevels.indexOf(getSourceName(source)) > levelIndex
       );
-    const currentLevel = config.util
+    const currentLevelSource = config.util
       .getConfigSources()
       .filter((source) => getSourceName(source) === level)
       .at(0);
+    const lowerLevelSources = config.util
+      .getConfigSources()
+      .filter(
+        (source) => confLevels.indexOf(getSourceName(source)) < levelIndex
+      );
 
     const valueTree: Record<string, any> = Object.create(null);
 
@@ -497,42 +502,22 @@ export class ConfigValidator {
           children: Object.keys(field.children).reverse(),
         });
       } else {
-        value[childName]['default'] =
-          field.default != undefined ? field.default : null;
         value[childName]['label'] =
           field.label != undefined ? field.label : null;
         value[childName]['description'] =
           field.description != undefined ? field.description : null;
-
-        value[childName]['value'] = config.has(childPath.join('.'))
-          ? config.get(childPath.join('.'))
-          : null;
-
-        if (!config.has(childPath.join('.'))) {
-          value[childName]['level'] = 'undefined';
-        } else if (
-          higherLevels.some((l) => {
-            if (getSourceName(l) === 'custom-environment-variables') {
-              const { value: envVar, defined } = getValue(l.parsed, childPath);
-              if (defined) {
-                const value = process.env[envVar];
-                return value != undefined;
-              }
-            } else {
-              return getValue(l.parsed, childPath).defined;
-            }
-            return false;
-          })
-        ) {
-          value[childName]['level'] = 'higher';
-        } else if (
-          currentLevel &&
-          getValue(currentLevel.parsed, childPath).defined
-        ) {
-          value[childName]['level'] = 'current';
-        } else {
-          value[childName]['level'] = 'lower';
-        }
+        value[childName]['default'] = getValueFromConfigSources(
+          lowerLevelSources,
+          childPath
+        );
+        value[childName]['value'] = getValueFromConfigSources(
+          [...(currentLevelSource != undefined ? [currentLevelSource] : [])],
+          childPath
+        );
+        value[childName]['override'] = getValueFromConfigSources(
+          higherLevelSources,
+          childPath
+        );
       }
     }
 
@@ -547,7 +532,7 @@ export class ConfigValidator {
    * @param {IConfig} config
    * @return  {string[]}
    */
-  private static getNodeConfigOrder = (config: IConfig): string[] => {
+  private static getNodeConfigLevels = (config: IConfig): string[] => {
     const instance = config.util.getEnv('NODE_APP_INSTANCE');
     let deployment = config.util.getEnv('NODE_ENV');
     deployment = config.util.getEnv('NODE_CONFIG_ENV');
@@ -555,7 +540,7 @@ export class ConfigValidator {
     const shortHostname =
       fullHostname != undefined ? fullHostname.split('.')[0] : undefined;
 
-    const configOrder = [
+    const configLevels = [
       'default',
       ...(instance != undefined ? [`default-${instance}`] : []),
       ...(deployment != undefined ? [`${deployment}`] : []),
@@ -596,6 +581,6 @@ export class ConfigValidator {
       'custom-environment-variables',
     ];
 
-    return configOrder;
+    return configLevels;
   };
 }
