@@ -131,7 +131,7 @@ describe('TxPot', () => {
      * - run test
      * - check returned value
      * @expected
-     * - should return 2 filtered txs
+     * - should return true
      */
     it('should return true when no validator function is set', async () => {
       const res = await txPot.callValidateTx(testData.tx1);
@@ -146,7 +146,7 @@ describe('TxPot', () => {
      * - run test
      * - check returned value
      * @expected
-     * - should return 2 filtered txs
+     * - should return true
      */
     it('should return true when tx is valid', async () => {
       const mockedValidator = async (tx: TransactionEntity) => true;
@@ -170,8 +170,10 @@ describe('TxPot', () => {
      * - mock TxPot.setTransactionAsInvalid
      * - run test
      * - check returned value
+     * - check if function got called
      * @expected
-     * - should return 2 filtered txs
+     * - should return false
+     * - `setTransactionAsInvalid` should got called
      */
     it('should return false and set tx as invalid', async () => {
       await txRepository.insert(testData.tx1);
@@ -735,7 +737,7 @@ describe('TxPot', () => {
      * - run test
      * - check returned value
      * @expected
-     * - should return 2 filtered txs
+     * - should return the valid tx
      */
     it('should only return valid txs when validate key is passed', async () => {
       // insert 2 txs with same status
