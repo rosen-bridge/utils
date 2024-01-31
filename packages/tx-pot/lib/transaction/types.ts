@@ -35,14 +35,8 @@ export interface TxOptions {
   chain?: string;
   txType?: string;
   status?: FieldOption<TransactionStatus>;
-  // requiredSign: number,
-  // lastCheck: number,
-  // lastStatusUpdate: string,
   failedInSign?: boolean;
-  // signFailedCount: number,
-  // serializedTx: string,
   extra?: FieldValue<string>;
-  // extra2: string,
 }
 
 export class UnregisteredChain extends Error {
