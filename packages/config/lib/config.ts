@@ -5,7 +5,7 @@ import {
 } from './schema/Validators/fieldProperties';
 import { ConfigField, ConfigSchema } from './schema/types/fields';
 import { When } from './schema/types/validations';
-import { getSourceName, getValue, getValueFromConfigSources } from './utils';
+import { getSourceName, getValueFromConfigSources } from './utils';
 import { valueValidations, valueValidators } from './value/validators';
 
 export class ConfigValidator {
