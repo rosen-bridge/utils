@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/extended-typeorm",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "An extended typeorm datasource with run some queries better",
   "main": "dist/lib/index.js",
   "types": "dist/lib/index.d.ts",
