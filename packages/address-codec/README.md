@@ -1,4 +1,4 @@
-# @rosen-bridge/address-encoding
+# @rosen-bridge/address-codec
 
 ## Table of contents
 
@@ -14,11 +14,11 @@ A Typescript package for encoding and decoding of addresses in Rosen bridge supp
 npm:
 
 ```sh
-npm i @rosen-bridge/address-encoding
+npm i @rosen-bridge/address-codec
 ```
 
 yarn:
 
 ```sh
-yarn add @rosen-bridge/address-encoding
+yarn add @rosen-bridge/address-codec
 ```

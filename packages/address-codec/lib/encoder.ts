@@ -1,5 +1,5 @@
 import { BITCOIN_CHAIN, CARDANO_CHAIN, ERGO_CHAIN } from './const';
-import { UnsupportedAddress, UnsupportedChain } from './types';
+import { UnsupportedAddressError, UnsupportedChainError } from './types';
 import * as ergoLib from 'ergo-lib-wasm-nodejs';
 import * as cardanoLib from '@emurgo/cardano-serialization-lib-nodejs';
 import * as bitcoinLib from 'bitcoinjs-lib';
@@ -10,7 +10,7 @@ import * as bitcoinLib from 'bitcoinjs-lib';
  * @param chain
  * @param address
  */
-export const addressEncoder = (chain: string, address: string): string => {
+export const encodeAddress = (chain: string, address: string): string => {
   let encoded: string;
   switch (chain) {
     case ERGO_CHAIN:
@@ -29,8 +29,9 @@ export const addressEncoder = (chain: string, address: string): string => {
       ).toString('hex');
       break;
     default:
-      throw new UnsupportedChain(chain);
+      throw new UnsupportedChainError(chain);
   }
-  if (encoded.length > 57 * 2) throw new UnsupportedAddress(chain, address);
+  if (encoded.length > 57 * 2)
+    throw new UnsupportedAddressError(chain, address);
   return encoded;
 };

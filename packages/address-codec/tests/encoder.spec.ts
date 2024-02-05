@@ -1,10 +1,14 @@
 import * as testData from './testData';
-import { UnsupportedAddress, UnsupportedChain, addressEncoder } from '../lib';
+import {
+  UnsupportedAddressError,
+  UnsupportedChainError,
+  encodeAddress,
+} from '../lib';
 import { BITCOIN_CHAIN, CARDANO_CHAIN, ERGO_CHAIN } from '../lib/const';
 
-describe('addressEncoder', () => {
+describe('encodeAddress', () => {
   /**
-   * @target `addressEncoder` should encode Ergo address successfully
+   * @target `encodeAddress` should encode Ergo address successfully
    * @dependencies
    * @scenario
    * - run test
@@ -13,12 +17,12 @@ describe('addressEncoder', () => {
    * - it should be public key of given address in hex
    */
   it('should encode Ergo address successfully', () => {
-    const res = addressEncoder(ERGO_CHAIN, testData.ergoAddress);
+    const res = encodeAddress(ERGO_CHAIN, testData.ergoAddress);
     expect(res).toEqual(testData.encodedErgoAddress);
   });
 
   /**
-   * @target `addressEncoder` should encode Cardano address successfully
+   * @target `encodeAddress` should encode Cardano address successfully
    * @dependencies
    * @scenario
    * - run test
@@ -27,12 +31,12 @@ describe('addressEncoder', () => {
    * - it should be public key of given address in hex
    */
   it('should encode Cardano address successfully', () => {
-    const res = addressEncoder(CARDANO_CHAIN, testData.cardanoAddress);
+    const res = encodeAddress(CARDANO_CHAIN, testData.cardanoAddress);
     expect(res).toEqual(testData.encodedCardanoAddress);
   });
 
   /**
-   * @target `addressEncoder` should encode Bitcoin address successfully
+   * @target `encodeAddress` should encode Bitcoin address successfully
    * @dependencies
    * @scenario
    * - run test
@@ -41,12 +45,12 @@ describe('addressEncoder', () => {
    * - it should be output script of given address in hex
    */
   it('should encode Bitcoin address successfully', () => {
-    const res = addressEncoder(BITCOIN_CHAIN, testData.bitcoinAddress);
+    const res = encodeAddress(BITCOIN_CHAIN, testData.bitcoinAddress);
     expect(res).toEqual(testData.encodedBitcoinAddress);
   });
 
   /**
-   * @target `addressEncoder` should throw error when encoded address is more than 57 bytes
+   * @target `encodeAddress` should throw error when encoded address is more than 57 bytes
    * @dependencies
    * @scenario
    * - run test & check thrown exception
@@ -55,12 +59,12 @@ describe('addressEncoder', () => {
    */
   it('should throw error when encoded address is more than 57 bytes', () => {
     expect(() => {
-      addressEncoder(ERGO_CHAIN, testData.longErgoAddress);
-    }).toThrow(UnsupportedAddress);
+      encodeAddress(ERGO_CHAIN, testData.longErgoAddress);
+    }).toThrow(UnsupportedAddressError);
   });
 
   /**
-   * @target `addressEncoder` should throw error when chain is not supported
+   * @target `encodeAddress` should throw error when chain is not supported
    * @dependencies
    * @scenario
    * - run test & check thrown exception
@@ -69,7 +73,7 @@ describe('addressEncoder', () => {
    */
   it('should throw error when chain is not supported', () => {
     expect(() => {
-      addressEncoder('unsupported-chain', 'address');
-    }).toThrow(UnsupportedChain);
+      encodeAddress('unsupported-chain', 'address');
+    }).toThrow(UnsupportedChainError);
   });
 });
