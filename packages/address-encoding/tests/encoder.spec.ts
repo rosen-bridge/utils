@@ -1,5 +1,5 @@
 import * as testData from './testData';
-import { addressEncoder } from '../lib';
+import { UnsupportedAddress, UnsupportedChain, addressEncoder } from '../lib';
 import { BITCOIN_CHAIN, CARDANO_CHAIN, ERGO_CHAIN } from '../lib/const';
 
 describe('addressEncoder', () => {
@@ -43,5 +43,33 @@ describe('addressEncoder', () => {
   it('should encode Bitcoin address successfully', () => {
     const res = addressEncoder(BITCOIN_CHAIN, testData.bitcoinAddress);
     expect(res).toEqual(testData.encodedBitcoinAddress);
+  });
+
+  /**
+   * @target `addressEncoder` should throw error when encoded address is more than 57 bytes
+   * @dependencies
+   * @scenario
+   * - run test & check thrown exception
+   * @expected
+   * - it should throw UnsupportedAddress error
+   */
+  it('should throw error when encoded address is more than 57 bytes', () => {
+    expect(() => {
+      addressEncoder(ERGO_CHAIN, testData.longErgoAddress);
+    }).toThrow(UnsupportedAddress);
+  });
+
+  /**
+   * @target `addressEncoder` should throw error when chain is not supported
+   * @dependencies
+   * @scenario
+   * - run test & check thrown exception
+   * @expected
+   * - it should throw UnsupportedChain error
+   */
+  it('should throw error when chain is not supported', () => {
+    expect(() => {
+      addressEncoder('unsupported-chain', 'address');
+    }).toThrow(UnsupportedChain);
   });
 });

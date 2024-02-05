@@ -10,28 +10,26 @@ import * as bitcoinLib from 'bitcoinjs-lib';
  * @param chain
  * @param encodedAddress
  */
-export const addressDecoder = (chain: string, encodedAddress: string) => {
+export const addressDecoder = (
+  chain: string,
+  encodedAddress: string
+): string => {
   if (encodedAddress.length > 57 * 2)
     throw new UnsupportedAddress(chain, encodedAddress);
-  let address: string;
   switch (chain) {
     case ERGO_CHAIN:
-      address = ergoLib.Address.from_public_key(
+      return ergoLib.Address.from_public_key(
         Buffer.from(encodedAddress, 'hex')
       ).to_base58(ergoLib.NetworkPrefix.Mainnet);
-      break;
     case CARDANO_CHAIN:
-      address = cardanoLib.Address.from_bytes(
+      return cardanoLib.Address.from_bytes(
         Buffer.from(encodedAddress, 'hex')
       ).to_bech32();
-      break;
     case BITCOIN_CHAIN:
-      address = bitcoinLib.address.fromOutputScript(
+      return bitcoinLib.address.fromOutputScript(
         Buffer.from(encodedAddress, 'hex')
       );
-      break;
     default:
       throw new UnsupportedChain(chain);
   }
-  return address;
 };
