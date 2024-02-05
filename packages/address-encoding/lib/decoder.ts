@@ -25,8 +25,11 @@ export const addressDecoder = (chain: string, encodedAddress: string) => {
         Buffer.from(encodedAddress, 'hex')
       ).to_bech32();
       break;
-    case BITCOIN_CHAIN: // TODO: implement this
-      throw new UnsupportedChain(chain);
+    case BITCOIN_CHAIN:
+      address = bitcoinLib.address.fromOutputScript(
+        Buffer.from(encodedAddress, 'hex')
+      );
+      break;
     default:
       throw new UnsupportedChain(chain);
   }

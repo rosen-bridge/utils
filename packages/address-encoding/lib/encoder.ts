@@ -24,7 +24,9 @@ export const addressEncoder = (chain: string, address: string): string => {
       ).toString('hex');
       break;
     case BITCOIN_CHAIN:
-      encoded = bitcoinLib.address.fromBech32(address).data.toString('hex');
+      encoded = Buffer.from(
+        bitcoinLib.address.toOutputScript(address)
+      ).toString('hex');
       break;
     default:
       throw new UnsupportedChain(chain);
