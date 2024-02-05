@@ -1,13 +1,19 @@
 import { IConfig } from 'config';
+import config from 'config';
+import * as fs from 'fs';
+import * as yaml from 'js-yaml';
+import JsonBigIntFactory from 'json-bigint';
+import path from 'path';
 import {
   propertyValidators,
   supportedTypes,
 } from './schema/Validators/fieldProperties';
 import { ConfigField, ConfigSchema } from './schema/types/fields';
 import { When } from './schema/types/validations';
-import { getSourceName, getValue, getValueFromConfigSources } from './utils';
+import { getSourceName, getValueFromConfigSources } from './utils';
 import { valueValidations, valueValidators } from './value/validators';
 
+declare const require: any;
 export class ConfigValidator {
   constructor(private schema: ConfigSchema) {
     this.validateSchema();
@@ -583,4 +589,130 @@ export class ConfigValidator {
 
     return configLevels;
   };
+
+  /**
+   * validates a config object and writes it to the node-config file
+   * corresponding to the passed level
+   *
+   * @param {Record<string, any>} configObj
+   * @param {IConfig} config
+   * @param {string} level output node-config file level
+   * @param {string} format the format of the output file
+   */
+  validateAndWriteConfig = (
+    configObj: Record<string, any>,
+    config: IConfig,
+    level: string,
+    format: string
+  ) => {
+    const confLevels = ConfigValidator.getNodeConfigLevels(config).filter(
+      (l) => l !== 'custom-environment-variables'
+    );
+    const levelIndex = confLevels.indexOf(level);
+    if (levelIndex === -1) {
+      throw new Error(
+        `The "${level}" level not found in the current system's configuration levels`
+      );
+    }
+
+    console.log(`RRRRRR`);
+    fs.readdirSync('/').forEach((file) => {
+      console.log(file);
+    });
+    console.log(`EEEEEE ${JSON.stringify(config.util.toObject())}`);
+
+    const configDir =
+      process.env['NODE_CONFIG_DIR'] != undefined
+        ? process.env['NODE_CONFIG_DIR']
+        : './config';
+    let output = '';
+    let ext = '';
+    switch (format) {
+      case 'json': {
+        const JsonBigInt = JsonBigIntFactory({
+          alwaysParseAsBig: false,
+          useNativeBigInt: true,
+        });
+        output = JsonBigInt.stringify(configObj);
+        ext = 'json';
+        break;
+      }
+      case 'yaml': {
+        output = yaml.dump(configObj);
+        ext = 'yaml';
+        break;
+      }
+      default:
+        throw Error(`Invalid format=${format}`);
+    }
+
+    const outputPath = path.join(configDir, `${level}.${ext}`);
+    const backupPath = path.join(configDir, `${level}-backup.${ext}`);
+    const confFileExists = fs.existsSync(outputPath);
+    if (confFileExists) {
+      fs.renameSync(outputPath, backupPath);
+    }
+    fs.writeFileSync(outputPath, output);
+
+    const updatedConfObj = config.util.loadFileConfigs();
+
+    try {
+      this.validateConfig(updatedConfObj);
+      fs.unlinkSync(backupPath);
+    } catch (error) {
+      fs.unlinkSync(outputPath);
+      if (confFileExists) {
+        fs.renameSync(backupPath, outputPath);
+      }
+      throw error;
+    }
+  };
 }
+
+// const schema = {
+//   apiType: {
+//     type: 'string',
+//     default: 'explorer',
+//     description: 'type of api to use',
+//     label: 'api type',
+//     validations: [
+//       {
+//         required: true,
+//         error: 'error message when value not validated',
+//       },
+//       { choices: ['node', 'explorer'] },
+//     ],
+//   },
+//   servers: {
+//     type: 'object',
+//     children: {
+//       url: {
+//         type: 'string',
+//       },
+//       port: {
+//         type: 'number',
+//       },
+//     },
+//   },
+//   apis: {
+//     type: 'object',
+//     children: {
+//       explorer: {
+//         type: 'object',
+//         children: {
+//           url: {
+//             type: 'string',
+//             default: 'example.com',
+//           },
+//           port: {
+//             type: 'number',
+//             default: 443,
+//           },
+//         },
+//       },
+//     },
+//   },
+// };
+// const confValidator = new ConfigValidator(<ConfigSchema>schema);
+// const obj = { apiType: 'water' };
+// confValidator.validateAndWriteConfig(obj, config, 'default', 'json');

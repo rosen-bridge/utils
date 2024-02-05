@@ -1,9 +1,10 @@
 import './configEnvVars';
 import config from 'config';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, beforeEach, vi, afterEach } from 'vitest';
 import { ConfigValidator } from '../lib';
 import { ConfigSchema } from '../lib/schema/types/fields';
 import * as testData from './configTestData';
+import { vol } from 'memfs';
 
 describe('ConfigValidator', () => {
   describe('generateDefault', () => {
@@ -735,6 +736,75 @@ describe('ConfigValidator', () => {
       expect(configCharacteristic).toEqual(
         testData.schemaConfigCharPair.characteristic
       );
+    });
+  });
+
+  describe('validateAndWriteConfig', () => {
+    beforeEach(() => {
+      vol.reset();
+      console.log('HERE111111111111111');
+      vol.writeFileSync('/file1', '');
+    });
+
+    /**
+     * @target getConfigForLevel should return the correct characteristic object
+     * for passed level of node config package
+     * @dependencies
+     * @scenario
+     * - call getConfigForLevel
+     * - check if correct characteristic object is returned
+     * @expected
+     * - correct characteristic object should be returned
+     */
+    it(`should return the correct characteristic object for passed level of node
+    config package`, async () => {
+      const schema = {
+        apiType: {
+          type: 'string',
+          default: 'explorer',
+          description: 'type of api to use',
+          label: 'api type',
+          validations: [
+            {
+              required: true,
+              error: 'error message when value not validated',
+            },
+            { choices: ['node', 'explorer'] },
+          ],
+        },
+        servers: {
+          type: 'object',
+          children: {
+            url: {
+              type: 'string',
+            },
+            port: {
+              type: 'number',
+            },
+          },
+        },
+        apis: {
+          type: 'object',
+          children: {
+            explorer: {
+              type: 'object',
+              children: {
+                url: {
+                  type: 'string',
+                  default: 'example.com',
+                },
+                port: {
+                  type: 'number',
+                  default: 443,
+                },
+              },
+            },
+          },
+        },
+      };
+      const confValidator = new ConfigValidator(<ConfigSchema>schema);
+      const obj = { apiType: 'water' };
+      confValidator.validateAndWriteConfig(obj, config, 'default', 'json');
     });
   });
 });
