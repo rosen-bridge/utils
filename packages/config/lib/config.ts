@@ -615,12 +615,6 @@ export class ConfigValidator {
       );
     }
 
-    console.log(`RRRRRR`);
-    fs.readdirSync('/').forEach((file) => {
-      console.log(file);
-    });
-    console.log(`EEEEEE ${JSON.stringify(config.util.toObject())}`);
-
     const configDir =
       process.env['NODE_CONFIG_DIR'] != undefined
         ? process.env['NODE_CONFIG_DIR']
@@ -668,51 +662,3 @@ export class ConfigValidator {
     }
   };
 }
-
-// const schema = {
-//   apiType: {
-//     type: 'string',
-//     default: 'explorer',
-//     description: 'type of api to use',
-//     label: 'api type',
-//     validations: [
-//       {
-//         required: true,
-//         error: 'error message when value not validated',
-//       },
-//       { choices: ['node', 'explorer'] },
-//     ],
-//   },
-//   servers: {
-//     type: 'object',
-//     children: {
-//       url: {
-//         type: 'string',
-//       },
-//       port: {
-//         type: 'number',
-//       },
-//     },
-//   },
-//   apis: {
-//     type: 'object',
-//     children: {
-//       explorer: {
-//         type: 'object',
-//         children: {
-//           url: {
-//             type: 'string',
-//             default: 'example.com',
-//           },
-//           port: {
-//             type: 'number',
-//             default: 443,
-//           },
-//         },
-//       },
-//     },
-//   },
-// };
-// const confValidator = new ConfigValidator(<ConfigSchema>schema);
-// const obj = { apiType: 'water' };
-// confValidator.validateAndWriteConfig(obj, config, 'default', 'json');

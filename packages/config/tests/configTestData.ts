@@ -907,16 +907,16 @@ export const schemaConfigCharPair = {
       url: {
         label: null,
         description: null,
-        default: 'something.org',
+        default: null,
         value: null,
-        override: 'example.org',
+        override: 'some-url.org',
       },
       port: {
         label: null,
         description: null,
-        default: null,
-        value: null,
-        override: '777',
+        default: 500,
+        value: 777,
+        override: null,
       },
     },
     apis: {

@@ -1,12 +1,28 @@
-import './configEnvVars';
+import { configDir } from './configEnvSetup';
 import config from 'config';
-import { describe, expect, it, beforeEach, vi, afterEach } from 'vitest';
+import fs from 'fs';
+import path from 'path';
+import { afterAll, beforeEach, describe, expect, it } from 'vitest';
 import { ConfigValidator } from '../lib';
 import { ConfigSchema } from '../lib/schema/types/fields';
 import * as testData from './configTestData';
-import { vol } from 'memfs';
+
+afterAll(() => {
+  fs.rmSync(configDir, { force: true, recursive: true });
+});
+
+beforeEach(() => {
+  fs.readdirSync(configDir).forEach((file) => {
+    fs.unlinkSync(path.join(configDir, file));
+  });
+  fs.cpSync(path.join(__dirname, 'configTestFiles'), configDir, {
+    recursive: true,
+  });
+});
 
 describe('ConfigValidator', () => {
+  // beforeEach(() => {});
+
   describe('generateDefault', () => {
     /**
      * @target generateDefault should return default values object for the
@@ -730,7 +746,7 @@ describe('ConfigValidator', () => {
       );
       const configCharacteristic = confValidator.getConfigForLevel(
         config,
-        config.util.getEnv('HOSTNAME')
+        'local'
       );
 
       expect(configCharacteristic).toEqual(
@@ -740,71 +756,100 @@ describe('ConfigValidator', () => {
   });
 
   describe('validateAndWriteConfig', () => {
-    beforeEach(() => {
-      vol.reset();
-      console.log('HERE111111111111111');
-      vol.writeFileSync('/file1', '');
+    /**
+     * @target validateAndWriteConfig should validate config when merged with
+     * passed object and write it to the appropriate config file
+     * @dependencies
+     * @scenario
+     * - call validateAndWriteConfig
+     * - check validateAndWriteConfig to throw no exception
+     * - check the config file to be correctly saved
+     * @expected
+     * - validateAndWriteConfig should throw no exception
+     * - the config file should be correctly saved
+     */
+    it(`should validate config when merged with passed object and write it to
+    the appropriate config file`, async () => {
+      const confValidator = new ConfigValidator(
+        <ConfigSchema>testData.schemaConfigCharPair.schema
+      );
+      const obj = { apiType: 'node' };
+      confValidator.validateAndWriteConfig(obj, config, 'default', 'json');
+      const savedObj = JSON.parse(
+        fs.readFileSync(path.join(configDir, 'default.json'), 'utf-8')
+      );
+
+      expect(savedObj).toEqual(obj);
     });
 
     /**
-     * @target getConfigForLevel should return the correct characteristic object
-     * for passed level of node config package
+     * @target validateAndWriteConfig should throw exception when config after
+     * being merged with passed object is not valid and preserve the original
+     * config file
      * @dependencies
      * @scenario
-     * - call getConfigForLevel
-     * - check if correct characteristic object is returned
+     * - call validateAndWriteConfig
+     * - check validateAndWriteConfig to throw exception
+     * - check the config file to be unchanged
      * @expected
-     * - correct characteristic object should be returned
+     * - validateAndWriteConfig should throw exception
+     * - config file should be unchanged
      */
-    it(`should return the correct characteristic object for passed level of node
-    config package`, async () => {
-      const schema = {
-        apiType: {
-          type: 'string',
-          default: 'explorer',
-          description: 'type of api to use',
-          label: 'api type',
-          validations: [
-            {
-              required: true,
-              error: 'error message when value not validated',
-            },
-            { choices: ['node', 'explorer'] },
-          ],
-        },
+    it(`should throw exception when config after being merged with passed object
+    is not valid and preserve the original config file`, async () => {
+      const confValidator = new ConfigValidator(
+        <ConfigSchema>testData.schemaConfigCharPair.schema
+      );
+      const originalObj = JSON.parse(
+        fs.readFileSync(path.join(configDir, 'local.json'), 'utf-8')
+      );
+
+      const obj = { apiType: 'wrong-value' };
+
+      expect(() =>
+        confValidator.validateAndWriteConfig(obj, config, 'local', 'json')
+      ).toThrow('value should be one of the choices');
+
+      const savedObj = JSON.parse(
+        fs.readFileSync(path.join(configDir, 'local.json'), 'utf-8')
+      );
+      expect(savedObj).toEqual(originalObj);
+    });
+
+    /**
+     * @target validateAndWriteConfig should not throw exception when config
+     * after being merged with passed object is valid even if the passed object
+     * itself is not valid
+     * @dependencies
+     * @scenario
+     * - call validateAndWriteConfig
+     * - check validateAndWriteConfig not to throw exception
+     * - check the config file to be correctly saved
+     * @expected
+     * - validateAndWriteConfig should throw exception
+     * - config file should be correctly saved
+     */
+    it(`should throw exception when config after being merged with passed object
+    is not valid and preserve the original config file`, async () => {
+      const confValidator = new ConfigValidator(
+        <ConfigSchema>testData.schemaConfigCharPair.schema
+      );
+      const originalObj = JSON.parse(
+        fs.readFileSync(path.join(configDir, 'local.json'), 'utf-8')
+      );
+
+      const obj = {
         servers: {
-          type: 'object',
-          children: {
-            url: {
-              type: 'string',
-            },
-            port: {
-              type: 'number',
-            },
-          },
-        },
-        apis: {
-          type: 'object',
-          children: {
-            explorer: {
-              type: 'object',
-              children: {
-                url: {
-                  type: 'string',
-                  default: 'example.com',
-                },
-                port: {
-                  type: 'number',
-                  default: 443,
-                },
-              },
-            },
-          },
+          url: 555,
         },
       };
-      const confValidator = new ConfigValidator(<ConfigSchema>schema);
-      const obj = { apiType: 'water' };
-      confValidator.validateAndWriteConfig(obj, config, 'default', 'json');
+
+      confValidator.validateAndWriteConfig(obj, config, 'local', 'json');
+
+      const savedObj = JSON.parse(
+        fs.readFileSync(path.join(configDir, 'local.json'), 'utf-8')
+      );
+      expect(savedObj).toEqual(obj);
     });
   });
 });
