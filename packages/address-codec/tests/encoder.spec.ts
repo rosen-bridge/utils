@@ -50,14 +50,14 @@ describe('encodeAddress', () => {
   });
 
   /**
-   * @target `encodeAddress` should throw error when encoded address is more than 57 bytes
+   * @target `encodeAddress` should throw error when encoded address is more than 60 bytes
    * @dependencies
    * @scenario
    * - run test & check thrown exception
    * @expected
    * - it should throw UnsupportedAddress error
    */
-  it('should throw error when encoded address is more than 57 bytes', () => {
+  it('should throw error when encoded address is more than 60 bytes', () => {
     expect(() => {
       encodeAddress(ERGO_CHAIN, testData.longErgoAddress);
     }).toThrow(UnsupportedAddressError);

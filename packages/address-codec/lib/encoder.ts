@@ -6,7 +6,7 @@ import * as bitcoinLib from 'bitcoinjs-lib';
 
 /**
  * encodes address of a chain to hex string
- *  throws error if encoded address length is more than 57 bytes
+ *  throws error if encoded address length is more than 60 bytes
  * @param chain
  * @param address
  */
@@ -31,7 +31,7 @@ export const encodeAddress = (chain: string, address: string): string => {
     default:
       throw new UnsupportedChainError(chain);
   }
-  if (encoded.length > 57 * 2)
+  if (encoded.length > 60 * 2)
     throw new UnsupportedAddressError(chain, address);
   return encoded;
 };

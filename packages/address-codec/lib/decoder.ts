@@ -6,7 +6,7 @@ import * as bitcoinLib from 'bitcoinjs-lib';
 
 /**
  * decodes address of a chain
- *  throws error if encoded address length is more than 57 bytes
+ *  throws error if encoded address length is more than 60 bytes
  * @param chain
  * @param encodedAddress
  */
@@ -14,7 +14,7 @@ export const decodeAddress = (
   chain: string,
   encodedAddress: string
 ): string => {
-  if (encodedAddress.length > 57 * 2)
+  if (encodedAddress.length > 60 * 2)
     throw new UnsupportedAddressError(chain, encodedAddress);
   switch (chain) {
     case ERGO_CHAIN:
