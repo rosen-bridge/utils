@@ -28,8 +28,8 @@ export class BitcoinEsploraRosenExtractor extends AbstractRosenDataExtractor<Bit
   }
 
   /**
-   * extracts RosenData from given lock transaction in blockfrost format
-   * @param transaction the lock transaction in blockfrost format
+   * extracts RosenData from given lock transaction in Esplora format
+   * @param transaction the lock transaction in Esplora format
    */
   get = (transaction: BitcoinEsploraTransaction): RosenData | undefined => {
     const baseError = `No rosen data found for tx [${transaction.txid}]`;
