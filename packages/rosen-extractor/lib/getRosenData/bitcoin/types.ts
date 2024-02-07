@@ -45,11 +45,3 @@ export interface BitcoinEsploraTransaction {
     block_time: number;
   };
 }
-
-// TODO: this interface is duplicate in all 3 chains!
-//  should we fix it in this merge?
-export interface TokenTransformation {
-  from: string;
-  to: string;
-  amount: string;
-}

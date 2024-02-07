@@ -1,4 +1,4 @@
-import { RosenData } from '../abstract/types';
+import { RosenData, TokenTransformation } from '../abstract/types';
 import AbstractRosenDataExtractor from '../abstract/AbstractRosenDataExtractor';
 import { CARDANO_CHAIN, CARDANO_NATIVE_TOKEN } from '../const';
 import {
@@ -6,7 +6,7 @@ import {
   Transaction,
   TransactionOutput,
 } from '@cardano-ogmios/schema';
-import { CardanoMetadataRosenData, TokenTransformation } from './types';
+import { CardanoMetadataRosenData } from './types';
 import { isArray, isString } from 'lodash-es';
 import JsonBigInt from '@rosen-bridge/json-bigint';
 

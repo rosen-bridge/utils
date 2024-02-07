@@ -1,4 +1,4 @@
-import { RosenData } from '../abstract/types';
+import { RosenData, TokenTransformation } from '../abstract/types';
 import AbstractRosenDataExtractor from '../abstract/AbstractRosenDataExtractor';
 import {
   BITCOIN_CHAIN,
@@ -9,7 +9,6 @@ import {
   BitcoinEsploraTransaction,
   EsploraTxOutput,
   OpReturnData,
-  TokenTransformation,
 } from './types';
 import { RosenTokens } from '@rosen-bridge/tokens';
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
