@@ -1,4 +1,5 @@
 import { IConfigSource } from 'config';
+import path from 'path';
 import { describe, expect, it } from 'vitest';
 import {
   getSourceName,
@@ -78,7 +79,7 @@ describe('getSourceName', () => {
    */
   it(`should return the source name for node config source`, async () => {
     const source: IConfigSource = {
-      name: 'E:\\Development\\Work\\Ergo\\Projects\\rosen-bridge\\utils\\config\\default.json',
+      name: path.join('./config', 'default.json'),
       original:
         '{\r\n  "apiType": "explorer",\r\n  "servers": {\r\n    "url": "something.org"\r\n  },\r\n  "apis": {\r\n    "explorer": {\r\n      "url": "example.com",\r\n      "port": 443\r\n    }\r\n  }\r\n}\r\n',
       parsed: {
