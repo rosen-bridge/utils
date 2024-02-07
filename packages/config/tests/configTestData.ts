@@ -287,7 +287,7 @@ export const apiSchemaConfigPairWrongPortType = {
   config: {
     apis: {
       explorer: {
-        port: '501',
+        port: 'abc',
       },
     },
   },
@@ -774,6 +774,42 @@ export const apiSchemaConfigPairWrongLessEqualFalseWhen = {
       explorer: {
         port: 600,
       },
+    },
+  },
+};
+
+export const apiSchemaConfigPairWithStringBigInt = {
+  schema: {
+    servers: {
+      type: 'object',
+      children: {
+        port: {
+          type: 'bigint',
+        },
+      },
+    },
+  },
+  config: {
+    servers: {
+      port: '800',
+    },
+  },
+};
+
+export const apiSchemaConfigPairWithStringNumber = {
+  schema: {
+    servers: {
+      type: 'object',
+      children: {
+        port: {
+          type: 'number',
+        },
+      },
+    },
+  },
+  config: {
+    servers: {
+      port: '800',
     },
   },
 };
