@@ -39,10 +39,4 @@ interface NodeTransaction {
   size?: bigint;
 }
 
-interface TokenTransformation {
-  from: string;
-  to: string;
-  amount: bigint;
-}
-
-export { NodeOutputBox, NodeTransaction, TokenTransformation };
+export { NodeOutputBox, NodeTransaction };

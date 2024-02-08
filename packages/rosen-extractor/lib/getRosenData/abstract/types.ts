@@ -10,4 +10,10 @@ interface RosenData {
   sourceTxId: string;
 }
 
-export { RosenData };
+interface TokenTransformation {
+  from: string;
+  to: string;
+  amount: string;
+}
+
+export { RosenData, TokenTransformation };

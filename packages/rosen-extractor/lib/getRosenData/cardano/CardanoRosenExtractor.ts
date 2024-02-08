@@ -1,10 +1,9 @@
 import AbstractRosenDataExtractor from '../abstract/AbstractRosenDataExtractor';
-import { RosenData } from '../abstract/types';
+import { RosenData, TokenTransformation } from '../abstract/types';
 import {
   CardanoBoxCandidate,
   CardanoMetadataRosenData,
   CardanoTx,
-  TokenTransformation,
 } from './types';
 import { CARDANO_CHAIN, CARDANO_NATIVE_TOKEN } from '../const';
 import JsonBigInt from '@rosen-bridge/json-bigint';
