@@ -34,7 +34,7 @@ describe('BitcoinEsploraRosenExtractor', () => {
      * there is only one output
      * @dependencies
      * @scenario
-     * - mock tx without OP_RETURN utxo
+     * - mock tx with only one output
      * - run test
      * - check returned value
      * @expected
@@ -80,7 +80,7 @@ describe('BitcoinEsploraRosenExtractor', () => {
      * second output is not to lock address
      * @dependencies
      * @scenario
-     * - mock tx without OP_RETURN utxo
+     * - mock tx with no output box to lock address
      * - run test
      * - check returned value
      * @expected
@@ -100,16 +100,16 @@ describe('BitcoinEsploraRosenExtractor', () => {
 
     /**
      * @target `BitcoinEsploraRosenExtractor.get` should return undefined when
-     * there is only one output
+     * no data is extracted from OP_RETURN box
      * @dependencies
      * @scenario
-     * - mock tx without OP_RETURN utxo
+     * - mock tx with invalid rosen data in OP_RETURN
      * - run test
      * - check returned value
      * @expected
      * - it should return undefined
      */
-    it('should return undefined when there is only one output', () => {
+    it('should return undefined when no data is extracted from OP_RETURN box', () => {
       const invalidTx = testData.txs.invalidData;
 
       const extractor = new BitcoinEsploraRosenExtractor(
@@ -123,21 +123,22 @@ describe('BitcoinEsploraRosenExtractor', () => {
 
     /**
      * @target `BitcoinEsploraRosenExtractor.get` should return undefined when
-     * there is only one output
+     * token transformation is not possible
      * @dependencies
      * @scenario
-     * - mock tx without OP_RETURN utxo
+     * - mock valid lock tx
+     * - generate extractor with a tokenMap that does not support BTC
      * - run test
      * - check returned value
      * @expected
      * - it should return undefined
      */
-    it('should return undefined when there is only one output', () => {
-      const invalidTx = testData.txs.lessBoxes;
+    it('should return undefined when token transformation is not possible', () => {
+      const invalidTx = testData.txs.lockTx;
 
       const extractor = new BitcoinEsploraRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        TestUtils.noNativeTokens
       );
       const result = extractor.get(invalidTx as BitcoinEsploraTransaction);
 
@@ -150,7 +151,7 @@ describe('BitcoinEsploraRosenExtractor', () => {
      * @target `BitcoinEsploraRosenExtractor.parseRosenData` should extract rosen data successfully
      * @dependencies
      * @scenario
-     * - mock utxo scriptPubKey
+     * - mock utxo with scriptPubKey that contains valid rosen data
      * - run test
      * - check returned value
      * @expected
@@ -173,7 +174,7 @@ describe('BitcoinEsploraRosenExtractor', () => {
      * when script does not start with OP_RETURN opcode
      * @dependencies
      * @scenario
-     * - mock utxo scriptPubKey
+     * - mock utxo with scriptPubKey that does not contain OP_RETURN opcode
      * - run test & check thrown exception
      * @expected
      * - it should throw error
@@ -196,7 +197,7 @@ describe('BitcoinEsploraRosenExtractor', () => {
      * when second opcode is not OP_PUSHDATA1 opcode
      * @dependencies
      * @scenario
-     * - mock utxo scriptPubKey
+     * - mock utxo with scriptPubKey that does not contain OP_PUSHDATA1 opcode
      * - run test & check thrown exception
      * @expected
      * - it should throw error
@@ -219,7 +220,7 @@ describe('BitcoinEsploraRosenExtractor', () => {
      * when toChain is invalid
      * @dependencies
      * @scenario
-     * - mock utxo scriptPubKey
+     * - mock utxo with scriptPubKey that contain rosen data with invalid toChain
      * - run test & check thrown exception
      * @expected
      * - it should throw error
