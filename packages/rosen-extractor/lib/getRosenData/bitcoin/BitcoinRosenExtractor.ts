@@ -21,7 +21,7 @@ export class BitcoinRosenExtractor extends AbstractRosenDataExtractor<string> {
   }
 
   /**
-   * extracts RosenData from given lock transaction in Esplora format
+   * extracts RosenData from given lock transaction in BitcoinTx format
    * @param serializedTransaction stringified transaction in BitcoinTx format
    */
   get = (serializedTransaction: string): RosenData | undefined => {
@@ -84,7 +84,7 @@ export class BitcoinRosenExtractor extends AbstractRosenDataExtractor<string> {
       };
     } catch (e) {
       this.logger.debug(
-        `An error occurred while getting Bitcoin rosen data from Esplora: ${e}`
+        `An error occurred while getting Bitcoin rosen data: ${e}`
       );
       if (e instanceof Error && e.stack) {
         this.logger.debug(e.stack);
