@@ -45,3 +45,20 @@ export interface BitcoinEsploraTransaction {
     block_time: number;
   };
 }
+
+export interface BitcoinTxInput {
+  txId: string;
+  index: number;
+  scriptPubKey: string;
+}
+
+export interface BitcoinTxOutput {
+  scriptPubKey: string;
+  value: bigint;
+}
+
+export interface BitcoinTx {
+  id: string;
+  inputs: BitcoinTxInput[];
+  outputs: BitcoinTxOutput[];
+}

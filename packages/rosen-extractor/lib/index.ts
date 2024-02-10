@@ -1,5 +1,6 @@
 export { default as AbstractRosenDataExtractor } from './getRosenData/abstract/AbstractRosenDataExtractor';
 export { BitcoinEsploraRosenExtractor } from './getRosenData/bitcoin/BitcoinEsploraRosenExtractor';
+export { BitcoinRosenExtractor } from './getRosenData/bitcoin/BitcoinRosenExtractor';
 export { CardanoKoiosRosenExtractor } from './getRosenData/cardano/CardanoKoiosRosenExtractor';
 export { CardanoOgmiosRosenExtractor } from './getRosenData/cardano/CardanoOgmiosRosenExtractor';
 export { CardanoRosenExtractor } from './getRosenData/cardano/CardanoRosenExtractor';
