@@ -1,4 +1,4 @@
-import { IConfig } from 'config';
+import { IConfig, IConfigSource } from 'config';
 import {
   propertyValidators,
   supportedTypes,
@@ -453,54 +453,67 @@ export class ConfigValidator {
 
     const valueTree: Record<string, any> = Object.create(null);
 
-    const stack: {
-      schema: ConfigSchema;
-      parentValue: Record<string, any> | undefined;
-      parentPath: string[];
-      name: string;
-      children: string[];
-    }[] = [
-      {
-        schema: this.schema,
-        parentValue: undefined,
-        parentPath: [],
-        name: '',
-        children: Object.keys(this.schema).reverse(),
-      },
-    ];
-
     // Traverses the schema object tree depth first
-    while (stack.length > 0) {
-      const { schema, parentValue, parentPath, name, children } = stack.at(-1)!;
+    ConfigValidator.processConfigForLevelNode(
+      valueTree,
+      this.schema,
+      undefined,
+      [],
+      '',
+      Object.keys(this.schema).reverse(),
+      higherLevelSources,
+      currentLevelSource,
+      lowerLevelSources
+    );
 
-      // if a subtree's processing is finished go to the previous level
-      if (children.length === 0) {
-        // if a subtree is empty (has no values) remove it from the result
-        if (
-          parentValue != undefined &&
-          Object.keys(parentValue[name]).length === 0
-        ) {
-          delete parentValue[name];
-        }
-        stack.pop();
-        continue;
-      }
+    return valueTree;
+  }
 
-      const childName = children.pop()!;
+  /**
+   * traverses the config schema depth first to produce characteristic object
+   *
+   * @static
+   * @param {Record<string, any>} valueTree
+   * @param {ConfigSchema} schema
+   * @param {(Record<string, any> | undefined)} parentValue
+   * @param {string[]} parentPath
+   * @param {string} name
+   * @param {string[]} children
+   * @param {IConfigSource[]} higherLevelSources
+   * @param {(IConfigSource | undefined)} currentLevelSource
+   * @param {IConfigSource[]} lowerLevelSources
+   */
+  private static processConfigForLevelNode(
+    valueTree: Record<string, any>,
+    schema: ConfigSchema,
+    parentValue: Record<string, any> | undefined,
+    parentPath: string[],
+    name: string,
+    children: string[],
+    higherLevelSources: IConfigSource[],
+    currentLevelSource: IConfigSource | undefined,
+    lowerLevelSources: IConfigSource[]
+  ) {
+    // if a subtree's processing is finished go to the previous level
+    for (const childName of children) {
       const childPath = parentPath.concat([childName]);
       const value = parentValue != undefined ? parentValue[name] : valueTree;
       const field = schema[childName];
-      // if a field is of type object and thus is a subtree, add it to the stack
-      // to be traversed later. Otherwise it's a leaf and needs no traversal.
+      // if a field is of type object and thus is a subtree, recurse on it.
+      // Otherwise it's a leaf and needs no traversal.
       value[childName] = Object.create(null);
       if (field.type === 'object') {
-        stack.push({
-          schema: field.children,
-          parentValue: value,
-          parentPath: childPath,
-          name: childName,
-          children: Object.keys(field.children).reverse(),
-        });
+        ConfigValidator.processConfigForLevelNode(
+          valueTree,
+          field.children,
+          value,
+          childPath,
+          childName,
+          Object.keys(field.children).reverse(),
+          higherLevelSources,
+          currentLevelSource,
+          lowerLevelSources
+        );
       } else {
         value[childName]['label'] =
           field.label != undefined ? field.label : null;
@@ -521,7 +534,13 @@ export class ConfigValidator {
       }
     }
 
-    return valueTree;
+    // if a subtree is empty (has no values) remove it from the result
+    if (
+      parentValue != undefined &&
+      Object.keys(parentValue[name]).length === 0
+    ) {
+      delete parentValue[name];
+    }
   }
 
   /**
