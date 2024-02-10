@@ -168,23 +168,6 @@ export const rosenData = {
     '6a1b9e7a755afb5d82ecaa5f432d51bd23e452ee1031fc99066e92788a075a84',
 };
 
-export const opReturnScripts = {
-  valid:
-    '6a4c3300000000007554fc820000000000962f582103f999da8e6e42660e4464d17d29e63bc006734a6710a24eb489b466323d3a9339',
-  noOpReturn:
-    '4c3300000000007554fc820000000000962f582103f999da8e6e42660e4464d17d29e63bc006734a6710a24eb489b466323d3a9339',
-  noPushData:
-    '6a3300000000007554fc820000000000962f582103f999da8e6e42660e4464d17d29e63bc006734a6710a24eb489b466323d3a9339',
-  invalidToChain:
-    '6a4c3309000000007554fc820000000000962f582103f999da8e6e42660e4464d17d29e63bc006734a6710a24eb489b466323d3a9339',
-};
-export const opReturnData = {
-  toChain: 'ergo',
-  toAddress: '9iMjQx8PzwBKXRvsFUJFJAPoy31znfEeBUGz8DRkcnJX4rJYjVd',
-  bridgeFee: '1968503938',
-  networkFee: '9842520',
-};
-
 export const lockUtxo = {
   scriptpubkey: '0014b20272a6591937ba7d687dc889f3637ed40efa6a',
   scriptpubkey_asm:
