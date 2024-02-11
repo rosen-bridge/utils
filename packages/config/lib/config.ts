@@ -457,10 +457,7 @@ export class ConfigValidator {
     ConfigValidator.processConfigForLevelNode(
       valueTree,
       this.schema,
-      undefined,
       [],
-      '',
-      Object.keys(this.schema).reverse(),
       higherLevelSources,
       currentLevelSource,
       lowerLevelSources
@@ -470,50 +467,44 @@ export class ConfigValidator {
   }
 
   /**
-   * traverses the config schema depth first to produce characteristic object
+   *traverses the config schema depth first to produce characteristic object
    *
-   * @static
-   * @param {Record<string, any>} valueTree
+   * @param {Record<string, any>} value
    * @param {ConfigSchema} schema
-   * @param {(Record<string, any> | undefined)} parentValue
-   * @param {string[]} parentPath
-   * @param {string} name
-   * @param {string[]} children
+   * @param {string[]} path
    * @param {IConfigSource[]} higherLevelSources
    * @param {(IConfigSource | undefined)} currentLevelSource
    * @param {IConfigSource[]} lowerLevelSources
+   * @memberof ConfigValidator
    */
-  private static processConfigForLevelNode(
-    valueTree: Record<string, any>,
+  private static processConfigForLevelNode = (
+    value: Record<string, any>,
     schema: ConfigSchema,
-    parentValue: Record<string, any> | undefined,
-    parentPath: string[],
-    name: string,
-    children: string[],
+    path: string[],
     higherLevelSources: IConfigSource[],
     currentLevelSource: IConfigSource | undefined,
     lowerLevelSources: IConfigSource[]
-  ) {
-    // if a subtree's processing is finished go to the previous level
-    for (const childName of children) {
-      const childPath = parentPath.concat([childName]);
-      const value = parentValue != undefined ? parentValue[name] : valueTree;
+  ) => {
+    for (const childName of Object.keys(schema).reverse()) {
+      const childPath = path.concat([childName]);
       const field = schema[childName];
       // if a field is of type object and thus is a subtree, recurse on it.
       // Otherwise it's a leaf and needs no traversal.
       value[childName] = Object.create(null);
       if (field.type === 'object') {
         ConfigValidator.processConfigForLevelNode(
-          valueTree,
+          value[childName],
           field.children,
-          value,
           childPath,
-          childName,
-          Object.keys(field.children).reverse(),
           higherLevelSources,
           currentLevelSource,
           lowerLevelSources
         );
+
+        // if a subtree is empty (has no values) remove it from the result
+        if (Object.keys(value[childName]).length === 0) {
+          delete value[childName];
+        }
       } else {
         value[childName]['label'] =
           field.label != undefined ? field.label : null;
@@ -533,15 +524,7 @@ export class ConfigValidator {
         );
       }
     }
-
-    // if a subtree is empty (has no values) remove it from the result
-    if (
-      parentValue != undefined &&
-      Object.keys(parentValue[name]).length === 0
-    ) {
-      delete parentValue[name];
-    }
-  }
+  };
 
   /**
    * returns a list of config sources used by node config package, ordered from
