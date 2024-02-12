@@ -1,9 +1,11 @@
+import { IConfig, IConfigSource } from 'config';
 import {
   propertyValidators,
   supportedTypes,
 } from './schema/Validators/fieldProperties';
 import { ConfigField, ConfigSchema } from './schema/types/fields';
 import { When } from './schema/types/validations';
+import { getSourceName, getValueFromConfigSources } from './utils';
 import { valueValidations, valueValidators } from './value/validators';
 
 export class ConfigValidator {
@@ -417,5 +419,165 @@ export class ConfigValidator {
     return `interface ${name} {
   ${attributes.map((attr) => `${attr[0]}: ${attr[1]};`).join('\n  ')}
 }`;
+  };
+
+  /**
+   * returns a characteristic object for values at a specific node config level
+   *
+   * @param {IConfig} config
+   * @param {string} level
+   * @return {Record<string, any>}
+   */
+  getConfigForLevel(config: IConfig, level: string): Record<string, any> {
+    const confLevels = ConfigValidator.getNodeConfigLevels(config);
+    const levelIndex = confLevels.indexOf(level);
+    if (levelIndex === -1) {
+      throw new Error(
+        `The "${level}" level not found in the current system configuration levels`
+      );
+    }
+    const higherLevelSources = config.util
+      .getConfigSources()
+      .filter(
+        (source) => confLevels.indexOf(getSourceName(source)) > levelIndex
+      );
+    const currentLevelSource = config.util
+      .getConfigSources()
+      .filter((source) => getSourceName(source) === level)
+      .at(0);
+    const lowerLevelSources = config.util
+      .getConfigSources()
+      .filter(
+        (source) => confLevels.indexOf(getSourceName(source)) < levelIndex
+      );
+
+    // Traverses the schema object tree depth first
+    const valueTree = ConfigValidator.processConfigForLevelNode(
+      this.schema,
+      [],
+      higherLevelSources,
+      currentLevelSource,
+      lowerLevelSources
+    );
+
+    return valueTree;
+  }
+
+  /**
+   *traverses the config schema depth first to produce characteristic object
+   *
+   * @private
+   * @static
+   * @param {ConfigSchema} schema
+   * @param {string[]} path
+   * @param {IConfigSource[]} higherLevelSources
+   * @param {(IConfigSource | undefined)} currentLevelSource
+   * @param {IConfigSource[]} lowerLevelSources
+   * @return {Record<string, any>}
+   * @memberof ConfigValidator
+   */
+  private static processConfigForLevelNode(
+    schema: ConfigSchema,
+    path: string[],
+    higherLevelSources: IConfigSource[],
+    currentLevelSource: IConfigSource | undefined,
+    lowerLevelSources: IConfigSource[]
+  ): Record<string, any> {
+    const value = Object.create(null);
+    for (const childName of Object.keys(schema).reverse()) {
+      const childPath = path.concat([childName]);
+      const field = schema[childName];
+      // if a field is of type object and thus is a subtree, recurse on it.
+      // Otherwise it's a leaf and needs no traversal.
+      value[childName] = Object.create(null);
+      if (field.type === 'object') {
+        value[childName] = ConfigValidator.processConfigForLevelNode(
+          field.children,
+          childPath,
+          higherLevelSources,
+          currentLevelSource,
+          lowerLevelSources
+        );
+      } else {
+        value[childName]['label'] =
+          field.label != undefined ? field.label : null;
+        value[childName]['description'] =
+          field.description != undefined ? field.description : null;
+        value[childName]['default'] = getValueFromConfigSources(
+          lowerLevelSources,
+          childPath
+        );
+        value[childName]['value'] = getValueFromConfigSources(
+          [...(currentLevelSource != undefined ? [currentLevelSource] : [])],
+          childPath
+        );
+        value[childName]['override'] = getValueFromConfigSources(
+          higherLevelSources,
+          childPath
+        );
+      }
+    }
+
+    return value;
+  }
+
+  /**
+   * returns a list of config sources used by node config package, ordered from
+   * the lowest to the highest priority
+   *
+   * @static
+   * @param {IConfig} config
+   * @return  {string[]}
+   */
+  private static getNodeConfigLevels = (config: IConfig): string[] => {
+    const instance = config.util.getEnv('NODE_APP_INSTANCE');
+    let deployment = config.util.getEnv('NODE_ENV');
+    deployment = config.util.getEnv('NODE_CONFIG_ENV');
+    const fullHostname = config.util.getEnv('HOSTNAME');
+    const shortHostname =
+      fullHostname != undefined ? fullHostname.split('.')[0] : undefined;
+
+    const configLevels = [
+      'default',
+      ...(instance != undefined ? [`default-${instance}`] : []),
+      ...(deployment != undefined ? [`${deployment}`] : []),
+      ...(instance != undefined && deployment != undefined
+        ? [`${deployment}-${instance}`]
+        : []),
+      ...(shortHostname != undefined ? [`${shortHostname}`] : []),
+      ...(shortHostname != undefined && instance != undefined
+        ? [`${shortHostname}-${instance}`]
+        : []),
+      ...(shortHostname != undefined && deployment != undefined
+        ? [`${shortHostname}-${deployment}`]
+        : []),
+      ...(shortHostname != undefined &&
+      deployment != undefined &&
+      instance != undefined
+        ? [`${shortHostname}-${deployment}-${instance}`]
+        : []),
+      ...(fullHostname != undefined ? [`${fullHostname}`] : []),
+      ...(fullHostname != undefined && instance != undefined
+        ? [`${fullHostname}-${instance}`]
+        : []),
+      ...(fullHostname != undefined && deployment != undefined
+        ? [`${fullHostname}-${deployment}`]
+        : []),
+      ...(fullHostname != undefined &&
+      deployment != undefined &&
+      instance != undefined
+        ? [`${fullHostname}-${deployment}-${instance}`]
+        : []),
+      `local`,
+      ...(instance != undefined ? [`local-${instance}`] : []),
+      ...(deployment != undefined ? [`local-${deployment}`] : []),
+      ...(deployment != undefined && instance != undefined
+        ? [`local-${deployment}-${instance}`]
+        : []),
+      '$NODE_CONFIG',
+      'custom-environment-variables',
+    ];
+
+    return configLevels;
   };
 }
