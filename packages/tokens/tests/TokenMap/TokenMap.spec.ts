@@ -235,4 +235,37 @@ describe('TokenMap', () => {
       ]);
     });
   });
+
+  describe('getAllNativeTokens', () => {
+    /**
+     * @target TokenMap.getAllNativeTokens should return all cardano native tokens
+     * @dependencies
+     * @scenario
+     * - call getAllNativeTokens
+     * @expected
+     * - should return one token of cardano
+     */
+    it('should return all cardano native tokens', () => {
+      const tokenMap = new TokenMap(firstTokenMap);
+      expect(tokenMap.getAllNativeTokens('cardano')).toEqual([
+        firstTokenMap.tokens[2]['cardano'],
+      ]);
+    });
+
+    /**
+     * @target TokenMap.getAllNativeTokens should return all ergo native tokens
+     * @dependencies
+     * @scenario
+     * - call getAllNativeTokens
+     * @expected
+     * - should return two token of ergo
+     */
+    it('should return all ergo native tokens', () => {
+      const tokenMap = new TokenMap(firstTokenMap);
+      expect(tokenMap.getAllNativeTokens('ergo')).toEqual([
+        firstTokenMap.tokens[0]['ergo'],
+        firstTokenMap.tokens[1]['ergo'],
+      ]);
+    });
+  });
 });
