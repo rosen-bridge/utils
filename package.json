@@ -14,6 +14,7 @@
     "lint": "npm run lint --workspaces",
     "prepare": "husky install",
     "release": "npm run release --workspaces",
+    "test": "npm run test --if-present --workspaces",
     "type-check": "npm run type-check --workspaces",
     "version": "npx changeset version && npm i"
   },

@@ -4,4 +4,4 @@
 
 ### Minor Changes
 
-- Add chains native resident tokens to tokenMap
+- Add getAllNativeTokens function to return a chain supported tokens with native residency
