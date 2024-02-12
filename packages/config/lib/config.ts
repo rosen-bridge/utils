@@ -451,11 +451,8 @@ export class ConfigValidator {
         (source) => confLevels.indexOf(getSourceName(source)) < levelIndex
       );
 
-    const valueTree: Record<string, any> = Object.create(null);
-
     // Traverses the schema object tree depth first
-    ConfigValidator.processConfigForLevelNode(
-      valueTree,
+    const valueTree = ConfigValidator.processConfigForLevelNode(
       this.schema,
       [],
       higherLevelSources,
@@ -469,22 +466,24 @@ export class ConfigValidator {
   /**
    *traverses the config schema depth first to produce characteristic object
    *
-   * @param {Record<string, any>} value
+   * @private
+   * @static
    * @param {ConfigSchema} schema
    * @param {string[]} path
    * @param {IConfigSource[]} higherLevelSources
    * @param {(IConfigSource | undefined)} currentLevelSource
    * @param {IConfigSource[]} lowerLevelSources
+   * @return {Record<string, any>}
    * @memberof ConfigValidator
    */
-  private static processConfigForLevelNode = (
-    value: Record<string, any>,
+  private static processConfigForLevelNode(
     schema: ConfigSchema,
     path: string[],
     higherLevelSources: IConfigSource[],
     currentLevelSource: IConfigSource | undefined,
     lowerLevelSources: IConfigSource[]
-  ) => {
+  ): Record<string, any> {
+    const value = Object.create(null);
     for (const childName of Object.keys(schema).reverse()) {
       const childPath = path.concat([childName]);
       const field = schema[childName];
@@ -492,19 +491,13 @@ export class ConfigValidator {
       // Otherwise it's a leaf and needs no traversal.
       value[childName] = Object.create(null);
       if (field.type === 'object') {
-        ConfigValidator.processConfigForLevelNode(
-          value[childName],
+        value[childName] = ConfigValidator.processConfigForLevelNode(
           field.children,
           childPath,
           higherLevelSources,
           currentLevelSource,
           lowerLevelSources
         );
-
-        // if a subtree is empty (has no values) remove it from the result
-        if (Object.keys(value[childName]).length === 0) {
-          delete value[childName];
-        }
       } else {
         value[childName]['label'] =
           field.label != undefined ? field.label : null;
@@ -524,7 +517,9 @@ export class ConfigValidator {
         );
       }
     }
-  };
+
+    return value;
+  }
 
   /**
    * returns a list of config sources used by node config package, ordered from
