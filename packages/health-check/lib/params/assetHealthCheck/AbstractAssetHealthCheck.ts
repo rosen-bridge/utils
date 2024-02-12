@@ -1,3 +1,4 @@
+import { trimEnd } from 'lodash';
 import { CARDANO_NATIVE_ASSET, ERGO_NATIVE_ASSET } from '../../constants';
 import {
   AbstractHealthCheckParam,
@@ -107,7 +108,10 @@ abstract class AbstractAssetHealthCheckParam extends AbstractHealthCheckParam {
       .toString()
       .slice(-this.assetDecimal)
       .padStart(this.assetDecimal, '0');
-    return `${roundTokenAmount}.${decimalTokenAmount}`;
+    return trimEnd(
+      trimEnd(`${roundTokenAmount}.${decimalTokenAmount}`, '0'),
+      '.'
+    );
   };
 }
 

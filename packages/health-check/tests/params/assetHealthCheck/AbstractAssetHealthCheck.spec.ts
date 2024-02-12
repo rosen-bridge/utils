@@ -120,5 +120,19 @@ describe('AbstractAssetHealthCheckParam', () => {
       assetHealthCheckParam.setTokenDecimal(3);
       expect(assetHealthCheckParam.getTokenDecimalStr(99n)).toEqual('0.099');
     });
+
+    /**
+     * @target AbstractAssetHealthCheckParam.getTokenDecimalStr should return correct format with 3 decimals
+     * @dependencies
+     * @scenario
+     * - mock token decimal
+     * - get token decimal str
+     * @expected
+     * - should return the amount str with 3 decimals
+     */
+    it('should generate correct format with 1 decimal that is zero', () => {
+      assetHealthCheckParam.setTokenDecimal(1);
+      expect(assetHealthCheckParam.getTokenDecimalStr(900n)).toEqual('90');
+    });
   });
 });
