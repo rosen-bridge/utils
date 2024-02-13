@@ -1,17 +1,14 @@
 import { RosenData, TokenTransformation } from '../abstract/types';
 import AbstractRosenDataExtractor from '../abstract/AbstractRosenDataExtractor';
 import { BITCOIN_CHAIN, BITCOIN_NATIVE_TOKEN } from '../const';
-import {
-  BitcoinEsploraTransaction,
-  EsploraTxOutput,
-  OpReturnData,
-} from './types';
+import { BitcoinTx, BitcoinTxOutput, OpReturnData } from './types';
 import { RosenTokens } from '@rosen-bridge/tokens';
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import { address } from 'bitcoinjs-lib';
 import { parseRosenData } from './utils';
+import JsonBigInt from '@rosen-bridge/json-bigint';
 
-export class BitcoinEsploraRosenExtractor extends AbstractRosenDataExtractor<BitcoinEsploraTransaction> {
+export class BitcoinRosenExtractor extends AbstractRosenDataExtractor<string> {
   protected lockScriptPubKey: string;
 
   constructor(
@@ -24,22 +21,26 @@ export class BitcoinEsploraRosenExtractor extends AbstractRosenDataExtractor<Bit
   }
 
   /**
-   * extracts RosenData from given lock transaction in Esplora format
-   * @param transaction the lock transaction in Esplora format
+   * extracts RosenData from given lock transaction in BitcoinTx format
+   * @param serializedTransaction stringified transaction in BitcoinTx format
    */
-  get = (transaction: BitcoinEsploraTransaction): RosenData | undefined => {
-    const baseError = `No rosen data found for tx [${transaction.txid}]`;
+  get = (serializedTransaction: string): RosenData | undefined => {
+    let transaction: BitcoinTx;
     try {
-      const outputs = transaction.vout;
+      transaction = JsonBigInt.parse(serializedTransaction);
+    } catch (e) {
+      throw new Error(
+        `Failed to parse transaction json to BitcoinTx format while extracting rosen data: ${e}`
+      );
+    }
+    const baseError = `No rosen data found for tx [${transaction.id}]`;
+    try {
+      const outputs = transaction.outputs;
       if (outputs.length < 2) {
         this.logger.debug(baseError + `: Insufficient number of boxes`);
         return undefined;
       }
-      if (outputs[0].scriptpubkey_type !== 'op_return') {
-        this.logger.debug(baseError + `: 1st box is not OP_RETURN box`);
-        return undefined;
-      }
-      if (outputs[1].scriptpubkey !== this.lockScriptPubKey) {
+      if (outputs[1].scriptPubKey !== this.lockScriptPubKey) {
         this.logger.debug(baseError + `: 2nd box is not to lock address`);
         return undefined;
       }
@@ -47,7 +48,7 @@ export class BitcoinEsploraRosenExtractor extends AbstractRosenDataExtractor<Bit
       // parse rosen data from OP_RETURN box
       let opReturnData: OpReturnData;
       try {
-        opReturnData = parseRosenData(outputs[0].scriptpubkey);
+        opReturnData = parseRosenData(outputs[0].scriptPubKey);
       } catch (e) {
         this.logger.debug(
           baseError + `: Failed to extract data from OP_RETURN box: ${e}`
@@ -67,7 +68,9 @@ export class BitcoinEsploraRosenExtractor extends AbstractRosenDataExtractor<Bit
         return undefined;
       }
 
-      const fromAddress = transaction.vin[0].prevout.scriptpubkey_address;
+      const fromAddress = address.fromOutputScript(
+        Buffer.from(transaction.inputs[0].scriptPubKey, 'hex')
+      );
       return {
         toChain: opReturnData.toChain,
         toAddress: opReturnData.toAddress,
@@ -77,11 +80,11 @@ export class BitcoinEsploraRosenExtractor extends AbstractRosenDataExtractor<Bit
         sourceChainTokenId: assetTransformation.from,
         amount: assetTransformation.amount,
         targetChainTokenId: assetTransformation.to,
-        sourceTxId: transaction.txid,
+        sourceTxId: transaction.id,
       };
     } catch (e) {
       this.logger.debug(
-        `An error occurred while getting Bitcoin rosen data from Esplora: ${e}`
+        `An error occurred while getting Bitcoin rosen data: ${e}`
       );
       if (e instanceof Error && e.stack) {
         this.logger.debug(e.stack);
@@ -96,7 +99,7 @@ export class BitcoinEsploraRosenExtractor extends AbstractRosenDataExtractor<Bit
    * @param toChain event target chain
    */
   getAssetTransformation = (
-    box: EsploraTxOutput,
+    box: BitcoinTxOutput,
     toChain: string
   ): TokenTransformation | undefined => {
     // try to build transformation using locked BTC

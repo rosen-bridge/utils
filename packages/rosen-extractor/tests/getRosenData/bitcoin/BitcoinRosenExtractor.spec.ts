@@ -1,13 +1,13 @@
-import { BitcoinEsploraRosenExtractor } from '../../../lib';
-import * as testData from './esploraTestData';
+import { BitcoinRosenExtractor } from '../../../lib';
+import * as testData from './testData';
 import TestUtils from '../TestUtils';
 import { ERGO_CHAIN, CARDANO_CHAIN } from '../../../lib/getRosenData/const';
-import { BitcoinEsploraTransaction } from '../../../lib/getRosenData/bitcoin/types';
+import JsonBigInt from '@rosen-bridge/json-bigint';
 
-describe('BitcoinEsploraRosenExtractor', () => {
+describe('BitcoinRosenExtractor', () => {
   describe('get', () => {
     /**
-     * @target `BitcoinEsploraRosenExtractor.get` should extract rosenData from
+     * @target `BitcoinRosenExtractor.get` should extract rosenData from
      * BTC locking tx successfully
      * @dependencies
      * @scenario
@@ -18,19 +18,19 @@ describe('BitcoinEsploraRosenExtractor', () => {
      * - it should return expected rosenData object
      */
     it('should extract rosenData from BTC locking tx successfully', () => {
-      const validLockTx = testData.txs.lockTx;
+      const validLockTx = JsonBigInt.stringify(testData.txs.lockTx);
 
-      const extractor = new BitcoinEsploraRosenExtractor(
+      const extractor = new BitcoinRosenExtractor(
         testData.lockAddress,
         TestUtils.tokens
       );
-      const result = extractor.get(validLockTx as BitcoinEsploraTransaction);
+      const result = extractor.get(validLockTx);
 
       expect(result).toStrictEqual(testData.rosenData);
     });
 
     /**
-     * @target `BitcoinEsploraRosenExtractor.get` should return undefined when
+     * @target `BitcoinRosenExtractor.get` should return undefined when
      * there is only one output
      * @dependencies
      * @scenario
@@ -41,19 +41,19 @@ describe('BitcoinEsploraRosenExtractor', () => {
      * - it should return undefined
      */
     it('should return undefined when there is only one output', () => {
-      const invalidTx = testData.txs.lessBoxes;
+      const invalidTx = JsonBigInt.stringify(testData.txs.lessBoxes);
 
-      const extractor = new BitcoinEsploraRosenExtractor(
+      const extractor = new BitcoinRosenExtractor(
         testData.lockAddress,
         TestUtils.tokens
       );
-      const result = extractor.get(invalidTx as BitcoinEsploraTransaction);
+      const result = extractor.get(invalidTx);
 
       expect(result).toBeUndefined();
     });
 
     /**
-     * @target `BitcoinEsploraRosenExtractor.get` should return undefined when
+     * @target `BitcoinRosenExtractor.get` should return undefined when
      * first output is not OP_RETURN
      * @dependencies
      * @scenario
@@ -64,19 +64,19 @@ describe('BitcoinEsploraRosenExtractor', () => {
      * - it should return undefined
      */
     it('should return undefined when first output is not OP_RETURN', () => {
-      const invalidTx = testData.txs.noOpReturn;
+      const invalidTx = JsonBigInt.stringify(testData.txs.noOpReturn);
 
-      const extractor = new BitcoinEsploraRosenExtractor(
+      const extractor = new BitcoinRosenExtractor(
         testData.lockAddress,
         TestUtils.tokens
       );
-      const result = extractor.get(invalidTx as BitcoinEsploraTransaction);
+      const result = extractor.get(invalidTx);
 
       expect(result).toBeUndefined();
     });
 
     /**
-     * @target `BitcoinEsploraRosenExtractor.get` should return undefined when
+     * @target `BitcoinRosenExtractor.get` should return undefined when
      * second output is not to lock address
      * @dependencies
      * @scenario
@@ -87,19 +87,19 @@ describe('BitcoinEsploraRosenExtractor', () => {
      * - it should return undefined
      */
     it('should return undefined when second output is not to lock address', () => {
-      const invalidTx = testData.txs.noLock;
+      const invalidTx = JsonBigInt.stringify(testData.txs.noLock);
 
-      const extractor = new BitcoinEsploraRosenExtractor(
+      const extractor = new BitcoinRosenExtractor(
         testData.lockAddress,
         TestUtils.tokens
       );
-      const result = extractor.get(invalidTx as BitcoinEsploraTransaction);
+      const result = extractor.get(invalidTx);
 
       expect(result).toBeUndefined();
     });
 
     /**
-     * @target `BitcoinEsploraRosenExtractor.get` should return undefined when
+     * @target `BitcoinRosenExtractor.get` should return undefined when
      * no data is extracted from OP_RETURN box
      * @dependencies
      * @scenario
@@ -110,19 +110,19 @@ describe('BitcoinEsploraRosenExtractor', () => {
      * - it should return undefined
      */
     it('should return undefined when no data is extracted from OP_RETURN box', () => {
-      const invalidTx = testData.txs.invalidData;
+      const invalidTx = JsonBigInt.stringify(testData.txs.invalidData);
 
-      const extractor = new BitcoinEsploraRosenExtractor(
+      const extractor = new BitcoinRosenExtractor(
         testData.lockAddress,
         TestUtils.tokens
       );
-      const result = extractor.get(invalidTx as BitcoinEsploraTransaction);
+      const result = extractor.get(invalidTx);
 
       expect(result).toBeUndefined();
     });
 
     /**
-     * @target `BitcoinEsploraRosenExtractor.get` should return undefined when
+     * @target `BitcoinRosenExtractor.get` should return undefined when
      * token transformation is not possible
      * @dependencies
      * @scenario
@@ -134,13 +134,13 @@ describe('BitcoinEsploraRosenExtractor', () => {
      * - it should return undefined
      */
     it('should return undefined when token transformation is not possible', () => {
-      const invalidTx = testData.txs.lockTx;
+      const invalidTx = JsonBigInt.stringify(testData.txs.lockTx);
 
-      const extractor = new BitcoinEsploraRosenExtractor(
+      const extractor = new BitcoinRosenExtractor(
         testData.lockAddress,
         TestUtils.noNativeTokens
       );
-      const result = extractor.get(invalidTx as BitcoinEsploraTransaction);
+      const result = extractor.get(invalidTx);
 
       expect(result).toBeUndefined();
     });
@@ -148,7 +148,7 @@ describe('BitcoinEsploraRosenExtractor', () => {
 
   describe('getAssetTransformation', () => {
     /**
-     * @target `BitcoinEsploraRosenExtractor.getAssetTransformation` should return transformation
+     * @target `BitcoinRosenExtractor.getAssetTransformation` should return transformation
      * successfully when BTC is supported on target chain
      * @dependencies
      * @scenario
@@ -161,7 +161,7 @@ describe('BitcoinEsploraRosenExtractor', () => {
     it('should return transformation successfully when BTC is supported on target chain', () => {
       const lockUtxo = testData.lockUtxo;
 
-      const extractor = new BitcoinEsploraRosenExtractor(
+      const extractor = new BitcoinRosenExtractor(
         testData.lockAddress,
         TestUtils.tokens
       );
@@ -171,7 +171,7 @@ describe('BitcoinEsploraRosenExtractor', () => {
     });
 
     /**
-     * @target `BitcoinEsploraRosenExtractor.getAssetTransformation` should return undefined
+     * @target `BitcoinRosenExtractor.getAssetTransformation` should return undefined
      * when BTC is NOT supported on target chain
      * @dependencies
      * @scenario
@@ -184,7 +184,7 @@ describe('BitcoinEsploraRosenExtractor', () => {
     it('should return undefined when BTC is NOT supported on target chain', () => {
       const lockUtxo = testData.lockUtxo;
 
-      const extractor = new BitcoinEsploraRosenExtractor(
+      const extractor = new BitcoinRosenExtractor(
         testData.lockAddress,
         TestUtils.tokens
       );
