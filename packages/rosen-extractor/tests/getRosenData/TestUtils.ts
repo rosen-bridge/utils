@@ -1,5 +1,7 @@
 import { RosenTokens } from '@rosen-bridge/tokens';
 import {
+  BITCOIN_CHAIN,
+  BITCOIN_NATIVE_TOKEN,
   CARDANO_CHAIN,
   CARDANO_NATIVE_TOKEN,
   ERGO_CHAIN,
@@ -11,6 +13,7 @@ export default class TestUtils {
     idKeys: {
       ergo: 'tokenId',
       cardano: 'tokenId',
+      bitcoin: 'tokenId',
     },
     tokens: [
       {
@@ -80,6 +83,27 @@ export default class TestUtils {
           metaData: {
             type: 'CIP26',
             residency: 'native',
+          },
+        },
+      },
+      {
+        [BITCOIN_CHAIN]: {
+          tokenId: BITCOIN_NATIVE_TOKEN,
+          name: 'BTC',
+          decimals: 8,
+          metaData: {
+            type: 'native',
+            residency: 'native',
+          },
+        },
+        [ERGO_CHAIN]: {
+          tokenId:
+            'dcbda15f1361f5eeba416dd63e059fce34f0c57499e9afe733ea0fd59cf63f48',
+          name: 'rsBTC',
+          decimals: 8,
+          metaData: {
+            type: 'EIP-004',
+            residency: 'wrapped',
           },
         },
       },

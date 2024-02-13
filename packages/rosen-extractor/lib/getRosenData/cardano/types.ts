@@ -32,12 +32,6 @@ interface KoiosTransaction {
   metadata?: Metadata;
 }
 
-interface TokenTransformation {
-  from: string;
-  to: string;
-  amount: string;
-}
-
 interface CardanoRosenData {
   toChain: string;
   toAddress: string;
@@ -151,7 +145,6 @@ type GraphQLTxOutput = NonNullable<GraphQLTransaction['outputs'][0]>;
 export {
   Utxo,
   KoiosTransaction,
-  TokenTransformation,
   CardanoRosenData,
   CardanoMetadataRosenData,
   Metadata,

@@ -823,17 +823,17 @@ class ErgoTestData {
     tokenLocked: {
       from: 'f6a69529b12a7e2326acffee8383e0c44408f87a872886fadf410fe8498006d3',
       to: 'ada',
-      amount: 2000000n,
+      amount: '2000000',
     },
     ergLocked: {
       from: 'erg',
       to: 'ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2.7369676d61',
-      amount: 11100000n,
+      amount: '11100000',
     },
     wrongTokenLocked: {
       from: 'erg',
       to: 'ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2.7369676d61',
-      amount: 1100000n,
+      amount: '1100000',
     },
   };
 

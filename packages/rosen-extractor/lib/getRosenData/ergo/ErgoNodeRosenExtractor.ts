@@ -1,7 +1,7 @@
-import { RosenData } from '../abstract/types';
+import { RosenData, TokenTransformation } from '../abstract/types';
 import AbstractRosenDataExtractor from '../abstract/AbstractRosenDataExtractor';
 import { ERGO_CHAIN, ERGO_NATIVE_TOKEN } from '../const';
-import { NodeOutputBox, NodeTransaction, TokenTransformation } from './types';
+import { NodeOutputBox, NodeTransaction } from './types';
 import { RosenTokens } from '@rosen-bridge/tokens';
 import { Address, Constant } from 'ergo-lib-wasm-nodejs';
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
@@ -49,7 +49,7 @@ export class ErgoNodeRosenExtractor extends AbstractRosenDataExtractor<NodeTrans
                   networkFee: Buffer.from(R4Serialized[2]).toString(),
                   fromAddress: Buffer.from(R4Serialized[4]).toString(),
                   sourceChainTokenId: assetTransformation.from,
-                  amount: assetTransformation.amount.toString(),
+                  amount: assetTransformation.amount,
                   targetChainTokenId: assetTransformation.to,
                   sourceTxId: transaction.id,
                 };
@@ -102,7 +102,7 @@ export class ErgoNodeRosenExtractor extends AbstractRosenDataExtractor<NodeTrans
           return {
             from: this.tokens.getID(token[0], ERGO_CHAIN),
             to: this.tokens.getID(token[0], toChain),
-            amount: lockedToken.amount,
+            amount: lockedToken.amount.toString(),
           };
       }
     }
@@ -115,7 +115,7 @@ export class ErgoNodeRosenExtractor extends AbstractRosenDataExtractor<NodeTrans
       return {
         from: ERGO_NATIVE_TOKEN,
         to: this.tokens.getID(erg[0], toChain),
-        amount: box.value,
+        amount: box.value.toString(),
       };
     } else {
       this.logger.debug(

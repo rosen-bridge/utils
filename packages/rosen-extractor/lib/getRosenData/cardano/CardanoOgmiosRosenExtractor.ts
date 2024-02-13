@@ -1,13 +1,13 @@
-import { RosenData } from '../abstract/types';
+import { RosenData, TokenTransformation } from '../abstract/types';
 import AbstractRosenDataExtractor from '../abstract/AbstractRosenDataExtractor';
 import { CARDANO_CHAIN, CARDANO_NATIVE_TOKEN } from '../const';
 import {
-  ArrayMetadatum,
+  ObjectNoSchema,
   Transaction,
   TransactionOutput,
 } from '@cardano-ogmios/schema';
-import { CardanoMetadataRosenData, TokenTransformation } from './types';
-import { isArray, isString, merge, reduce } from 'lodash-es';
+import { CardanoMetadataRosenData } from './types';
+import { isArray, isString } from 'lodash-es';
 import JsonBigInt from '@rosen-bridge/json-bigint';
 
 export class CardanoOgmiosRosenExtractor extends AbstractRosenDataExtractor<Transaction> {
@@ -22,7 +22,7 @@ export class CardanoOgmiosRosenExtractor extends AbstractRosenDataExtractor<Tran
       if (metadata) {
         const blob = metadata.labels;
         if (blob && blob['0'] && blob['0'].json) {
-          const data = reduce(blob['0'].json as ArrayMetadatum, merge, {});
+          const data = blob['0'].json as ObjectNoSchema;
           if (
             isString(data.to) &&
             isString(data.networkFee) &&

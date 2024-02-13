@@ -1,12 +1,11 @@
 import { isPlainObject } from 'lodash-es';
-import { RosenData } from '../abstract/types';
+import { RosenData, TokenTransformation } from '../abstract/types';
 import AbstractRosenDataExtractor from '../abstract/AbstractRosenDataExtractor';
 import { CARDANO_CHAIN, CARDANO_NATIVE_TOKEN } from '../const';
 import {
   CardanoMetadataRosenData,
   GraphQLTransaction,
   GraphQLTxOutput,
-  TokenTransformation,
 } from './types';
 import JsonBigInt from '@rosen-bridge/json-bigint';
 

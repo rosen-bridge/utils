@@ -1,3 +1,4 @@
+import { NATIVE_RESIDENCY } from './constants';
 import { RosenChainToken, RosenTokens } from './types';
 
 /**
@@ -123,5 +124,19 @@ export class TokenMap {
         `idKey of the ${chain} chain is missed in the config file`
       );
     }
+  };
+
+  /**
+   * return all native tokens for a specific chain.
+   * @param chain: one of supported chains
+   */
+  getAllNativeTokens = (chain: string): RosenChainToken[] => {
+    return this.tokensConfig.tokens
+      .filter(
+        (token) =>
+          Object.hasOwn(token, chain) &&
+          token[chain].metaData.residency == NATIVE_RESIDENCY
+      )
+      .map((token) => token[chain]);
   };
 }

@@ -14,7 +14,7 @@ export const firstTokenMap: RosenTokens = {
         decimals: 0,
         metaData: {
           type: 'tokenType',
-          residency: 'tokenResidency',
+          residency: 'native',
         },
       },
       cardano: {
@@ -25,7 +25,7 @@ export const firstTokenMap: RosenTokens = {
         decimals: 0,
         metaData: {
           type: 'tokenType',
-          residency: 'tokenResidency',
+          residency: 'wrapped',
         },
       },
     },
@@ -37,7 +37,7 @@ export const firstTokenMap: RosenTokens = {
         decimals: 0,
         metaData: {
           type: 'tokenType',
-          residency: 'tokenResidency',
+          residency: 'native',
         },
       },
       binance: {
@@ -46,7 +46,7 @@ export const firstTokenMap: RosenTokens = {
         decimals: 0,
         metaData: {
           type: 'BNBToken',
-          residency: 'tokenResidency',
+          residency: 'wrapped',
         },
       },
     },
@@ -57,7 +57,7 @@ export const firstTokenMap: RosenTokens = {
         decimals: 0,
         metaData: {
           type: 'tokenType',
-          residency: 'tokenResidency',
+          residency: 'wrapped',
         },
       },
       cardano: {
@@ -68,7 +68,7 @@ export const firstTokenMap: RosenTokens = {
         decimals: 0,
         metaData: {
           type: 'tokenType',
-          residency: 'tokenResidency',
+          residency: 'native',
         },
       },
     },
@@ -87,7 +87,7 @@ export const secondTokenMap: RosenTokens = {
         decimals: 0,
         metaData: {
           type: 'tokenType',
-          residency: 'tokenResidency',
+          residency: 'native',
         },
       },
       cardano: {
@@ -98,7 +98,7 @@ export const secondTokenMap: RosenTokens = {
         decimals: 0,
         metaData: {
           type: 'tokenType',
-          residency: 'tokenResidency',
+          residency: 'wrapped',
         },
       },
     },
@@ -112,7 +112,7 @@ export const firstToken = {
     decimals: 0,
     metaData: {
       type: 'tokenType',
-      residency: 'tokenResidency',
+      residency: 'native',
     },
   },
   cardano: {
@@ -123,7 +123,7 @@ export const firstToken = {
     decimals: 0,
     metaData: {
       type: 'tokenType',
-      residency: 'tokenResidency',
+      residency: 'wrapped',
     },
   },
 };
@@ -135,7 +135,7 @@ export const secondToken = {
     decimals: 0,
     metaData: {
       type: 'tokenType',
-      residency: 'tokenResidency',
+      residency: 'wrapped',
     },
   },
   cardano: {
@@ -146,7 +146,7 @@ export const secondToken = {
     decimals: 0,
     metaData: {
       type: 'tokenType',
-      residency: 'tokenResidency',
+      residency: 'native',
     },
   },
 };
