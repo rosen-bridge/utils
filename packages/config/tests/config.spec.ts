@@ -1,7 +1,9 @@
+import './configEnvVars';
+import config from 'config';
 import { describe, expect, it } from 'vitest';
 import { ConfigValidator } from '../lib';
-import * as testData from './configTestData';
 import { ConfigSchema } from '../lib/schema/types/fields';
+import * as testData from './configTestData';
 
 describe('ConfigValidator', () => {
   describe('generateDefault', () => {
@@ -706,6 +708,33 @@ describe('ConfigValidator', () => {
       );
       const types = confValidator.generateTSTypes('Infrastructure');
       expect(types).toEqual(testData.schemaTypeScriptTypesPair.types);
+    });
+  });
+
+  describe('getConfigForLevel', () => {
+    /**
+     * @target getConfigForLevel should return the correct characteristic object
+     * for passed level of node config package
+     * @dependencies
+     * @scenario
+     * - call getConfigForLevel
+     * - check if correct characteristic object is returned
+     * @expected
+     * - correct characteristic object should be returned
+     */
+    it(`should return the correct characteristic object for passed level of node
+    config package`, async () => {
+      const confValidator = new ConfigValidator(
+        <ConfigSchema>testData.schemaConfigCharPair.schema
+      );
+      const configCharacteristic = confValidator.getConfigForLevel(
+        config,
+        config.util.getEnv('HOSTNAME')
+      );
+
+      expect(configCharacteristic).toEqual(
+        testData.schemaConfigCharPair.characteristic
+      );
     });
   });
 });

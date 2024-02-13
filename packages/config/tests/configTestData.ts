@@ -849,3 +849,93 @@ interface Explorer {
 }
 `,
 };
+
+export const schemaConfigCharPair = {
+  schema: {
+    apiType: {
+      type: 'string',
+      default: 'explorer',
+      description: 'type of api to use',
+      label: 'api type',
+      validations: [
+        {
+          required: true,
+          error: 'error message when value not validated',
+        },
+        { choices: ['node', 'explorer'] },
+      ],
+    },
+    servers: {
+      type: 'object',
+      children: {
+        url: {
+          type: 'string',
+        },
+        port: {
+          type: 'number',
+        },
+      },
+    },
+    apis: {
+      type: 'object',
+      children: {
+        explorer: {
+          type: 'object',
+          children: {
+            url: {
+              type: 'string',
+              default: 'example.com',
+            },
+            port: {
+              type: 'number',
+              default: 443,
+            },
+          },
+        },
+      },
+    },
+  },
+  characteristic: {
+    apiType: {
+      label: 'api type',
+      description: 'type of api to use',
+      default: 'explorer',
+      value: null,
+      override: null,
+    },
+    servers: {
+      url: {
+        label: null,
+        description: null,
+        default: 'something.org',
+        value: null,
+        override: 'example.org',
+      },
+      port: {
+        label: null,
+        description: null,
+        default: null,
+        value: null,
+        override: '777',
+      },
+    },
+    apis: {
+      explorer: {
+        url: {
+          label: null,
+          description: null,
+          default: 'example.com',
+          value: null,
+          override: null,
+        },
+        port: {
+          label: null,
+          description: null,
+          default: 443,
+          value: null,
+          override: null,
+        },
+      },
+    },
+  },
+};

@@ -1,0 +1,12 @@
+{
+  "apiType": "explorer",
+  "servers": {
+    "url": "something.org"
+  },
+  "apis": {
+    "explorer": {
+      "url": "example.com",
+      "port": 443
+    }
+  }
+}
