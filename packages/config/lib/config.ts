@@ -606,7 +606,7 @@ export class ConfigValidator {
     const levelIndex = confLevels.indexOf(level);
     if (levelIndex === -1) {
       throw new Error(
-        `The "${level}" level not found in the current system's configuration levels`
+        `The [${level}] level not found in the current system's configuration levels`
       );
     }
 
@@ -632,7 +632,7 @@ export class ConfigValidator {
         break;
       }
       default:
-        throw Error(`Invalid format=${format}`);
+        throw Error(`Invalid format: ${format}`);
     }
 
     const outputPath = path.join(configDir, `${level}.${ext}`);

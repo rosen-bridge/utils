@@ -1,5 +1,5 @@
 ---
-'@rosen-bridge/config': patch
+'@rosen-bridge/config': minor
 ---
 
 added validateAndWriteConfig method to the ConfigValidator class to validate and update node-config files.
