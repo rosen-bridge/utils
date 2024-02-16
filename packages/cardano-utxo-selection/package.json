@@ -37,6 +37,6 @@
     "rosen"
   ],
   "dependencies": {
-    "@rosen-bridge/abstract-logger": "^0.3.0"
+    "@rosen-bridge/abstract-logger": "^1.0.0"
   }
 }
