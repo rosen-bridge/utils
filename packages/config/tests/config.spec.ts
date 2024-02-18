@@ -21,8 +21,6 @@ beforeEach(() => {
 });
 
 describe('ConfigValidator', () => {
-  // beforeEach(() => {});
-
   describe('generateDefault', () => {
     /**
      * @target generateDefault should return default values object for the
