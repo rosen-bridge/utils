@@ -8,6 +8,7 @@
   "include": ["lib/**/*"],
   "references": [
     { "path": "../tokens" },
-    { "path": "../loggers/abstract-logger" }
+    { "path": "../loggers/abstract-logger" },
+    { "path": "../address-codec" }
   ]
 }

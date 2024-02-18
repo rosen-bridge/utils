@@ -1,13 +1,8 @@
 import { isPlainObject } from 'lodash-es';
-import { RosenData } from '../abstract/types';
+import { RosenData, TokenTransformation } from '../abstract/types';
 import AbstractRosenDataExtractor from '../abstract/AbstractRosenDataExtractor';
 import { CARDANO_CHAIN, CARDANO_NATIVE_TOKEN } from '../const';
-import {
-  CardanoMetadataRosenData,
-  KoiosTransaction,
-  TokenTransformation,
-  Utxo,
-} from './types';
+import { CardanoMetadataRosenData, KoiosTransaction, Utxo } from './types';
 import JsonBigInt from '@rosen-bridge/json-bigint';
 
 export class CardanoKoiosRosenExtractor extends AbstractRosenDataExtractor<KoiosTransaction> {

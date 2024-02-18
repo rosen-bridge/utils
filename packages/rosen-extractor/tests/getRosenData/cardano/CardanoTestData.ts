@@ -562,26 +562,16 @@ export default class CardanoTestData {
       hash: '3f495218cb916d2061b51e393b83204d3efc869498a874dbb9df7a28a51cfa7d',
       labels: {
         '0': {
-          json: [
-            {
-              to: 'ergo',
-            },
-            {
-              bridgeFee: '3000',
-            },
-            {
-              networkFee: '300',
-            },
-            {
-              toAddress: '9hZxV3YNSfbCqS6GEses7DhAVSatvaoNtdsiNvkimPGG2c8fzkG',
-            },
-            {
-              fromAddress: [
-                'addr1q8hmp5zjzvv7s7pmgemz3mvrkd2nu7609hwgsqa0auf6h7h3r6x6jn2zrt8',
-                '',
-              ],
-            },
-          ],
+          json: {
+            to: 'ergo',
+            bridgeFee: '3000',
+            networkFee: '300',
+            toAddress: '9hZxV3YNSfbCqS6GEses7DhAVSatvaoNtdsiNvkimPGG2c8fzkG',
+            fromAddress: [
+              'addr1q8hmp5zjzvv7s7pmgemz3mvrkd2nu7609hwgsqa0auf6h7h3r6x6jn2zrt8',
+              '',
+            ],
+          },
         },
       },
     },
@@ -589,24 +579,14 @@ export default class CardanoTestData {
       hash: '3f495218cb916d2061b51e393b83204d3efc869498a874dbb9df7a28a51cfa7d',
       labels: {
         '0': {
-          json: [
-            {
-              to: 'ergo',
-            },
-            {
-              bridgeFee: '3000',
-            },
-            {
-              networkFee: '300',
-            },
-            {
-              toAddress: '9hZxV3YNSfbCqS6GEses7DhAVSatvaoNtdsiNvkimPGG2c8fzkG',
-            },
-            {
-              fromAddress:
-                'addr1q8hmp5zjzvv7s7pmgemz3mvrkd2nu7609hwgsqa0auf6h7h3r6x6jn2zrt8',
-            },
-          ],
+          json: {
+            to: 'ergo',
+            bridgeFee: '3000',
+            networkFee: '300',
+            toAddress: '9hZxV3YNSfbCqS6GEses7DhAVSatvaoNtdsiNvkimPGG2c8fzkG',
+            fromAddress:
+              'addr1q8hmp5zjzvv7s7pmgemz3mvrkd2nu7609hwgsqa0auf6h7h3r6x6jn2zrt8',
+          },
         },
       },
     },
@@ -616,51 +596,31 @@ export default class CardanoTestData {
     noZeroKey: {
       hash: '035ffd77d4fa243b647f6f5ef56ce96dd2d98784da663dfc35eeb986b01b8b72',
       labels: {
-        json: [
-          {
-            to: 'ergo',
-          },
-          {
-            bridgeFee: '3000',
-          },
-          {
-            networkFee: '300',
-          },
-          {
-            toAddress: '9hZxV3YNSfbCqS6GEses7DhAVSatvaoNtdsiNvkimPGG2c8fzkG',
-          },
-          {
-            fromAddress: [
-              'addr1q8hmp5zjzvv7s7pmgemz3mvrkd2nu7609hwgsqa0auf6h7h3r6x6jn2zrt8',
-              '',
-            ],
-          },
-        ],
+        json: {
+          to: 'ergo',
+          bridgeFee: '3000',
+          networkFee: '300',
+          toAddress: '9hZxV3YNSfbCqS6GEses7DhAVSatvaoNtdsiNvkimPGG2c8fzkG',
+          fromAddress: [
+            'addr1q8hmp5zjzvv7s7pmgemz3mvrkd2nu7609hwgsqa0auf6h7h3r6x6jn2zrt8',
+            '',
+          ],
+        },
       },
     },
     noJson: {
       hash: '3f495218cb916d2061b51e393b83204d3efc869498a874dbb9df7a28a51cfa7d',
       labels: {
-        '0': [
-          {
-            to: 'ergo',
-          },
-          {
-            bridgeFee: '3000',
-          },
-          {
-            networkFee: '300',
-          },
-          {
-            toAddress: '9hZxV3YNSfbCqS6GEses7DhAVSatvaoNtdsiNvkimPGG2c8fzkG',
-          },
-          {
-            fromAddress: [
-              'addr1q8hmp5zjzvv7s7pmgemz3mvrkd2nu7609hwgsqa0auf6h7h3r6x6jn2zrt8',
-              '',
-            ],
-          },
-        ],
+        '0': {
+          to: 'ergo',
+          bridgeFee: '3000',
+          networkFee: '300',
+          toAddress: '9hZxV3YNSfbCqS6GEses7DhAVSatvaoNtdsiNvkimPGG2c8fzkG',
+          fromAddress: [
+            'addr1q8hmp5zjzvv7s7pmgemz3mvrkd2nu7609hwgsqa0auf6h7h3r6x6jn2zrt8',
+            '',
+          ],
+        },
       },
     },
   };
