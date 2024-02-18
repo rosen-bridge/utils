@@ -648,7 +648,7 @@ describe('ConfigValidator', () => {
      * - call validateConfig with the config
      * - check if any exception is thrown
      * @expected
-     * - exception should be not be thrown
+     * - exception should not be thrown
      */
     it(`should not throw exception when "bigint" field is passed in string
     format`, async () => {
@@ -669,7 +669,7 @@ describe('ConfigValidator', () => {
      * - call validateConfig with the config
      * - check if any exception is thrown
      * @expected
-     * - exception should be not be thrown
+     * - exception should not be thrown
      */
     it(`should not throw exception when "number" field is passed in string
     format`, async () => {
