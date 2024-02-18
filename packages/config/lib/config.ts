@@ -90,6 +90,11 @@ export class ConfigValidator {
     config: Record<string, any>
   ) => {
     if (value != undefined) {
+      if (field.type === 'bigint') {
+        value = BigInt(value);
+      } else if (field.type === 'number' && value && !isNaN(value)) {
+        value = Number(value);
+      }
       valueValidators[field.type](value, field);
     }
 

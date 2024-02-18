@@ -637,6 +637,48 @@ describe('ConfigValidator', () => {
           .error
       );
     });
+
+    /**
+     * @target validateSchema should not throw exception when "bigint" field is
+     * passed in string format
+     * @dependencies
+     * @scenario
+     * - call validateConfig with the config
+     * - check if any exception is thrown
+     * @expected
+     * - exception should not be thrown
+     */
+    it(`should not throw exception when "bigint" field is passed in string
+    format`, async () => {
+      const confValidator = new ConfigValidator(
+        <ConfigSchema>testData.apiSchemaConfigPairWithStringBigInt.schema
+      );
+
+      confValidator.validateConfig(
+        testData.apiSchemaConfigPairWithStringBigInt.config
+      );
+    });
+
+    /**
+     * @target validateSchema should not throw exception when "number" field is
+     * passed in string format
+     * @dependencies
+     * @scenario
+     * - call validateConfig with the config
+     * - check if any exception is thrown
+     * @expected
+     * - exception should not be thrown
+     */
+    it(`should not throw exception when "number" field is passed in string
+    format`, async () => {
+      const confValidator = new ConfigValidator(
+        <ConfigSchema>testData.apiSchemaConfigPairWithStringNumber.schema
+      );
+
+      confValidator.validateConfig(
+        testData.apiSchemaConfigPairWithStringNumber.config
+      );
+    });
   });
 
   describe('valueAt', () => {
