@@ -194,6 +194,48 @@ describe('TxPot', () => {
       expect(res).toEqual(false);
       expect(mockedSetTransactionAsInvalid).toHaveBeenCalled();
     });
+
+    /**
+     * @target TxPot.validateTx should return false and set tx as invalid
+     * when at least one validator returns false
+     * @dependencies
+     * - database
+     * @scenario
+     * - insert tx into db
+     * - register 3 validator functions (1st and 3rd ones returns true, 2nd one returns false)
+     * - mock TxPot.setTransactionAsInvalid
+     * - run test
+     * - check returned value
+     * - check if function got called
+     * @expected
+     * - should return false
+     * - `setTransactionAsInvalid` should got called
+     */
+    it('should return false and set tx as invalid when at least one validator returns false', async () => {
+      await txRepository.insert(testData.tx1);
+
+      const mockedValidators = [
+        async (tx: TransactionEntity) => true,
+        async (tx: TransactionEntity) => false,
+        async (tx: TransactionEntity) => true,
+      ];
+      mockedValidators.forEach((mockedValidator) =>
+        txPot.registerValidator(
+          testData.tx1.chain,
+          testData.tx1.txType,
+          mockedValidator
+        )
+      );
+
+      const mockedSetTransactionAsInvalid = vi.fn();
+      vi.spyOn(txPot as any, 'setTransactionAsInvalid').mockImplementation(
+        mockedSetTransactionAsInvalid
+      );
+
+      const res = await txPot.callValidateTx(testData.tx1);
+      expect(res).toEqual(false);
+      expect(mockedSetTransactionAsInvalid).toHaveBeenCalled();
+    });
   });
 
   describe('setTxStatus', () => {

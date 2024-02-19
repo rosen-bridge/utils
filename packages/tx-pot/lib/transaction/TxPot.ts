@@ -16,7 +16,10 @@ export class TxPot {
   protected static instance: TxPot;
   protected readonly txRepository: Repository<TransactionEntity>;
   protected chains = new Map<string, AbstractPotChainManager>();
-  protected validators = new Map<string, Map<string, ValidatorFunction>>();
+  protected validators = new Map<
+    string,
+    Map<string, Array<ValidatorFunction>>
+  >();
   protected txTypeCallbacks = new Map<
     string,
     Map<TransactionStatus, CallbackFunction>
@@ -80,11 +83,16 @@ export class TxPot {
   ): void => {
     let chainValidators = this.validators.get(chain);
     if (!chainValidators) {
-      chainValidators = new Map<string, ValidatorFunction>();
+      chainValidators = new Map<string, Array<ValidatorFunction>>();
       this.validators.set(chain, chainValidators);
     }
 
-    chainValidators.set(txType, validator);
+    let currentValidators = chainValidators.get(txType);
+    if (!currentValidators) {
+      currentValidators = [];
+      chainValidators.set(txType, currentValidators);
+    }
+    currentValidators.push(validator);
     this.logger.debug(
       `A tx validator function is registered for chain [${chain}] and type [${txType}]`
     );
@@ -162,18 +170,21 @@ export class TxPot {
    * @param tx
    */
   protected validateTx = async (tx: TransactionEntity): Promise<boolean> => {
-    const validator = this.validators.get(tx.chain)?.get(tx.txType);
-    if (validator === undefined) {
+    const validators = this.validators.get(tx.chain)?.get(tx.txType);
+    if (validators === undefined) {
       // tx is valid since no validator is found
       this.logger.debug(
         `No validator function is found for chain [${tx.chain}] and type [${tx.txType}]`
       );
       return true;
     }
-    if (await validator(tx)) return true;
-
-    await this.setTransactionAsInvalid(tx);
-    return false;
+    for (const validator of validators) {
+      if ((await validator(tx)) === false) {
+        await this.setTransactionAsInvalid(tx);
+        return false;
+      }
+    }
+    return true;
   };
 
   /**
@@ -284,8 +295,11 @@ export class TxPot {
    * - process sent txs
    */
   update = async (): Promise<void> => {
-    // process signed txs
+    // fetch signed and sent txs
     const signedTxs = await this.getTxsByStatus(TransactionStatus.SIGNED);
+    const sentTxs = await this.getTxsByStatus(TransactionStatus.SENT);
+    
+    // process signed txs
     for (const tx of signedTxs) {
       try {
         await this.processSignedTx(tx);
@@ -301,7 +315,6 @@ export class TxPot {
     );
 
     // process sent txs
-    const sentTxs = await this.getTxsByStatus(TransactionStatus.SENT);
     for (const tx of sentTxs) {
       try {
         await this.processesSentTx(tx);
