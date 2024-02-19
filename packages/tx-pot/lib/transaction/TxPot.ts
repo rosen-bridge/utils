@@ -344,13 +344,16 @@ export class TxPot {
 
   /**
    * inserts a new transaction into db
+   *   Note: make sure to set `lastCheck` field if initialStatus is `signed` or `sent`
    * @param txId
    * @param chain
    * @param txType
    * @param requiredSign
    * @param serializedTx
    * @param initialStatus
-   * @param lastCheck
+   * @param lastCheck last blockchain height that tx was valid
+   * @param extra
+   * @param extra2
    */
   addTx = async (
     txId: string,
@@ -359,7 +362,9 @@ export class TxPot {
     requiredSign: number,
     serializedTx: string,
     initialStatus = TransactionStatus.APPROVED,
-    lastCheck = 0
+    lastCheck = 0,
+    extra?: string,
+    extra2?: string
   ): Promise<void> => {
     await this.txRepository.insert({
       txId: txId,
@@ -372,6 +377,8 @@ export class TxPot {
       failedInSign: false,
       signFailedCount: 0,
       serializedTx: serializedTx,
+      extra: extra,
+      extra2: extra2,
     });
   };
 
