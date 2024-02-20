@@ -102,37 +102,27 @@ yargs(hideBin(process.argv))
 
       zxcvbnOptions.setOptions(options);
 
-      if (argv.weak) {
-        console.log(
-          `HASH: ${Buffer.from(blake2b(argv.input, undefined, 32)).toString(
-            'hex'
-          )}`
-        );
-        return;
-      }
-      const password_check = zxcvbn(argv.input);
-      switch (password_check.score) {
-        case 3:
-        case 4:
-          console.log(
-            `HASH: ${Buffer.from(blake2b(argv.input, undefined, 32)).toString(
-              'hex'
-            )}`
-          );
-          break;
-        default:
-          if (password_check.feedback.warning)
-            console.error(`Error: ${password_check.feedback}`);
-          else console.error('your api-key is weak!');
+      const passwordCheck = zxcvbn(argv.input);
+      if (!argv.weak) {
+        if (![3, 4].includes(passwordCheck.score)) {
+          if (passwordCheck.feedback.warning)
+            console.error(`Error: ${passwordCheck.feedback}`);
+          else console.error('Your api-key is weak!');
 
-          if (password_check.feedback.suggestions.length > 0) {
+          if (passwordCheck.feedback.suggestions.length > 0) {
             console.warn('Suggestions:');
-            password_check.feedback.suggestions.forEach((s) =>
+            passwordCheck.feedback.suggestions.forEach((s) =>
               console.warn(`- ${s}`)
             );
           }
-          break;
+          return;
+        }
       }
+      console.log(
+        `HASH: ${Buffer.from(blake2b(argv.input, undefined, 32)).toString(
+          'hex'
+        )}`
+      );
     }
   )
   .demandCommand(1)
