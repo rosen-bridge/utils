@@ -4,6 +4,9 @@ import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import chalk from 'chalk';
 import ora from 'ora';
+import { zxcvbn, zxcvbnOptions } from '@zxcvbn-ts/core';
+import * as zxcvbnCommonPackage from '@zxcvbn-ts/language-common';
+import * as zxcvbnEnPackage from '@zxcvbn-ts/language-en';
 
 import { downloadRosenAssets } from '@rosen-bridge/utils';
 import { EdDSA } from '@rosen-bridge/tss';
@@ -74,17 +77,62 @@ yargs(hideBin(process.argv))
     'blake2b-hash [input]',
     'blake2b hash of specified input',
     (yargs) => {
-      return yargs.positional('input', {
-        type: 'string',
-        demandOption: 'true',
-      });
+      return yargs
+        .positional('input', {
+          type: 'string',
+          demandOption: 'true',
+        })
+        .option('weak', {
+          alias: 'w',
+          description:
+            "choose a weak api-key with own risk! (it isn't a recommended flag!)",
+          default: false,
+          type: 'boolean',
+        });
     },
     (argv) => {
-      console.log(
-        `HASH: ${Buffer.from(blake2b(argv.input, undefined, 32)).toString(
-          'hex'
-        )}`
-      );
+      const options = {
+        translations: zxcvbnEnPackage.translations,
+        graphs: zxcvbnCommonPackage.adjacencyGraphs,
+        dictionary: {
+          ...zxcvbnCommonPackage.dictionary,
+          ...zxcvbnEnPackage.dictionary,
+        },
+      };
+
+      zxcvbnOptions.setOptions(options);
+
+      if (argv.weak) {
+        console.log(
+          `HASH: ${Buffer.from(blake2b(argv.input, undefined, 32)).toString(
+            'hex'
+          )}`
+        );
+        return;
+      }
+      const password_check = zxcvbn(argv.input);
+      switch (password_check.score) {
+        case 3:
+        case 4:
+          console.log(
+            `HASH: ${Buffer.from(blake2b(argv.input, undefined, 32)).toString(
+              'hex'
+            )}`
+          );
+          break;
+        default:
+          if (password_check.feedback.warning)
+            console.error(`Error: ${password_check.feedback}`);
+          else console.error('your api-key is weak!');
+
+          if (password_check.feedback.suggestions.length > 0) {
+            console.warn('Suggestions:');
+            password_check.feedback.suggestions.forEach((s) =>
+              console.warn(`- ${s}`)
+            );
+          }
+          break;
+      }
     }
   )
   .demandCommand(1)
