@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/cli",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "The official Rosen bridge cli, providing helpers for the tasks related to Rosen bridge",
   "main": "dist/bin/index.js",
   "bin": "dist/bin/index.js",
