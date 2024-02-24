@@ -1,4 +1,4 @@
-import { AssetBalance, BitcoinUtxo, selectBitcoinUtxos } from '../lib';
+import { BitcoinUtxo, selectBitcoinUtxos } from '../lib';
 import * as testData from './testData';
 
 describe('selectBitcoinUtxos', () => {
@@ -14,7 +14,7 @@ describe('selectBitcoinUtxos', () => {
    * @dependencies
    * @scenario
    * - mock a function to return 2 boxes
-   * - mock an AssetBalance object with assets less than box assets
+   * - mock an required BTC with assets less than box assets
    * - run test
    * - check returned value
    * @expected
@@ -24,15 +24,12 @@ describe('selectBitcoinUtxos', () => {
     // Mock a function to return 2 boxes
     const nextUtxo = createMockedGeneratorFunction(utxos.slice(0, 2));
 
-    // Mock an AssetBalance object with assets less than box assets
-    const requiredAssets: AssetBalance = {
-      nativeToken: 500000n,
-      tokens: [],
-    };
+    // Mock an required BTC with assets less than box assets
+    const requiredBtc = 500000n;
 
     // Run test
     const result = await selectBitcoinUtxos(
-      requiredAssets,
+      requiredBtc,
       [],
       emptyTrackMap,
       nextUtxo,
@@ -50,7 +47,7 @@ describe('selectBitcoinUtxos', () => {
    * @dependencies
    * @scenario
    * - mock a function to return 2 boxes
-   * - mock an AssetBalance object with assets more than box assets
+   * - mock an required BTC with assets more than box assets
    * - run test
    * - check returned value
    * @expected
@@ -60,15 +57,12 @@ describe('selectBitcoinUtxos', () => {
     // Mock a function to return 2 boxes
     const nextUtxo = createMockedGeneratorFunction(utxos.slice(0, 2));
 
-    // Mock an AssetBalance object with assets more than box assets
-    const requiredAssets: AssetBalance = {
-      nativeToken: 30000000n,
-      tokens: [],
-    };
+    // Mock an required BTC with assets more than box assets
+    const requiredBtc = 30000000n;
 
     // Run test
     const result = await selectBitcoinUtxos(
-      requiredAssets,
+      requiredBtc,
       [],
       emptyTrackMap,
       nextUtxo,
@@ -86,7 +80,7 @@ describe('selectBitcoinUtxos', () => {
    * @dependencies
    * @scenario
    * - mock a function to return 12 boxes
-   * - mock an AssetBalance object with assets less than box assets
+   * - mock an required BTC with assets less than box assets
    * - run test
    * - check returned value
    * @expected
@@ -96,15 +90,12 @@ describe('selectBitcoinUtxos', () => {
     // Mock a function to return 12 boxes
     const nextUtxo = createMockedGeneratorFunction(utxos.slice(0, 12));
 
-    // Mock an AssetBalance object with assets less than box assets
-    const requiredAssets: AssetBalance = {
-      nativeToken: 90000000n,
-      tokens: [],
-    };
+    // Mock an required BTC with assets less than box assets
+    const requiredBtc = 90000000n;
 
     // Run test
     const result = await selectBitcoinUtxos(
-      requiredAssets,
+      requiredBtc,
       [],
       emptyTrackMap,
       nextUtxo,
@@ -122,7 +113,7 @@ describe('selectBitcoinUtxos', () => {
    * @dependencies
    * @scenario
    * - mock a function to return 12 boxes
-   * - mock an AssetBalance object with assets more than box assets
+   * - mock an required BTC with assets more than box assets
    * - run test
    * - check returned value
    * @expected
@@ -132,15 +123,11 @@ describe('selectBitcoinUtxos', () => {
     // Mock a function to return 12 boxes
     const nextUtxo = createMockedGeneratorFunction(utxos.slice(0, 12));
 
-    // Mock an AssetBalance object with assets more than box assets
-    const requiredAssets: AssetBalance = {
-      nativeToken: 130000000n,
-      tokens: [],
-    };
-
+    // Mock an required BTC with assets more than box assets
+    const requiredBtc = 130000000n;
     // Run test
     const result = await selectBitcoinUtxos(
-      requiredAssets,
+      requiredBtc,
       [],
       emptyTrackMap,
       nextUtxo,
@@ -158,7 +145,7 @@ describe('selectBitcoinUtxos', () => {
    * @dependencies
    * @scenario
    * - mock a function to return NO boxes
-   * - mock an AssetBalance object with some assets
+   * - mock an required BTC with some assets
    * - run test
    * - check returned value
    * @expected
@@ -168,15 +155,12 @@ describe('selectBitcoinUtxos', () => {
     // Mock a function to return NO boxes
     const nextUtxo = createMockedGeneratorFunction([]);
 
-    // Mock an AssetBalance object with some assets
-    const requiredAssets: AssetBalance = {
-      nativeToken: 100000n,
-      tokens: [],
-    };
+    // Mock an required BTC with some assets
+    const requiredBtc = 100000n;
 
     // Run test
     const result = await selectBitcoinUtxos(
-      requiredAssets,
+      requiredBtc,
       [],
       emptyTrackMap,
       nextUtxo,
@@ -195,7 +179,7 @@ describe('selectBitcoinUtxos', () => {
    * @scenario
    * - mock a function to return 2 boxes
    * - mock a Map to track first box to a new box
-   * - mock an AssetBalance object with assets less than box assets
+   * - mock an required BTC with assets less than box assets
    * - run test
    * - check returned value
    * @expected
@@ -209,15 +193,12 @@ describe('selectBitcoinUtxos', () => {
     const trackMap = new Map<string, BitcoinUtxo>();
     trackMap.set(`${utxos[0].txId}.${utxos[0].index}`, utxos[2]);
 
-    // Mock an AssetBalance object with assets less than box assets
-    const requiredAssets: AssetBalance = {
-      nativeToken: 500000n,
-      tokens: [],
-    };
+    // Mock an required BTC with assets less than box assets
+    const requiredBtc = 500000n;
 
     // Run test
     const result = await selectBitcoinUtxos(
-      requiredAssets,
+      requiredBtc,
       [],
       trackMap,
       nextUtxo,
@@ -236,7 +217,7 @@ describe('selectBitcoinUtxos', () => {
    * @scenario
    * - mock a function to return 2 boxes
    * - mock a Map to track first box to a new box
-   * - mock an AssetBalance object with assets more than box assets
+   * - mock an required BTC with assets more than box assets
    * - run test
    * - check returned value
    * @expected
@@ -250,15 +231,12 @@ describe('selectBitcoinUtxos', () => {
     const trackMap = new Map<string, BitcoinUtxo>();
     trackMap.set(`${utxos[0].txId}.${utxos[0].index}`, utxos[2]);
 
-    // Mock an AssetBalance object with assets less than box assets
-    const requiredAssets: AssetBalance = {
-      nativeToken: 19000000n,
-      tokens: [],
-    };
+    // Mock an required BTC with assets less than box assets
+    const requiredBtc = 19000000n;
 
     // Run test
     const result = await selectBitcoinUtxos(
-      requiredAssets,
+      requiredBtc,
       [],
       trackMap,
       nextUtxo,
@@ -277,7 +255,7 @@ describe('selectBitcoinUtxos', () => {
    * @scenario
    * - mock a function to return 2 boxes
    * - mock first box as forbidden
-   * - mock an AssetBalance object with assets less than box assets
+   * - mock an required BTC with assets less than box assets
    * - run test
    * - check returned value
    * @expected
@@ -290,15 +268,12 @@ describe('selectBitcoinUtxos', () => {
     // Mock first box as forbidden
     const forbiddenIds = [`${utxos[0].txId}.${utxos[0].index}`];
 
-    // Mock an AssetBalance object with assets less than box assets
-    const requiredAssets: AssetBalance = {
-      nativeToken: 900000n,
-      tokens: [],
-    };
+    // Mock an required BTC with assets less than box assets
+    const requiredBtc = 900000n;
 
     // Run test
     const result = await selectBitcoinUtxos(
-      requiredAssets,
+      requiredBtc,
       forbiddenIds,
       emptyTrackMap,
       nextUtxo,
@@ -317,7 +292,7 @@ describe('selectBitcoinUtxos', () => {
    * @scenario
    * - mock a function to return one box
    * - mock a Map to track first box to no box
-   * - mock an AssetBalance object with assets less than box assets
+   * - mock an required BTC with assets less than box assets
    * - run test
    * - check returned value
    * @expected
@@ -331,15 +306,12 @@ describe('selectBitcoinUtxos', () => {
     const trackMap = new Map<string, BitcoinUtxo | undefined>();
     trackMap.set(`${utxos[0].txId}.${utxos[0].index}`, undefined);
 
-    // Mock an AssetBalance object with assets less than box assets
-    const requiredAssets: AssetBalance = {
-      nativeToken: 500000n,
-      tokens: [],
-    };
+    // Mock an required BTC with assets less than box assets
+    const requiredBtc = 500000n;
 
     // Run test
     const result = await selectBitcoinUtxos(
-      requiredAssets,
+      requiredBtc,
       [],
       trackMap,
       nextUtxo,
@@ -358,7 +330,7 @@ describe('selectBitcoinUtxos', () => {
    * @scenario
    * - mock a function to return 2 boxes
    * - mock a Map to track both boxes to a box
-   * - mock an AssetBalance object with assets more than tracked box assets
+   * - mock an required BTC with assets more than tracked box assets
    * - run test
    * - check returned value
    * @expected
@@ -373,15 +345,12 @@ describe('selectBitcoinUtxos', () => {
     trackMap.set(`${utxos[0].txId}.${utxos[0].index}`, utxos[2]);
     trackMap.set(`${utxos[1].txId}.${utxos[1].index}`, utxos[2]);
 
-    // Mock an AssetBalance object with assets more than tracked box assets
-    const requiredAssets: AssetBalance = {
-      nativeToken: 4000000n,
-      tokens: [],
-    };
+    // Mock an required BTC with assets more than tracked box assets
+    const requiredBtc = 4000000n;
 
     // Run test
     const result = await selectBitcoinUtxos(
-      requiredAssets,
+      requiredBtc,
       [],
       trackMap,
       nextUtxo,
@@ -399,7 +368,7 @@ describe('selectBitcoinUtxos', () => {
    * @dependencies
    * @scenario
    * - mock a function to return 2 boxes
-   * - mock an AssetBalance object with assets less than box assets
+   * - mock an required BTC with assets less than box assets
    * - run test
    * - check returned value
    * @expected
@@ -409,15 +378,12 @@ describe('selectBitcoinUtxos', () => {
     // Mock a function to return 2 boxes
     const nextUtxo = createMockedGeneratorFunction(utxos.slice(0, 2));
 
-    // Mock an AssetBalance object with assets less than box assets
-    const requiredAssets: AssetBalance = {
-      nativeToken: 500000n,
-      tokens: [],
-    };
+    // Mock an required BTC with assets less than box assets
+    const requiredBtc = 500000n;
 
     // Run test
     const result = await selectBitcoinUtxos(
-      requiredAssets,
+      requiredBtc,
       [],
       emptyTrackMap,
       nextUtxo,

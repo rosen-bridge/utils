@@ -1,4 +1,4 @@
-import { AssetBalance, BoxInfo, BitcoinUtxo, CoveringBoxes } from './types';
+import { BoxInfo, BitcoinUtxo, CoveringBoxes } from './types';
 import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
 
 /**
@@ -18,7 +18,7 @@ export const getUtxoInfo = (utxo: BitcoinUtxo): BoxInfo => {
 
 /**
  * gets useful, allowable and last boxes for an address until required assets are satisfied
- * @param requiredAssets the required assets
+ * @param requiredBtc the required assets
  * @param forbiddenBoxIds the id of forbidden boxes
  * @param trackMap the mapping of a box id to it's next box
  * @param nextUtxo a generator function to get utxo
@@ -26,27 +26,20 @@ export const getUtxoInfo = (utxo: BitcoinUtxo): BoxInfo => {
  * @returns an object containing the selected boxes with a boolean showing if requirements covered or not
  */
 export const selectBitcoinUtxos = async (
-  requiredAssets: AssetBalance,
+  requiredBtc: bigint,
   forbiddenBoxIds: Array<string>,
   trackMap: Map<string, BitcoinUtxo | undefined>,
   utxoIterator: Iterator<BitcoinUtxo, undefined>,
   minimumAllowedBtc: bigint,
   logger: AbstractLogger = new DummyLogger()
 ): Promise<CoveringBoxes<BitcoinUtxo>> => {
-  let uncoveredNativeToken = requiredAssets.nativeToken;
-  const uncoveredTokens = requiredAssets.tokens.filter(
-    (info) => info.value > 0n
-  );
+  let uncoveredNativeToken = requiredBtc;
   const selectedUtxos: Array<string> = [];
-
-  const isRequirementRemaining = () => {
-    return uncoveredTokens.length > 0 || uncoveredNativeToken > 0n;
-  };
 
   const result: Array<BitcoinUtxo> = [];
 
   // get boxes until requirements are satisfied
-  while (isRequirementRemaining()) {
+  while (uncoveredNativeToken > 0n) {
     const iteratorResponse = utxoIterator.next();
 
     // end process if there are no more boxes
@@ -84,46 +77,29 @@ export const selectBitcoinUtxos = async (
     // check if box value is sufficient
     if (boxInfo.assets.nativeToken < minimumAllowedBtc) {
       logger.debug(
-        `box value is less than minimum allowed value [${boxInfo.assets.nativeToken} < ${minimumAllowedBtc}]`
+        `box [${boxInfo.id}] is skipped due to insufficient value [${boxInfo.assets.nativeToken} < ${minimumAllowedBtc}]`
       );
       continue;
     }
 
     // check and add if box assets are useful to requirements
-    let isUseful = false;
-    boxInfo.assets.tokens.forEach((boxToken) => {
-      const tokenIndex = uncoveredTokens.findIndex(
-        (requiredToken) => requiredToken.id === boxToken.id
-      );
-      if (tokenIndex !== -1) {
-        isUseful = true;
-        const token = uncoveredTokens[tokenIndex];
-        if (token.value > boxToken.value) token.value -= boxToken.value;
-        else uncoveredTokens.splice(tokenIndex, 1);
-        logger.debug(
-          `box [${boxInfo.id}] is selected due to need of token [${token.id}]`
-        );
-      }
-    });
-    if (isUseful || uncoveredNativeToken > 0n) {
-      uncoveredNativeToken -=
-        uncoveredNativeToken >= boxInfo.assets.nativeToken
-          ? boxInfo.assets.nativeToken
-          : uncoveredNativeToken;
-      result.push(trackedBox!);
-      selectedUtxos.push(boxInfo.id);
-      logger.debug(`box [${boxInfo.id}] is selected`);
-    } else logger.debug(`box [${boxInfo.id}] is ignored`);
+    uncoveredNativeToken -=
+      uncoveredNativeToken >= boxInfo.assets.nativeToken
+        ? boxInfo.assets.nativeToken
+        : uncoveredNativeToken;
+    result.push(trackedBox!);
+    selectedUtxos.push(boxInfo.id);
+    logger.debug(`box [${boxInfo.id}] is selected`);
 
     // end process if requirements are satisfied
-    if (!isRequirementRemaining()) {
+    if (uncoveredNativeToken <= 0n) {
       logger.debug(`requirements satisfied`);
       break;
     }
   }
 
   return {
-    covered: !isRequirementRemaining(),
+    covered: uncoveredNativeToken <= 0n,
     boxes: result,
   };
 };
