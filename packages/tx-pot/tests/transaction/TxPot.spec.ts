@@ -194,6 +194,48 @@ describe('TxPot', () => {
       expect(res).toEqual(false);
       expect(mockedSetTransactionAsInvalid).toHaveBeenCalled();
     });
+
+    /**
+     * @target TxPot.validateTx should return false and set tx as invalid
+     * when at least one validator returns false
+     * @dependencies
+     * - database
+     * @scenario
+     * - insert tx into db
+     * - register 3 validator functions (1st and 3rd ones returns true, 2nd one returns false)
+     * - mock TxPot.setTransactionAsInvalid
+     * - run test
+     * - check returned value
+     * - check if function got called
+     * @expected
+     * - should return false
+     * - `setTransactionAsInvalid` should got called
+     */
+    it('should return false and set tx as invalid when at least one validator returns false', async () => {
+      await txRepository.insert(testData.tx1);
+
+      const mockedValidators = [
+        async (tx: TransactionEntity) => true,
+        async (tx: TransactionEntity) => false,
+        async (tx: TransactionEntity) => true,
+      ];
+      mockedValidators.forEach((mockedValidator) =>
+        txPot.registerValidator(
+          testData.tx1.chain,
+          testData.tx1.txType,
+          mockedValidator
+        )
+      );
+
+      const mockedSetTransactionAsInvalid = vi.fn();
+      vi.spyOn(txPot as any, 'setTransactionAsInvalid').mockImplementation(
+        mockedSetTransactionAsInvalid
+      );
+
+      const res = await txPot.callValidateTx(testData.tx1);
+      expect(res).toEqual(false);
+      expect(mockedSetTransactionAsInvalid).toHaveBeenCalled();
+    });
   });
 
   describe('setTxStatus', () => {
@@ -804,6 +846,42 @@ describe('TxPot', () => {
         ...testData.tx1,
         lastStatusUpdate: String(testData.currentTimeStampAsSeconds),
         extra: null,
+        extra2: null,
+      });
+    });
+
+    /**
+     * @target TxPot.addTx should insert new tx with extra fields successfully
+     * @dependencies
+     * - Date
+     * - database
+     * @scenario
+     * - run test
+     * - check db records
+     * @expected
+     * - new tx should be inserted
+     */
+    it('should insert new tx with extra fields successfully', async () => {
+      await txPot.addTx(
+        testData.tx3.txId,
+        testData.tx3.chain,
+        testData.tx3.txType,
+        testData.tx3.requiredSign,
+        testData.tx3.serializedTx,
+        testData.tx3.status as TransactionStatus,
+        testData.tx3.lastCheck,
+        testData.tx3.extra,
+        testData.tx3.extra2
+      );
+
+      const txs = await txRepository.find();
+      expect(txs.length).toEqual(1);
+      expect(txs[0]).toEqual({
+        ...testData.tx3,
+        failedInSign: false,
+        signFailedCount: 0,
+        lastStatusUpdate: String(testData.currentTimeStampAsSeconds),
+        extra: testData.tx3.extra,
         extra2: null,
       });
     });
