@@ -14,7 +14,7 @@ describe('selectBitcoinUtxos', () => {
    * @dependencies
    * @scenario
    * - mock a function to return 2 boxes
-   * - mock an required BTC with assets less than box assets
+   * - mock required BTC with assets less than box assets
    * - run test
    * - check returned value
    * @expected
@@ -24,7 +24,7 @@ describe('selectBitcoinUtxos', () => {
     // Mock a function to return 2 boxes
     const nextUtxo = createMockedGeneratorFunction(utxos.slice(0, 2));
 
-    // Mock an required BTC with assets less than box assets
+    // Mock required BTC with assets less than box assets
     const requiredBtc = 500000n;
 
     // Run test
@@ -33,7 +33,10 @@ describe('selectBitcoinUtxos', () => {
       [],
       emptyTrackMap,
       nextUtxo,
-      0n
+      0n,
+      0,
+      0,
+      1
     );
 
     // Check returned value
@@ -47,7 +50,7 @@ describe('selectBitcoinUtxos', () => {
    * @dependencies
    * @scenario
    * - mock a function to return 2 boxes
-   * - mock an required BTC with assets more than box assets
+   * - mock required BTC with assets more than box assets
    * - run test
    * - check returned value
    * @expected
@@ -57,7 +60,7 @@ describe('selectBitcoinUtxos', () => {
     // Mock a function to return 2 boxes
     const nextUtxo = createMockedGeneratorFunction(utxos.slice(0, 2));
 
-    // Mock an required BTC with assets more than box assets
+    // Mock required BTC with assets more than box assets
     const requiredBtc = 30000000n;
 
     // Run test
@@ -66,7 +69,10 @@ describe('selectBitcoinUtxos', () => {
       [],
       emptyTrackMap,
       nextUtxo,
-      0n
+      0n,
+      0,
+      0,
+      1
     );
 
     // Check returned value
@@ -80,7 +86,7 @@ describe('selectBitcoinUtxos', () => {
    * @dependencies
    * @scenario
    * - mock a function to return 12 boxes
-   * - mock an required BTC with assets less than box assets
+   * - mock required BTC with assets less than box assets
    * - run test
    * - check returned value
    * @expected
@@ -90,7 +96,7 @@ describe('selectBitcoinUtxos', () => {
     // Mock a function to return 12 boxes
     const nextUtxo = createMockedGeneratorFunction(utxos.slice(0, 12));
 
-    // Mock an required BTC with assets less than box assets
+    // Mock required BTC with assets less than box assets
     const requiredBtc = 90000000n;
 
     // Run test
@@ -99,7 +105,10 @@ describe('selectBitcoinUtxos', () => {
       [],
       emptyTrackMap,
       nextUtxo,
-      0n
+      0n,
+      0,
+      0,
+      1
     );
 
     // Check returned value
@@ -113,7 +122,7 @@ describe('selectBitcoinUtxos', () => {
    * @dependencies
    * @scenario
    * - mock a function to return 12 boxes
-   * - mock an required BTC with assets more than box assets
+   * - mock required BTC with assets more than box assets
    * - run test
    * - check returned value
    * @expected
@@ -123,7 +132,7 @@ describe('selectBitcoinUtxos', () => {
     // Mock a function to return 12 boxes
     const nextUtxo = createMockedGeneratorFunction(utxos.slice(0, 12));
 
-    // Mock an required BTC with assets more than box assets
+    // Mock required BTC with assets more than box assets
     const requiredBtc = 130000000n;
     // Run test
     const result = await selectBitcoinUtxos(
@@ -131,7 +140,10 @@ describe('selectBitcoinUtxos', () => {
       [],
       emptyTrackMap,
       nextUtxo,
-      0n
+      0n,
+      0,
+      0,
+      1
     );
 
     // Check returned value
@@ -145,7 +157,7 @@ describe('selectBitcoinUtxos', () => {
    * @dependencies
    * @scenario
    * - mock a function to return NO boxes
-   * - mock an required BTC with some assets
+   * - mock required BTC with some assets
    * - run test
    * - check returned value
    * @expected
@@ -155,7 +167,7 @@ describe('selectBitcoinUtxos', () => {
     // Mock a function to return NO boxes
     const nextUtxo = createMockedGeneratorFunction([]);
 
-    // Mock an required BTC with some assets
+    // Mock required BTC with some assets
     const requiredBtc = 100000n;
 
     // Run test
@@ -164,7 +176,10 @@ describe('selectBitcoinUtxos', () => {
       [],
       emptyTrackMap,
       nextUtxo,
-      0n
+      0n,
+      0,
+      0,
+      1
     );
 
     // Check returned value
@@ -179,7 +194,7 @@ describe('selectBitcoinUtxos', () => {
    * @scenario
    * - mock a function to return 2 boxes
    * - mock a Map to track first box to a new box
-   * - mock an required BTC with assets less than box assets
+   * - mock required BTC with assets less than box assets
    * - run test
    * - check returned value
    * @expected
@@ -193,7 +208,7 @@ describe('selectBitcoinUtxos', () => {
     const trackMap = new Map<string, BitcoinUtxo>();
     trackMap.set(`${utxos[0].txId}.${utxos[0].index}`, utxos[2]);
 
-    // Mock an required BTC with assets less than box assets
+    // Mock required BTC with assets less than box assets
     const requiredBtc = 500000n;
 
     // Run test
@@ -202,7 +217,10 @@ describe('selectBitcoinUtxos', () => {
       [],
       trackMap,
       nextUtxo,
-      0n
+      0n,
+      0,
+      0,
+      1
     );
 
     // Check returned value
@@ -217,7 +235,7 @@ describe('selectBitcoinUtxos', () => {
    * @scenario
    * - mock a function to return 2 boxes
    * - mock a Map to track first box to a new box
-   * - mock an required BTC with assets more than box assets
+   * - mock required BTC with assets more than box assets
    * - run test
    * - check returned value
    * @expected
@@ -231,7 +249,7 @@ describe('selectBitcoinUtxos', () => {
     const trackMap = new Map<string, BitcoinUtxo>();
     trackMap.set(`${utxos[0].txId}.${utxos[0].index}`, utxos[2]);
 
-    // Mock an required BTC with assets less than box assets
+    // Mock required BTC with assets less than box assets
     const requiredBtc = 19000000n;
 
     // Run test
@@ -240,7 +258,10 @@ describe('selectBitcoinUtxos', () => {
       [],
       trackMap,
       nextUtxo,
-      0n
+      0n,
+      0,
+      0,
+      1
     );
 
     // Check returned value
@@ -255,7 +276,7 @@ describe('selectBitcoinUtxos', () => {
    * @scenario
    * - mock a function to return 2 boxes
    * - mock first box as forbidden
-   * - mock an required BTC with assets less than box assets
+   * - mock required BTC with assets less than box assets
    * - run test
    * - check returned value
    * @expected
@@ -268,7 +289,7 @@ describe('selectBitcoinUtxos', () => {
     // Mock first box as forbidden
     const forbiddenIds = [`${utxos[0].txId}.${utxos[0].index}`];
 
-    // Mock an required BTC with assets less than box assets
+    // Mock required BTC with assets less than box assets
     const requiredBtc = 900000n;
 
     // Run test
@@ -277,7 +298,10 @@ describe('selectBitcoinUtxos', () => {
       forbiddenIds,
       emptyTrackMap,
       nextUtxo,
-      0n
+      0n,
+      0,
+      0,
+      1
     );
 
     // Check returned value
@@ -292,7 +316,7 @@ describe('selectBitcoinUtxos', () => {
    * @scenario
    * - mock a function to return one box
    * - mock a Map to track first box to no box
-   * - mock an required BTC with assets less than box assets
+   * - mock required BTC with assets less than box assets
    * - run test
    * - check returned value
    * @expected
@@ -306,7 +330,7 @@ describe('selectBitcoinUtxos', () => {
     const trackMap = new Map<string, BitcoinUtxo | undefined>();
     trackMap.set(`${utxos[0].txId}.${utxos[0].index}`, undefined);
 
-    // Mock an required BTC with assets less than box assets
+    // Mock required BTC with assets less than box assets
     const requiredBtc = 500000n;
 
     // Run test
@@ -315,7 +339,10 @@ describe('selectBitcoinUtxos', () => {
       [],
       trackMap,
       nextUtxo,
-      0n
+      0n,
+      0,
+      0,
+      1
     );
 
     // Check returned value
@@ -330,7 +357,7 @@ describe('selectBitcoinUtxos', () => {
    * @scenario
    * - mock a function to return 2 boxes
    * - mock a Map to track both boxes to a box
-   * - mock an required BTC with assets more than tracked box assets
+   * - mock required BTC with assets more than tracked box assets
    * - run test
    * - check returned value
    * @expected
@@ -345,7 +372,7 @@ describe('selectBitcoinUtxos', () => {
     trackMap.set(`${utxos[0].txId}.${utxos[0].index}`, utxos[2]);
     trackMap.set(`${utxos[1].txId}.${utxos[1].index}`, utxos[2]);
 
-    // Mock an required BTC with assets more than tracked box assets
+    // Mock required BTC with assets more than tracked box assets
     const requiredBtc = 4000000n;
 
     // Run test
@@ -354,7 +381,10 @@ describe('selectBitcoinUtxos', () => {
       [],
       trackMap,
       nextUtxo,
-      0n
+      0n,
+      0,
+      0,
+      1
     );
 
     // Check returned value
@@ -368,7 +398,8 @@ describe('selectBitcoinUtxos', () => {
    * @dependencies
    * @scenario
    * - mock a function to return 2 boxes
-   * - mock an required BTC with assets less than box assets
+   * - mock required BTC with assets less than box assets
+   * - mock minimum allowed satoshi more than both boxes assets
    * - run test
    * - check returned value
    * @expected
@@ -378,8 +409,11 @@ describe('selectBitcoinUtxos', () => {
     // Mock a function to return 2 boxes
     const nextUtxo = createMockedGeneratorFunction(utxos.slice(0, 2));
 
-    // Mock an required BTC with assets less than box assets
+    // Mock required BTC with assets less than box assets
     const requiredBtc = 500000n;
+
+    // Mock minimum allowed satoshi more than both boxes assets
+    const minimumAllowedSatoshi = 12300000n;
 
     // Run test
     const result = await selectBitcoinUtxos(
@@ -387,11 +421,55 @@ describe('selectBitcoinUtxos', () => {
       [],
       emptyTrackMap,
       nextUtxo,
-      12300000n
+      minimumAllowedSatoshi,
+      0,
+      0,
+      1
     );
 
     // Check returned value
     expect(result.covered).toEqual(false);
     expect(result.boxes.length).toEqual(0);
+  });
+
+  /**
+   * @target selectBitcoinUtxos should return enough boxes to satisfy estimated fee
+   * @dependencies
+   * @scenario
+   * - mock a function to return 2 boxes
+   * - mock required BTC equal to first box value
+   * - mock input weight, estimated tx weight and fee ratio
+   * - run test
+   * - check returned value
+   * @expected
+   * - it should return true with two boxes
+   */
+  it('should return enough boxes to satisfy estimated fee', async () => {
+    // Mock a function to return 2 boxes
+    const nextUtxo = createMockedGeneratorFunction(utxos.slice(0, 2));
+
+    // Mock required BTC equal to first box value
+    const requiredBtc = utxos[0].value;
+
+    // Mock input weight, estimated tx weight and fee ratio
+    const inputWeight = 2;
+    const estimatedTxWeight = 4;
+    const feeRatio = 2;
+
+    // Run test
+    const result = await selectBitcoinUtxos(
+      requiredBtc,
+      [],
+      emptyTrackMap,
+      nextUtxo,
+      0n,
+      inputWeight,
+      estimatedTxWeight,
+      feeRatio
+    );
+
+    // Check returned value
+    expect(result.covered).toEqual(true);
+    expect(result.boxes).toEqual(utxos.slice(0, 2));
   });
 });
