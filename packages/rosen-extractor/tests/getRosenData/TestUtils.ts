@@ -1,3 +1,7 @@
+import {
+  ETHEREUM_CHAIN,
+  ETHEREUM_NATIVE_TOKEN,
+} from './../../lib/getRosenData/const';
 import { RosenTokens } from '@rosen-bridge/tokens';
 import {
   BITCOIN_CHAIN,
@@ -14,6 +18,7 @@ export default class TestUtils {
       ergo: 'tokenId',
       cardano: 'tokenId',
       bitcoin: 'tokenId',
+      ethereum: 'tokenId',
     },
     tokens: [
       {
@@ -61,6 +66,15 @@ export default class TestUtils {
             residency: 'tokenResidency',
           },
         },
+        [ETHEREUM_CHAIN]: {
+          tokenId: 'b416c8a6d7ec94706a9ae2c26c11d320519482b1',
+          name: 'rsAda',
+          decimals: 6,
+          metaData: {
+            type: 'ERC-20',
+            residency: 'wrapped',
+          },
+        },
       },
       {
         [ERGO_CHAIN]: {
@@ -87,6 +101,15 @@ export default class TestUtils {
         },
       },
       {
+        [ETHEREUM_CHAIN]: {
+          tokenId: '4606d11ff65b17d29e8c5e4085f9a868a8e5e4f2',
+          name: 'rsBTC',
+          decimals: 8,
+          metaData: {
+            type: 'ERC-20',
+            residency: 'wrapped',
+          },
+        },
         [BITCOIN_CHAIN]: {
           tokenId: BITCOIN_NATIVE_TOKEN,
           name: 'BTC',
@@ -101,6 +124,27 @@ export default class TestUtils {
             'dcbda15f1361f5eeba416dd63e059fce34f0c57499e9afe733ea0fd59cf63f48',
           name: 'rsBTC',
           decimals: 8,
+          metaData: {
+            type: 'EIP-004',
+            residency: 'wrapped',
+          },
+        },
+      },
+      {
+        [ETHEREUM_CHAIN]: {
+          tokenId: ETHEREUM_NATIVE_TOKEN,
+          name: 'ETH',
+          decimals: 18,
+          metaData: {
+            type: 'native',
+            residency: 'native',
+          },
+        },
+        [ERGO_CHAIN]: {
+          tokenId:
+            'dcbda15f1361f5eeba41748193e059fce34f0c57499e9afe733ea0fd59cf63f48',
+          name: 'rsETH',
+          decimals: 18,
           metaData: {
             type: 'EIP-004',
             residency: 'wrapped',
