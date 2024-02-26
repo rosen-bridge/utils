@@ -1,9 +1,24 @@
-import './configEnvVars';
+import { configDir } from './configEnvSetup';
 import config from 'config';
-import { describe, expect, it } from 'vitest';
+import fs from 'fs';
+import path from 'path';
+import { afterAll, beforeEach, describe, expect, it } from 'vitest';
 import { ConfigValidator } from '../lib';
 import { ConfigSchema } from '../lib/schema/types/fields';
 import * as testData from './configTestData';
+
+afterAll(() => {
+  fs.rmSync(configDir, { force: true, recursive: true });
+});
+
+beforeEach(() => {
+  fs.readdirSync(configDir).forEach((file) => {
+    fs.unlinkSync(path.join(configDir, file));
+  });
+  fs.cpSync(path.join(__dirname, 'configTestFiles'), configDir, {
+    recursive: true,
+  });
+});
 
 describe('ConfigValidator', () => {
   describe('generateDefault', () => {
@@ -622,6 +637,48 @@ describe('ConfigValidator', () => {
           .error
       );
     });
+
+    /**
+     * @target validateSchema should not throw exception when "bigint" field is
+     * passed in string format
+     * @dependencies
+     * @scenario
+     * - call validateConfig with the config
+     * - check if any exception is thrown
+     * @expected
+     * - exception should not be thrown
+     */
+    it(`should not throw exception when "bigint" field is passed in string
+    format`, async () => {
+      const confValidator = new ConfigValidator(
+        <ConfigSchema>testData.apiSchemaConfigPairWithStringBigInt.schema
+      );
+
+      confValidator.validateConfig(
+        testData.apiSchemaConfigPairWithStringBigInt.config
+      );
+    });
+
+    /**
+     * @target validateSchema should not throw exception when "number" field is
+     * passed in string format
+     * @dependencies
+     * @scenario
+     * - call validateConfig with the config
+     * - check if any exception is thrown
+     * @expected
+     * - exception should not be thrown
+     */
+    it(`should not throw exception when "number" field is passed in string
+    format`, async () => {
+      const confValidator = new ConfigValidator(
+        <ConfigSchema>testData.apiSchemaConfigPairWithStringNumber.schema
+      );
+
+      confValidator.validateConfig(
+        testData.apiSchemaConfigPairWithStringNumber.config
+      );
+    });
   });
 
   describe('valueAt', () => {
@@ -729,12 +786,110 @@ describe('ConfigValidator', () => {
       );
       const configCharacteristic = confValidator.getConfigForLevel(
         config,
-        config.util.getEnv('HOSTNAME')
+        'local'
       );
 
       expect(configCharacteristic).toEqual(
         testData.schemaConfigCharPair.characteristic
       );
+    });
+  });
+
+  describe('validateAndWriteConfig', () => {
+    /**
+     * @target validateAndWriteConfig should validate config when merged with
+     * passed object and write it to the appropriate config file
+     * @dependencies
+     * @scenario
+     * - call validateAndWriteConfig
+     * - check validateAndWriteConfig to throw no exception
+     * - check the config file to be correctly saved
+     * @expected
+     * - validateAndWriteConfig should throw no exception
+     * - the config file should be correctly saved
+     */
+    it(`should validate config when merged with passed object and write it to
+    the appropriate config file`, async () => {
+      const confValidator = new ConfigValidator(
+        <ConfigSchema>testData.schemaConfigCharPair.schema
+      );
+      const obj = { apiType: 'node' };
+      confValidator.validateAndWriteConfig(obj, config, 'default', 'json');
+      const savedObj = JSON.parse(
+        fs.readFileSync(path.join(configDir, 'default.json'), 'utf-8')
+      );
+
+      expect(savedObj).toEqual(obj);
+    });
+
+    /**
+     * @target validateAndWriteConfig should throw exception when config after
+     * being merged with passed object is not valid and preserve the original
+     * config file
+     * @dependencies
+     * @scenario
+     * - call validateAndWriteConfig
+     * - check validateAndWriteConfig to throw exception
+     * - check the config file to be unchanged
+     * @expected
+     * - validateAndWriteConfig should throw exception
+     * - config file should be unchanged
+     */
+    it(`should throw exception when config after being merged with passed object
+    is not valid and preserve the original config file`, async () => {
+      const confValidator = new ConfigValidator(
+        <ConfigSchema>testData.schemaConfigCharPair.schema
+      );
+      const originalObj = JSON.parse(
+        fs.readFileSync(path.join(configDir, 'local.json'), 'utf-8')
+      );
+
+      const obj = { apiType: 'wrong-value' };
+
+      expect(() =>
+        confValidator.validateAndWriteConfig(obj, config, 'local', 'json')
+      ).toThrow('value should be one of the choices');
+
+      const savedObj = JSON.parse(
+        fs.readFileSync(path.join(configDir, 'local.json'), 'utf-8')
+      );
+      expect(savedObj).toEqual(originalObj);
+    });
+
+    /**
+     * @target validateAndWriteConfig should not throw exception when config
+     * after being merged with passed object is valid even if the passed object
+     * itself is not valid
+     * @dependencies
+     * @scenario
+     * - call validateAndWriteConfig
+     * - check validateAndWriteConfig not to throw exception
+     * - check the config file to be correctly saved
+     * @expected
+     * - validateAndWriteConfig should throw exception
+     * - config file should be correctly saved
+     */
+    it(`should throw exception when config after being merged with passed object
+    is not valid and preserve the original config file`, async () => {
+      const confValidator = new ConfigValidator(
+        <ConfigSchema>testData.schemaConfigCharPair.schema
+      );
+      const originalObj = JSON.parse(
+        fs.readFileSync(path.join(configDir, 'local.json'), 'utf-8')
+      );
+
+      const obj = {
+        servers: {
+          url: 555,
+        },
+      };
+
+      confValidator.validateAndWriteConfig(obj, config, 'local', 'json');
+
+      const savedObj = JSON.parse(
+        fs.readFileSync(path.join(configDir, 'local.json'), 'utf-8')
+      );
+      expect(savedObj).toEqual(obj);
     });
   });
 });

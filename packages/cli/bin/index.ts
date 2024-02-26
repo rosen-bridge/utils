@@ -4,6 +4,9 @@ import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import chalk from 'chalk';
 import ora from 'ora';
+import { zxcvbn, zxcvbnOptions } from '@zxcvbn-ts/core';
+import * as zxcvbnCommonPackage from '@zxcvbn-ts/language-common';
+import * as zxcvbnEnPackage from '@zxcvbn-ts/language-en';
 
 import { downloadRosenAssets } from '@rosen-bridge/utils';
 import { EdDSA } from '@rosen-bridge/tss';
@@ -74,12 +77,47 @@ yargs(hideBin(process.argv))
     'blake2b-hash [input]',
     'blake2b hash of specified input',
     (yargs) => {
-      return yargs.positional('input', {
-        type: 'string',
-        demandOption: 'true',
-      });
+      return yargs
+        .positional('input', {
+          type: 'string',
+          demandOption: 'true',
+        })
+        .option('weak', {
+          alias: 'w',
+          description:
+            "choose a weak api-key with own risk! (it isn't a recommended flag!)",
+          default: false,
+          type: 'boolean',
+        });
     },
     (argv) => {
+      const options = {
+        translations: zxcvbnEnPackage.translations,
+        graphs: zxcvbnCommonPackage.adjacencyGraphs,
+        dictionary: {
+          ...zxcvbnCommonPackage.dictionary,
+          ...zxcvbnEnPackage.dictionary,
+        },
+      };
+
+      zxcvbnOptions.setOptions(options);
+
+      const passwordCheck = zxcvbn(argv.input);
+      if (!argv.weak) {
+        if (![3, 4].includes(passwordCheck.score)) {
+          if (passwordCheck.feedback.warning)
+            console.error(`Error: ${passwordCheck.feedback}`);
+          else console.error('Your api-key is weak!');
+
+          if (passwordCheck.feedback.suggestions.length > 0) {
+            console.warn('Suggestions:');
+            passwordCheck.feedback.suggestions.forEach((s) =>
+              console.warn(`- ${s}`)
+            );
+          }
+          return;
+        }
+      }
       console.log(
         `HASH: ${Buffer.from(blake2b(argv.input, undefined, 32)).toString(
           'hex'

@@ -1,8 +1,8 @@
 {
-  "name": "@rosen-bridge/service-manager",
+  "name": "@rosen-bridge/tx-pot",
   "version": "0.1.0",
-  "description": "is a Typescript package to simplify auto-start and auto-stop service management in a hierarchical structure, ensuring proper startup order and dependency handling",
-  "repository": "@rosen-bridge/service-manager",
+  "description": "a Typescript package to manage transactions storage, sign, submit and related processes",
+  "repository": "@rosen-bridge/tx-pot",
   "license": "GPL-3.0",
   "author": "Rosen Team",
   "type": "module",
@@ -13,7 +13,7 @@
     "coverage": "npm run test -- --coverage",
     "lint": "eslint --fix . && npm run prettify",
     "prettify": "prettier --write . --ignore-path ./.gitignore",
-    "release": "npm run build && npm publish --access public",
+    "release": "npm run test -- --run && npm run build && npm publish --access public",
     "test": "NODE_OPTIONS=--experimental-specifier-resolution=node vitest",
     "type-check": "tsc --noEmit"
   },
@@ -21,18 +21,19 @@
     "@types/node": "^18.11.18",
     "@typescript-eslint/eslint-plugin": "^6.7.0",
     "@typescript-eslint/parser": "^6.7.0",
-    "@vitest/coverage-c8": "^0.26.3",
+    "@vitest/coverage-v8": "^1.2.2",
     "eslint": "^8.16.0",
     "eslint-config-prettier": "^8.5.0",
     "prettier": "2.7.1",
     "typescript": "^5.0.0",
-    "vitest": "^0.26.2"
+    "vite-plugin-wasm": "^3.3.0",
+    "vitest": "^1.2.1"
   },
   "engines": {
     "node": ">=18.12.0"
   },
   "dependencies": {
     "@rosen-bridge/abstract-logger": "^1.0.0",
-    "await-semaphore": "^0.1.3"
+    "typeorm": "^0.3.17"
   }
 }

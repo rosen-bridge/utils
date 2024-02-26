@@ -1,5 +1,5 @@
 {
   "servers": {
-    "port": "SERVER_PORT"
+    "url": "SERVER_URL"
   }
 }
