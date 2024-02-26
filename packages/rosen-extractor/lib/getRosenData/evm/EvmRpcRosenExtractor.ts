@@ -55,7 +55,6 @@ export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<Transaction
         rosenDataRaw = callData;
         tokenAddress = this.nativeToken;
         amount = transaction.value.toString();
-        console.log(this.tokens.getIdKey(this.chain));
         const tokens = this.tokens.search(this.chain, {
           [this.tokens.getIdKey(this.chain)]: this.nativeToken,
         });

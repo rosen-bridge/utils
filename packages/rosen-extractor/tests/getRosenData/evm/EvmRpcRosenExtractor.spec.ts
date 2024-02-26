@@ -115,6 +115,31 @@ describe('EvmRpcRosenExtractor', () => {
 
     /**
      * @target `EvmRpcaRosenExtractor.get` should return undefined when
+     * native token is not in the source chain's token map
+     * @dependencies
+     * @scenario
+     * - mock extractor with token map lacking the native token
+     * - run test
+     * - check returned value
+     * @expected
+     * - it should return undefined
+     */
+    it("should return undefined when native token is not in the source chain's token map", () => {
+      const invalidExtractor = new EvmRpcRosenExtractor(
+        testData.lockAddress,
+        TestUtils.tokens,
+        chainName,
+        'NA'
+      );
+      const invalidTx = testData.validNativeLockTx;
+      const result = invalidExtractor.get(
+        new TransactionResponse(invalidTx, new JsonRpcProvider())
+      );
+      expect(result).toBeUndefined();
+    });
+
+    /**
+     * @target `EvmRpcaRosenExtractor.get` should return undefined when
      * `to` is empty
      * @dependencies
      * @scenario
