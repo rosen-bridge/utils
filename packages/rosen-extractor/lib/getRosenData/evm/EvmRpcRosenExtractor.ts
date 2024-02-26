@@ -1,7 +1,7 @@
 import { RosenData } from '../abstract/types';
 import AbstractRosenDataExtractor from '../abstract/AbstractRosenDataExtractor';
 import { TransactionResponse } from 'ethers';
-import { RosenTokens } from '@rosen-bridge/tokens';
+import { RosenTokens, RosenChainToken } from '@rosen-bridge/tokens';
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import { parseRosenData } from './utils';
 
@@ -22,7 +22,7 @@ export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<Transaction
   }
 
   /**
-   * extracts RosenData from given lock transaction in Rpc format
+   * extracts RosenData from given lock transaction in RPC format
    * cheks:
    *     Native token transfer:
    *         1. `to` must be the lock address
@@ -33,7 +33,7 @@ export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<Transaction
    *         3. bytes from 5 to 37 must be the lock address
    *         4. bytes from 37 to 69 show the amount
    *         5. bytes after 69 must represnt a valid CallDataRosenData
-   * @param transaction the lock transaction in Rpc format
+   * @param transaction the lock transaction in RPC format
    */
   get = (transaction: TransactionResponse): RosenData | undefined => {
     const baseError = `No rosen data found for tx [${transaction.hash}]`;
@@ -44,7 +44,7 @@ export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<Transaction
       }
       let rosenData;
       const callData = transaction.data.substring(2);
-      let tokenId: Record<string, any>;
+      let token: Record<string, RosenChainToken>;
       let rosenDataRaw;
       let tokenAddress;
       let amount;
@@ -56,16 +56,16 @@ export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<Transaction
         tokenAddress = this.nativeToken;
         amount = transaction.value.toString();
         console.log(this.tokens.getIdKey(this.chain));
-        const tokenIds = this.tokens.search(this.chain, {
+        const tokens = this.tokens.search(this.chain, {
           [this.tokens.getIdKey(this.chain)]: this.nativeToken,
         });
-        if (tokenIds.length == 1) {
+        if (tokens.length == 1) {
           sourceTokenId = this.nativeToken;
-          tokenId = tokenIds[0];
+          token = tokens[0];
         } else {
           this.logger.debug(
             baseError +
-              `: native token not available in source chian's tokens map.`
+              `: native token [${this.nativeToken}] is not available in source chian's tokens map.`
           );
           return undefined;
         }
@@ -89,22 +89,18 @@ export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<Transaction
         amount = BigInt('0x' + callData.slice(72, 72 + 64)).toString();
         rosenDataRaw = callData.substring(72 + 64);
         tokenAddress = transaction.to;
-        const token = this.tokens.search(this.chain, {
+        const tokens = this.tokens.search(this.chain, {
           [this.tokens.getIdKey(this.chain)]: tokenAddress,
         });
-        if (token.length != 1) {
-          this.logger.debug(baseError + `: Token is not supported.`);
-          return undefined;
-        }
-        tokenId = token[0];
-        try {
-          sourceTokenId = this.tokens.getID(tokenId, this.chain);
-        } catch (e) {
+        if (tokens.length != 1) {
           this.logger.debug(
-            baseError + `: Failed to find the source token ID: ${e}`
+            baseError +
+              `: token [${tokenAddress}] is not supported on chain: [${this.chain}].`
           );
           return undefined;
         }
+        token = tokens[0];
+        sourceTokenId = tokenAddress;
       }
       try {
         rosenData = parseRosenData(rosenDataRaw);
@@ -116,10 +112,11 @@ export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<Transaction
       }
 
       try {
-        targetTokenId = this.tokens.getID(tokenId, rosenData.toChain);
+        targetTokenId = this.tokens.getID(token, rosenData.toChain);
       } catch (e) {
         this.logger.debug(
-          baseError + `: Failed to find the target token ID: ${e}`
+          baseError +
+            `: token [${tokenAddress}] is not supported on chain: [${rosenData.toChain}].`
         );
         return undefined;
       }
@@ -136,7 +133,7 @@ export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<Transaction
       };
     } catch (e) {
       this.logger.debug(
-        `An error occurred while getting Evm rosen data from Rpc: ${e}`
+        `An error occurred while getting EVM rosen data from RPC: ${e}`
       );
       if (e instanceof Error && e.stack) {
         this.logger.debug(e.stack);

@@ -34,7 +34,10 @@ export const encodeAddress = (chain: string, address: string): string => {
       ).toString('hex');
       break;
     case ETHEREUM_CHAIN:
-      encoded = address;
+      if (address.length != 42 || address.substring(0, 2) != '0x') {
+        throw new UnsupportedAddressError(chain, address);
+      }
+      encoded = address.substring(2);
       break;
     default:
       throw new UnsupportedChainError(chain);

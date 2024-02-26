@@ -4,7 +4,12 @@ import {
   UnsupportedChainError,
   decodeAddress,
 } from '../lib';
-import { BITCOIN_CHAIN, CARDANO_CHAIN, ERGO_CHAIN } from '../lib/const';
+import {
+  BITCOIN_CHAIN,
+  CARDANO_CHAIN,
+  ERGO_CHAIN,
+  ETHEREUM_CHAIN,
+} from '../lib/const';
 
 describe('decodeAddress', () => {
   /**
@@ -47,6 +52,20 @@ describe('decodeAddress', () => {
   it('should decode Bitcoin address successfully', () => {
     const res = decodeAddress(BITCOIN_CHAIN, testData.encodedBitcoinAddress);
     expect(res).toEqual(testData.bitcoinAddress);
+  });
+
+  /**
+   * @target `decodeAddress` should decode Ethereum address successfully
+   * @dependencies
+   * @scenario
+   * - run test
+   * - check returned value
+   * @expected
+   * - it should be address in hex format
+   */
+  it('should decode Ethereum address successfully', () => {
+    const res = decodeAddress(ETHEREUM_CHAIN, testData.encodedEthereumAddress);
+    expect(res).toEqual(testData.ethereumAddress);
   });
 
   /**
