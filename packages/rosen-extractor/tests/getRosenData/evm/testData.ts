@@ -1,6 +1,6 @@
 import { Signature } from 'ethers';
 
-export const lockAddress = 'edee4752e5a2f595151c94762fb38e5730357785';
+export const lockAddress = '0xedee4752e5a2f595151c94762fb38e5730357785';
 
 export const validErc20LockTx = {
   blockNumber: 19195927,
@@ -61,13 +61,13 @@ export const rosenDataErc20 = {
   toAddress: '9iMjQx8PzwBKXRvsFUJFJAPoy31znfEeBUGz8DRkcnJX4rJYjVd',
   bridgeFee: '1968503938',
   networkFee: '9842520',
-  fromAddress: 'f9CA64253deb69814c5B1d80384Bb25F643427dB',
-  sourceChainTokenId: 'b416c8a6d7ec94706a9ae2c26c11d320519482b1',
+  fromAddress: '0xf9CA64253deb69814c5B1d80384Bb25F643427dB',
+  sourceChainTokenId: '0xb416c8a6d7ec94706a9ae2c26c11d320519482b1',
   amount: '3305307248',
   targetChainTokenId:
     'f6a69529b12a7e2326acffee8383e0c44408f87a872886fadf410fe8498006d3',
   sourceTxId:
-    '0a661586235004d977583ee5715ae87679d2815381ff62f08e006bbc7e3a9afc',
+    '0x0a661586235004d977583ee5715ae87679d2815381ff62f08e006bbc7e3a9afc',
 };
 
 export const validNativeLockTx = {
@@ -102,13 +102,13 @@ export const rosenDataNative = {
   toAddress: '9iMjQx8PzwBKXRvsFUJFJAPoy31znfEeBUGz8DRkcnJX4rJYjVd',
   bridgeFee: '1968503938',
   networkFee: '9842520',
-  fromAddress: 'f9CA64253deb69814c5B1d80384Bb25F643427dB',
+  fromAddress: '0xf9CA64253deb69814c5B1d80384Bb25F643427dB',
   sourceChainTokenId: 'eth',
   amount: '92850988521632054',
   targetChainTokenId:
     'dcbda15f1361f5eeba41748193e059fce34f0c57499e9afe733ea0fd59cf63f48',
   sourceTxId:
-    '0a661586235004d977583ee5715ae87679d2815381ff62f08e006bbc7e3a9afc',
+    '0x0a661586235004d977583ee5715ae87679d2815381ff62f08e006bbc7e3a9afc',
 };
 
 export const noLockNoTransfer = {

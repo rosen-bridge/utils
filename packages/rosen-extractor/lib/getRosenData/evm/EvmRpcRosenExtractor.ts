@@ -36,11 +36,9 @@ export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<Transaction
    * @param transaction the lock transaction in Rpc format
    */
   get = (transaction: TransactionResponse): RosenData | undefined => {
-    console.log('resid inja');
     const baseError = `No rosen data found for tx [${transaction.hash}]`;
     try {
       if (transaction.to == null) {
-        console.log('inja 1');
         this.logger.debug(baseError + `: 'to' address is empty.`);
         return undefined;
       }
@@ -52,7 +50,7 @@ export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<Transaction
       let amount;
       let sourceTokenId, targetTokenId;
 
-      if (transaction.to.substring(2) == this.lockAddress) {
+      if (transaction.to == this.lockAddress) {
         // transaction must be a native token transfer
         rosenDataRaw = callData;
         tokenAddress = this.nativeToken;
@@ -81,7 +79,7 @@ export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<Transaction
         }
         if (
           BigInt('0x' + callData.substring(8, 72)).toString(16) !=
-          this.lockAddress
+          this.lockAddress.substring(2)
         ) {
           this.logger.debug(
             baseError + `: 'to' address is not the lock address.`
@@ -90,7 +88,7 @@ export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<Transaction
         }
         amount = BigInt('0x' + callData.slice(72, 72 + 64)).toString();
         rosenDataRaw = callData.substring(72 + 64);
-        tokenAddress = transaction.to.substring(2);
+        tokenAddress = transaction.to;
         const token = this.tokens.search(this.chain, {
           [this.tokens.getIdKey(this.chain)]: tokenAddress,
         });
@@ -130,11 +128,11 @@ export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<Transaction
         toAddress: rosenData.toAddress,
         bridgeFee: rosenData.bridgeFee,
         networkFee: rosenData.networkFee,
-        fromAddress: transaction.from.substring(2),
+        fromAddress: transaction.from,
         sourceChainTokenId: sourceTokenId,
         amount: amount,
         targetChainTokenId: targetTokenId,
-        sourceTxId: transaction.hash.substring(2),
+        sourceTxId: transaction.hash,
       };
     } catch (e) {
       this.logger.debug(

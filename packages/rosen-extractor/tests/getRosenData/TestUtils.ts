@@ -67,7 +67,7 @@ export default class TestUtils {
           },
         },
         [ETHEREUM_CHAIN]: {
-          tokenId: 'b416c8a6d7ec94706a9ae2c26c11d320519482b1',
+          tokenId: '0xb416c8a6d7ec94706a9ae2c26c11d320519482b1',
           name: 'rsAda',
           decimals: 6,
           metaData: {
@@ -102,7 +102,7 @@ export default class TestUtils {
       },
       {
         [ETHEREUM_CHAIN]: {
-          tokenId: '4606d11ff65b17d29e8c5e4085f9a868a8e5e4f2',
+          tokenId: '0x4606d11ff65b17d29e8c5e4085f9a868a8e5e4f2',
           name: 'rsBTC',
           decimals: 8,
           metaData: {
