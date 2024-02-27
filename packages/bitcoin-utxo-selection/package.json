@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/bitcoin-utxo-selection",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Typescript package to select enough Bitcoin utxos for required amount of BTC",
   "repository": "https://github.com/rosen-bridge/utils",
   "license": "GPL-3.0",
