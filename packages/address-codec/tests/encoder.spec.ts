@@ -69,13 +69,13 @@ describe('encodeAddress', () => {
   });
 
   /**
-   * @target `encodeAddress` should throw  error when address is not 40 bytes
+   * @target `encodeAddress` should throw error when address is not 40 bytes
    * @dependencies
    * @scenario
    * - run test
    * - run test & check thrown exception
    * @expected
-   * - it should throw  error when address is not 40 bytes
+   * - it should throw UnsupportedAddress error
    */
   it('should encode Ethereum address successfully', () => {
     expect(() => {

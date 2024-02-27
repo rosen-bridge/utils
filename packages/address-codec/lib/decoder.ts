@@ -11,7 +11,7 @@ import * as bitcoinLib from 'bitcoinjs-lib';
 
 /**
  * decodes address of a chain
- * throws error if encoded address length is more than 60 bytes
+ *  throws error if encoded address length is more than 60 bytes
  * @param chain
  * @param encodedAddress
  */
@@ -35,6 +35,9 @@ export const decodeAddress = (
         Buffer.from(encodedAddress, 'hex')
       );
     case ETHEREUM_CHAIN:
+      if (encodedAddress.length != 40) {
+        throw new UnsupportedAddressError(chain, encodedAddress);
+      }
       return '0x' + encodedAddress;
     default:
       throw new UnsupportedChainError(chain);

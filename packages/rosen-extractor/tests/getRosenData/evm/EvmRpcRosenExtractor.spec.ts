@@ -76,6 +76,25 @@ describe('EvmRpcRosenExtractor', () => {
 
     /**
      * @target `EvmRpcRosenExtractor.get` should return undefined when
+     * target chain does not support token and transaction is an ERC-20 token transfer
+     * @dependencies
+     * @scenario
+     * - mock transaction with target chain does not support token
+     * - run test
+     * - check returned value
+     * @expected
+     * - it should return undefined
+     */
+    it('should return undefined when target chain does not support token and transaction is an ERC-20 token transfer', () => {
+      const invalidTx = testData.invalidTxTargetNoToken;
+      const result = extractor.get(
+        new TransactionResponse(invalidTx, new JsonRpcProvider())
+      );
+      expect(result).toBeUndefined();
+    });
+
+    /**
+     * @target `EvmRpcRosenExtractor.get` should return undefined when
      * target chain does not support eth and transaction is a native token transfer
      * @dependencies
      * @scenario
