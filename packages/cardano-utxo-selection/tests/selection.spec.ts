@@ -420,4 +420,50 @@ describe('selectCardanoUtxos', () => {
     expect(result.covered).toEqual(false);
     expect(result.boxes).toEqual([utxos[2]]);
   });
+
+  /**
+   * @target selectCardanoUtxos should interact with AsyncIterator successfully
+   * @dependencies
+   * @scenario
+   * - mock an async generator to return 12 utxos paginated
+   * - mock an AssetBalance object with assets more than box assets
+   * - run test
+   * - check returned value
+   * @expected
+   * - it should return both serialized boxes
+   */
+  it('should interact with AsyncIterator successfully', async () => {
+    // Mock an async generator to return 12 utxos paginated
+    const boxes = utxos.slice(0, 12);
+    async function* generator() {
+      let offset = 0;
+      const limit = 2;
+      while (true) {
+        const page = boxes.slice(offset, offset + limit);
+        if (page.length === 0) break;
+        yield* page;
+        offset += limit;
+      }
+      return undefined;
+    }
+    const nextUtxo = generator();
+
+    // Mock an AssetBalance object with assets less than box assets
+    const requiredAssets: AssetBalance = {
+      nativeToken: 90000000n,
+      tokens: [{ id: tokenId1, value: 50n }],
+    };
+
+    // Run test
+    const result = await selectCardanoUtxos(
+      requiredAssets,
+      [],
+      emptyTrackMap,
+      nextUtxo
+    );
+
+    // Check returned value
+    expect(result.covered).toEqual(true);
+    expect(result.boxes).toEqual(utxos.slice(0, 11));
+  });
 });

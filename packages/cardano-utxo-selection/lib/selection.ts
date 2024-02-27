@@ -32,7 +32,9 @@ export const selectCardanoUtxos = async (
   requiredAssets: AssetBalance,
   forbiddenBoxIds: Array<string>,
   trackMap: Map<string, CardanoUtxo | undefined>,
-  utxoIterator: Iterator<CardanoUtxo, undefined>,
+  utxoIterator:
+    | AsyncIterator<CardanoUtxo, undefined>
+    | Iterator<CardanoUtxo, undefined>,
   logger: AbstractLogger = new DummyLogger()
 ): Promise<CoveringBoxes<CardanoUtxo>> => {
   let uncoveredNativeToken = requiredAssets.nativeToken;
@@ -49,7 +51,7 @@ export const selectCardanoUtxos = async (
 
   // get boxes until requirements are satisfied
   while (isRequirementRemaining()) {
-    const iteratorResponse = utxoIterator.next();
+    const iteratorResponse = await utxoIterator.next();
 
     // end process if there are no more boxes
     if (iteratorResponse.done) break;

@@ -472,4 +472,51 @@ describe('selectBitcoinUtxos', () => {
     expect(result.covered).toEqual(true);
     expect(result.boxes).toEqual(utxos.slice(0, 2));
   });
+
+  /**
+   * @target selectBitcoinUtxos should interact with AsyncIterator successfully
+   * @dependencies
+   * @scenario
+   * - mock an async generator to return 12 utxos paginated
+   * - mock an AssetBalance object with assets more than box assets
+   * - run test
+   * - check returned value
+   * @expected
+   * - it should return both serialized boxes
+   */
+  it('should interact with AsyncIterator successfully', async () => {
+    // Mock an async generator to return 12 utxos paginated
+    const boxes = utxos.slice(0, 12);
+    async function* generator() {
+      let offset = 0;
+      const limit = 2;
+      while (true) {
+        const page = boxes.slice(offset, offset + limit);
+        if (page.length === 0) break;
+        yield* page;
+        offset += limit;
+      }
+      return undefined;
+    }
+    const nextUtxo = generator();
+
+    // Mock required BTC with assets less than box assets
+    const requiredBtc = 90000000n;
+
+    // Run test
+    const result = await selectBitcoinUtxos(
+      requiredBtc,
+      [],
+      emptyTrackMap,
+      nextUtxo,
+      0n,
+      0,
+      0,
+      1
+    );
+
+    // Check returned value
+    expect(result.covered).toEqual(true);
+    expect(result.boxes).toEqual(utxos.slice(0, 11));
+  });
 });
