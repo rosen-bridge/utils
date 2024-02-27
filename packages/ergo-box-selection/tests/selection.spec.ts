@@ -439,7 +439,7 @@ describe('selectErgoBoxes', () => {
    * - run test
    * - check returned value
    * @expected
-   * - it should return both serialized boxes
+   * - it should return all serialized boxes except the last one
    */
   it('should interact with AsyncIterator successfully', async () => {
     // Mock an async generator to return 12 utxos paginated
