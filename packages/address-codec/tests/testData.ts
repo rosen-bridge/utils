@@ -16,3 +16,10 @@ export const longErgoAddress =
   'nB3L2PD3LBtiNhDYK7XhZ8nVt6uekBXN7RcPUKgdKLXFcrJiSPxmQsUKuUkTRQ1hbvDrxEQAKYurGFbaGD1RPxU7XqQimD78j23HHMQKL1boUGsnNhCxaVNAYMcFbQNo355Af8cWkhAN6';
 export const longEncodedAddress =
   '100304000e20a6ac381e6fa99929fd1477b3ba9499790a775e91d4c14c5aa86e9a118dfac8530400d801d601b2db6501fe730000ea02d1aedb63087201d901024d0e938c720201730198b2e4c672010510730200ade4c67201041ad901020ecdee7202';
+
+export const ethereumAddress = '0xb416c8a6d7ec94706a9ae2c26c11d320519482b1';
+export const encodedEthereumAddress =
+  'b416c8a6d7ec94706a9ae2c26c11d320519482b1';
+
+export const invalidEthereumAddressLength =
+  '0xb416c8a7ec94706a9ae2c26c11d320519482b1';

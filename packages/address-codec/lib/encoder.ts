@@ -1,4 +1,9 @@
-import { BITCOIN_CHAIN, CARDANO_CHAIN, ERGO_CHAIN } from './const';
+import {
+  BITCOIN_CHAIN,
+  CARDANO_CHAIN,
+  ERGO_CHAIN,
+  ETHEREUM_CHAIN,
+} from './const';
 import { UnsupportedAddressError, UnsupportedChainError } from './types';
 import * as ergoLib from 'ergo-lib-wasm-nodejs';
 import * as cardanoLib from '@emurgo/cardano-serialization-lib-nodejs';
@@ -27,6 +32,12 @@ export const encodeAddress = (chain: string, address: string): string => {
       encoded = Buffer.from(
         bitcoinLib.address.toOutputScript(address)
       ).toString('hex');
+      break;
+    case ETHEREUM_CHAIN:
+      if (address.length != 42 || address.substring(0, 2) != '0x') {
+        throw new UnsupportedAddressError(chain, address);
+      }
+      encoded = address.substring(2);
       break;
     default:
       throw new UnsupportedChainError(chain);

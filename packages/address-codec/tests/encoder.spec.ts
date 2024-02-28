@@ -4,7 +4,12 @@ import {
   UnsupportedChainError,
   encodeAddress,
 } from '../lib';
-import { BITCOIN_CHAIN, CARDANO_CHAIN, ERGO_CHAIN } from '../lib/const';
+import {
+  BITCOIN_CHAIN,
+  CARDANO_CHAIN,
+  ERGO_CHAIN,
+  ETHEREUM_CHAIN,
+} from '../lib/const';
 
 describe('encodeAddress', () => {
   /**
@@ -47,6 +52,35 @@ describe('encodeAddress', () => {
   it('should encode Bitcoin address successfully', () => {
     const res = encodeAddress(BITCOIN_CHAIN, testData.bitcoinAddress);
     expect(res).toEqual(testData.encodedBitcoinAddress);
+  });
+
+  /**
+   * @target `encodeAddress` should encode Ethereum address successfully
+   * @dependencies
+   * @scenario
+   * - run test
+   * - check returned value
+   * @expected
+   * - it should be output script of given address in hex
+   */
+  it('should encode Ethereum address successfully', () => {
+    const res = encodeAddress(ETHEREUM_CHAIN, testData.ethereumAddress);
+    expect(res).toEqual(testData.encodedEthereumAddress);
+  });
+
+  /**
+   * @target `encodeAddress` should throw error when address is not 40 bytes
+   * @dependencies
+   * @scenario
+   * - run test
+   * - run test & check thrown exception
+   * @expected
+   * - it should throw UnsupportedAddress error
+   */
+  it('should encode Ethereum address successfully', () => {
+    expect(() => {
+      encodeAddress(ETHEREUM_CHAIN, testData.invalidEthereumAddressLength);
+    }).toThrow(UnsupportedAddressError);
   });
 
   /**

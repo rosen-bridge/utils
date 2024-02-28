@@ -298,7 +298,7 @@ export class TxPot {
     // fetch signed and sent txs
     const signedTxs = await this.getTxsByStatus(TransactionStatus.SIGNED);
     const sentTxs = await this.getTxsByStatus(TransactionStatus.SENT);
-    
+
     // process signed txs
     for (const tx of signedTxs) {
       try {
