@@ -44,7 +44,7 @@ class ExplorerPermitHealthCheckParam extends AbstractPermitHealthCheckParam {
         if (
           R4 &&
           Buffer.from(
-            wasm.Constant.decode_from_base16(R4.serializedValue).to_js()[0]
+            wasm.Constant.decode_from_base16(R4.serializedValue).to_byte_array()
           ).toString('hex') === this.WID
         ) {
           RWTCount +=
