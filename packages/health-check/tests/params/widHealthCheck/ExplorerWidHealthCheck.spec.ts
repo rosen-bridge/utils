@@ -67,7 +67,6 @@ describe('ExplorerWidHealthCheckParam', () => {
      * - The widExists should update to true successfully using explorer api
      */
     it('Should update the wid status to exists', async () => {
-      console.log(mockedCollateralBox('awcNft', wid));
       jest.mocked(ergoExplorerClientFactory).mockReturnValue({
         v1: {
           // mock return value of explorer watcher address assets
