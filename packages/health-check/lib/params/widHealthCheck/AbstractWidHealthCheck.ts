@@ -4,17 +4,17 @@ import {
 } from '../AbstractHealthCheckParam';
 
 abstract class AbstractWidHealthCheckParam extends AbstractHealthCheckParam {
-  protected rwtRepoAddress: string;
-  protected rwtRepoNft: string;
+  protected collateralAddress: string;
+  protected awcNft: string;
   protected address: string;
   protected widExists: boolean;
   protected updateTimeStamp: Date;
 
-  constructor(rwtRepoAddress: string, rwtRepoNft: string, address: string) {
+  constructor(collateralAddress: string, awcNft: string, address: string) {
     super();
-    this.rwtRepoAddress = rwtRepoAddress;
+    this.collateralAddress = collateralAddress;
     this.address = address;
-    this.rwtRepoNft = rwtRepoNft;
+    this.awcNft = awcNft;
   }
 
   /**

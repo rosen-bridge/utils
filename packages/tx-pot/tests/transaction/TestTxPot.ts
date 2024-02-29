@@ -1,5 +1,5 @@
 import { DataSource } from 'typeorm';
-import { AbstractLogger } from '@rosen-bridge/logger-interface';
+import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import { TransactionEntity, TransactionStatus, TxPot } from '../../lib';
 
 export class TestTxPot extends TxPot {

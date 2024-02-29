@@ -8,12 +8,12 @@ class ExplorerWidHealthCheckParam extends AbstractWidHealthCheckParam {
   private API_REQUEST_LIMIT = 100;
 
   constructor(
-    rwtRepoAddress: string,
-    rwtRepoNFT: string,
+    collateralAddress: string,
+    awcNft: string,
     address: string,
     networkUrl: string
   ) {
-    super(rwtRepoAddress, rwtRepoNFT, address);
+    super(collateralAddress, awcNft, address);
     this.explorerApi = ergoExplorerClientFactory(networkUrl);
   }
 
@@ -32,28 +32,33 @@ class ExplorerWidHealthCheckParam extends AbstractWidHealthCheckParam {
       offset = 0;
     do {
       const boxes = await this.explorerApi.v1.getApiV1BoxesUnspentByaddressP1(
-        this.rwtRepoAddress,
+        this.collateralAddress,
         { offset: offset, limit: this.API_REQUEST_LIMIT }
       );
 
+      if (!boxes.items)
+        throw Error('Bad explorer response, response should have items');
+
       // Finding the legit repo box
-      const repoBox = boxes.items?.find((box) =>
+      const collaterals = boxes.items.filter((box) =>
         box.assets && box.assets.length > 0
-          ? box.assets[0].tokenId === this.rwtRepoNft
+          ? box.assets[0].tokenId === this.awcNft
           : false
       );
-      if (repoBox) {
-        // Extracting WID list
-        const widList = wasm.Constant.decode_from_base16(
-          (repoBox as any).additionalRegisters['R4'].serializedValue
-        )
-          .to_js()
-          .map((register: Uint8Array) => Buffer.from(register).toString('hex'));
-        // Searching for the WID
-        const wid = intersection(widList, tokenIdList);
-        this.widExists = wid.length > 0;
-        break;
-      }
+      // Extracting WID list
+      const widList = collaterals.map((box) =>
+        Buffer.from(
+          wasm.Constant.decode_from_base16(
+            (box as any).additionalRegisters['R4'].serializedValue
+          ).to_byte_array()
+        ).toString('hex')
+      );
+
+      // Searching for the WID
+      const wid = intersection(widList, tokenIdList);
+      this.widExists = wid.length > 0;
+      // Setting WID count
+      if (this.widExists) break;
 
       total = boxes.total ?? 0n;
       offset += this.API_REQUEST_LIMIT;

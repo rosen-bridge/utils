@@ -13,4 +13,5 @@ export * from './params/widHealthCheck/NodeWidHealthCheck';
 export * from './params/scannerSyncHealthCheck/CardanoScannerSyncHealthCheck';
 export * from './params/scannerSyncHealthCheck/cardano';
 export * from './params/scannerSyncHealthCheck/ErgoScannerSyncHealthCheck';
+export * from './params/scannerSyncHealthCheck/AbstractScannerSyncHealthCheck';
 export * from './params/nodeSyncHealthCheck/ErgoNodeSyncHealthCheck';

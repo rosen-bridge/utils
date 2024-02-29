@@ -33,7 +33,7 @@ describe('NodePermitAssetHealthCheckParam', () => {
                   },
                 ],
                 additionalRegisters: {
-                  R4: '1a0120d4e03eda58a338f8f65b40de258407dbdbbd9b8ccca374f66be8d97e52c8a752',
+                  R4: '0e20d4e03eda58a338f8f65b40de258407dbdbbd9b8ccca374f66be8d97e52c8a752',
                   R5: '0e0100',
                 },
               },
@@ -46,7 +46,7 @@ describe('NodePermitAssetHealthCheckParam', () => {
                   },
                 ],
                 additionalRegisters: {
-                  R4: '1a0120d4e03eda58a338f8f65b40de258407dbdbbd9b8ccca374f66be8d97e52c8a752',
+                  R4: '0e20d4e03eda58a338f8f65b40de258407dbdbbd9b8ccca374f66be8d97e52c8a752',
                   R5: '0e0100',
                 },
               },
@@ -59,7 +59,7 @@ describe('NodePermitAssetHealthCheckParam', () => {
                   },
                 ],
                 additionalRegisters: {
-                  R4: '1a0120c1f5aa4b1a713396a63f556df49c70add93b3471cbca893c6146fce5a4b95e76',
+                  R4: '0e20c1f5aa4b1a713396a63f556df49c70add93b3471cbca893c6146fce5a4b95e76',
                   R5: '0e0100',
                 },
               },

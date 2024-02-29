@@ -43,9 +43,9 @@ class NodePermitHealthCheckParam extends AbstractPermitHealthCheckParam {
         const R4 = box.additionalRegisters['R4'];
         if (
           R4 &&
-          Buffer.from(wasm.Constant.decode_from_base16(R4).to_js()[0]).toString(
-            'hex'
-          ) === this.WID
+          Buffer.from(
+            wasm.Constant.decode_from_base16(R4).to_byte_array()
+          ).toString('hex') === this.WID
         ) {
           RWTCount +=
             box.assets?.find((token) => token.tokenId === this.RWT)?.amount ??

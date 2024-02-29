@@ -1,6 +1,6 @@
 import { DataSource, Repository } from 'typeorm';
 import { TransactionEntity } from '../db/entities/TransactionEntity';
-import { AbstractLogger, DummyLogger } from '@rosen-bridge/logger-interface';
+import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
 import {
   CallbackFunction,
   SigningStatus,
