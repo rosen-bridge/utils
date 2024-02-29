@@ -38,7 +38,9 @@ export const selectErgoBoxes = async (
   requiredAssets: AssetBalance,
   forbiddenBoxIds: Array<string>,
   trackMap: Map<string, ErgoBoxProxy | undefined>,
-  boxIterator: Iterator<ErgoBoxProxy, undefined>,
+  boxIterator:
+    | AsyncIterator<ErgoBoxProxy, undefined>
+    | Iterator<ErgoBoxProxy, undefined>,
   logger: AbstractLogger = new DummyLogger()
 ): Promise<CoveringBoxes<ErgoBoxProxy>> => {
   let uncoveredNativeToken = requiredAssets.nativeToken;
@@ -55,7 +57,7 @@ export const selectErgoBoxes = async (
 
   // get boxes until requirements are satisfied
   while (isRequirementRemaining()) {
-    const iteratorResult = boxIterator.next();
+    const iteratorResult = await boxIterator.next();
 
     // end process if there are no more boxes
     if (iteratorResult.done) break;

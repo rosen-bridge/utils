@@ -34,7 +34,9 @@ export const selectBitcoinUtxos = async (
   requiredSatoshi: bigint,
   forbiddenBoxIds: Array<string>,
   trackMap: Map<string, BitcoinUtxo | undefined>,
-  utxoIterator: Iterator<BitcoinUtxo, undefined>,
+  utxoIterator:
+    | AsyncIterator<BitcoinUtxo, undefined>
+    | Iterator<BitcoinUtxo, undefined>,
   minimumAllowedSatoshi: bigint,
   utxoWeights: number,
   estimatedTxWeight: number,
@@ -49,7 +51,7 @@ export const selectBitcoinUtxos = async (
 
   // get boxes until requirements are satisfied
   while (uncoveredNativeToken > 0n) {
-    const iteratorResponse = utxoIterator.next();
+    const iteratorResponse = await utxoIterator.next();
 
     // end process if there are no more boxes
     if (iteratorResponse.done) break;
