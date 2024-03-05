@@ -446,6 +446,73 @@ describe('TxPot', () => {
         ],
       ]);
     });
+
+    /**
+     * @target TxPot.processSignedTx should submit the tx nor update the status
+     * when at least one submit validator does not allow submission
+     * @dependencies
+     * - database
+     * @scenario
+     * - insert tx with signed status
+     * - mock PotChainManager and register to TxPot
+     *   - mock `submitTransaction`
+     * - register 3 submit validator functions
+     *   - 1st and 3rd ones returns true
+     *   - 2nd one returns false
+     * - run test (call `update`)
+     * - check if function got called
+     * - check db records
+     * @expected
+     * - `submitTransaction` should NOT got called
+     * - columns of the tx should remain unchanged
+     */
+    it('should submit the tx nor update the status when at least one submit validator does not allow submission', async () => {
+      // insert tx with signed status
+      await txRepository.insert(testData.tx4);
+
+      // mock PotChainManager and register to TxPot
+      const mockedManager = new TestPotChainManager();
+      txPot.registerChain(testData.tx4.chain, mockedManager);
+      // mock `submitTransaction`
+      const mockedSubmitTransaction = vi.fn();
+      mockedSubmitTransaction.mockResolvedValue(undefined);
+      vi.spyOn(mockedManager, 'submitTransaction').mockImplementation(
+        mockedSubmitTransaction
+      );
+
+      // register 3 submit validator functions
+      const mockedValidators = [
+        { id: 'validator-1', validator: async (tx: TransactionEntity) => true },
+        {
+          id: 'validator-2',
+          validator: async (tx: TransactionEntity) => false,
+        },
+        { id: 'validator-3', validator: async (tx: TransactionEntity) => true },
+      ];
+      mockedValidators.forEach((mockedValidator) =>
+        txPot.registerSubmitValidator(
+          testData.tx1.chain,
+          mockedValidator.id,
+          mockedValidator.validator
+        )
+      );
+
+      // run test
+      await txPot.update();
+
+      // check if function got called
+      expect(mockedSubmitTransaction).not.toHaveBeenCalled();
+
+      // check db records
+      const txs = (await txRepository.find()).map((tx) => [
+        tx.txId,
+        tx.status,
+        tx.lastStatusUpdate,
+      ]);
+      expect(txs).toEqual([
+        [testData.tx4.txId, testData.tx4.status, testData.tx4.lastStatusUpdate],
+      ]);
+    });
   });
 
   describe('processesSentTx', () => {

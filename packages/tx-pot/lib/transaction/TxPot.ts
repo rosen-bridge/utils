@@ -24,6 +24,10 @@ export class TxPot {
     string,
     Map<TransactionStatus, Map<string, CallbackFunction>>
   >();
+  protected submissionAllowance = new Map<
+    string,
+    Map<string, ValidatorFunction>
+  >();
   protected logger: AbstractLogger;
 
   protected constructor(dataSource: DataSource, logger?: AbstractLogger) {
@@ -105,6 +109,36 @@ export class TxPot {
       );
     }
     typeValidators.set(id, validator);
+  };
+
+  /**
+   * registers a submit validator function
+   * @param chain
+   * @param id
+   * @param validator
+   */
+  registerSubmitValidator = (
+    chain: string,
+    id: string,
+    validator: ValidatorFunction
+  ): void => {
+    let chainAllowance = this.submissionAllowance.get(chain);
+    if (!chainAllowance) {
+      chainAllowance = new Map<string, ValidatorFunction>();
+      this.submissionAllowance.set(chain, chainAllowance);
+    }
+
+    const currentValidator = chainAllowance.get(id);
+    if (currentValidator) {
+      this.logger.debug(
+        `New tx submit validator function is registered for chain [${chain}]`
+      );
+    } else {
+      this.logger.debug(
+        `The tx submit validator function for chain [${chain}] is replaced`
+      );
+    }
+    chainAllowance.set(id, validator);
   };
 
   /**
@@ -218,6 +252,34 @@ export class TxPot {
   };
 
   /**
+   * checks a transaction for submission
+   * returns true if no validator functions is set or all validators allow tx to submit
+   * otherwise returns false
+   * @param tx
+   */
+  protected isSubmitAllowed = async (
+    tx: TransactionEntity
+  ): Promise<boolean> => {
+    const validators = this.submissionAllowance.get(tx.chain);
+    if (validators === undefined) {
+      // tx is allowed for submission since no validator is found
+      this.logger.debug(
+        `No submit validator function is found for chain [${tx.chain}]`
+      );
+      return true;
+    }
+    for (const idValidatorPair of validators) {
+      if ((await idValidatorPair[1](tx)) === false) {
+        this.logger.debug(
+          `tx [${tx.txId}] is not allowed for submission by submit validator [${idValidatorPair[0]}]`
+        );
+        return false;
+      }
+    }
+    return true;
+  };
+
+  /**
    * updates the status of a tx
    * @param txKey tx id and chain
    * @param status new status
@@ -262,6 +324,7 @@ export class TxPot {
    * @param tx
    */
   protected processSignedTx = async (tx: TransactionEntity): Promise<void> => {
+    if (!(await this.isSubmitAllowed(tx))) return;
     const manager = this.getChainManager(tx.chain);
     try {
       await manager.submitTransaction(tx.serializedTx);
