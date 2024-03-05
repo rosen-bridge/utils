@@ -101,11 +101,11 @@ export class TxPot {
     const currentValidator = typeValidators.get(id);
     if (currentValidator) {
       this.logger.debug(
-        `New tx validator function is registered for chain [${chain}] and type [${txType}]`
+        `New tx validator function is registered for chain [${chain}] and type [${txType}] by id [${id}]`
       );
     } else {
       this.logger.debug(
-        `The tx validator function for chain [${chain}] and type [${txType}] is replaced`
+        `The tx validator function for chain [${chain}], type [${txType}] and id [${id}] is replaced`
       );
     }
     typeValidators.set(id, validator);
@@ -131,11 +131,11 @@ export class TxPot {
     const currentValidator = chainAllowance.get(id);
     if (currentValidator) {
       this.logger.debug(
-        `New tx submit validator function is registered for chain [${chain}]`
+        `New tx submit validator function is registered for chain [${chain}] by id [${id}]`
       );
     } else {
       this.logger.debug(
-        `The tx submit validator function for chain [${chain}] is replaced`
+        `The tx submit validator function for chain [${chain}] and id [${id}] is replaced`
       );
     }
     chainAllowance.set(id, validator);
@@ -174,11 +174,11 @@ export class TxPot {
     const currentCallback = statusCallbacks.get(id);
     if (currentCallback) {
       this.logger.debug(
-        `New tx status callback function is registered for type [${txType}] and status [${status}]`
+        `New tx status callback function is registered for type [${txType}] and status [${status}] by id [${id}]`
       );
     } else {
       this.logger.debug(
-        `The tx status callback function for type [${txType}] and status [${status}] is replaced`
+        `The tx status callback function for type [${txType}] and status [${status}] and id [${id}] is replaced`
       );
     }
     statusCallbacks.set(id, callback);
