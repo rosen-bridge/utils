@@ -1,6 +1,11 @@
 import { Repository } from 'typeorm';
 import { mockDataSource } from '../db/dataSource.mock';
-import { TransactionEntity, TransactionStatus } from '../../lib';
+import {
+  CallbackFunction,
+  TransactionEntity,
+  TransactionStatus,
+  ValidatorFunction,
+} from '../../lib';
 import { TestTxPot } from './TestTxPot';
 import * as testData from './testData';
 import { TestPotChainManager } from '../network/TestPotChainManager';
@@ -23,6 +28,87 @@ describe('TxPot', () => {
 
   afterAll(() => {
     vi.useRealTimers();
+  });
+
+  describe('unregisterValidator', () => {
+    /**
+     * @target TxPot.unregisterValidator should remove registered validator successfully
+     * @dependencies
+     * @scenario
+     * - register a validator function
+     * - run test
+     * - check registered validators
+     * @expected
+     * - there should be no validator
+     */
+    it('should remove registered validator successfully', async () => {
+      const mockedValidator = async (tx: TransactionEntity) => true;
+      txPot.registerValidator('chain', 'txType', 'id', mockedValidator);
+
+      txPot.unregisterValidator('chain', 'txType', 'id');
+
+      const validatorsMap: Map<
+        string,
+        Map<string, Map<string, ValidatorFunction>>
+      > = (txPot as any).validators;
+      expect(validatorsMap.get('chain')?.get('txType')?.size).toEqual(0);
+    });
+  });
+
+  describe('unregisterSubmitValidator', () => {
+    /**
+     * @target TxPot.unregisterSubmitValidator should remove registered submit validator successfully
+     * @dependencies
+     * @scenario
+     * - register a validator function
+     * - run test
+     * - check registered submit validators
+     * @expected
+     * - there should be no validator
+     */
+    it('should remove registered submit validator successfully', async () => {
+      const mockedValidator = async (tx: TransactionEntity) => true;
+      txPot.registerSubmitValidator('chain', 'id', mockedValidator);
+
+      txPot.unregisterSubmitValidator('chain', 'id');
+
+      const validatorsMap: Map<string, Map<string, ValidatorFunction>> = (
+        txPot as any
+      ).submissionAllowance;
+      expect(validatorsMap.get('chain')?.size).toEqual(0);
+    });
+  });
+
+  describe('unregisterCallback', () => {
+    /**
+     * @target TxPot.unregisterCallback should remove registered submit validator successfully
+     * @dependencies
+     * @scenario
+     * - register a validator function
+     * - run test
+     * - check registered submit validators
+     * @expected
+     * - there should be no validator
+     */
+    it('should remove registered submit validator successfully', async () => {
+      const mockedCallback = vi.fn();
+      txPot.registerCallback(
+        'txType',
+        TransactionStatus.SIGNED,
+        'id',
+        mockedCallback
+      );
+
+      txPot.unregisterCallback('txType', TransactionStatus.SIGNED, 'id');
+
+      const callbacksMap: Map<
+        string,
+        Map<TransactionStatus, Map<string, CallbackFunction>>
+      > = (txPot as any).txTypeCallbacks;
+      expect(
+        callbacksMap.get('txType')?.get(TransactionStatus.SIGNED)?.size
+      ).toEqual(0);
+    });
   });
 
   describe('setTransactionAsInvalid', () => {
