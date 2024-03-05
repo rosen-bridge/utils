@@ -310,7 +310,12 @@ describe('TxPot', () => {
       const newStatus = TransactionStatus.IN_SIGN;
       const mockedCallback = vi.fn();
       mockedCallback.mockResolvedValue(undefined);
-      txPot.registerCallback(testData.tx1.txType, newStatus, mockedCallback);
+      txPot.registerCallback(
+        testData.tx1.txType,
+        newStatus,
+        'id',
+        mockedCallback
+      );
 
       // run test
       await txPot.callSetTxStatus(testData.tx1, newStatus);

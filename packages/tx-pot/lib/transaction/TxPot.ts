@@ -22,7 +22,7 @@ export class TxPot {
   >();
   protected txTypeCallbacks = new Map<
     string,
-    Map<TransactionStatus, CallbackFunction>
+    Map<TransactionStatus, Map<string, CallbackFunction>>
   >();
   protected logger: AbstractLogger;
 
@@ -113,23 +113,41 @@ export class TxPot {
    *  of given type changes to given status
    * @param txType
    * @param status
+   * @param id
    * @param callback
    */
   registerCallback = (
     txType: string,
     status: TransactionStatus,
+    id: string,
     callback: CallbackFunction
   ): void => {
     let typeCallbacks = this.txTypeCallbacks.get(txType);
     if (!typeCallbacks) {
-      typeCallbacks = new Map<TransactionStatus, CallbackFunction>();
+      typeCallbacks = new Map<
+        TransactionStatus,
+        Map<string, CallbackFunction>
+      >();
       this.txTypeCallbacks.set(txType, typeCallbacks);
     }
 
-    typeCallbacks.set(status, callback);
-    this.logger.debug(
-      `A tx status callback function is registered for type [${txType}] and status [${status}]`
-    );
+    let statusCallbacks = typeCallbacks.get(status);
+    if (!statusCallbacks) {
+      statusCallbacks = new Map<string, CallbackFunction>();
+      typeCallbacks.set(status, statusCallbacks);
+    }
+
+    const currentCallback = statusCallbacks.get(id);
+    if (currentCallback) {
+      this.logger.debug(
+        `New tx status callback function is registered for type [${txType}] and status [${status}]`
+      );
+    } else {
+      this.logger.debug(
+        `The tx status callback function for type [${txType}] and status [${status}] is replaced`
+      );
+    }
+    statusCallbacks.set(id, callback);
   };
 
   /**
@@ -218,15 +236,17 @@ export class TxPot {
         lastStatusUpdate: this.currentTime(),
       }
     );
-    const callback = this.txTypeCallbacks.get(tx.txType)?.get(status);
-    if (callback)
-      callback(tx, status).catch((e) => {
-        this.logger.debug(
-          `An error occurred while handling tx [${tx.txId}] status change: ${e}`
-        );
-        if (e instanceof Error && e.stack) this.logger.debug(e.stack);
-      });
-    else
+    const callbacks = this.txTypeCallbacks.get(tx.txType)?.get(status);
+    if (callbacks) {
+      for (const idCallbackPair of callbacks) {
+        idCallbackPair[1](tx, status).catch((e) => {
+          this.logger.debug(
+            `An error occurred while handling tx [${tx.txId}] status change in callback [${idCallbackPair[0]}]: ${e}`
+          );
+          if (e instanceof Error && e.stack) this.logger.debug(e.stack);
+        });
+      }
+    } else
       this.logger.debug(
         `No callback function is set for type [${tx.txType}] and status [${status}]`
       );
