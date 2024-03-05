@@ -153,6 +153,7 @@ describe('TxPot', () => {
       txPot.registerValidator(
         testData.tx1.chain,
         testData.tx1.txType,
+        'id',
         mockedValidator
       );
 
@@ -182,6 +183,7 @@ describe('TxPot', () => {
       txPot.registerValidator(
         testData.tx1.chain,
         testData.tx1.txType,
+        'id',
         mockedValidator
       );
 
@@ -215,15 +217,19 @@ describe('TxPot', () => {
       await txRepository.insert(testData.tx1);
 
       const mockedValidators = [
-        async (tx: TransactionEntity) => true,
-        async (tx: TransactionEntity) => false,
-        async (tx: TransactionEntity) => true,
+        { id: 'validator-1', validator: async (tx: TransactionEntity) => true },
+        {
+          id: 'validator-2',
+          validator: async (tx: TransactionEntity) => false,
+        },
+        { id: 'validator-3', validator: async (tx: TransactionEntity) => true },
       ];
       mockedValidators.forEach((mockedValidator) =>
         txPot.registerValidator(
           testData.tx1.chain,
           testData.tx1.txType,
-          mockedValidator
+          mockedValidator.id,
+          mockedValidator.validator
         )
       );
 
@@ -711,6 +717,7 @@ describe('TxPot', () => {
       txPot.registerValidator(
         testData.tx6.chain,
         testData.tx6.txType,
+        'id',
         mockedValidator
       );
 
@@ -794,11 +801,13 @@ describe('TxPot', () => {
       txPot.registerValidator(
         testData.tx3.chain,
         testData.tx3.txType,
+        'tx3-validator',
         mockedValidator
       );
       txPot.registerValidator(
         testData.tx5.chain,
         testData.tx5.txType,
+        'tx5-validator',
         mockedValidator
       );
 

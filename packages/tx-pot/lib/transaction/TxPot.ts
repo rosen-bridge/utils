@@ -18,7 +18,7 @@ export class TxPot {
   protected chains = new Map<string, AbstractPotChainManager>();
   protected validators = new Map<
     string,
-    Map<string, Array<ValidatorFunction>>
+    Map<string, Map<string, ValidatorFunction>>
   >();
   protected txTypeCallbacks = new Map<
     string,
@@ -74,28 +74,37 @@ export class TxPot {
    * registers a validator function
    * @param chain
    * @param txType
+   * @param id
    * @param validator
    */
   registerValidator = (
     chain: string,
     txType: string,
+    id: string,
     validator: ValidatorFunction
   ): void => {
     let chainValidators = this.validators.get(chain);
     if (!chainValidators) {
-      chainValidators = new Map<string, Array<ValidatorFunction>>();
+      chainValidators = new Map<string, Map<string, ValidatorFunction>>();
       this.validators.set(chain, chainValidators);
     }
 
-    let currentValidators = chainValidators.get(txType);
-    if (!currentValidators) {
-      currentValidators = [];
-      chainValidators.set(txType, currentValidators);
+    let typeValidators = chainValidators.get(txType);
+    if (!typeValidators) {
+      typeValidators = new Map<string, ValidatorFunction>();
+      chainValidators.set(txType, typeValidators);
     }
-    currentValidators.push(validator);
-    this.logger.debug(
-      `A tx validator function is registered for chain [${chain}] and type [${txType}]`
-    );
+    const currentValidator = typeValidators.get(id);
+    if (currentValidator) {
+      this.logger.debug(
+        `New tx validator function is registered for chain [${chain}] and type [${txType}]`
+      );
+    } else {
+      this.logger.debug(
+        `The tx validator function for chain [${chain}] and type [${txType}] is replaced`
+      );
+    }
+    typeValidators.set(id, validator);
   };
 
   /**
@@ -178,8 +187,11 @@ export class TxPot {
       );
       return true;
     }
-    for (const validator of validators) {
-      if ((await validator(tx)) === false) {
+    for (const idValidatorPair of validators) {
+      if ((await idValidatorPair[1](tx)) === false) {
+        this.logger.debug(
+          `tx [${tx.txId}] is recognized as invalid by validator [${idValidatorPair[0]}]`
+        );
         await this.setTransactionAsInvalid(tx);
         return false;
       }
