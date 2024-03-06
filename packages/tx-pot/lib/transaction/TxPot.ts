@@ -105,7 +105,7 @@ export class TxPot {
         `The tx validator function for chain [${chain}], type [${txType}] and id [${id}] is replaced`
       );
     } else {
-      this.logger.debug(
+      this.logger.info(
         `New tx validator function is registered for chain [${chain}] and type [${txType}] by id [${id}]`
       );
     }
@@ -127,7 +127,7 @@ export class TxPot {
     }
 
     validators.delete(id);
-    this.logger.debug(
+    this.logger.info(
       `Removed tx validator function for chain [${chain}], type [${txType}] and id [${id}]`
     );
   };
@@ -156,7 +156,7 @@ export class TxPot {
         `The tx submit validator function for chain [${chain}] and id [${id}] is replaced`
       );
     } else {
-      this.logger.debug(
+      this.logger.info(
         `New tx submit validator function is registered for chain [${chain}] by id [${id}]`
       );
     }
@@ -177,7 +177,7 @@ export class TxPot {
     }
 
     chainAllowance.delete(id);
-    this.logger.debug(
+    this.logger.info(
       `Removed tx submit validator function for chain [${chain}] and id [${id}]`
     );
   };
@@ -219,7 +219,7 @@ export class TxPot {
         `The tx status callback function for type [${txType}] and status [${status}] and id [${id}] is replaced`
       );
     } else {
-      this.logger.debug(
+      this.logger.info(
         `New tx status callback function is registered for type [${txType}] and status [${status}] by id [${id}]`
       );
     }
@@ -245,7 +245,7 @@ export class TxPot {
     }
 
     callbacks.delete(id);
-    this.logger.debug(
+    this.logger.info(
       `Removed tx status callback function for type [${txType}] and status [${status}] and id [${id}]`
     );
   };
