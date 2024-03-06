@@ -487,6 +487,7 @@ describe('TxPot', () => {
      * - insert tx with signed status
      * - mock PotChainManager and register to TxPot
      *   - mock `submitTransaction` to throw error
+     * - register submit validator function
      * - run test (call `update`)
      * - check if function got called
      * - check db records
@@ -510,6 +511,13 @@ describe('TxPot', () => {
       );
       vi.spyOn(mockedManager, 'submitTransaction').mockImplementation(
         mockedSubmitTransaction
+      );
+
+      // register submit validator function
+      txPot.registerSubmitValidator(
+        testData.tx1.chain,
+        'validator-1',
+        async (tx: TransactionEntity) => true
       );
 
       // run test
