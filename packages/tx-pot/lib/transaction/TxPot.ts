@@ -18,11 +18,15 @@ export class TxPot {
   protected chains = new Map<string, AbstractPotChainManager>();
   protected validators = new Map<
     string,
-    Map<string, Array<ValidatorFunction>>
+    Map<string, Map<string, ValidatorFunction>>
   >();
   protected txTypeCallbacks = new Map<
     string,
-    Map<TransactionStatus, CallbackFunction>
+    Map<TransactionStatus, Map<string, CallbackFunction>>
+  >();
+  protected submissionAllowance = new Map<
+    string,
+    Map<string, ValidatorFunction>
   >();
   protected logger: AbstractLogger;
 
@@ -74,27 +78,107 @@ export class TxPot {
    * registers a validator function
    * @param chain
    * @param txType
+   * @param id
    * @param validator
    */
   registerValidator = (
     chain: string,
     txType: string,
+    id: string,
     validator: ValidatorFunction
   ): void => {
     let chainValidators = this.validators.get(chain);
     if (!chainValidators) {
-      chainValidators = new Map<string, Array<ValidatorFunction>>();
+      chainValidators = new Map<string, Map<string, ValidatorFunction>>();
       this.validators.set(chain, chainValidators);
     }
 
-    let currentValidators = chainValidators.get(txType);
-    if (!currentValidators) {
-      currentValidators = [];
-      chainValidators.set(txType, currentValidators);
+    let typeValidators = chainValidators.get(txType);
+    if (!typeValidators) {
+      typeValidators = new Map<string, ValidatorFunction>();
+      chainValidators.set(txType, typeValidators);
     }
-    currentValidators.push(validator);
-    this.logger.debug(
-      `A tx validator function is registered for chain [${chain}] and type [${txType}]`
+    const currentValidator = typeValidators.get(id);
+    typeValidators.set(id, validator);
+    if (currentValidator) {
+      this.logger.debug(
+        `The tx validator function for chain [${chain}], type [${txType}] and id [${id}] is replaced`
+      );
+    } else {
+      this.logger.info(
+        `New tx validator function is registered for chain [${chain}] and type [${txType}] by id [${id}]`
+      );
+    }
+  };
+
+  /**
+   * removes a validator function
+   * @param chain
+   * @param txType
+   * @param id
+   */
+  unregisterValidator = (chain: string, txType: string, id: string): void => {
+    const validators = this.validators.get(chain)?.get(txType);
+    if (!validators) {
+      this.logger.debug(
+        `No tx validator function is set for chain [${chain}], type [${txType}] and id [${id}]`
+      );
+      return;
+    }
+
+    validators.delete(id);
+    this.logger.info(
+      `Removed tx validator function for chain [${chain}], type [${txType}] and id [${id}]`
+    );
+  };
+
+  /**
+   * registers a submit validator function
+   * @param chain
+   * @param id
+   * @param validator
+   */
+  registerSubmitValidator = (
+    chain: string,
+    id: string,
+    validator: ValidatorFunction
+  ): void => {
+    let chainAllowance = this.submissionAllowance.get(chain);
+    if (!chainAllowance) {
+      chainAllowance = new Map<string, ValidatorFunction>();
+      this.submissionAllowance.set(chain, chainAllowance);
+    }
+
+    const currentValidator = chainAllowance.get(id);
+    chainAllowance.set(id, validator);
+    if (currentValidator) {
+      this.logger.debug(
+        `The tx submit validator function for chain [${chain}] and id [${id}] is replaced`
+      );
+    } else {
+      this.logger.info(
+        `New tx submit validator function is registered for chain [${chain}] by id [${id}]`
+      );
+    }
+  };
+
+  /**
+   * removes a submit validator function
+   * @param chain
+   * @param id
+   */
+  unregisterSubmitValidator = (chain: string, id: string): void => {
+    const chainAllowance = this.submissionAllowance.get(chain);
+    if (!chainAllowance) {
+      this.logger.debug(
+        `No tx submit validator function is set for chain [${chain}] and id [${id}]`
+      );
+      return;
+    }
+
+    chainAllowance.delete(id);
+    this.logger.info(
+      `Removed tx submit validator function for chain [${chain}] and id [${id}]`
     );
   };
 
@@ -104,22 +188,65 @@ export class TxPot {
    *  of given type changes to given status
    * @param txType
    * @param status
+   * @param id
    * @param callback
    */
   registerCallback = (
     txType: string,
     status: TransactionStatus,
+    id: string,
     callback: CallbackFunction
   ): void => {
     let typeCallbacks = this.txTypeCallbacks.get(txType);
     if (!typeCallbacks) {
-      typeCallbacks = new Map<TransactionStatus, CallbackFunction>();
+      typeCallbacks = new Map<
+        TransactionStatus,
+        Map<string, CallbackFunction>
+      >();
       this.txTypeCallbacks.set(txType, typeCallbacks);
     }
 
-    typeCallbacks.set(status, callback);
-    this.logger.debug(
-      `A tx status callback function is registered for type [${txType}] and status [${status}]`
+    let statusCallbacks = typeCallbacks.get(status);
+    if (!statusCallbacks) {
+      statusCallbacks = new Map<string, CallbackFunction>();
+      typeCallbacks.set(status, statusCallbacks);
+    }
+
+    const currentCallback = statusCallbacks.get(id);
+    statusCallbacks.set(id, callback);
+    if (currentCallback) {
+      this.logger.debug(
+        `The tx status callback function for type [${txType}] and status [${status}] and id [${id}] is replaced`
+      );
+    } else {
+      this.logger.info(
+        `New tx status callback function is registered for type [${txType}] and status [${status}] by id [${id}]`
+      );
+    }
+  };
+
+  /**
+   * removes a callback function
+   * @param txType
+   * @param status
+   * @param id
+   */
+  unregisterCallback = (
+    txType: string,
+    status: TransactionStatus,
+    id: string
+  ): void => {
+    const callbacks = this.txTypeCallbacks.get(txType)?.get(status);
+    if (!callbacks) {
+      this.logger.debug(
+        `No tx status callback function is set for type [${txType}] and status [${status}] and id [${id}]`
+      );
+      return;
+    }
+
+    callbacks.delete(id);
+    this.logger.info(
+      `Removed tx status callback function for type [${txType}] and status [${status}] and id [${id}]`
     );
   };
 
@@ -178,9 +305,40 @@ export class TxPot {
       );
       return true;
     }
-    for (const validator of validators) {
-      if ((await validator(tx)) === false) {
+    for (const idValidatorPair of validators) {
+      if ((await idValidatorPair[1](tx)) === false) {
+        this.logger.debug(
+          `tx [${tx.txId}] is recognized as invalid by validator [${idValidatorPair[0]}]`
+        );
         await this.setTransactionAsInvalid(tx);
+        return false;
+      }
+    }
+    return true;
+  };
+
+  /**
+   * checks a transaction for submission
+   * returns true if no validator functions is set or all validators allow tx to submit
+   * otherwise returns false
+   * @param tx
+   */
+  protected isSubmitAllowed = async (
+    tx: TransactionEntity
+  ): Promise<boolean> => {
+    const validators = this.submissionAllowance.get(tx.chain);
+    if (validators === undefined) {
+      // tx is allowed for submission since no validator is found
+      this.logger.debug(
+        `No submit validator function is found for chain [${tx.chain}]`
+      );
+      return true;
+    }
+    for (const idValidatorPair of validators) {
+      if ((await idValidatorPair[1](tx)) === false) {
+        this.logger.debug(
+          `tx [${tx.txId}] is not allowed for submission by submit validator [${idValidatorPair[0]}]`
+        );
         return false;
       }
     }
@@ -206,15 +364,17 @@ export class TxPot {
         lastStatusUpdate: this.currentTime(),
       }
     );
-    const callback = this.txTypeCallbacks.get(tx.txType)?.get(status);
-    if (callback)
-      callback(tx, status).catch((e) => {
-        this.logger.debug(
-          `An error occurred while handling tx [${tx.txId}] status change: ${e}`
-        );
-        if (e instanceof Error && e.stack) this.logger.debug(e.stack);
-      });
-    else
+    const callbacks = this.txTypeCallbacks.get(tx.txType)?.get(status);
+    if (callbacks) {
+      for (const idCallbackPair of callbacks) {
+        idCallbackPair[1](tx, status).catch((e) => {
+          this.logger.debug(
+            `An error occurred while handling tx [${tx.txId}] status change in callback [${idCallbackPair[0]}]: ${e}`
+          );
+          if (e instanceof Error && e.stack) this.logger.debug(e.stack);
+        });
+      }
+    } else
       this.logger.debug(
         `No callback function is set for type [${tx.txType}] and status [${status}]`
       );
@@ -230,6 +390,7 @@ export class TxPot {
    * @param tx
    */
   protected processSignedTx = async (tx: TransactionEntity): Promise<void> => {
+    if (!(await this.isSubmitAllowed(tx))) return;
     const manager = this.getChainManager(tx.chain);
     try {
       await manager.submitTransaction(tx.serializedTx);

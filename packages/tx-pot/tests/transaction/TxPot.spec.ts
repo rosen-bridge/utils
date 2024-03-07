@@ -1,6 +1,11 @@
 import { Repository } from 'typeorm';
 import { mockDataSource } from '../db/dataSource.mock';
-import { TransactionEntity, TransactionStatus } from '../../lib';
+import {
+  CallbackFunction,
+  TransactionEntity,
+  TransactionStatus,
+  ValidatorFunction,
+} from '../../lib';
 import { TestTxPot } from './TestTxPot';
 import * as testData from './testData';
 import { TestPotChainManager } from '../network/TestPotChainManager';
@@ -23,6 +28,87 @@ describe('TxPot', () => {
 
   afterAll(() => {
     vi.useRealTimers();
+  });
+
+  describe('unregisterValidator', () => {
+    /**
+     * @target TxPot.unregisterValidator should remove registered validator successfully
+     * @dependencies
+     * @scenario
+     * - register a validator function
+     * - run test
+     * - check registered validators
+     * @expected
+     * - there should be no validator
+     */
+    it('should remove registered validator successfully', async () => {
+      const mockedValidator = async (tx: TransactionEntity) => true;
+      txPot.registerValidator('chain', 'txType', 'id', mockedValidator);
+
+      txPot.unregisterValidator('chain', 'txType', 'id');
+
+      const validatorsMap: Map<
+        string,
+        Map<string, Map<string, ValidatorFunction>>
+      > = (txPot as any).validators;
+      expect(validatorsMap.get('chain')?.get('txType')?.size).toEqual(0);
+    });
+  });
+
+  describe('unregisterSubmitValidator', () => {
+    /**
+     * @target TxPot.unregisterSubmitValidator should remove registered submit validator successfully
+     * @dependencies
+     * @scenario
+     * - register a validator function
+     * - run test
+     * - check registered submit validators
+     * @expected
+     * - there should be no validator
+     */
+    it('should remove registered submit validator successfully', async () => {
+      const mockedValidator = async (tx: TransactionEntity) => true;
+      txPot.registerSubmitValidator('chain', 'id', mockedValidator);
+
+      txPot.unregisterSubmitValidator('chain', 'id');
+
+      const validatorsMap: Map<string, Map<string, ValidatorFunction>> = (
+        txPot as any
+      ).submissionAllowance;
+      expect(validatorsMap.get('chain')?.size).toEqual(0);
+    });
+  });
+
+  describe('unregisterCallback', () => {
+    /**
+     * @target TxPot.unregisterCallback should remove registered submit validator successfully
+     * @dependencies
+     * @scenario
+     * - register a validator function
+     * - run test
+     * - check registered submit validators
+     * @expected
+     * - there should be no validator
+     */
+    it('should remove registered submit validator successfully', async () => {
+      const mockedCallback = vi.fn();
+      txPot.registerCallback(
+        'txType',
+        TransactionStatus.SIGNED,
+        'id',
+        mockedCallback
+      );
+
+      txPot.unregisterCallback('txType', TransactionStatus.SIGNED, 'id');
+
+      const callbacksMap: Map<
+        string,
+        Map<TransactionStatus, Map<string, CallbackFunction>>
+      > = (txPot as any).txTypeCallbacks;
+      expect(
+        callbacksMap.get('txType')?.get(TransactionStatus.SIGNED)?.size
+      ).toEqual(0);
+    });
   });
 
   describe('setTransactionAsInvalid', () => {
@@ -153,6 +239,7 @@ describe('TxPot', () => {
       txPot.registerValidator(
         testData.tx1.chain,
         testData.tx1.txType,
+        'id',
         mockedValidator
       );
 
@@ -182,6 +269,7 @@ describe('TxPot', () => {
       txPot.registerValidator(
         testData.tx1.chain,
         testData.tx1.txType,
+        'id',
         mockedValidator
       );
 
@@ -215,15 +303,19 @@ describe('TxPot', () => {
       await txRepository.insert(testData.tx1);
 
       const mockedValidators = [
-        async (tx: TransactionEntity) => true,
-        async (tx: TransactionEntity) => false,
-        async (tx: TransactionEntity) => true,
+        { id: 'validator-1', validator: async (tx: TransactionEntity) => true },
+        {
+          id: 'validator-2',
+          validator: async (tx: TransactionEntity) => false,
+        },
+        { id: 'validator-3', validator: async (tx: TransactionEntity) => true },
       ];
       mockedValidators.forEach((mockedValidator) =>
         txPot.registerValidator(
           testData.tx1.chain,
           testData.tx1.txType,
-          mockedValidator
+          mockedValidator.id,
+          mockedValidator.validator
         )
       );
 
@@ -304,7 +396,12 @@ describe('TxPot', () => {
       const newStatus = TransactionStatus.IN_SIGN;
       const mockedCallback = vi.fn();
       mockedCallback.mockResolvedValue(undefined);
-      txPot.registerCallback(testData.tx1.txType, newStatus, mockedCallback);
+      txPot.registerCallback(
+        testData.tx1.txType,
+        newStatus,
+        'id',
+        mockedCallback
+      );
 
       // run test
       await txPot.callSetTxStatus(testData.tx1, newStatus);
@@ -390,6 +487,7 @@ describe('TxPot', () => {
      * - insert tx with signed status
      * - mock PotChainManager and register to TxPot
      *   - mock `submitTransaction` to throw error
+     * - register submit validator function
      * - run test (call `update`)
      * - check if function got called
      * - check db records
@@ -415,6 +513,13 @@ describe('TxPot', () => {
         mockedSubmitTransaction
       );
 
+      // register submit validator function
+      txPot.registerSubmitValidator(
+        testData.tx1.chain,
+        'validator-1',
+        async (tx: TransactionEntity) => true
+      );
+
       // run test
       await txPot.update();
 
@@ -433,6 +538,73 @@ describe('TxPot', () => {
           TransactionStatus.SENT,
           String(testData.currentTimeStampAsSeconds),
         ],
+      ]);
+    });
+
+    /**
+     * @target TxPot.processSignedTx should submit the tx nor update the status
+     * when at least one submit validator does not allow submission
+     * @dependencies
+     * - database
+     * @scenario
+     * - insert tx with signed status
+     * - mock PotChainManager and register to TxPot
+     *   - mock `submitTransaction`
+     * - register 3 submit validator functions
+     *   - 1st and 3rd ones returns true
+     *   - 2nd one returns false
+     * - run test (call `update`)
+     * - check if function got called
+     * - check db records
+     * @expected
+     * - `submitTransaction` should NOT got called
+     * - columns of the tx should remain unchanged
+     */
+    it('should submit the tx nor update the status when at least one submit validator does not allow submission', async () => {
+      // insert tx with signed status
+      await txRepository.insert(testData.tx4);
+
+      // mock PotChainManager and register to TxPot
+      const mockedManager = new TestPotChainManager();
+      txPot.registerChain(testData.tx4.chain, mockedManager);
+      // mock `submitTransaction`
+      const mockedSubmitTransaction = vi.fn();
+      mockedSubmitTransaction.mockResolvedValue(undefined);
+      vi.spyOn(mockedManager, 'submitTransaction').mockImplementation(
+        mockedSubmitTransaction
+      );
+
+      // register 3 submit validator functions
+      const mockedValidators = [
+        { id: 'validator-1', validator: async (tx: TransactionEntity) => true },
+        {
+          id: 'validator-2',
+          validator: async (tx: TransactionEntity) => false,
+        },
+        { id: 'validator-3', validator: async (tx: TransactionEntity) => true },
+      ];
+      mockedValidators.forEach((mockedValidator) =>
+        txPot.registerSubmitValidator(
+          testData.tx1.chain,
+          mockedValidator.id,
+          mockedValidator.validator
+        )
+      );
+
+      // run test
+      await txPot.update();
+
+      // check if function got called
+      expect(mockedSubmitTransaction).not.toHaveBeenCalled();
+
+      // check db records
+      const txs = (await txRepository.find()).map((tx) => [
+        tx.txId,
+        tx.status,
+        tx.lastStatusUpdate,
+      ]);
+      expect(txs).toEqual([
+        [testData.tx4.txId, testData.tx4.status, testData.tx4.lastStatusUpdate],
       ]);
     });
   });
@@ -711,6 +883,7 @@ describe('TxPot', () => {
       txPot.registerValidator(
         testData.tx6.chain,
         testData.tx6.txType,
+        'id',
         mockedValidator
       );
 
@@ -794,11 +967,13 @@ describe('TxPot', () => {
       txPot.registerValidator(
         testData.tx3.chain,
         testData.tx3.txType,
+        'tx3-validator',
         mockedValidator
       );
       txPot.registerValidator(
         testData.tx5.chain,
         testData.tx5.txType,
+        'tx5-validator',
         mockedValidator
       );
 
