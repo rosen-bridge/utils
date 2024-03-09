@@ -708,4 +708,24 @@ export class TxPot {
       where: options.map(txOptionToClause),
     });
   };
+
+  /**
+   * updates extra fields of a transaction
+   * @param txId
+   * @param chain
+   * @param extra
+   * @param extra2
+   */
+  updateExtra = async (
+    txId: string,
+    chain: string,
+    extra?: string,
+    extra2?: string
+  ): Promise<void> => {
+    if (extra == undefined && extra2 == undefined) return;
+    const updatedFields: Partial<TransactionEntity> = {};
+    if (extra) updatedFields.extra = extra;
+    if (extra2) updatedFields.extra2 = extra2;
+    await this.txRepository.update({ txId, chain }, updatedFields);
+  };
 }

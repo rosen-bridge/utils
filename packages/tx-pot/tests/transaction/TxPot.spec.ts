@@ -1821,4 +1821,36 @@ describe('TxPot', () => {
       expect(txs[1].txId).toEqual(testData.tx2.txId);
     });
   });
+
+  describe('updateExtra', () => {
+    /**
+     * @target TxPot.updateExtra should update extra columns successfully
+     * @dependencies
+     * - database
+     * @scenario
+     * - insert 2 txs
+     * - run test
+     * - check db records
+     * @expected
+     * - extra of target tx should be updated
+     * - extra of other txs should remain unchanged
+     */
+    it('should update extra columns successfully', async () => {
+      await txRepository.insert(testData.tx3);
+      await txRepository.insert(testData.tx4);
+
+      const updatedExtra = 'new-extra';
+      await txPot.updateExtra(
+        testData.tx3.txId,
+        testData.tx3.chain,
+        updatedExtra
+      );
+
+      const txs = (await txRepository.find()).map((tx) => [tx.txId, tx.extra]);
+      expect(txs).toEqual([
+        [testData.tx3.txId, updatedExtra],
+        [testData.tx4.txId, testData.tx4.extra],
+      ]);
+    });
+  });
 });
