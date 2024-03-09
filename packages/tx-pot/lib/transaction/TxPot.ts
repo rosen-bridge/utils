@@ -433,8 +433,19 @@ export class TxPot {
 
         if (isValidTx && isValidToType) {
           // tx is valid. resending...
-          this.logger.info(`Tx [${tx.txId}] is still valid. Resending tx...`);
-          await manager.submitTransaction(tx.serializedTx);
+          this.logger.info(
+            `Tx [${tx.txId}] is still valid. Attempting resend...`
+          );
+          if (await this.isSubmitAllowed(tx)) {
+            try {
+              await manager.submitTransaction(tx.serializedTx);
+            } catch (e) {
+              this.logger.warn(
+                `Failed to submit tx [${tx.txId}] to chain [${tx.chain}]: ${e}`
+              );
+              if (e instanceof Error && e.stack) this.logger.warn(e.stack);
+            }
+          }
         } else {
           // tx seems invalid. reset status if enough blocks past.
           await this.setTransactionAsInvalid(tx);
