@@ -1852,5 +1852,30 @@ describe('TxPot', () => {
         [testData.tx4.txId, testData.tx4.extra],
       ]);
     });
+
+    /**
+     * @target TxPot.updateExtra should set null successfully
+     * @dependencies
+     * - database
+     * @scenario
+     * - insert a tx with extra
+     * - run test
+     * - check db records
+     * @expected
+     * - extra of target tx should be updated
+     */
+    it('should set null successfully', async () => {
+      await txRepository.insert(testData.tx3);
+
+      const updatedExtra = null;
+      await txPot.updateExtra(
+        testData.tx3.txId,
+        testData.tx3.chain,
+        updatedExtra
+      );
+
+      const txs = (await txRepository.find()).map((tx) => [tx.txId, tx.extra]);
+      expect(txs).toEqual([[testData.tx3.txId, updatedExtra]]);
+    });
   });
 });

@@ -548,8 +548,8 @@ export class TxPot {
     serializedTx: string,
     initialStatus = TransactionStatus.APPROVED,
     lastCheck = 0,
-    extra?: string,
-    extra2?: string
+    extra?: string | null,
+    extra2?: string | null
   ): Promise<void> => {
     await this.txRepository.insert({
       txId: txId,
@@ -719,13 +719,10 @@ export class TxPot {
   updateExtra = async (
     txId: string,
     chain: string,
-    extra?: string,
-    extra2?: string
+    extra?: string | null,
+    extra2?: string | null
   ): Promise<void> => {
-    if (extra == undefined && extra2 == undefined) return;
-    const updatedFields: Partial<TransactionEntity> = {};
-    if (extra) updatedFields.extra = extra;
-    if (extra2) updatedFields.extra2 = extra2;
-    await this.txRepository.update({ txId, chain }, updatedFields);
+    if (extra === undefined && extra2 === undefined) return;
+    await this.txRepository.update({ txId, chain }, { extra, extra2 });
   };
 }
