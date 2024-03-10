@@ -35,10 +35,10 @@ export class TransactionEntity {
   @Column('varchar', {
     nullable: true,
   })
-  extra?: string;
+  extra?: string | null;
 
   @Column('varchar', {
     nullable: true,
   })
-  extra2?: string;
+  extra2?: string | null;
 }
