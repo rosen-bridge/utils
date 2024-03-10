@@ -1,11 +1,11 @@
 import { RosenData } from '../abstract/types';
 import AbstractRosenDataExtractor from '../abstract/AbstractRosenDataExtractor';
-import { TransactionResponse } from 'ethers';
+import { Transaction } from 'ethers';
 import { RosenTokens, RosenChainToken } from '@rosen-bridge/tokens';
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import { parseRosenData } from './utils';
 
-export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<TransactionResponse> {
+export class EvmRosenExtractor extends AbstractRosenDataExtractor<string> {
   protected chain: string;
   protected nativeToken: string;
 
@@ -22,7 +22,7 @@ export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<Transaction
   }
 
   /**
-   * extracts RosenData from given lock transaction in RPC format
+   * extracts RosenData from given lock transaction in ethers Transaction format
    * checks:
    *     Native token transfer:
    *         1. `to` must be the lock address
@@ -33,9 +33,21 @@ export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<Transaction
    *         3. bytes from 5 to 37 must be the lock address
    *         4. bytes from 37 to 69 show the amount
    *         5. bytes after 69 must represent a valid CallDataRosenData
-   * @param transaction the lock transaction in RPC format
+   * @param serializedTransaction signed serialized transaction in ethers Transaction format
    */
-  get = (transaction: TransactionResponse): RosenData | undefined => {
+  get = (serializedTransaction: string): RosenData | undefined => {
+    let transaction: Transaction;
+    try {
+      transaction = Transaction.from(serializedTransaction);
+      if (transaction.from == null || transaction.hash == null)
+        throw Error(
+          `transaction 'from' ([${transaction.from}]) or 'hash' ([${transaction.hash}]) is unexpected`
+        );
+    } catch (e) {
+      throw new Error(
+        `Failed to parse transaction from ethers Transaction format while extracting rosen data: ${e}`
+      );
+    }
     const baseError = `No rosen data found for tx [${transaction.hash}]`;
     try {
       if (transaction.to == null) {
@@ -131,9 +143,7 @@ export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<Transaction
         sourceTxId: transaction.hash,
       };
     } catch (e) {
-      this.logger.debug(
-        `An error occurred while getting EVM rosen data from RPC: ${e}`
-      );
+      this.logger.debug(`An error occurred while getting EVM rosen data: ${e}`);
       if (e instanceof Error && e.stack) {
         this.logger.debug(e.stack);
       }
