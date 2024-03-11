@@ -435,13 +435,13 @@ similar to `txId`, the `extra` column supports single and multiple value conditi
 // fetch transactions with single data
 txPot.getTxsQuery([
   {
-    txId: 'arbitrary-data',
+    extra: 'arbitrary-data',
   },
 ]);
 // fetch transactions with list of data
 txPot.getTxsQuery([
   {
-    txId: ['arbitrary-data-1', 'arbitrary-data-2'],
+    extra: ['arbitrary-data-1', 'arbitrary-data-2'],
   },
 ]);
 ```
