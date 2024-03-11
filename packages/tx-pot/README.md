@@ -33,21 +33,21 @@ yarn add @rosen-bridge/tx-pot
 
 ## Usage
 
-Usage of `@rosen-bridge/tx-pot` package is explained briefly in several parts. Implementing network interface, setup and insert transaction steps are crucial to use the package. Other steps just explain how to utilize the package and better use cases.
+The usage of `@rosen-bridge/tx-pot` package is explained briefly in several parts. Implementing network interface, setup and insert transaction steps are crucial to use the package. Other steps just explain how to utilize the package and better use cases.
 
-`TxPot` required database connection and works with single table, `TransactionEntity`. The primary key for this table is pair of chain and transaction id. It also has various columns which will be explained in [#insert-transaction](#insert-transaction).
+`TxPot` requires a database connection and works with a single table, `TransactionEntity`. The primary key for this table is the pair of chain and transaction id. It also has various columns which will be explained in [#insert-transaction](#insert-transaction).
 
 ### Network Interface
 
-Before diving into using `TxPot`, a network interface is required for each chain. The interface should implement `AbstractPotChainManager` class. These interfaces should be registered in `TxPot` after setup step. The interface functions are briefly described in the following.
+Before diving into using `TxPot`, a network interface is required for each chain. The interface should implement the `AbstractPotChainManager` class. These interfaces should be registered in `TxPot` after the setup step. The interface functions are briefly described in the following.
 
 #### `getHeight`
 
-This function gets the blockchain current height. It is required while processing `sent` transaction and is used to update transaction `lastCheck`, which almost shows the last height that a transaction was valid. It is also required while setting a transaction as invalid.
+This function gets the blockchain's current height. It is required while processing transactions with `sent` status and is used to update the transaction `lastCheck`, which almost shows the last height that a transaction was valid. It is also required while setting a transaction as invalid.
 
 #### `getTxRequiredConfirmation`
 
-This function returns required number of confirmation for a transaction based on it's type. The transaction types are defined by superior package and doesn't matter to `TxPot`.
+This function returns the required number of confirmations for a transaction based on its type. The transaction types are defined by the superior package and don't matter to `TxPot`.
 
 > ```ts
 > @param txType <string> type of the transaction
@@ -55,7 +55,7 @@ This function returns required number of confirmation for a transaction based on
 
 #### `getTxConfirmation`
 
-This function gets number of confirmation for a transaction. **Note that this function should return -1 if tx is not mined (e.g. is in mempool) or is not in the blockchain**.
+This function gets the number of confirmations for a transaction. **Note that this function should return -1 if tx is not mined (e.g. is in mempool) or is not in the blockchain**.
 
 > ```ts
 > @param txId <string> the transaction id
@@ -63,7 +63,7 @@ This function gets number of confirmation for a transaction. **Note that this fu
 
 #### `isTxValid`
 
-This function checks if a transaction is still valid and can be sent to the network. For example, in UTxO-based blockchains, it should check if the input UTxOs are valid and still unspent. Also in Account-based blockchains, state of the account (e.g. `nonce` in Ethereum) should be checked.
+This function checks if a transaction is still valid and can be sent to the network. For example, in UTxO-based blockchains, it should check if the input UTxOs are valid and still unspent. Also in Account-based blockchains, the state of the account (e.g. `nonce` in Ethereum) should be checked.
 
 > ```ts
 > @param serializedTx <string> the serialized transaction
@@ -90,7 +90,7 @@ This function checks if a transaction is in mempool. If the blockchain has no me
 
 `TxPot` is defined in Singleton architecture, i.e. a single object will be defined and used by the entire program.
 
-To instantiate `TxPot`, `setup` function should get called with `typeorm` data source.
+To instantiate `TxPot`, the `setup` function should get called with `typeorm` data source.
 
 ```ts
 import { TxPot } from '@rosen-bridge/tx-pot';
@@ -125,7 +125,7 @@ Validator and callback functions can be registered to `TxPot` but they are optio
 
 ### Insert Transaction
 
-Transaction can be inserted using `addTx` function. It insert transactions with `approved` status by default and 0 for `lastCheck` column. For inserting signed transactions, `signed` status should be passed as initial status. In this case **don't forget to also pass current blockchain height as `lastCheck` argument**. There are two columns to store arbitrary data for transactions, `extra` and `extra2`. The difference is transactions can be filtered and fetched by their `extra` field while it is not possible using `extra2`. If some foreign key concept is required for transactions, it is suggested to store the key in `extra` column.
+Transaction can be inserted using the `addTx` function. It inserts transactions with `approved` status by default and 0 for the `lastCheck` column. For inserting signed transactions, the `signed` status should be passed as initial status. In this case, **don't forget to also pass the current blockchain height as `lastCheck` argument**. There are two columns to store arbitrary data for transactions, `extra` and `extra2`. The difference is transactions can be filtered and fetched by their `extra` field while it is not possible with `extra2`. If some foreign key concept is required for transactions, it is suggested to store the key in the `extra` column.
 
 Example of inserting a transaction into `TxPot`:
 
@@ -177,7 +177,7 @@ Transactions can be inserted with any other statuses, though it is not recommend
 
 ### Process Signed Transactions
 
-Signed transactions are processed by `TxPot` itself. The process will be executed by `update` function. It is recommended to execute it on interval based on the minimum blockchain block time. Example:
+Signed transactions are processed by `TxPot` itself. The process will be executed by the `update` function. It is recommended to execute it on the interval based on the minimum blockchain block time. Example:
 
 ```ts
 const txPotJob = async () => {
@@ -188,30 +188,30 @@ const txPotJob = async () => {
 };
 ```
 
-This function only processes transaction with `signed` and `sent` statues.
+This function only processes transactions with `signed` and `sent` statuses.
 
-Transactions with `signed` status will be validated by submit validators (if any is registered) and if all validators allow, it will be submitted to the network and it's status will be updated to `sent`.
+Transactions with `signed` status will be validated by the submit validators (if any are registered) and if all are passed, it will be submitted to the network and its status will be updated to `sent`.
 
 Processing `sent` transactions is a bit more complicated. There are three cases.
 
-If the transaction is mined and confirmed enough, it's status will be updated to `completed`.
+If the transaction is mined and confirmed enough, its status will be updated to `completed`.
 
-If the transaction is mined but enough confirmation is not passed yet, the `lastCheck` column is updated to current height of the blockchain.
+If the transaction is mined but enough confirmation is not passed yet, the `lastCheck` column is updated to the current height of the blockchain.
 
 If the transaction is not mined, it will be searched for in mempool.
-If it is in mempool, the `lastCheck` column is updated to current height of the blockchain.
-If it is not in mempool, transaction will be validated.
+If it is in mempool, the `lastCheck` column is updated to the current height of the blockchain.
+If it is not in mempool, the transaction will be validated.
 
-There may be two validations in here.
-First one is the chain validation, which is `isTxValid` function in network interface (described in [Network Interface
+There may be two validations here.
+The first one is the chain validation, which is the `isTxValid` function in the network interface (described in [Network Interface
 ](#istxvalid)).
-Second one is any registered validator by superior package (see [#transaction-validations](#transaction-validations) for more details).
+The second one is any registered validator by the superior package (see [#transaction-validations](#transaction-validations) for more details).
 **Note that submit validators won't be checked in here**.
 
 If the transaction is still valid, it will be submitted to the network.
-If it's not, the `lastCheck` column will be checked and only if enough blocks is passed from it, the status will be updated to `invalid`.
+If it's not, the `lastCheck` column will be checked and only if enough blocks are passed from it, the status will be updated to `invalid`.
 
-There are other statuses for transactions, but they will not be processed by `TxPot` and the superior package should process them itself. It is recommended to process them before calling `update`:
+There are other statuses for transactions, but they will not be processed by `TxPot` and the the superior package should process them itself. It is recommended to process them before calling `update`:
 
 ```ts
 const txPotJob = async () => {
@@ -234,21 +234,21 @@ const txPotJob = async () => {
 };
 ```
 
-The `validate` flag in `getTxsByStatus` arguments specifies if the fetched transactions should be validated. Similar to `sent` transactions, chain validation and registered validator will be checked.
+The `validate` flag in `getTxsByStatus` arguments specifies if the fetched transactions should be validated. Similar to `sent` transactions, chain validation and the registered validators will be checked.
 **Note that submit validators won't be checked in here either**.
 
-Again similar to `sent` transactions, if the transaction is not valid, the `lastCheck` column will be checked and only if enough blocks is passed from it, the status will be updated to `invalid`. The remaining valid txs will be returned.
+Again similar to `sent` transactions, if the transaction is not valid, the `lastCheck` column will be checked and only if enough blocks are passed from it, the status will be updated to `invalid`. The remaining valid transactions will be returned.
 
 ### Transaction Validations
 
 There are three types of validators in `TxPot`.
-First one is to validate chain conditions, which is checked by chain manager (`isTxValid` function described in [Network Interface
+The first one is to validate chain conditions, which are checked by the chain manager (`isTxValid` function described in [Network Interface
 ](#istxvalid)).
-Second one is the validators registered by superior package using `registerValidator`.
-Third one is the submit-only validators, which should be registered by `registerSubmitValidator`. Note that the third one will be called only before attempting to submit a transaction and won't be called in any other cases (such as processing `sent` transactions).
+The second one is the validators registered by the superior package using `registerValidator`.
+The third one is the submit-only validators, which should be registered by `registerSubmitValidator`. Note that the third one will be called only before attempting to submit a transaction and won't be called in any other cases (such as processing `sent` transactions).
 
-The second type of validators, require chain, transaction type and an id to be registered. While validating a transaction, the validators will be filtered by transaction's chain and type.
-Multiple validators can be registered for a single chain and transaction type using different ids. Registering new validator with same chain, type and id will override the previous one. Example:
+The second type of validator, requires chain, transaction type and an id to be registered. Id only identifies the validator and won't be used while validating transactions.
+Multiple validators can be registered for a single chain and transaction type using different ids. Registering a new validator with the same chain, type and id will override the previous one. Example:
 
 ```ts
 import { s1ErgoPaymentTxValidator } from '../service1/validators';
@@ -268,7 +268,7 @@ txPot.registerValidator(
 );
 ```
 
-the submit-only validators only require chain and id. Similar to previous one, registering multiple validators is allowed and registering validator with duplicate chain and id overrides the previous one. Example:
+the submit-only validators only require chain and id. Similar to the previous one, registering multiple validators is allowed and registering the validator with duplicate chain and id overrides the previous one. Example:
 
 ```ts
 import { s1ErgoSubmitValidator } from '../service1/validators';
@@ -309,13 +309,13 @@ txPot.unregisterCallback(`payment`, TransactionStatus.COMPLETED, 'service-1');
 
 ### Fetch Transactions
 
-Some functions are defined to update and fetch transactions. The `getTxsQuery` function is defined for general use cases and always returns list of transactions.
-It get list of queries and merge the result (technically, queries are merged into single query with `OR` clause).
-Each query supports conditions on six fields of the transaction. The available conditions are describe in the following.
+Some functions are defined to update and fetch transactions. The `getTxsQuery` function is defined for general use cases and always returns the list of transactions.
+It gets the list of queries and merges the result (technically, queries are merged into a single query with `OR` clause).
+Each query supports conditions on six fields of the transaction. The available conditions are described in the following.
 
 #### `txId`
 
-Transactions can be fetched by id in two ways. Fetching transactions with single id, or list of ids.
+Transactions can be fetched by id in two ways. Fetching transactions with a single id, or list of ids.
 
 ```ts
 // fetch transactions with single id
@@ -337,7 +337,7 @@ txPot.getTxsQuery([
 
 #### `chain`
 
-Only single chain can be specified in the query. Example:
+Only a single chain can be specified in the query. Example:
 
 ```ts
 txPot.getTxsQuery([
@@ -349,7 +349,7 @@ txPot.getTxsQuery([
 
 #### `txType`
 
-Only single transaction type can be specified in the query. Example:
+Only a single transaction type can be specified in the query. Example:
 
 ```ts
 txPot.getTxsQuery([
@@ -389,7 +389,7 @@ txPot.getTxsQuery([
 ]);
 ```
 
-- all statuses except single one
+- all statuses except a single one
 
 ```ts
 txPot.getTxsQuery([
@@ -429,7 +429,7 @@ txPot.getTxsQuery([
 
 #### `extra`
 
-similar to `txId`, the `extra` column support single and multiple value condition.
+similar to `txId`, the `extra` column supports single and multiple value conditions.
 
 ```ts
 // fetch transactions with single data
