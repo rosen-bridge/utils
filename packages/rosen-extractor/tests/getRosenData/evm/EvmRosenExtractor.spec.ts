@@ -1,7 +1,7 @@
 import { EvmRosenExtractor } from '../../../lib';
 import * as testData from './testData';
 import TestUtils from '../TestUtils';
-import { Transaction } from 'ethers';
+import { Transaction, getAddress } from 'ethers';
 
 describe('EvmRosenExtractor', () => {
   describe('get', () => {
@@ -175,10 +175,12 @@ describe('EvmRosenExtractor', () => {
      */
     it('should return undefined when transaction is an ERC-20 transfer and `recipient` is not lock address', () => {
       const invalidTx = { ...testData.validErc20LockTx };
-      invalidTx.data =
-        invalidTx.data.substring(0, 14) + 'e' + invalidTx.data.substring(15);
-      const result = extractor.get(Transaction.from(invalidTx).serialized);
-      expect(result).toBeUndefined();
+      if (invalidTx.data != null) {
+        invalidTx.data =
+          invalidTx.data.substring(0, 14) + 'e' + invalidTx.data.substring(15);
+        const result = extractor.get(Transaction.from(invalidTx).serialized);
+        expect(result).toBeUndefined();
+      }
     });
 
     /**
@@ -194,10 +196,17 @@ describe('EvmRosenExtractor', () => {
      */
     it('should return undefined when transaction is an ERC-20 transfer and token is not supported in the source chain', () => {
       const invalidTx = { ...testData.validErc20LockTx };
-      invalidTx.to =
-        invalidTx.to.substring(0, 10) + '0' + invalidTx.to.substring(11);
-      const result = extractor.get(Transaction.from(invalidTx).serialized);
-      expect(result).toBeUndefined();
+      if (invalidTx.to != null) {
+        invalidTx.to = getAddress(
+          (
+            invalidTx.to.substring(0, 10) +
+            '0' +
+            invalidTx.to.substring(11)
+          ).toLowerCase()
+        );
+        const result = extractor.get(Transaction.from(invalidTx).serialized);
+        expect(result).toBeUndefined();
+      }
     });
 
     /**
@@ -213,10 +222,12 @@ describe('EvmRosenExtractor', () => {
      */
     it('should return undefined when calldata can not be parsed to rosen data', () => {
       const invalidTx = { ...testData.validErc20LockTx };
-      const len = invalidTx.data.length;
-      invalidTx.data = invalidTx.data.substring(0, len - 10);
-      const result = extractor.get(Transaction.from(invalidTx).serialized);
-      expect(result).toBeUndefined();
+      if (invalidTx.data != null) {
+        const len = invalidTx.data.length;
+        invalidTx.data = invalidTx.data.substring(0, len - 10);
+        const result = extractor.get(Transaction.from(invalidTx).serialized);
+        expect(result).toBeUndefined();
+      }
     });
   });
 });

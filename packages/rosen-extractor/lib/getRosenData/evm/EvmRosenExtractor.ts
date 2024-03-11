@@ -62,7 +62,7 @@ export class EvmRosenExtractor extends AbstractRosenDataExtractor<string> {
       let amount;
       let sourceTokenId, targetTokenId;
 
-      if (transaction.to == this.lockAddress) {
+      if (transaction.to.toLocaleLowerCase() == this.lockAddress) {
         // transaction must be a native token transfer
         rosenDataRaw = callData;
         tokenAddress = this.nativeToken;
@@ -90,7 +90,7 @@ export class EvmRosenExtractor extends AbstractRosenDataExtractor<string> {
         }
         if (
           BigInt('0x' + callData.substring(8, 72)).toString(16) !=
-          this.lockAddress.substring(2)
+          this.lockAddress.substring(2).toLowerCase()
         ) {
           this.logger.debug(
             baseError + `: 'to' address is not the lock address.`
@@ -99,7 +99,7 @@ export class EvmRosenExtractor extends AbstractRosenDataExtractor<string> {
         }
         amount = BigInt('0x' + callData.slice(72, 72 + 64)).toString();
         rosenDataRaw = callData.substring(72 + 64);
-        tokenAddress = transaction.to;
+        tokenAddress = transaction.to.toLocaleLowerCase();
         const tokens = this.tokens.search(this.chain, {
           [this.tokens.getIdKey(this.chain)]: tokenAddress,
         });
@@ -136,7 +136,7 @@ export class EvmRosenExtractor extends AbstractRosenDataExtractor<string> {
         toAddress: rosenData.toAddress,
         bridgeFee: rosenData.bridgeFee,
         networkFee: rosenData.networkFee,
-        fromAddress: transaction.from,
+        fromAddress: transaction.from.toLowerCase(),
         sourceChainTokenId: sourceTokenId,
         amount: amount,
         targetChainTokenId: targetTokenId,
