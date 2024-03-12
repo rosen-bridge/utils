@@ -36,7 +36,7 @@ export interface TxOptions {
   txType?: string;
   status?: FieldOption<TransactionStatus>;
   failedInSign?: boolean;
-  extra?: FieldValue<string>;
+  extra?: FieldValue<string | null>;
 }
 
 export class UnregisteredChain extends Error {
