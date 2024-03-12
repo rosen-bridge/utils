@@ -366,27 +366,15 @@ export class ConfigValidator {
       // if a node/field is of type object and thus is a subtree, add it both to
       // value tree and to the stack to be traversed later. Otherwise it's a
       // leaf and needs no traversal, so add it only to the value tree.
-      if (field.type === 'object' || field.type === 'array') {
-        if (field.type === 'object') {
-          value[childName] = Object.create(null);
-          stack.push({
-            schema: field.children,
-            parentValue: value,
-            fieldName: childName,
-            children: Object.keys(field.children).reverse(),
-          });
-        }
-        // else {
-        //   for (const item of value) {
-        //     stack.push({
-        //       schema: field.items,
-        //       parentValue: value,
-        //       fieldName: childName,
-        //       children: Object.keys(field.items).reverse(),
-        //     });
-        //   }
-        // }
-      } else if (field.default != undefined) {
+      if (field.type === 'object') {
+        value[childName] = Object.create(null);
+        stack.push({
+          schema: field.children,
+          parentValue: value,
+          fieldName: childName,
+          children: Object.keys(field.children).reverse(),
+        });
+      } else if (field.type !== 'array' && field.default != undefined) {
         value[childName] = field.default;
       }
     }
