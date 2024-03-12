@@ -57,7 +57,7 @@ export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<Transaction
       let amount;
       let sourceTokenId, targetTokenId;
 
-      if (transaction.to.toLocaleLowerCase() == this.lockAddress) {
+      if (transaction.to.toLowerCase() == this.lockAddress) {
         // transaction must be a native token transfer
         rosenDataRaw = callData;
         tokenAddress = this.nativeToken;
@@ -94,7 +94,7 @@ export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<Transaction
         }
         amount = BigInt('0x' + callData.slice(72, 72 + 64)).toString();
         rosenDataRaw = callData.substring(72 + 64);
-        tokenAddress = transaction.to.toLocaleLowerCase();
+        tokenAddress = transaction.to.toLowerCase();
         const tokens = this.tokens.search(this.chain, {
           [this.tokens.getIdKey(this.chain)]: tokenAddress,
         });
@@ -106,7 +106,7 @@ export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<Transaction
           return undefined;
         }
         token = tokens[0];
-        sourceTokenId = tokenAddress.toLocaleLowerCase();
+        sourceTokenId = tokenAddress.toLowerCase();
       }
       try {
         rosenData = parseRosenData(rosenDataRaw);
@@ -131,7 +131,7 @@ export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<Transaction
         toAddress: rosenData.toAddress,
         bridgeFee: rosenData.bridgeFee,
         networkFee: rosenData.networkFee,
-        fromAddress: transaction.from.toLocaleLowerCase(),
+        fromAddress: transaction.from.toLowerCase(),
         sourceChainTokenId: sourceTokenId,
         amount: amount,
         targetChainTokenId: targetTokenId,
