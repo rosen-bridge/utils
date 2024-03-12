@@ -1,11 +1,11 @@
 import { RosenData } from '../abstract/types';
 import AbstractRosenDataExtractor from '../abstract/AbstractRosenDataExtractor';
-import { TransactionResponse } from 'ethers';
+import { Transaction } from 'ethers';
 import { RosenTokens, RosenChainToken } from '@rosen-bridge/tokens';
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import { parseRosenData } from './utils';
 
-export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<TransactionResponse> {
+export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<Transaction> {
   protected chain: string;
   protected nativeToken: string;
 
@@ -22,7 +22,7 @@ export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<Transaction
   }
 
   /**
-   * extracts RosenData from given lock transaction in RPC format
+   * extracts RosenData from given lock transaction in ethers Transaction object
    * checks:
    *     Native token transfer:
    *         1. `to` must be the lock address
@@ -33,11 +33,18 @@ export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<Transaction
    *         3. bytes from 5 to 37 must be the lock address
    *         4. bytes from 37 to 69 show the amount
    *         5. bytes after 69 must represent a valid CallDataRosenData
-   * @param transaction the lock transaction in RPC format
+   * @param transaction the lock transaction in ethers Transaction object
    */
-  get = (transaction: TransactionResponse): RosenData | undefined => {
+  get = (transaction: Transaction): RosenData | undefined => {
     const baseError = `No rosen data found for tx [${transaction.hash}]`;
     try {
+      if (transaction.from == null || transaction.hash == null) {
+        this.logger.debug(
+          baseError +
+            `transaction 'from' ([${transaction.from}]) or 'hash' ([${transaction.hash}]) is unexpected (probably unsigned transaction is passed)`
+        );
+        return undefined;
+      }
       if (transaction.to == null) {
         this.logger.debug(baseError + `: 'to' address is empty.`);
         return undefined;

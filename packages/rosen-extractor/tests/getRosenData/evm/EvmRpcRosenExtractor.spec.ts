@@ -1,13 +1,7 @@
 import { EvmRpcRosenExtractor } from '../../../lib';
 import * as testData from './testData';
 import TestUtils from '../TestUtils';
-import {
-  TransactionResponse,
-  JsonRpcProvider,
-  Transaction,
-  Signature,
-  TransactionLike,
-} from 'ethers';
+import { Transaction, Signature, TransactionLike } from 'ethers';
 
 describe('EvmRpcRosenExtractor', () => {
   describe('get', () => {
@@ -30,7 +24,7 @@ describe('EvmRpcRosenExtractor', () => {
       if (txResJson.to != null) {
         txResJson.to = txResJson.to.toLowerCase();
       }
-      return new TransactionResponse(txResJson, new JsonRpcProvider());
+      return Transaction.from(txResJson);
     };
 
     /**
@@ -122,7 +116,7 @@ describe('EvmRpcRosenExtractor', () => {
     });
 
     /**
-     * @target `EvmRpcaRosenExtractor.get` should return undefined when
+     * @target `EvmRpcRosenExtractor.get` should return undefined when
      * transaction is a native token transfer and `to` is not lock address
      * @dependencies
      * @scenario
@@ -140,7 +134,7 @@ describe('EvmRpcRosenExtractor', () => {
     });
 
     /**
-     * @target `EvmRpcaRosenExtractor.get` should return undefined when
+     * @target `EvmRpcRosenExtractor.get` should return undefined when
      * native token is not in the source chain's token map
      * @dependencies
      * @scenario
@@ -163,7 +157,7 @@ describe('EvmRpcRosenExtractor', () => {
     });
 
     /**
-     * @target `EvmRpcaRosenExtractor.get` should return undefined when
+     * @target `EvmRpcRosenExtractor.get` should return undefined when
      * `to` is empty
      * @dependencies
      * @scenario
@@ -180,7 +174,7 @@ describe('EvmRpcRosenExtractor', () => {
     });
 
     /**
-     * @target `EvmRpcaRosenExtractor.get` should return undefined when
+     * @target `EvmRpcRosenExtractor.get` should return undefined when
      * transaction is an ERC-20 transfer and `recipient` is not lock address
      * @dependencies
      * @scenario
@@ -199,7 +193,7 @@ describe('EvmRpcRosenExtractor', () => {
     });
 
     /**
-     * @target `EvmRpcaRosenExtractor.get` should return undefined when
+     * @target `EvmRpcRosenExtractor.get` should return undefined when
      * transaction is an ERC-20 transfer and token is not supported in the source chain
      * @dependencies
      * @scenario
@@ -218,7 +212,7 @@ describe('EvmRpcRosenExtractor', () => {
     });
 
     /**
-     * @target `EvmRpcaRosenExtractor.get` should return undefined when
+     * @target `EvmRpcRosenExtractor.get` should return undefined when
      * calldata can not be parsed to rosen data
      * @dependencies
      * @scenario
