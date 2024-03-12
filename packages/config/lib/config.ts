@@ -23,56 +23,90 @@ export class ConfigValidator {
    * @param {Record<string, any>} config
    */
   public validateConfig(config: Record<string, any>) {
-    const errorPreamble = (path: Array<string>) =>
-      `config validation failed for "${path.join('.')}" field`;
-
-    const stack: Array<{
-      subSchema: ConfigSchema;
-      subConfig: Record<string, any> | undefined;
-      parentPath: Array<string>;
-    }> = [
-      {
-        subSchema: this.schema,
-        subConfig: config,
-        parentPath: [],
-      },
-    ];
-
     this.validateValue(
       config,
       { type: 'object', children: this.schema },
       config
     );
 
-    // Traverses the schema object tree depth first in coordination with config
-    // object tree and validate config using the schema
-    while (stack.length > 0) {
-      const { subSchema, subConfig, parentPath } = stack.pop()!;
-      // Process children of current field
-      for (const name of Object.keys(subSchema)) {
-        const path = parentPath.concat([name]);
-        try {
-          const field = subSchema[name];
-          let value = undefined;
-          if (subConfig != undefined && Object.hasOwn(subConfig, name)) {
-            value = subConfig[name];
-          }
+    this.validateSubConfig(config, config, this.schema, []);
+  }
 
-          this.validateValue(value, field, config);
-
-          // if a node/field is of type object and thus is a subtree, add it to
-          // the stack to be traversed later
-          if (field.type === 'object') {
-            stack.push({
-              subSchema: field.children,
-              subConfig: value,
-              parentPath: path,
-            });
-          }
-        } catch (error: any) {
-          throw new Error(`${errorPreamble(path)}: ${error.message}`);
+  /**
+   * traverses and validates a subconfig using the subschema
+   *
+   * @private
+   * @param {Record<string, any>} config
+   * @param {Record<string, any>} subConfig
+   * @param {ConfigSchema} subSchema
+   * @param {string[]} path
+   * @memberof ConfigValidator
+   */
+  private validateSubConfig(
+    config: Record<string, any>,
+    subConfig: Record<string, any>,
+    subSchema: ConfigSchema,
+    path: string[]
+  ) {
+    const errorPreamble = (path: Array<string>) =>
+      `config validation failed for "${path.join('.')}" field`;
+    for (const name of Object.keys(subSchema)) {
+      const childPath = path.concat([name]);
+      try {
+        const field = subSchema[name];
+        let value = undefined;
+        if (subConfig != undefined && Object.hasOwn(subConfig, name)) {
+          value = subConfig[name];
         }
+
+        this.validateValue(value, field, config);
+
+        // if a node/field is of type object and thus is a subtree, traverse it
+        if (field.type === 'object') {
+          this.validateSubConfig(config, value, field.children, childPath);
+        } else if (field.type === 'array') {
+          if (Array.isArray(value)) {
+            for (const item of value) {
+              ConfigValidator.modifyObject(config, item, childPath);
+              this.validateSubConfig(
+                config,
+                { [name]: item },
+                { [name]: field.items },
+                childPath
+              );
+              ConfigValidator.modifyObject(config, value, childPath);
+            }
+          }
+        }
+      } catch (error: any) {
+        throw new Error(`${errorPreamble(childPath)}: ${error.message}`);
       }
+    }
+  }
+
+  /**
+   * sets an object's specific subtree to the specified value
+   *
+   * @static
+   * @param {Record<string, any>} obj
+   * @param {*} newValue
+   * @param {string[]} path
+   * @return {*}
+   * @memberof ConfigValidator
+   */
+  static modifyObject(obj: Record<string, any>, newValue: any, path: string[]) {
+    let value: any = obj;
+    for (const key of path.slice(0, -1)) {
+      if (value != undefined && Object.hasOwn(value, key)) {
+        value = value[key];
+      } else {
+        return;
+      }
+    }
+
+    const lastKey = path.at(-1);
+    if (lastKey != undefined) {
+      value[lastKey] = newValue;
     }
   }
 
@@ -98,7 +132,11 @@ export class ConfigValidator {
       valueValidators[field.type](value, field);
     }
 
-    if (field.type != 'object' && field.validations) {
+    if (
+      field.type !== 'object' &&
+      field.type !== 'array' &&
+      field.validations
+    ) {
       for (const validation of field.validations) {
         const name = Object.keys(validation).filter(
           (key) => key !== 'when' && key !== 'error'
@@ -199,6 +237,11 @@ export class ConfigValidator {
               subSchema: field.children,
               parentPath: path,
             });
+          } else if (field.type === 'array') {
+            stack.push({
+              subSchema: { [name]: field.items },
+              parentPath: path,
+            });
           }
         } catch (error: any) {
           throw new Error(`${errorPreamble(path)}: ${error.message}`);
@@ -228,7 +271,7 @@ export class ConfigValidator {
       if (
         !Object.hasOwn(propertyValidators.all, key) &&
         !(
-          field.type !== 'object' &&
+          !['object', 'array'].includes(field.type) &&
           Object.hasOwn(propertyValidators.primitive, key)
         ) &&
         !Object.hasOwn(propertyValidators[field.type], key)
@@ -241,7 +284,7 @@ export class ConfigValidator {
       validator(field, this);
     }
 
-    if (field.type !== 'object') {
+    if (field.type !== 'object' && field.type !== 'array') {
       for (const validator of Object.values(propertyValidators.primitive)) {
         validator(field, this);
       }
@@ -264,7 +307,12 @@ export class ConfigValidator {
     for (const part of path) {
       if (subTree != undefined && Object.hasOwn(subTree, part)) {
         field = subTree[part];
-        subTree = 'children' in field ? field.children : undefined;
+        subTree =
+          'children' in field
+            ? field.children
+            : 'items' in field && 'children' in field.items
+            ? field.items.children
+            : undefined;
       } else {
         return undefined;
       }
@@ -318,14 +366,26 @@ export class ConfigValidator {
       // if a node/field is of type object and thus is a subtree, add it both to
       // value tree and to the stack to be traversed later. Otherwise it's a
       // leaf and needs no traversal, so add it only to the value tree.
-      if (field.type === 'object') {
-        value[childName] = Object.create(null);
-        stack.push({
-          schema: field.children,
-          parentValue: value,
-          fieldName: childName,
-          children: Object.keys(field.children).reverse(),
-        });
+      if (field.type === 'object' || field.type === 'array') {
+        if (field.type === 'object') {
+          value[childName] = Object.create(null);
+          stack.push({
+            schema: field.children,
+            parentValue: value,
+            fieldName: childName,
+            children: Object.keys(field.children).reverse(),
+          });
+        }
+        // else {
+        //   for (const item of value) {
+        //     stack.push({
+        //       schema: field.items,
+        //       parentValue: value,
+        //       fieldName: childName,
+        //       children: Object.keys(field.items).reverse(),
+        //     });
+        //   }
+        // }
       } else if (field.default != undefined) {
         value[childName] = field.default;
       }
@@ -384,7 +444,10 @@ export class ConfigValidator {
         // if a node/field is of type object and thus is a subtree, add it to
         // the stack to be traversed later. Otherwise it's a leaf and needs no
         // traversal.
-        if (field.type === 'object') {
+        if (
+          field.type === 'object' ||
+          (field.type === 'array' && field.items.type === 'object')
+        ) {
           let childTypeName = `${childName[0].toUpperCase()}${childName.substring(
             1
           )}`;
@@ -394,17 +457,44 @@ export class ConfigValidator {
             childTypeName += typeNameCount.toString();
           }
 
+          const children =
+            field.type === 'array' && field.items.type === 'object'
+              ? field.items.children
+              : field.type === 'object'
+              ? field.children
+              : {};
+
           stack.push({
-            subSchema: field.children,
-            children: Object.keys(field.children).reverse(),
+            subSchema: children,
+            children: Object.keys(children).reverse(),
             parentPath: path,
             typeName: childTypeName,
             attributes: [],
           });
 
-          attributes.push([childName, childTypeName]);
+          attributes.push([
+            childName,
+            field.type === 'array' ? `${childTypeName}[]` : childTypeName,
+          ]);
         } else {
-          attributes.push([childName, field.type]);
+          let fieldType: string =
+            field.type === 'array' ? field.items.type : field.type;
+          let isOptional = true;
+          if (field.type !== 'array' && field.validations != undefined) {
+            for (const validation of field.validations) {
+              if (field.type === 'string' && 'choices' in validation) {
+                fieldType = validation.choices.map((c) => `'${c}'`).join(' | ');
+              }
+
+              if ('required' in validation && !('when' in validation)) {
+                isOptional = false;
+              }
+            }
+          }
+          attributes.push([
+            isOptional ? `${childName}?` : childName,
+            field.type === 'array' ? `${fieldType}[]` : fieldType,
+          ]);
         }
       } catch (error: any) {
         throw new Error(`${errorPreamble(path)}: ${error.message}`);
@@ -425,7 +515,7 @@ export class ConfigValidator {
     name: string,
     attributes: Array<[string, string]>
   ): string => {
-    return `interface ${name} {
+    return `export interface ${name} {
   ${attributes.map((attr) => `${attr[0]}: ${attr[1]};`).join('\n  ')}
 }`;
   };

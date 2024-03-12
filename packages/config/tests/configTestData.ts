@@ -67,6 +67,64 @@ export const correctApiSchema = {
       { choices: ['node', 'explorer'] },
     ],
   },
+  logs: {
+    type: 'array',
+    items: {
+      type: 'object',
+      children: {
+        type: {
+          type: 'string',
+          validations: [
+            {
+              required: true,
+              error: 'log type must be specified',
+            },
+            { choices: ['file', 'console', 'loki'] },
+          ],
+        },
+        maxSize: {
+          type: 'string',
+          validations: [
+            {
+              required: true,
+              error: 'maxSize for file log type must be specified',
+              when: { path: 'logs.type', value: 'file' },
+            },
+          ],
+        },
+        maxFiles: {
+          type: 'string',
+          validations: [
+            {
+              required: true,
+              error: 'maxFiles for file log type must be specified',
+              when: { path: 'logs.type', value: 'file' },
+            },
+          ],
+        },
+        path: {
+          type: 'string',
+          validations: [
+            {
+              required: true,
+              error: 'path for file log type must be specified',
+              when: { path: 'logs.type', value: 'file' },
+            },
+          ],
+        },
+        level: {
+          type: 'string',
+          validations: [
+            {
+              required: true,
+              error: 'log level must be specified',
+              when: { path: 'logs.type', value: 'file' },
+            },
+          ],
+        },
+      },
+    },
+  },
   servers: {
     type: 'object',
     children: {
@@ -155,6 +213,64 @@ export const apiSchemaConfigPair = {
         { choices: ['node', 'explorer'] },
       ],
     },
+    logs: {
+      type: 'array',
+      items: {
+        type: 'object',
+        children: {
+          type: {
+            type: 'string',
+            validations: [
+              {
+                required: true,
+                error: 'log type must be specified',
+              },
+              { choices: ['file', 'console', 'loki'] },
+            ],
+          },
+          maxSize: {
+            type: 'string',
+            validations: [
+              {
+                required: true,
+                error: 'maxSize for file log type must be specified',
+                when: { path: 'logs.type', value: 'file' },
+              },
+            ],
+          },
+          maxFiles: {
+            type: 'string',
+            validations: [
+              {
+                required: true,
+                error: 'maxFiles for file log type must be specified',
+                when: { path: 'logs.type', value: 'file' },
+              },
+            ],
+          },
+          path: {
+            type: 'string',
+            validations: [
+              {
+                required: true,
+                error: 'path for file log type must be specified',
+                when: { path: 'logs.type', value: 'file' },
+              },
+            ],
+          },
+          level: {
+            type: 'string',
+            validations: [
+              {
+                required: true,
+                error: 'log level must be specified',
+                when: { path: 'logs.type', value: 'file' },
+              },
+            ],
+          },
+        },
+      },
+    },
     servers: {
       type: 'object',
       children: {
@@ -194,6 +310,19 @@ export const apiSchemaConfigPair = {
   },
   config: {
     apiType: 'explorer',
+    logs: [
+      {
+        type: 'file',
+        maxSize: '20m',
+        maxFiles: '14d',
+        path: './logs/',
+        level: 'info',
+      },
+      {
+        type: 'loki',
+        level: 'debug',
+      },
+    ],
     servers: {
       url: 'node256.mydomain.net',
     },
@@ -818,6 +947,60 @@ export const schemaTypeScriptTypesPair = {
   schema: {
     apiType: {
       type: 'string',
+      validations: [{ choices: ['node', 'explorer', 'superApi'] }],
+    },
+    logs: {
+      type: 'array',
+      items: {
+        type: 'object',
+        children: {
+          type: {
+            type: 'string',
+            validations: [
+              {
+                required: true,
+              },
+              { choices: ['file', 'console', 'loki'] },
+            ],
+          },
+          maxSize: {
+            type: 'string',
+            validations: [
+              {
+                required: true,
+                when: { path: 'logs.type', value: 'file' },
+              },
+            ],
+          },
+          maxFiles: {
+            type: 'string',
+            validations: [
+              {
+                required: true,
+                when: { path: 'logs.type', value: 'file' },
+              },
+            ],
+          },
+          path: {
+            type: 'string',
+            validations: [
+              {
+                required: true,
+                when: { path: 'logs.type', value: 'file' },
+              },
+            ],
+          },
+          level: {
+            type: 'string',
+            validations: [
+              {
+                required: true,
+                when: { path: 'logs.type', value: 'file' },
+              },
+            ],
+          },
+        },
+      },
     },
     explorer: {
       type: 'object',
@@ -858,30 +1041,39 @@ export const schemaTypeScriptTypesPair = {
       },
     },
   },
-  types: `interface Infrastructure {
+  types: `export interface Infrastructure {
   apis: Apis;
   server: Server;
   explorer: Explorer1;
-  apiType: string;
+  logs: Logs[];
+  apiType?: 'node' | 'explorer' | 'superApi';
 }
 
-interface Explorer1 {
-  domain: string;
-  path: string;
+export interface Logs {
+  type: 'file' | 'console' | 'loki';
+  maxSize?: string;
+  maxFiles?: string;
+  path?: string;
+  level?: string;
 }
 
-interface Server {
-  url: string;
-  port: number;
+export interface Explorer1 {
+  domain?: string;
+  path?: string;
 }
 
-interface Apis {
+export interface Server {
+  url?: string;
+  port?: number;
+}
+
+export interface Apis {
   explorer: Explorer;
 }
 
-interface Explorer {
-  url: string;
-  port: number;
+export interface Explorer {
+  url?: string;
+  port?: number;
 }
 `,
 };

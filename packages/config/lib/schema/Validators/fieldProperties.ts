@@ -102,7 +102,24 @@ export const propertyValidators = {
   },
   object: {
     children: (field: types.ObjectField, config: ConfigValidator) => {
+      if (
+        !Object.hasOwn(field, 'children') ||
+        typeof field.children !== 'object'
+      ) {
+        throw new Error(
+          `object field type must have a "children" property of type "object"`
+        );
+      }
       return;
+    },
+  },
+  array: {
+    items: (field: types.ArrayField, config: ConfigValidator) => {
+      if (!Object.hasOwn(field, 'items') || typeof field.items !== 'object') {
+        throw new Error(
+          `array field type must have a "items" property of type "object"`
+        );
+      }
     },
   },
   string: {
