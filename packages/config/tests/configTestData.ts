@@ -198,6 +198,18 @@ export const schemaWithIncorrectPortDefaultValueTypeSample = {
   },
 };
 
+export const arrayTypeSchemaWithoutItems = {
+  logs: {
+    type: 'array',
+  },
+};
+
+export const objectTypeSchemaWithoutChildren = {
+  api: {
+    type: 'object',
+  },
+};
+
 export const apiSchemaConfigPair = {
   schema: {
     apiType: {
@@ -356,6 +368,31 @@ export const apiSchemaConfigPairWrongChoice = {
   },
   config: {
     apiType: 'scanner',
+  },
+};
+
+export const arraySchemaConfigPairWrongValueType = {
+  schema: {
+    logs: {
+      type: 'array',
+      items: {
+        type: 'object',
+        children: {
+          type: {
+            type: 'string',
+          },
+          maxSize: {
+            type: 'string',
+          },
+        },
+      },
+    },
+  },
+  config: {
+    logs: {
+      type: 'loki',
+      maxSize: '12m',
+    },
   },
 };
 

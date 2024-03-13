@@ -76,6 +76,48 @@ describe('ConfigValidator', () => {
           )
       ).toThrow();
     });
+
+    /**
+     * @target validateSchema should throw exception when array type doesn't
+     * have an item property
+     * @dependencies
+     * @scenario
+     * - create a new instance of Config which calls Config.validateSchema
+     * - check if any exception is thrown
+     * @expected
+     * - exception should be thrown
+     */
+    it(`should throw exception when array type doesn't have an item property`, async () => {
+      expect(
+        () =>
+          new ConfigValidator(
+            <ConfigSchema>testData.arrayTypeSchemaWithoutItems
+          )
+      ).toThrow(
+        `array field type must have a "items" property of type "object"`
+      );
+    });
+
+    /**
+     * @target validateSchema should throw exception when object type doesn't
+     * have a children property
+     * @dependencies
+     * @scenario
+     * - create a new instance of Config which calls Config.validateSchema
+     * - check if any exception is thrown
+     * @expected
+     * - exception should be thrown
+     */
+    it(`should throw exception when object type doesn't have a children property`, async () => {
+      expect(
+        () =>
+          new ConfigValidator(
+            <ConfigSchema>testData.objectTypeSchemaWithoutChildren
+          )
+      ).toThrow(
+        `object field type must have a "children" property of type "object"`
+      );
+    });
   });
 
   describe('validateConfig', () => {
@@ -678,6 +720,28 @@ describe('ConfigValidator', () => {
       confValidator.validateConfig(
         testData.apiSchemaConfigPairWithStringNumber.config
       );
+    });
+
+    /**
+     * @target validateConfig should throw exception when value doesn't match
+     * the schema array type
+     * @dependencies
+     * @scenario
+     * - call validateConfig with the config
+     * - check if any exception is thrown
+     * @expected
+     * - exception should be thrown
+     */
+    it(`should throw exception when value doesn't match the schema array type`, async () => {
+      const confValidator = new ConfigValidator(
+        <ConfigSchema>testData.arraySchemaConfigPairWrongValueType.schema
+      );
+
+      expect(() =>
+        confValidator.validateConfig(
+          testData.arraySchemaConfigPairWrongValueType.config
+        )
+      ).toThrow('value must be of array type');
     });
   });
 
