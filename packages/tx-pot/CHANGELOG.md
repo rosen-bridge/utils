@@ -1,5 +1,18 @@
 # @rosen-bridge/tx-pot
 
+## 1.0.0
+
+### Major Changes
+
+- - add id to validator registration
+  - support registering multiple callbacks using id
+
+### Minor Changes
+
+- add function to unregister validators and callbacks
+- add function to register submit-only validator (validates tx for submit)
+- add function to only update extra columns
+
 ## 0.1.1
 
 ### Patch Changes

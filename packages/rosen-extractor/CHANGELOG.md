@@ -1,5 +1,15 @@
 # @rosen-bridge/rosen-extractor
 
+## 4.0.0
+
+### Major Changes
+
+- change EvmRosenExtractor tx format
+
+### Minor Changes
+
+- add universal evm rosen extractor
+
 ## 3.5.0
 
 ### Minor Changes

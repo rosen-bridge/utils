@@ -542,7 +542,7 @@ describe('TxPot', () => {
     });
 
     /**
-     * @target TxPot.processSignedTx should submit the tx nor update the status
+     * @target TxPot.processSignedTx should not submit the tx nor update the status
      * when at least one submit validator does not allow submission
      * @dependencies
      * - database
@@ -560,7 +560,7 @@ describe('TxPot', () => {
      * - `submitTransaction` should NOT got called
      * - columns of the tx should remain unchanged
      */
-    it('should submit the tx nor update the status when at least one submit validator does not allow submission', async () => {
+    it('should not submit the tx nor update the status when at least one submit validator does not allow submission', async () => {
       // insert tx with signed status
       await txRepository.insert(testData.tx4);
 
@@ -805,6 +805,60 @@ describe('TxPot', () => {
 
       // check if function got called
       expect(mockedSubmitTransaction).toHaveBeenCalled();
+    });
+
+    /**
+     * @target TxPot.processesSentTx should not resubmit if submit validator does not allow
+     * @dependencies
+     * - database
+     * @scenario
+     * - insert tx with sent status
+     * - mock PotChainManager and register to TxPot
+     *   - mock `getTxConfirmation`
+     *   - mock `getTxRequiredConfirmation` to return -1
+     *   - mock `isTxInMempool` to return false
+     *   - mock `isTxValid` to return true
+     *   - mock `submitTransaction`
+     * - register a submit validator function to return false
+     * - run test (call `update`)
+     * - check if function got called
+     * @expected
+     * - `submitTransaction` should NOT got called
+     */
+    it('should not resubmit if submit validator does not allow', async () => {
+      // insert tx with sent status
+      await txRepository.insert(testData.tx6);
+
+      // mock PotChainManager and register to TxPot
+      const mockedManager = new TestPotChainManager();
+      txPot.registerChain(testData.tx6.chain, mockedManager);
+      // mock `getTxConfirmation`
+      vi.spyOn(mockedManager, 'getTxConfirmation').mockResolvedValue(-1);
+      // mock `getTxRequiredConfirmation`
+      vi.spyOn(mockedManager, 'getTxRequiredConfirmation').mockReturnValue(10);
+      // mock `isTxInMempool`
+      vi.spyOn(mockedManager, 'isTxInMempool').mockResolvedValue(false);
+      // mock `isTxValid`
+      vi.spyOn(mockedManager, 'isTxValid').mockResolvedValue(true);
+      // mock `submitTransaction`
+      const mockedSubmitTransaction = vi.fn();
+      mockedSubmitTransaction.mockResolvedValue(undefined);
+      vi.spyOn(mockedManager, 'submitTransaction').mockImplementation(
+        mockedSubmitTransaction
+      );
+
+      // register a submit validator function to return false
+      txPot.registerSubmitValidator(
+        testData.tx6.chain,
+        'validator-2',
+        async (tx: TransactionEntity) => false
+      );
+
+      // run test
+      await txPot.update();
+
+      // check if function got called
+      expect(mockedSubmitTransaction).not.toHaveBeenCalled();
     });
 
     /**
@@ -1765,6 +1819,63 @@ describe('TxPot', () => {
       expect(txs.length).toEqual(2);
       expect(txs[0].txId).toEqual(testData.tx1.txId);
       expect(txs[1].txId).toEqual(testData.tx2.txId);
+    });
+  });
+
+  describe('updateExtra', () => {
+    /**
+     * @target TxPot.updateExtra should update extra columns successfully
+     * @dependencies
+     * - database
+     * @scenario
+     * - insert 2 txs
+     * - run test
+     * - check db records
+     * @expected
+     * - extra of target tx should be updated
+     * - extra of other txs should remain unchanged
+     */
+    it('should update extra columns successfully', async () => {
+      await txRepository.insert(testData.tx3);
+      await txRepository.insert(testData.tx4);
+
+      const updatedExtra = 'new-extra';
+      await txPot.updateExtra(
+        testData.tx3.txId,
+        testData.tx3.chain,
+        updatedExtra
+      );
+
+      const txs = (await txRepository.find()).map((tx) => [tx.txId, tx.extra]);
+      expect(txs).toEqual([
+        [testData.tx3.txId, updatedExtra],
+        [testData.tx4.txId, testData.tx4.extra],
+      ]);
+    });
+
+    /**
+     * @target TxPot.updateExtra should set null successfully
+     * @dependencies
+     * - database
+     * @scenario
+     * - insert a tx with extra
+     * - run test
+     * - check db records
+     * @expected
+     * - extra of target tx should be updated
+     */
+    it('should set null successfully', async () => {
+      await txRepository.insert(testData.tx3);
+
+      const updatedExtra = null;
+      await txPot.updateExtra(
+        testData.tx3.txId,
+        testData.tx3.chain,
+        updatedExtra
+      );
+
+      const txs = (await txRepository.find()).map((tx) => [tx.txId, tx.extra]);
+      expect(txs).toEqual([[testData.tx3.txId, updatedExtra]]);
     });
   });
 });
