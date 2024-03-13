@@ -1,11 +1,11 @@
 import { RosenData } from '../abstract/types';
 import AbstractRosenDataExtractor from '../abstract/AbstractRosenDataExtractor';
-import { TransactionResponse } from 'ethers';
+import { Transaction } from 'ethers';
 import { RosenTokens, RosenChainToken } from '@rosen-bridge/tokens';
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import { parseRosenData } from './utils';
 
-export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<TransactionResponse> {
+export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<Transaction> {
   protected chain: string;
   protected nativeToken: string;
 
@@ -22,8 +22,8 @@ export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<Transaction
   }
 
   /**
-   * extracts RosenData from given lock transaction in RPC format
-   * cheks:
+   * extracts RosenData from given lock transaction in ethers Transaction object
+   * checks:
    *     Native token transfer:
    *         1. `to` must be the lock address
    *         2. the entire calldata must represent a valid CallDataRosenData
@@ -32,12 +32,19 @@ export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<Transaction
    *         2. first four bytes of the call data indicate `transfer` function call: a9059cbb
    *         3. bytes from 5 to 37 must be the lock address
    *         4. bytes from 37 to 69 show the amount
-   *         5. bytes after 69 must represnt a valid CallDataRosenData
-   * @param transaction the lock transaction in RPC format
+   *         5. bytes after 69 must represent a valid CallDataRosenData
+   * @param transaction the lock transaction in ethers Transaction object
    */
-  get = (transaction: TransactionResponse): RosenData | undefined => {
+  get = (transaction: Transaction): RosenData | undefined => {
     const baseError = `No rosen data found for tx [${transaction.hash}]`;
     try {
+      if (transaction.from == null || transaction.hash == null) {
+        this.logger.debug(
+          baseError +
+            `transaction 'from' ([${transaction.from}]) or 'hash' ([${transaction.hash}]) is unexpected (probably unsigned transaction is passed)`
+        );
+        return undefined;
+      }
       if (transaction.to == null) {
         this.logger.debug(baseError + `: 'to' address is empty.`);
         return undefined;
@@ -50,7 +57,7 @@ export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<Transaction
       let amount;
       let sourceTokenId, targetTokenId;
 
-      if (transaction.to == this.lockAddress) {
+      if (transaction.to.toLowerCase() == this.lockAddress) {
         // transaction must be a native token transfer
         rosenDataRaw = callData;
         tokenAddress = this.nativeToken;
@@ -87,7 +94,7 @@ export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<Transaction
         }
         amount = BigInt('0x' + callData.slice(72, 72 + 64)).toString();
         rosenDataRaw = callData.substring(72 + 64);
-        tokenAddress = transaction.to;
+        tokenAddress = transaction.to.toLowerCase();
         const tokens = this.tokens.search(this.chain, {
           [this.tokens.getIdKey(this.chain)]: tokenAddress,
         });
@@ -99,7 +106,7 @@ export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<Transaction
           return undefined;
         }
         token = tokens[0];
-        sourceTokenId = tokenAddress;
+        sourceTokenId = tokenAddress.toLowerCase();
       }
       try {
         rosenData = parseRosenData(rosenDataRaw);
@@ -124,7 +131,7 @@ export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<Transaction
         toAddress: rosenData.toAddress,
         bridgeFee: rosenData.bridgeFee,
         networkFee: rosenData.networkFee,
-        fromAddress: transaction.from,
+        fromAddress: transaction.from.toLowerCase(),
         sourceChainTokenId: sourceTokenId,
         amount: amount,
         targetChainTokenId: targetTokenId,
