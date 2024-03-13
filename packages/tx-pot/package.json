@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/tx-pot",
-  "version": "0.1.1",
+  "version": "1.0.0",
   "description": "a Typescript package to manage transactions storage, sign, submit and related processes",
   "repository": "@rosen-bridge/tx-pot",
   "license": "GPL-3.0",
