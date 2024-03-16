@@ -1338,10 +1338,16 @@ describe('TssSigner', () => {
       signer.handleSignData(
         StatusEnum.Success,
         'valid signing data',
-        'signature'
+        'signature',
+        'signature recovery'
       );
       expect(callback).toHaveBeenCalledTimes(1);
-      expect(callback).toHaveBeenCalledWith(true, undefined, 'signature');
+      expect(callback).toHaveBeenCalledWith(
+        true,
+        undefined,
+        'signature',
+        'signature recovery'
+      );
     });
 
     /**
@@ -1358,6 +1364,7 @@ describe('TssSigner', () => {
       signer.handleSignData(
         StatusEnum.Failed,
         'valid signing data',
+        '',
         '',
         'error message'
       );

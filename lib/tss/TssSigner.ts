@@ -647,12 +647,14 @@ export class TssSigner extends Communicator {
    * @param status
    * @param message
    * @param signature
+   * @param signatureRecovery
    * @param error
    */
   handleSignData = (
     status: StatusEnum,
     message: string,
     signature?: string,
+    signatureRecovery?: string,
     error?: string
   ) => {
     const sign = this.getSign(message, true);
@@ -661,7 +663,7 @@ export class TssSigner extends Communicator {
     }
     if (status === StatusEnum.Success) {
       if (signature) {
-        sign.callback(true, undefined, signature);
+        sign.callback(true, undefined, signature, signatureRecovery);
       } else {
         throw Error('signature is required when sign is successfully');
       }
