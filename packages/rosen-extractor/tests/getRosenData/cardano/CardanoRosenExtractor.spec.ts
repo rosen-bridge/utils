@@ -363,5 +363,33 @@ describe('CardanoRosenExtractor', () => {
       // check returned value
       expect(result).toBeUndefined();
     });
+
+    /**
+     * @target: should return undefined when no asset locked and ADA is not supported
+     * @dependencies:
+     * @scenario
+     * - mock a UTXO with valid ADA transformation
+     * - run the test
+     * - check returned value
+     * @expected
+     * - extractor should return undefined
+     */
+    it('should return undefined when ADA is not supported on target chain', () => {
+      // mock a UTXO with valid ADA transformation
+      const tokenLockedUtxo = CardanoTestData.rosenUTXOs.wrongTokenLocked;
+
+      // run the test
+      const extractor = new CardanoRosenExtractor(
+        CardanoTestData.lockAddress,
+        TestUtils.tokens
+      );
+      const result = extractor.getAssetTransformation(
+        tokenLockedUtxo,
+        'not-supported-chain'
+      );
+
+      // check returned value
+      expect(result).toBeUndefined();
+    });
   });
 });

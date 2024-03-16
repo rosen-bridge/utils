@@ -98,12 +98,13 @@ export class ErgoNodeRosenExtractor extends AbstractRosenDataExtractor<NodeTrans
         const token = this.tokens.search(ERGO_CHAIN, {
           [this.tokens.getIdKey(ERGO_CHAIN)]: lockedToken.tokenId,
         });
-        if (token.length > 0)
+        if (token.length > 0 && Object.hasOwn(token[0], toChain)) {
           return {
-            from: this.tokens.getID(token[0], ERGO_CHAIN),
+            from: lockedToken.tokenId,
             to: this.tokens.getID(token[0], toChain),
             amount: lockedToken.amount.toString(),
           };
+        }
       }
     }
 
@@ -111,7 +112,7 @@ export class ErgoNodeRosenExtractor extends AbstractRosenDataExtractor<NodeTrans
     const erg = this.tokens.search(ERGO_CHAIN, {
       [this.tokens.getIdKey(ERGO_CHAIN)]: ERGO_NATIVE_TOKEN,
     });
-    if (erg.length > 0) {
+    if (erg.length > 0 && Object.hasOwn(erg[0], toChain)) {
       return {
         from: ERGO_NATIVE_TOKEN,
         to: this.tokens.getID(erg[0], toChain),

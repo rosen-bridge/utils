@@ -308,5 +308,34 @@ describe('GraphQLRosenExtractor', () => {
       // check return value
       expect(result).toBeUndefined();
     });
+
+    /**
+     * Target: GraphQLRosenExtractor.getAssetTransformation
+     * Dependencies:
+     *  -
+     * Scenario:
+     *  generate a UTXO with native token transformation
+     *  run test (targetChain should not Support ADA)
+     *  check return value
+     * Expected:
+     *  function returns undefined
+     */
+    it('should return undefined when ADA is not supported on target chain', () => {
+      // generate a UTXO with invalid asset transformation
+      const adaLockedUtxo = testData.graphQLUtxos.adaLocked;
+
+      // run test
+      const extractor = new CardanoGraphQLRosenExtractor(
+        testData.lockAddress,
+        TestUtils.tokens
+      );
+      const result = extractor.getAssetTransformation(
+        adaLockedUtxo,
+        'not-supported-chain'
+      );
+
+      // check return value
+      expect(result).toBeUndefined();
+    });
   });
 });

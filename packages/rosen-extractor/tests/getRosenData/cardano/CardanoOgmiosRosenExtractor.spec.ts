@@ -403,5 +403,34 @@ describe('OgmiosRosenExtractor', () => {
       // check return value
       expect(result).toBeUndefined();
     });
+
+    /**
+     * Target: OgmiosRosenExtractor.getAssetTransformation
+     * Dependencies:
+     *  -
+     * Scenario:
+     *  generate a UTXO with native token transformation
+     *  run test (targetChain should not Support ADA)
+     *  check return value
+     * Expected:
+     *  function returns undefined
+     */
+    it('should return undefined when ADA is not supported on target chain', () => {
+      // generate a UTXO with invalid asset transformation
+      const adaLockedUtxo = CardanoTestData.ogmiosTxOuts.adaLocked;
+
+      // run test
+      const extractor = new CardanoOgmiosRosenExtractor(
+        CardanoTestData.lockAddress,
+        TestUtils.tokens
+      );
+      const result = extractor.getAssetTransformation(
+        adaLockedUtxo,
+        'not-supported-chain'
+      );
+
+      // check return value
+      expect(result).toBeUndefined();
+    });
   });
 });
