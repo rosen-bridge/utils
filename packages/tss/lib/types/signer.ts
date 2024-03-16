@@ -24,7 +24,12 @@ export interface SignerConfig {
 
 export interface Sign {
   msg: string;
-  callback: (status: boolean, message?: string, signature?: string) => unknown;
+  callback: (
+    status: boolean,
+    message?: string,
+    signature?: string,
+    signatureRecovery?: string
+  ) => unknown;
   request?: {
     guards: Array<ActiveGuard>;
     index: number;
