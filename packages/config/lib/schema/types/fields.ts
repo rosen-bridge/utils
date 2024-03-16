@@ -4,7 +4,7 @@ export type PrimitiveValue = string | boolean | number | bigint;
 
 export type ConfigSchema = Record<string, ConfigField>;
 
-export type ConfigField = ObjectField | PrimitiveField;
+export type ConfigField = ObjectField | ArrayField | PrimitiveField;
 
 export type PrimitiveField =
   | StringField
@@ -17,6 +17,13 @@ export interface ObjectField {
   description?: string;
   label?: string;
   children: ConfigSchema;
+}
+
+export interface ArrayField {
+  type: 'array';
+  description?: string;
+  label?: string;
+  items: ConfigField;
 }
 
 export interface GenericField<T> {

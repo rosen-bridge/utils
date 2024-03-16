@@ -23,6 +23,11 @@ export const valueValidators: Record<string, any> = {
       }
     }
   },
+  array: (value: Array<any>, field: types.ArrayField) => {
+    if (!Array.isArray(value)) {
+      throw new Error(`value must be of array type`);
+    }
+  },
   string: (value: string, field: types.StringField) => {
     if (typeof value !== 'string') {
       throw new Error(`value must be of string type`);

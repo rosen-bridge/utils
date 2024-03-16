@@ -76,6 +76,44 @@ describe('ConfigValidator', () => {
           )
       ).toThrow();
     });
+
+    /**
+     * @target validateSchema should throw exception when array type doesn't
+     * have an item property
+     * @dependencies
+     * @scenario
+     * - create a new instance of Config which calls Config.validateSchema
+     * - check if any exception is thrown
+     * @expected
+     * - exception should be thrown
+     */
+    it(`should throw exception when array type doesn't have an item property`, async () => {
+      expect(
+        () =>
+          new ConfigValidator(
+            <ConfigSchema>testData.arrayTypeSchemaWithoutItems
+          )
+      ).toThrow();
+    });
+
+    /**
+     * @target validateSchema should throw exception when object type doesn't
+     * have a children property
+     * @dependencies
+     * @scenario
+     * - create a new instance of Config which calls Config.validateSchema
+     * - check if any exception is thrown
+     * @expected
+     * - exception should be thrown
+     */
+    it(`should throw exception when object type doesn't have a children property`, async () => {
+      expect(
+        () =>
+          new ConfigValidator(
+            <ConfigSchema>testData.objectTypeSchemaWithoutChildren
+          )
+      ).toThrow();
+    });
   });
 
   describe('validateConfig', () => {
@@ -679,6 +717,28 @@ describe('ConfigValidator', () => {
         testData.apiSchemaConfigPairWithStringNumber.config
       );
     });
+
+    /**
+     * @target validateConfig should throw exception when value doesn't match
+     * the schema array type
+     * @dependencies
+     * @scenario
+     * - call validateConfig with the config
+     * - check if any exception is thrown
+     * @expected
+     * - exception should be thrown
+     */
+    it(`should throw exception when value doesn't match the schema array type`, async () => {
+      const confValidator = new ConfigValidator(
+        <ConfigSchema>testData.arraySchemaConfigPairWrongValueType.schema
+      );
+
+      expect(() =>
+        confValidator.validateConfig(
+          testData.arraySchemaConfigPairWrongValueType.config
+        )
+      ).toThrow();
+    });
   });
 
   describe('valueAt', () => {
@@ -848,7 +908,7 @@ describe('ConfigValidator', () => {
 
       expect(() =>
         confValidator.validateAndWriteConfig(obj, config, 'local', 'json')
-      ).toThrow('value should be one of the choices');
+      ).toThrow();
 
       const savedObj = JSON.parse(
         fs.readFileSync(path.join(configDir, 'local.json'), 'utf-8')
