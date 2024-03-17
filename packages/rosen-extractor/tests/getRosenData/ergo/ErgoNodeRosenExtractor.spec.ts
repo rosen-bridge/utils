@@ -281,5 +281,34 @@ describe('ErgoNodeRosenExtractor', () => {
       // check return value
       expect(result).toBeUndefined();
     });
+
+    /**
+     * Target: ErgoNodeRosenExtractor.getAssetTransformation
+     * Dependencies:
+     *  -
+     * Scenario:
+     *  generate a box with native token transformation
+     *  run test (targetChain should not Support Erg)
+     *  check return value
+     * Expected:
+     *  function returns undefined
+     */
+    it('should return undefined when Erg is not supported on target chain', () => {
+      // generate a box with invalid asset transformation
+      const ergLockedBox = ErgoTestData.nodeBoxes.ergLocked;
+
+      // run test
+      const extractor = new ErgoNodeRosenExtractor(
+        ErgoTestData.lockAddress,
+        TestUtils.tokens
+      );
+      const result = extractor.getAssetTransformation(
+        ergLockedBox,
+        'not-supported-chain'
+      );
+
+      // check return value
+      expect(result).toBeUndefined();
+    });
   });
 });

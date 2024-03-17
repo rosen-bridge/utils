@@ -102,7 +102,7 @@ export class CardanoOgmiosRosenExtractor extends AbstractRosenDataExtractor<Tran
           policyId: policyId,
           assetName: assetName,
         });
-        if (token.length > 0) {
+        if (token.length > 0 && Object.hasOwn(token[0], toChain)) {
           return {
             from: this.tokens.getID(token[0], CARDANO_CHAIN),
             to: this.tokens.getID(token[0], toChain),
@@ -116,7 +116,7 @@ export class CardanoOgmiosRosenExtractor extends AbstractRosenDataExtractor<Tran
     const lovelace = this.tokens.search(CARDANO_CHAIN, {
       [this.tokens.getIdKey(CARDANO_CHAIN)]: CARDANO_NATIVE_TOKEN,
     });
-    if (lovelace.length > 0) {
+    if (lovelace.length > 0 && Object.hasOwn(lovelace[0], toChain)) {
       return {
         from: CARDANO_NATIVE_TOKEN,
         to: this.tokens.getID(lovelace[0], toChain),
