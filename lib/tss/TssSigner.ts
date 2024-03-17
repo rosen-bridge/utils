@@ -9,6 +9,7 @@ import {
   SignRequestPayload,
   SignStartPayload,
   StatusEnum,
+  Crypto,
 } from '../types/signer';
 import { GuardDetection } from '../detection/GuardDetection';
 import {
@@ -51,11 +52,14 @@ export class TssSigner extends Communicator {
   /**
    * get threshold value from tss-api instance if threshold didn't set or expired and set for this and detection
    * this function calls on every update
+   * @param crypto ecdsa or eddsa
    */
-  protected updateThreshold = async () => {
+  protected updateThreshold = async (crypto: Crypto) => {
     try {
       if (this.threshold.expiry < Date.now()) {
-        const res = await this.axios.get<{ threshold: number }>(thresholdUrl);
+        const res = await this.axios.get<{ threshold: number }>(thresholdUrl, {
+          params: { crypto },
+        });
         const threshold = res.data.threshold + 1;
         this.detection.setNeedGuardThreshold(threshold);
         this.threshold = {
@@ -141,7 +145,8 @@ export class TssSigner extends Communicator {
     if ((await this.getIndex()) !== this.getGuardTurn()) {
       return;
     }
-    await this.updateThreshold();
+    if (this.signs.length === 0) return;
+    await this.updateThreshold(this.signs[0].crypto);
     const activeGuards = await this.detection.activeGuards();
     if (activeGuards.length < this.threshold.value) {
       return;
@@ -157,6 +162,7 @@ export class TssSigner extends Communicator {
         const payload: SignRequestPayload = {
           msg: sign.msg,
           guards: activeGuards,
+          crypto: sign.crypto,
         };
         await this.sendMessage(requestMessage, payload, [], timestamp);
         const release = await this.signAccessMutex.acquire();
@@ -200,10 +206,12 @@ export class TssSigner extends Communicator {
    * add new sign to queue
    * if other guards proceed this sign we also process it
    * @param msg
+   * @param crypto ecdsa or eddsa
    * @param callback
    */
   sign = async (
     msg: string,
+    crypto: Crypto,
     callback: (status: boolean, message?: string, args?: string) => unknown
   ) => {
     if (this.getSign(msg, true)) {
@@ -217,6 +225,7 @@ export class TssSigner extends Communicator {
       signs: [],
       addedTime: this.getDate(),
       posted: false,
+      crypto,
     });
     release();
 
@@ -226,7 +235,7 @@ export class TssSigner extends Communicator {
         `processing pending request for [${msg}] from other guards`
       );
       await this.handleRequestMessage(
-        { msg: msg, guards: pending.guards },
+        { msg: msg, guards: pending.guards, crypto },
         pending.sender,
         pending.index,
         pending.timestamp
@@ -237,13 +246,18 @@ export class TssSigner extends Communicator {
   /**
    * sign message and return promise
    * @param message
+   * @param crypto
    */
-  signPromised = (message: string): Promise<string> => {
+  signPromised = (message: string, crypto: Crypto): Promise<string> => {
     return new Promise<string>((resolve, reject) => {
-      this.sign(message, (status: boolean, message?: string, args?: string) => {
-        if (status && args) resolve(args);
-        reject(message);
-      })
+      this.sign(
+        message,
+        crypto,
+        (status: boolean, message?: string, args?: string) => {
+          if (status && args) resolve(args);
+          reject(message);
+        }
+      )
         .then(() => null)
         .catch((e) => reject(e));
     });
@@ -414,6 +428,7 @@ export class TssSigner extends Communicator {
           guards: payload.guards,
           timestamp,
           sender,
+          crypto: payload.crypto,
         });
       }
       release();
