@@ -1,5 +1,13 @@
 # @rosen-bridge/rosen-extractor
 
+## 4.0.1
+
+### Patch Changes
+
+- check token availability on target chain
+- Updated dependencies
+  - @rosen-bridge/address-codec@0.2.1
+
 ## 4.0.0
 
 ### Major Changes
