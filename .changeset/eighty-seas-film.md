@@ -2,4 +2,5 @@
 '@rosen-bridge/tss': major
 ---
 
-add crypto protocol to data flow
+- add chainCode as required to TssSigner class config
+- change TssSigner to abstract with abstract `getSignExtraData` and `handleSuccessfulSign` functions

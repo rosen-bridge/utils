@@ -1,5 +1,5 @@
 import { ECDSA } from '../enc';
-import { EcdsaConfig } from '../types/signer';
+import { EcdsaConfig, Sign } from '../types/signer';
 import { TssSigner } from './TssSigner';
 
 export class EcdsaSigner extends TssSigner {
@@ -38,5 +38,25 @@ export class EcdsaSigner extends TssSigner {
     return {
       derivationPath: this.derivationPath,
     };
+  };
+
+  /**
+   * handles signing data callback in case of successful sign
+   * @param sign
+   * @param signature
+   * @param signatureRecovery
+   */
+  handleSuccessfulSign = async (
+    sign: Sign,
+    signature?: string,
+    signatureRecovery?: string
+  ): Promise<void> => {
+    if (signature && signatureRecovery) {
+      sign.callback(true, undefined, signature, signatureRecovery);
+    } else {
+      throw Error(
+        'signature and signature recovery are required when ECDSA sign is successful'
+      );
+    }
   };
 }
