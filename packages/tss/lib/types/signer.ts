@@ -3,12 +3,9 @@ import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import { GuardDetection } from '../detection/GuardDetection';
 import { ActiveGuard } from './abstract';
 
-export type Crypto = 'ecdsa' | 'eddsa';
-
-export interface SignerConfig {
+export interface SignerBaseConfig {
   logger?: AbstractLogger;
   guardsPk: Array<string>;
-  signer: EncryptionHandler;
   submitMsg: (message: string, guards: Array<string>) => unknown;
   messageValidDuration?: number;
   timeoutSeconds?: number;
@@ -22,6 +19,20 @@ export interface SignerConfig {
   thresholdTTL?: number;
   responseDelay?: number;
   signPerRoundLimit?: number;
+  chainCode: string;
+}
+
+export interface SignerConfig extends SignerBaseConfig {
+  signer: EncryptionHandler;
+}
+
+export interface EcdsaConfig extends SignerBaseConfig {
+  derivationPath: number[];
+  secret: string;
+}
+
+export interface EddsaConfig extends SignerBaseConfig {
+  secret: string;
 }
 
 export interface Sign {
@@ -40,7 +51,6 @@ export interface Sign {
   signs: Array<string>;
   addedTime: number;
   posted: boolean;
-  crypto: Crypto;
 }
 
 export interface PendingSign {
@@ -49,12 +59,10 @@ export interface PendingSign {
   index: number;
   timestamp: number;
   sender: string;
-  crypto: Crypto;
 }
 export interface SignRequestPayload {
   msg: string;
   guards: Array<ActiveGuard>;
-  crypto: Crypto;
 }
 
 export interface SignApprovePayload {

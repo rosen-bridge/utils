@@ -42,6 +42,7 @@ describe('TssSigner', () => {
       tssApiUrl: '',
       getPeerId: () => Promise.resolve('myPeerId'),
       shares: signers.guardPks,
+      chainCode: 'chainCode',
     });
   });
 
@@ -64,7 +65,6 @@ describe('TssSigner', () => {
         addedTime: Math.floor(currentTime / 1000) - 5 * 60 - 1,
         callback: () => null,
         posted: false,
-        crypto: 'ecdsa',
       });
       await (signer as any).cleanup();
       expect(signer.getSigns().length).toEqual(0);
@@ -88,7 +88,6 @@ describe('TssSigner', () => {
         posted: false,
         addedTime: Math.floor(currentTime / 1000) - 5 * 60 + 1,
         callback: () => null,
-        crypto: 'ecdsa',
       });
       await (signer as any).cleanup();
       expect(signer.getSigns().length).toEqual(1);
@@ -112,7 +111,6 @@ describe('TssSigner', () => {
         guards: [],
         timestamp: currentTime,
         sender: '',
-        crypto: 'ecdsa',
       });
       await (signer as any).cleanup();
       expect(signer.getPendingSigns().length).toEqual(0);
@@ -136,7 +134,6 @@ describe('TssSigner', () => {
         guards: [],
         timestamp: currentTime,
         sender: '',
-        crypto: 'ecdsa',
       });
       await (signer as any).cleanup();
       expect(signer.getPendingSigns().length).toEqual(1);
@@ -151,7 +148,6 @@ describe('TssSigner', () => {
         callback: jest.fn(),
         signs: [],
         addedTime: currentTime,
-        crypto: 'ecdsa',
       });
     });
     /**
@@ -270,7 +266,6 @@ describe('TssSigner', () => {
           callback: jest.fn(),
           signs: [],
           addedTime: currentTime + i * 10,
-          crypto: 'ecdsa',
         });
       }
       await signer.update();
@@ -361,7 +356,7 @@ describe('TssSigner', () => {
      * - an element with entered msg must add to sign list
      */
     it('should add new sign to list', async () => {
-      await signer.sign('msg', 'ecdsa', jest.fn());
+      await signer.sign('msg', jest.fn());
       expect(
         signer.getSigns().filter((item) => item.msg === 'msg').length
       ).toEqual(1);
@@ -383,18 +378,16 @@ describe('TssSigner', () => {
         index: 6,
         sender: 'sender',
         timestamp: currentTime,
-        crypto: 'ecdsa',
       });
       const mockedHandleRequest = jest
         .spyOn(signer as any, 'handleRequestMessage')
         .mockReturnValue(null);
-      await signer.sign('signing message', 'ecdsa', jest.fn());
+      await signer.sign('signing message', jest.fn());
       expect(mockedHandleRequest).toHaveBeenCalledTimes(1);
       expect(mockedHandleRequest).toHaveBeenCalledWith(
         {
           msg: 'signing message',
           guards: [],
-          crypto: 'ecdsa',
         },
         'sender',
         6,
@@ -532,7 +525,6 @@ describe('TssSigner', () => {
         addedTime: currentTime,
         callback: jest.fn(),
         posted: false,
-        crypto: 'ecdsa',
       });
     });
     /**
@@ -555,7 +547,6 @@ describe('TssSigner', () => {
         {
           msg: 'test message',
           guards: activeGuards,
-          crypto: 'ecdsa',
         },
         'sender',
         6,
@@ -589,7 +580,6 @@ describe('TssSigner', () => {
         {
           msg: 'test message',
           guards: activeGuards,
-          crypto: 'ecdsa',
         },
         'sender',
         5,
@@ -617,7 +607,6 @@ describe('TssSigner', () => {
         {
           msg: 'test message',
           guards: invalidGuards,
-          crypto: 'ecdsa',
         },
         'sender',
         6,
@@ -653,7 +642,6 @@ describe('TssSigner', () => {
       const payload: SignRequestPayload = {
         msg: 'test message',
         guards: guards,
-        crypto: 'ecdsa',
       };
       await signer.mockedHandleRequestMessage(
         payload,
@@ -706,7 +694,6 @@ describe('TssSigner', () => {
           ...activeGuards,
           { peerId: 'peerId-4', publicKey: await guardSigners[4].getPk() },
         ],
-        crypto: 'ecdsa',
       };
       await signer.mockedHandleRequestMessage(
         payload,
@@ -739,7 +726,6 @@ describe('TssSigner', () => {
       const payload: SignRequestPayload = {
         msg: 'test message new',
         guards: activeGuards,
-        crypto: 'ecdsa',
       };
       await signer.mockedHandleRequestMessage(
         payload,
@@ -758,7 +744,6 @@ describe('TssSigner', () => {
           msg: 'test message new',
           sender: 'sender',
           timestamp,
-          crypto: 'ecdsa',
         },
       ]);
     });
@@ -784,7 +769,6 @@ describe('TssSigner', () => {
       const payload: SignRequestPayload = {
         msg: 'test message new',
         guards: activeGuards,
-        crypto: 'ecdsa',
       };
       const pendings = signer.getPendingSigns();
       pendings.push({
@@ -793,7 +777,6 @@ describe('TssSigner', () => {
         index: 0,
         timestamp: 0,
         sender: 'sender old',
-        crypto: 'ecdsa',
       });
       await signer.mockedHandleRequestMessage(
         payload,
@@ -812,7 +795,6 @@ describe('TssSigner', () => {
           msg: 'test message new',
           sender: 'sender',
           timestamp,
-          crypto: 'ecdsa',
         },
       ]);
     });
@@ -836,7 +818,6 @@ describe('TssSigner', () => {
         addedTime: currentTime,
         callback: jest.fn,
         posted: false,
-        crypto: 'ecdsa',
       });
       const sign = signer.mockedGetSign('msg1');
       expect(sign).toBeDefined();
@@ -860,7 +841,6 @@ describe('TssSigner', () => {
         addedTime: currentTime,
         callback: jest.fn,
         posted: false,
-        crypto: 'ecdsa',
       });
       const sign = signer.mockedGetSign('msg2');
       expect(sign).toBeUndefined();
@@ -885,7 +865,6 @@ describe('TssSigner', () => {
         guards: [],
         timestamp: currentTime,
         sender: 'sender',
-        crypto: 'eddsa',
       });
       const sign = signer.mockedGetPendingSign('msg1');
       expect(sign).toBeDefined();
@@ -909,7 +888,6 @@ describe('TssSigner', () => {
         guards: [],
         timestamp: currentTime,
         sender: 'sender',
-        crypto: 'eddsa',
       });
       const sign = signer.mockedGetSign('msg2');
       expect(sign).toBeUndefined();
@@ -935,7 +913,6 @@ describe('TssSigner', () => {
           timestamp,
         },
         posted: false,
-        crypto: 'ecdsa',
       });
     });
 
@@ -1150,7 +1127,6 @@ describe('TssSigner', () => {
         addedTime: timestamp,
         callback: jest.fn(),
         posted: false,
-        crypto: 'ecdsa',
       });
       activeGuards = await Promise.all(
         guardSigners.map(async (item, index) => ({
@@ -1318,7 +1294,6 @@ describe('TssSigner', () => {
         signs: [],
         addedTime: 0,
         posted: true,
-        crypto: 'ecdsa',
       });
     });
 
@@ -1553,8 +1528,8 @@ describe('TssSigner', () => {
         .spyOn((signer as any).axios, 'get')
         .mockReturnValue({ data: { threshold: 6 } });
       (signer as any).threshold = { expiry: 0 };
-      await signer.mockedUpdateThreshold('eddsa');
-      await signer.mockedUpdateThreshold('eddsa');
+      await signer.mockedUpdateThreshold();
+      await signer.mockedUpdateThreshold();
       expect(mockedAxios).toHaveBeenCalledTimes(1);
     });
 
@@ -1577,7 +1552,7 @@ describe('TssSigner', () => {
         .mockReturnValue({ data: { threshold: 7 } });
       (signer as any).threshold = { expiry: currentTime, threshold: 7 };
       jest.spyOn(Date, 'now').mockReturnValue(currentTime + 1);
-      await signer.mockedUpdateThreshold('eddsa');
+      await signer.mockedUpdateThreshold();
       expect(mockedAxios).toHaveBeenCalledTimes(1);
     });
   });
