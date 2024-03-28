@@ -1,5 +1,5 @@
 import { EdDSA } from '../enc';
-import { EddsaConfig } from '../types/signer';
+import { EddsaConfig, Sign } from '../types/signer';
 import { TssSigner } from './TssSigner';
 
 export class EddsaSigner extends TssSigner {
@@ -34,5 +34,23 @@ export class EddsaSigner extends TssSigner {
    */
   getSignExtraData = (): Record<string, any> => {
     return {};
+  };
+
+  /**
+   * handles signing data callback in case of successful sign
+   * @param sign
+   * @param signature
+   * @param signatureRecovery
+   */
+  handleSuccessfulSign = async (
+    sign: Sign,
+    signature?: string,
+    signatureRecovery?: string
+  ): Promise<void> => {
+    if (signature) {
+      sign.callback(true, undefined, signature, signatureRecovery);
+    } else {
+      throw Error('signature is required when EdDSA sign is successful');
+    }
   };
 }

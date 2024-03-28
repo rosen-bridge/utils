@@ -674,11 +674,7 @@ export abstract class TssSigner extends Communicator {
       throw Error('Invalid message');
     }
     if (status === StatusEnum.Success) {
-      if (signature) {
-        sign.callback(true, undefined, signature, signatureRecovery);
-      } else {
-        throw Error('signature is required when sign is successfully');
-      }
+      this.handleSuccessfulSign(sign, signature, signatureRecovery);
     } else {
       sign.callback(false, error);
     }
@@ -687,4 +683,16 @@ export abstract class TssSigner extends Communicator {
       release();
     });
   };
+
+  /**
+   * handles signing data callback in case of successful sign
+   * @param sign
+   * @param signature
+   * @param signatureRecovery
+   */
+  abstract handleSuccessfulSign: (
+    sign: Sign,
+    signature?: string,
+    signatureRecovery?: string
+  ) => Promise<void>;
 }
