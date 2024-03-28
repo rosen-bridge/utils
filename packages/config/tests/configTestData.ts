@@ -152,6 +152,16 @@ export const correctApiSchema = {
           },
         },
       },
+      useTls: {
+        type: 'boolean',
+        default: false,
+        validations: [
+          {
+            required: true,
+            error: 'useTls must be specified',
+          },
+        ],
+      },
     },
   },
 };
