@@ -9,7 +9,6 @@ import {
   SignRequestPayload,
   SignStartPayload,
   StatusEnum,
-  Crypto,
 } from '../types/signer';
 import { GuardDetection } from '../detection/GuardDetection';
 import {
@@ -30,35 +29,35 @@ import { DummyLogger } from '@rosen-bridge/abstract-logger';
 import { Mutex } from 'await-semaphore';
 import axios, { AxiosInstance } from 'axios';
 
-export class TssSigner extends Communicator {
-  private readonly axios: AxiosInstance;
-  private readonly callbackUrl: string;
-  private threshold: Threshold;
-  private readonly thresholdTTL: number;
-  private readonly turnDuration: number;
-  private readonly turnNoWork: number;
-  private readonly timeout: number;
-  private readonly responseDelay: number;
-  private lastUpdateRound: number;
+export abstract class TssSigner extends Communicator {
+  protected readonly axios: AxiosInstance;
+  protected readonly callbackUrl: string;
+  protected threshold: Threshold;
+  protected readonly thresholdTTL: number;
+  protected readonly turnDuration: number;
+  protected readonly turnNoWork: number;
+  protected readonly timeout: number;
+  protected readonly responseDelay: number;
+  protected lastUpdateRound: number;
   protected signs: Array<Sign>;
   protected pendingSigns: Array<PendingSign>;
-  private readonly detection: GuardDetection;
-  private readonly getPeerId: () => Promise<string>;
-  private readonly pendingAccessMutex: Mutex;
-  private readonly signAccessMutex: Mutex;
-  private readonly shares: Array<string>;
-  private readonly signPerRoundLimit: number;
+  protected readonly detection: GuardDetection;
+  protected readonly getPeerId: () => Promise<string>;
+  protected readonly pendingAccessMutex: Mutex;
+  protected readonly signAccessMutex: Mutex;
+  protected readonly shares: Array<string>;
+  protected readonly signPerRoundLimit: number;
+  protected readonly chainCode: string;
 
   /**
    * get threshold value from tss-api instance if threshold didn't set or expired and set for this and detection
    * this function calls on every update
-   * @param crypto ecdsa or eddsa
    */
-  protected updateThreshold = async (crypto: Crypto) => {
+  protected updateThreshold = async () => {
     try {
       if (this.threshold.expiry < Date.now()) {
         const res = await this.axios.get<{ threshold: number }>(thresholdUrl, {
-          params: { crypto },
+          params: { crypto: this.signer.getCrypto() },
         });
         const threshold = res.data.threshold + 1;
         this.detection.setNeedGuardThreshold(threshold);
@@ -115,6 +114,7 @@ export class TssSigner extends Communicator {
     this.signAccessMutex = new Mutex();
     this.responseDelay = config.responseDelay ?? 5;
     this.signPerRoundLimit = config.signPerRoundLimit ?? 2;
+    this.chainCode = config.chainCode;
   }
 
   /**
@@ -146,7 +146,7 @@ export class TssSigner extends Communicator {
       return;
     }
     if (this.signs.length === 0) return;
-    await this.updateThreshold(this.signs[0].crypto);
+    await this.updateThreshold();
     const activeGuards = await this.detection.activeGuards();
     if (activeGuards.length < this.threshold.value) {
       return;
@@ -162,7 +162,6 @@ export class TssSigner extends Communicator {
         const payload: SignRequestPayload = {
           msg: sign.msg,
           guards: activeGuards,
-          crypto: sign.crypto,
         };
         await this.sendMessage(requestMessage, payload, [], timestamp);
         const release = await this.signAccessMutex.acquire();
@@ -206,12 +205,10 @@ export class TssSigner extends Communicator {
    * add new sign to queue
    * if other guards proceed this sign we also process it
    * @param msg
-   * @param crypto ecdsa or eddsa
    * @param callback
    */
   sign = async (
     msg: string,
-    crypto: Crypto,
     callback: (status: boolean, message?: string, args?: string) => unknown
   ) => {
     if (this.getSign(msg, true)) {
@@ -225,7 +222,6 @@ export class TssSigner extends Communicator {
       signs: [],
       addedTime: this.getDate(),
       posted: false,
-      crypto,
     });
     release();
 
@@ -235,7 +231,7 @@ export class TssSigner extends Communicator {
         `processing pending request for [${msg}] from other guards`
       );
       await this.handleRequestMessage(
-        { msg: msg, guards: pending.guards, crypto },
+        { msg: msg, guards: pending.guards },
         pending.sender,
         pending.index,
         pending.timestamp
@@ -246,18 +242,13 @@ export class TssSigner extends Communicator {
   /**
    * sign message and return promise
    * @param message
-   * @param crypto
    */
-  signPromised = (message: string, crypto: Crypto): Promise<string> => {
+  signPromised = (message: string): Promise<string> => {
     return new Promise<string>((resolve, reject) => {
-      this.sign(
-        message,
-        crypto,
-        (status: boolean, message?: string, args?: string) => {
-          if (status && args) resolve(args);
-          reject(message);
-        }
-      )
+      this.sign(message, (status: boolean, message?: string, args?: string) => {
+        if (status && args) resolve(args);
+        reject(message);
+      })
         .then(() => null)
         .catch((e) => reject(e));
     });
@@ -428,7 +419,6 @@ export class TssSigner extends Communicator {
           guards: payload.guards,
           timestamp,
           sender,
-          crypto: payload.crypto,
         });
       }
       release();
@@ -642,6 +632,8 @@ export class TssSigner extends Communicator {
         crypto: this.signer.getCrypto(),
         operationTimeout: remainingTime - this.responseDelay,
         callBackUrl: this.callbackUrl,
+        chainCode: this.chainCode,
+        ...this.getSignExtraData(),
       };
       return this.axios.post(signUrl, data).catch((err) => {
         this.logger.warn('Can not communicate with tss backend');
@@ -656,6 +648,11 @@ export class TssSigner extends Communicator {
       });
     }
   };
+
+  /**
+   * gets extra data required in sign message
+   */
+  abstract getSignExtraData: () => Record<string, any>;
 
   /**
    * handle signing data callback for a message and process callback function

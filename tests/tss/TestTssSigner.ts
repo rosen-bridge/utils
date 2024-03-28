@@ -1,6 +1,5 @@
 import {
   ActiveGuard,
-  Crypto,
   PendingSign,
   Sign,
   SignApprovePayload,
@@ -117,5 +116,14 @@ export class TestTssSigner extends TssSigner {
   /**
    * calling protected function updateThreshold
    */
-  mockedUpdateThreshold = (crypto: Crypto) => this.updateThreshold(crypto);
+  mockedUpdateThreshold = () => this.updateThreshold();
+
+  /**
+   * gets extra data required in sign message
+   * extra data: none
+   * @returns
+   */
+  getSignExtraData = (): Record<string, any> => {
+    return {};
+  };
 }
