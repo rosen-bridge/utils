@@ -662,7 +662,7 @@ export abstract class TssSigner extends Communicator {
    * @param signatureRecovery
    * @param error
    */
-  handleSignData = (
+  handleSignData = async (
     status: StatusEnum,
     message: string,
     signature?: string,
@@ -674,7 +674,7 @@ export abstract class TssSigner extends Communicator {
       throw Error('Invalid message');
     }
     if (status === StatusEnum.Success) {
-      this.handleSuccessfulSign(sign, signature, signatureRecovery);
+      await this.handleSuccessfulSign(sign, signature, signatureRecovery);
     } else {
       sign.callback(false, error);
     }

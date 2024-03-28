@@ -1306,14 +1306,14 @@ describe('TssSigner', () => {
      * @expected
      * - throw exception
      */
-    it('should throw error when sign does not exist', () => {
-      expect(() =>
+    it('should throw error when sign does not exist', async () => {
+      await expect(async () =>
         signer.handleSignData(
           StatusEnum.Success,
           'invalid signing data',
           'signature'
         )
-      ).toThrow();
+      ).rejects.toThrow();
     });
 
     /**
@@ -1325,10 +1325,10 @@ describe('TssSigner', () => {
      * @expected
      * - throw exception
      */
-    it('should throw error when status is success and no signature passed', () => {
-      expect(() =>
+    it('should throw error when status is success and no signature passed', async () => {
+      await expect(async () =>
         signer.handleSignData(StatusEnum.Success, 'valid signing data')
-      ).toThrow();
+      ).rejects.toThrow();
     });
 
     /**
@@ -1341,8 +1341,8 @@ describe('TssSigner', () => {
      * - callback function called once
      * - callback function called with true and undefined as message and signature
      */
-    it('should call callback function with success status and signature', () => {
-      signer.handleSignData(
+    it('should call callback function with success status and signature', async () => {
+      await signer.handleSignData(
         StatusEnum.Success,
         'valid signing data',
         'signature',
@@ -1367,8 +1367,8 @@ describe('TssSigner', () => {
      * - callback function called once
      * - callback function called with false and error message
      */
-    it('should call callback function with fail status and message', () => {
-      signer.handleSignData(
+    it('should call callback function with fail status and message', async () => {
+      await signer.handleSignData(
         StatusEnum.Failed,
         'valid signing data',
         '',
