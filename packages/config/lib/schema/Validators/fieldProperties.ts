@@ -216,6 +216,7 @@ const fieldValidations: Record<string, Record<string, any>> = {
       }
     },
   },
+  boolean: {},
   number: {
     gt: (validation: VNumeric<number>) => {
       if (!('gt' in validation)) {
