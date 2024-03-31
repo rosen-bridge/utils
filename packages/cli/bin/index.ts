@@ -83,12 +83,6 @@ yargs(hideBin(process.argv))
           type: 'string',
           demandOption: 'true',
         })
-        .option('saltSize', {
-          alias: 's',
-          description: 'size of salt',
-          default: 12,
-          type: 'number',
-        })
         .option('weak', {
           alias: 'w',
           description:
