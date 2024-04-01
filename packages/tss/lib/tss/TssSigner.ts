@@ -142,13 +142,22 @@ export abstract class TssSigner extends Communicator {
    */
   update = async () => {
     await this.cleanup();
-    if ((await this.getIndex()) !== this.getGuardTurn()) {
+    const myIndex = await this.getIndex();
+    const currentGuardIndex = this.getGuardTurn();
+    if (myIndex !== currentGuardIndex) {
+      this.logger.debug(`not my turn [${myIndex} != ${currentGuardIndex}]`);
       return;
     }
-    if (this.signs.length === 0) return;
+    if (this.signs.length === 0) {
+      this.logger.debug('nothing to sign');
+      return;
+    }
     await this.updateThreshold();
     const activeGuards = await this.detection.activeGuards();
     if (activeGuards.length < this.threshold.value) {
+      this.logger.debug(
+        `not enough guards [${activeGuards.length} < ${this.threshold.value}]`
+      );
       return;
     }
     const timestamp = this.getDate();
@@ -635,6 +644,9 @@ export abstract class TssSigner extends Communicator {
         chainCode: this.chainCode,
         ...this.getSignExtraData(),
       };
+      this.logger.debug(
+        `requesting tss-api to sign. data: ${JSON.stringify(data)}`
+      );
       return this.axios.post(signUrl, data).catch((err) => {
         this.logger.warn('Can not communicate with tss backend');
         this.logger.debug(err.stack);
