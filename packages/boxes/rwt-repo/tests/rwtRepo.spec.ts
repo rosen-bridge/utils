@@ -1,4 +1,4 @@
-import { ErgoNetworkType } from '@rosen-bridge/scanner';
+import { ErgoNetworkType } from '../lib/types';
 import ergoExplorerClientFactory from '@rosen-clients/ergo-explorer';
 import ergoNodeClientFactory from '@rosen-clients/ergo-node';
 import { Constant, ErgoBox } from 'ergo-lib-wasm-nodejs';
