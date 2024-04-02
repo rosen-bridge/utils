@@ -1,5 +1,11 @@
 # @rosen-bridge/config
 
+## 0.2.1
+
+### Patch Changes
+
+- add field validation for boolean type
+
 ## 0.2.0
 
 ### Minor Changes
