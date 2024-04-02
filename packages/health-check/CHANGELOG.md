@@ -1,5 +1,11 @@
 # @rosen-bridge/health-check
 
+## 4.0.1
+
+### Patch Changes
+
+- Update typeorm version
+
 ## 4.0.0
 
 ### Major Changes

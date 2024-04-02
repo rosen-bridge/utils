@@ -1,5 +1,11 @@
 # @rosen-bridge/tx-pot
 
+## 1.0.1
+
+### Patch Changes
+
+- Update typeorm version
+
 ## 1.0.0
 
 ### Major Changes

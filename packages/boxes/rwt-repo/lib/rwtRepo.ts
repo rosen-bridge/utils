@@ -1,5 +1,5 @@
 import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
-import { ErgoNetworkType } from '@rosen-bridge/scanner';
+import { ErgoNetworkType } from './types';
 import ergoExplorerClientFactory, {
   V0,
   V1,

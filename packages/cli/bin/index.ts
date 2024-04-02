@@ -11,6 +11,8 @@ import * as zxcvbnEnPackage from '@zxcvbn-ts/language-en';
 import { downloadRosenAssets } from '@rosen-bridge/utils';
 import { EdDSA } from '@rosen-bridge/tss';
 import { blake2b } from 'blakejs';
+import { randomBytes } from 'crypto';
+import * as crypto from 'crypto';
 
 yargs(hideBin(process.argv))
   .command(
@@ -118,10 +120,14 @@ yargs(hideBin(process.argv))
           return;
         }
       }
+      // size of salt should be between 8 and 96 bits
+      const saltSizeInBytes = (Math.random() * (96 - 8) + 8) / 8;
+      const randomSalt = randomBytes(saltSizeInBytes);
+      const saltedPass = Buffer.concat([randomSalt, Buffer.from(argv.input)]);
       console.log(
-        `HASH: ${Buffer.from(blake2b(argv.input, undefined, 32)).toString(
-          'hex'
-        )}`
+        `HASH: $${randomSalt.toString('base64')}$${Buffer.from(
+          blake2b(saltedPass, undefined, 32)
+        ).toString('base64')}`
       );
     }
   )

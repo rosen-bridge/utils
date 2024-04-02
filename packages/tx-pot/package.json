@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/tx-pot",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "a Typescript package to manage transactions storage, sign, submit and related processes",
   "repository": "@rosen-bridge/tx-pot",
   "license": "GPL-3.0",
@@ -34,6 +34,6 @@
   },
   "dependencies": {
     "@rosen-bridge/abstract-logger": "^1.0.0",
-    "typeorm": "^0.3.17"
+    "typeorm": "^0.3.20"
   }
 }
