@@ -117,4 +117,31 @@ export class TestTssSigner extends TssSigner {
    * calling protected function updateThreshold
    */
   mockedUpdateThreshold = () => this.updateThreshold();
+
+  /**
+   * gets extra data required in sign message
+   * extra data: none
+   * @returns
+   */
+  getSignExtraData = (): Record<string, any> => {
+    return {};
+  };
+
+  /**
+   * handles signing data callback in case of successful sign
+   * @param sign
+   * @param signature
+   * @param signatureRecovery
+   */
+  handleSuccessfulSign = async (
+    sign: Sign,
+    signature?: string,
+    signatureRecovery?: string
+  ): Promise<void> => {
+    if (signature) {
+      sign.callback(true, undefined, signature, signatureRecovery);
+    } else {
+      throw Error('signature is required when sign is successful');
+    }
+  };
 }

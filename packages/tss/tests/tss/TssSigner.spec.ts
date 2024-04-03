@@ -1,4 +1,10 @@
-import { ActiveGuard, EdDSA, GuardDetection, StatusEnum } from '../../lib';
+import {
+  ActiveGuard,
+  EdDSA,
+  GuardDetection,
+  SignRequestPayload,
+  StatusEnum,
+} from '../../lib';
 import { TestTssSigner } from './TestTssSigner';
 import { generateSigners } from '../testUtils';
 import {
@@ -36,6 +42,7 @@ describe('TssSigner', () => {
       tssApiUrl: '',
       getPeerId: () => Promise.resolve('myPeerId'),
       shares: signers.guardPks,
+      chainCode: 'chainCode',
     });
   });
 
@@ -632,7 +639,7 @@ describe('TssSigner', () => {
         ...activeGuards,
         { peerId: 'peerId-4', publicKey: await guardSigners[4].getPk() },
       ];
-      const payload = {
+      const payload: SignRequestPayload = {
         msg: 'test message',
         guards: guards,
       };
@@ -681,7 +688,7 @@ describe('TssSigner', () => {
       const mockedRegister = jest
         .spyOn(detection, 'register')
         .mockResolvedValue();
-      const payload = {
+      const payload: SignRequestPayload = {
         msg: 'test message',
         guards: [
           ...activeGuards,
@@ -716,7 +723,7 @@ describe('TssSigner', () => {
       const mockedRegister = jest
         .spyOn(detection, 'register')
         .mockResolvedValue();
-      const payload = {
+      const payload: SignRequestPayload = {
         msg: 'test message new',
         guards: activeGuards,
       };
@@ -759,7 +766,7 @@ describe('TssSigner', () => {
       const mockedRegister = jest
         .spyOn(detection, 'register')
         .mockResolvedValue();
-      const payload = {
+      const payload: SignRequestPayload = {
         msg: 'test message new',
         guards: activeGuards,
       };
@@ -1299,14 +1306,14 @@ describe('TssSigner', () => {
      * @expected
      * - throw exception
      */
-    it('should throw error when sign does not exist', () => {
-      expect(() =>
+    it('should throw error when sign does not exist', async () => {
+      await expect(async () =>
         signer.handleSignData(
           StatusEnum.Success,
           'invalid signing data',
           'signature'
         )
-      ).toThrow();
+      ).rejects.toThrow();
     });
 
     /**
@@ -1318,10 +1325,10 @@ describe('TssSigner', () => {
      * @expected
      * - throw exception
      */
-    it('should throw error when status is success and no signature passed', () => {
-      expect(() =>
+    it('should throw error when status is success and no signature passed', async () => {
+      await expect(async () =>
         signer.handleSignData(StatusEnum.Success, 'valid signing data')
-      ).toThrow();
+      ).rejects.toThrow();
     });
 
     /**
@@ -1334,14 +1341,20 @@ describe('TssSigner', () => {
      * - callback function called once
      * - callback function called with true and undefined as message and signature
      */
-    it('should call callback function with success status and signature', () => {
-      signer.handleSignData(
+    it('should call callback function with success status and signature', async () => {
+      await signer.handleSignData(
         StatusEnum.Success,
         'valid signing data',
-        'signature'
+        'signature',
+        'signature recovery'
       );
       expect(callback).toHaveBeenCalledTimes(1);
-      expect(callback).toHaveBeenCalledWith(true, undefined, 'signature');
+      expect(callback).toHaveBeenCalledWith(
+        true,
+        undefined,
+        'signature',
+        'signature recovery'
+      );
     });
 
     /**
@@ -1354,10 +1367,11 @@ describe('TssSigner', () => {
      * - callback function called once
      * - callback function called with false and error message
      */
-    it('should call callback function with fail status and message', () => {
-      signer.handleSignData(
+    it('should call callback function with fail status and message', async () => {
+      await signer.handleSignData(
         StatusEnum.Failed,
         'valid signing data',
+        '',
         '',
         'error message'
       );

@@ -29,24 +29,25 @@ import { DummyLogger } from '@rosen-bridge/abstract-logger';
 import { Mutex } from 'await-semaphore';
 import axios, { AxiosInstance } from 'axios';
 
-export class TssSigner extends Communicator {
-  private readonly axios: AxiosInstance;
-  private readonly callbackUrl: string;
-  private threshold: Threshold;
-  private readonly thresholdTTL: number;
-  private readonly turnDuration: number;
-  private readonly turnNoWork: number;
-  private readonly timeout: number;
-  private readonly responseDelay: number;
-  private lastUpdateRound: number;
+export abstract class TssSigner extends Communicator {
+  protected readonly axios: AxiosInstance;
+  protected readonly callbackUrl: string;
+  protected threshold: Threshold;
+  protected readonly thresholdTTL: number;
+  protected readonly turnDuration: number;
+  protected readonly turnNoWork: number;
+  protected readonly timeout: number;
+  protected readonly responseDelay: number;
+  protected lastUpdateRound: number;
   protected signs: Array<Sign>;
   protected pendingSigns: Array<PendingSign>;
-  private readonly detection: GuardDetection;
-  private readonly getPeerId: () => Promise<string>;
-  private readonly pendingAccessMutex: Mutex;
-  private readonly signAccessMutex: Mutex;
-  private readonly shares: Array<string>;
-  private readonly signPerRoundLimit: number;
+  protected readonly detection: GuardDetection;
+  protected readonly getPeerId: () => Promise<string>;
+  protected readonly pendingAccessMutex: Mutex;
+  protected readonly signAccessMutex: Mutex;
+  protected readonly shares: Array<string>;
+  protected readonly signPerRoundLimit: number;
+  protected readonly chainCode: string;
 
   /**
    * get threshold value from tss-api instance if threshold didn't set or expired and set for this and detection
@@ -55,7 +56,9 @@ export class TssSigner extends Communicator {
   protected updateThreshold = async () => {
     try {
       if (this.threshold.expiry < Date.now()) {
-        const res = await this.axios.get<{ threshold: number }>(thresholdUrl);
+        const res = await this.axios.get<{ threshold: number }>(thresholdUrl, {
+          params: { crypto: this.signer.getCrypto() },
+        });
         const threshold = res.data.threshold + 1;
         this.detection.setNeedGuardThreshold(threshold);
         this.threshold = {
@@ -111,6 +114,7 @@ export class TssSigner extends Communicator {
     this.signAccessMutex = new Mutex();
     this.responseDelay = config.responseDelay ?? 5;
     this.signPerRoundLimit = config.signPerRoundLimit ?? 2;
+    this.chainCode = config.chainCode;
   }
 
   /**
@@ -138,12 +142,22 @@ export class TssSigner extends Communicator {
    */
   update = async () => {
     await this.cleanup();
-    if ((await this.getIndex()) !== this.getGuardTurn()) {
+    const myIndex = await this.getIndex();
+    const currentGuardIndex = this.getGuardTurn();
+    if (myIndex !== currentGuardIndex) {
+      this.logger.debug(`not my turn [${myIndex} != ${currentGuardIndex}]`);
+      return;
+    }
+    if (this.signs.length === 0) {
+      this.logger.debug('nothing to sign');
       return;
     }
     await this.updateThreshold();
     const activeGuards = await this.detection.activeGuards();
     if (activeGuards.length < this.threshold.value) {
+      this.logger.debug(
+        `not enough guards [${activeGuards.length} < ${this.threshold.value}]`
+      );
       return;
     }
     const timestamp = this.getDate();
@@ -627,7 +641,12 @@ export class TssSigner extends Communicator {
         crypto: this.signer.getCrypto(),
         operationTimeout: remainingTime - this.responseDelay,
         callBackUrl: this.callbackUrl,
+        chainCode: this.chainCode,
+        ...this.getSignExtraData(),
       };
+      this.logger.debug(
+        `requesting tss-api to sign. data: ${JSON.stringify(data)}`
+      );
       return this.axios.post(signUrl, data).catch((err) => {
         this.logger.warn('Can not communicate with tss backend');
         this.logger.debug(err.stack);
@@ -643,16 +662,23 @@ export class TssSigner extends Communicator {
   };
 
   /**
+   * gets extra data required in sign message
+   */
+  abstract getSignExtraData: () => Record<string, any>;
+
+  /**
    * handle signing data callback for a message and process callback function
    * @param status
    * @param message
    * @param signature
+   * @param signatureRecovery
    * @param error
    */
-  handleSignData = (
+  handleSignData = async (
     status: StatusEnum,
     message: string,
     signature?: string,
+    signatureRecovery?: string,
     error?: string
   ) => {
     const sign = this.getSign(message, true);
@@ -660,11 +686,7 @@ export class TssSigner extends Communicator {
       throw Error('Invalid message');
     }
     if (status === StatusEnum.Success) {
-      if (signature) {
-        sign.callback(true, undefined, signature);
-      } else {
-        throw Error('signature is required when sign is successfully');
-      }
+      await this.handleSuccessfulSign(sign, signature, signatureRecovery);
     } else {
       sign.callback(false, error);
     }
@@ -673,4 +695,16 @@ export class TssSigner extends Communicator {
       release();
     });
   };
+
+  /**
+   * handles signing data callback in case of successful sign
+   * @param sign
+   * @param signature
+   * @param signatureRecovery
+   */
+  abstract handleSuccessfulSign: (
+    sign: Sign,
+    signature?: string,
+    signatureRecovery?: string
+  ) => Promise<void>;
 }

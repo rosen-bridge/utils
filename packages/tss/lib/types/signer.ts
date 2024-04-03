@@ -3,10 +3,9 @@ import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import { GuardDetection } from '../detection/GuardDetection';
 import { ActiveGuard } from './abstract';
 
-export interface SignerConfig {
+export interface SignerBaseConfig {
   logger?: AbstractLogger;
   guardsPk: Array<string>;
-  signer: EncryptionHandler;
   submitMsg: (message: string, guards: Array<string>) => unknown;
   messageValidDuration?: number;
   timeoutSeconds?: number;
@@ -20,11 +19,30 @@ export interface SignerConfig {
   thresholdTTL?: number;
   responseDelay?: number;
   signPerRoundLimit?: number;
+  chainCode: string;
+}
+
+export interface SignerConfig extends SignerBaseConfig {
+  signer: EncryptionHandler;
+}
+
+export interface EcdsaConfig extends SignerBaseConfig {
+  derivationPath: number[];
+  secret: string;
+}
+
+export interface EddsaConfig extends SignerBaseConfig {
+  secret: string;
 }
 
 export interface Sign {
   msg: string;
-  callback: (status: boolean, message?: string, signature?: string) => unknown;
+  callback: (
+    status: boolean,
+    message?: string,
+    signature?: string,
+    signatureRecovery?: string
+  ) => unknown;
   request?: {
     guards: Array<ActiveGuard>;
     index: number;
