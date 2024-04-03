@@ -1,5 +1,12 @@
 # @rosen-bridge/cli
 
+## 0.3.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @rosen-bridge/tss@2.0.0
+
 ## 0.3.1
 
 ### Patch Changes
