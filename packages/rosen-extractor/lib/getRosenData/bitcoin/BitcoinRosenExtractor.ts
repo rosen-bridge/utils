@@ -40,28 +40,48 @@ export class BitcoinRosenExtractor extends AbstractRosenDataExtractor<string> {
         this.logger.debug(baseError + `: Insufficient number of boxes`);
         return undefined;
       }
-      if (outputs[1].scriptPubKey !== this.lockScriptPubKey) {
-        this.logger.debug(baseError + `: 2nd box is not to lock address`);
-        return undefined;
-      }
+
+      let validData = false; // an OP_RETURN box with valid data is found
+      let validLock = false; // a lock box is found with available asset transformation
 
       // parse rosen data from OP_RETURN box
-      let opReturnData: OpReturnData;
-      try {
-        opReturnData = parseRosenData(outputs[0].scriptPubKey);
-      } catch (e) {
+      let opReturnData: OpReturnData | undefined;
+      for (let i = 0; i < outputs.length; i++) {
+        const output = outputs[i];
+        if (output.scriptPubKey.slice(0, 2) !== '6a') continue; // not an OP_RETURN utxo
+
+        try {
+          opReturnData = parseRosenData(output.scriptPubKey);
+          validData = true;
+          break;
+        } catch (e) {
+          this.logger.debug(
+            `Failed to extract data from OP_RETURN box [${transaction.id}.${i}]: ${e}`
+          );
+        }
+      }
+      if (!validData || !opReturnData) {
         this.logger.debug(
-          baseError + `: Failed to extract data from OP_RETURN box: ${e}`
+          baseError + `: No OP_RETURN box with valid data is found`
         );
         return undefined;
       }
 
       // find target chain token id
-      const assetTransformation = this.getAssetTransformation(
-        outputs[1],
-        opReturnData?.toChain
-      );
-      if (!assetTransformation) {
+      let assetTransformation: TokenTransformation | undefined;
+      for (let i = 0; i < outputs.length; i++) {
+        const output = outputs[i];
+        if (output.scriptPubKey !== this.lockScriptPubKey) continue; // utxo address is not lock address
+        assetTransformation = this.getAssetTransformation(
+          output,
+          opReturnData.toChain
+        );
+        if (assetTransformation) {
+          validLock = true;
+          break;
+        }
+      }
+      if (!validLock || !assetTransformation) {
         this.logger.debug(
           baseError + `: Failed to find rosen asset transformation`
         );
