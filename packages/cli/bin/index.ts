@@ -9,10 +9,9 @@ import * as zxcvbnCommonPackage from '@zxcvbn-ts/language-common';
 import * as zxcvbnEnPackage from '@zxcvbn-ts/language-en';
 
 import { downloadRosenAssets } from '@rosen-bridge/utils';
-import { EdDSA } from '@rosen-bridge/tss';
+import { ECDSA, EdDSA } from '@rosen-bridge/tss';
 import { blake2b } from 'blakejs';
 import { randomBytes } from 'crypto';
-import * as crypto from 'crypto';
 
 yargs(hideBin(process.argv))
   .command(
@@ -66,13 +65,32 @@ yargs(hideBin(process.argv))
   )
   .command(
     'tss-secret-generate',
-    'generate EdDSA Tss publicKey/secret',
-    async () => {
-      const secret = await EdDSA.randomKey();
-      const eddsa = new EdDSA(secret);
+    'generate Tss publicKey/secret',
+    (yargs) => {
+      return yargs.option('type', {
+        alias: 't',
+        description: "type of publicKey/secret 'ecdsa' or 'eddsa'",
+        type: 'string',
+        demandOption: true,
+      });
+    },
+    async (argv) => {
+      if (argv.type && argv.type.toLowerCase() === 'eddsa') {
+        const secret = await EdDSA.randomKey();
+        const eddsa = new EdDSA(secret);
 
-      console.log(`SECRET: ${secret}`);
-      console.log(`PK: ${await eddsa.getPk()}`);
+        console.log(`EdDSA SECRET: ${secret}`);
+        console.log(`EdDSA PK: ${await eddsa.getPk()}`);
+      } else if (argv.type && argv.type.toLowerCase() === 'ecdsa') {
+        const secret = await ECDSA.randomKey();
+        const ecdsa = new ECDSA(secret);
+
+        console.log(`ECDSA SECRET: ${secret}`);
+        console.log(`ECDSA PK: ${await ecdsa.getPk()}`);
+      } else
+        console.error(
+          `Type of your secret is wrong should be one of 'ecdsa', 'eddsa'`
+        );
     }
   )
   .command(

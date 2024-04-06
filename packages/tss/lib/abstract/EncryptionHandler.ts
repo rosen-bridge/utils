@@ -1,3 +1,5 @@
+import { randomBytes } from 'crypto';
+
 export abstract class EncryptionHandler {
   /**
    * sign a message with its own private key
@@ -22,4 +24,11 @@ export abstract class EncryptionHandler {
    * get my public key
    */
   abstract getPk: () => Promise<string>;
+
+  /**
+   * generate a random secret key
+   */
+  static randomKey = async (): Promise<string> => {
+    return randomBytes(32).toString('hex');
+  };
 }
