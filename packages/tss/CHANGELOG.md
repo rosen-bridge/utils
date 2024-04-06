@@ -1,5 +1,11 @@
 # @rosen-bridge/tss
 
+## 2.0.1
+
+### Patch Changes
+
+- move common function (randomKey) to abstract class EncryptionHandler
+
 ## 2.0.0
 
 ### Major Changes

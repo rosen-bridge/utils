@@ -1,5 +1,16 @@
 # @rosen-bridge/cli
 
+## 0.4.0
+
+### Minor Changes
+
+- update tss-secret-generate command to generate secret and pk for both protocols ecdsa and eddsa
+
+### Patch Changes
+
+- Updated dependencies
+  - @rosen-bridge/tss@2.0.1
+
 ## 0.3.2
 
 ### Patch Changes

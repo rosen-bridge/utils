@@ -1,7 +1,6 @@
 import { EncryptionHandler } from '../abstract';
 import * as ed from '@noble/ed25519';
 import { blake2b } from '@noble/hashes/blake2b';
-import { randomBytes } from 'crypto';
 
 ed.etc.sha512Sync = (...m) => blake2b(ed.etc.concatBytes(...m));
 
@@ -18,13 +17,6 @@ class EdDSA extends EncryptionHandler {
    */
   getPk = async () => {
     return Buffer.from(await ed.getPublicKey(this.key)).toString('hex');
-  };
-
-  /**
-   * generate a random secret key
-   */
-  static randomKey = async (): Promise<string> => {
-    return randomBytes(32).toString('hex');
   };
 
   /**
