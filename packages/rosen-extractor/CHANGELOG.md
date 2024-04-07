@@ -1,5 +1,11 @@
 # @rosen-bridge/rosen-extractor
 
+## 4.1.0
+
+### Minor Changes
+
+- allow custom order for tx outputs in bitcoin extractors
+
 ## 4.0.1
 
 ### Patch Changes
