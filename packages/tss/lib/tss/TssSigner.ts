@@ -47,7 +47,6 @@ export abstract class TssSigner extends Communicator {
   protected readonly signAccessMutex: Mutex;
   protected readonly shares: Array<string>;
   protected readonly signPerRoundLimit: number;
-  protected readonly chainCode: string;
 
   /**
    * get threshold value from tss-api instance if threshold didn't set or expired and set for this and detection
@@ -114,7 +113,6 @@ export abstract class TssSigner extends Communicator {
     this.signAccessMutex = new Mutex();
     this.responseDelay = config.responseDelay ?? 5;
     this.signPerRoundLimit = config.signPerRoundLimit ?? 2;
-    this.chainCode = config.chainCode;
   }
 
   /**
@@ -215,10 +213,14 @@ export abstract class TssSigner extends Communicator {
    * if other guards proceed this sign we also process it
    * @param msg
    * @param callback
+   * @param chainCode
+   * @param derivationPath
    */
   sign = async (
     msg: string,
-    callback: (status: boolean, message?: string, args?: string) => unknown
+    callback: (status: boolean, message?: string, args?: string) => unknown,
+    chainCode: string,
+    derivationPath?: number[]
   ) => {
     if (this.getSign(msg, true)) {
       throw Error('already signing this message');
@@ -231,6 +233,8 @@ export abstract class TssSigner extends Communicator {
       signs: [],
       addedTime: this.getDate(),
       posted: false,
+      chainCode,
+      derivationPath,
     });
     release();
 
@@ -251,13 +255,24 @@ export abstract class TssSigner extends Communicator {
   /**
    * sign message and return promise
    * @param message
+   * @param chainCode
+   * @param derivationPath
    */
-  signPromised = (message: string): Promise<string> => {
+  signPromised = (
+    message: string,
+    chainCode: string,
+    derivationPath?: number[]
+  ): Promise<string> => {
     return new Promise<string>((resolve, reject) => {
-      this.sign(message, (status: boolean, message?: string, args?: string) => {
-        if (status && args) resolve(args);
-        reject(message);
-      })
+      this.sign(
+        message,
+        (status: boolean, message?: string, args?: string) => {
+          if (status && args) resolve(args);
+          reject(message);
+        },
+        chainCode,
+        derivationPath
+      )
         .then(() => null)
         .catch((e) => reject(e));
     });
@@ -641,8 +656,8 @@ export abstract class TssSigner extends Communicator {
         crypto: this.signer.getCrypto(),
         operationTimeout: remainingTime - this.responseDelay,
         callBackUrl: this.callbackUrl,
-        chainCode: this.chainCode,
-        ...this.getSignExtraData(),
+        chainCode: sign.chainCode,
+        derivationPath: sign.derivationPath,
       };
       this.logger.debug(
         `requesting tss-api to sign. data: ${JSON.stringify(data)}`
@@ -660,11 +675,6 @@ export abstract class TssSigner extends Communicator {
       });
     }
   };
-
-  /**
-   * gets extra data required in sign message
-   */
-  abstract getSignExtraData: () => Record<string, any>;
 
   /**
    * handle signing data callback for a message and process callback function
