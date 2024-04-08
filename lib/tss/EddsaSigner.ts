@@ -22,19 +22,9 @@ export class EddsaSigner extends TssSigner {
       thresholdTTL: config.thresholdTTL,
       responseDelay: config.responseDelay,
       signPerRoundLimit: config.signPerRoundLimit,
-      chainCode: config.chainCode,
       signer: new EdDSA(config.secret),
     });
   }
-
-  /**
-   * gets extra data required in sign message
-   * extra data: none
-   * @returns
-   */
-  getSignExtraData = (): Record<string, any> => {
-    return {};
-  };
 
   /**
    * handles signing data callback in case of successful sign

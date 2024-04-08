@@ -22,23 +22,10 @@ export class EcdsaSigner extends TssSigner {
       thresholdTTL: config.thresholdTTL,
       responseDelay: config.responseDelay,
       signPerRoundLimit: config.signPerRoundLimit,
-      chainCode: config.chainCode,
       signer: new ECDSA(config.secret),
     });
     this.derivationPath = config.derivationPath;
   }
-
-  /**
-   * gets extra data required in sign message
-   * extra data:
-   * - derivationPath
-   * @returns
-   */
-  getSignExtraData = (): Record<string, any> => {
-    return {
-      derivationPath: this.derivationPath,
-    };
-  };
 
   /**
    * handles signing data callback in case of successful sign

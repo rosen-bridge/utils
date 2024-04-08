@@ -119,15 +119,6 @@ export class TestTssSigner extends TssSigner {
   mockedUpdateThreshold = () => this.updateThreshold();
 
   /**
-   * gets extra data required in sign message
-   * extra data: none
-   * @returns
-   */
-  getSignExtraData = (): Record<string, any> => {
-    return {};
-  };
-
-  /**
    * handles signing data callback in case of successful sign
    * @param sign
    * @param signature
