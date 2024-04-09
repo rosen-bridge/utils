@@ -24,8 +24,35 @@ export class EcdsaSigner extends TssSigner {
       signPerRoundLimit: config.signPerRoundLimit,
       signer: new ECDSA(config.secret),
     });
-    this.derivationPath = config.derivationPath;
   }
+
+  /**
+   * sign message and return promise
+   * @param message
+   * @param chainCode
+   * @param derivationPath
+   */
+  signPromised = (
+    message: string,
+    chainCode: string,
+    derivationPath?: number[]
+  ): Promise<string> => {
+    return new Promise<string>((resolve, reject) => {
+      if (!derivationPath)
+        throw Error(`derivationPath is required in ECDSA signing`);
+      this.sign(
+        message,
+        (status: boolean, message?: string, args?: string) => {
+          if (status && args) resolve(args);
+          reject(message);
+        },
+        chainCode,
+        derivationPath
+      )
+        .then(() => null)
+        .catch((e) => reject(e));
+    });
+  };
 
   /**
    * handles signing data callback in case of successful sign
