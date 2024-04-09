@@ -1,5 +1,13 @@
 # @rosen-bridge/tss
 
+## 3.0.0
+
+### Major Changes
+
+- change `sign` function to protected
+  change `signPromised` function to abstract
+  add `chainCode` and `derivationPath` to `signPromised` arguments and remove them from constructor
+
 ## 2.0.1
 
 ### Patch Changes
