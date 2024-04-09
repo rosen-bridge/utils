@@ -216,7 +216,7 @@ export abstract class TssSigner extends Communicator {
    * @param chainCode
    * @param derivationPath
    */
-  sign = async (
+  protected sign = async (
     msg: string,
     callback: (status: boolean, message?: string, args?: string) => unknown,
     chainCode: string,

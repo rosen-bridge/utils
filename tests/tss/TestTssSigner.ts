@@ -135,4 +135,19 @@ export class TestTssSigner extends TssSigner {
       throw Error('signature is required when sign is successful');
     }
   };
+
+  /**
+   * calls protected function sign
+   * @param msg
+   * @param callback
+   * @param chainCode
+   * @param derivationPath
+   * @returns
+   */
+  callSign = async (
+    msg: string,
+    callback: (status: boolean, message?: string, args?: string) => unknown,
+    chainCode: string,
+    derivationPath?: number[]
+  ) => this.sign(msg, callback, chainCode, derivationPath);
 }

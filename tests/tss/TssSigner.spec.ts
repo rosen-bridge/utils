@@ -359,7 +359,7 @@ describe('TssSigner', () => {
      * - an element with entered msg must add to sign list
      */
     it('should add new sign to list', async () => {
-      await signer.sign('msg', jest.fn(), 'chainCode');
+      await signer.callSign('msg', jest.fn(), 'chainCode');
       expect(
         signer.getSigns().filter((item) => item.msg === 'msg').length
       ).toEqual(1);
@@ -385,7 +385,7 @@ describe('TssSigner', () => {
       const mockedHandleRequest = jest
         .spyOn(signer as any, 'handleRequestMessage')
         .mockReturnValue(null);
-      await signer.sign('signing message', jest.fn(), 'chainCode');
+      await signer.callSign('signing message', jest.fn(), 'chainCode');
       expect(mockedHandleRequest).toHaveBeenCalledTimes(1);
       expect(mockedHandleRequest).toHaveBeenCalledWith(
         {
