@@ -27,6 +27,34 @@ export class EddsaSigner extends TssSigner {
   }
 
   /**
+   * sign message and return promise
+   * @param message
+   * @param chainCode
+   * @param derivationPath
+   */
+  signPromised = (
+    message: string,
+    chainCode: string,
+    derivationPath?: number[]
+  ): Promise<string> => {
+    return new Promise<string>((resolve, reject) => {
+      if (derivationPath)
+        throw Error(`derivationPath is not supported in EdDSA signing`);
+      this.sign(
+        message,
+        (status: boolean, message?: string, args?: string) => {
+          if (status && args) resolve(args);
+          reject(message);
+        },
+        chainCode,
+        derivationPath
+      )
+        .then(() => null)
+        .catch((e) => reject(e));
+    });
+  };
+
+  /**
    * handles signing data callback in case of successful sign
    * @param sign
    * @param signature

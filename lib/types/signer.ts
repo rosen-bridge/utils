@@ -26,7 +26,6 @@ export interface SignerConfig extends SignerBaseConfig {
 }
 
 export interface EcdsaConfig extends SignerBaseConfig {
-  derivationPath: number[];
   secret: string;
 }
 

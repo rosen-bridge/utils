@@ -258,25 +258,11 @@ export abstract class TssSigner extends Communicator {
    * @param chainCode
    * @param derivationPath
    */
-  signPromised = (
+  abstract signPromised: (
     message: string,
     chainCode: string,
     derivationPath?: number[]
-  ): Promise<string> => {
-    return new Promise<string>((resolve, reject) => {
-      this.sign(
-        message,
-        (status: boolean, message?: string, args?: string) => {
-          if (status && args) resolve(args);
-          reject(message);
-        },
-        chainCode,
-        derivationPath
-      )
-        .then(() => null)
-        .catch((e) => reject(e));
-    });
-  };
+  ) => Promise<string>;
 
   /**
    * process new message
