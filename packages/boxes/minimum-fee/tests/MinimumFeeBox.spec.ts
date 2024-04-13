@@ -102,7 +102,7 @@ describe('MinimumFeeBox', () => {
       const minimumFeeBox = generateDefaultMinimumFeeBox();
       await minimumFeeBox.fetchBox();
       const result = minimumFeeBox.getBox();
-      expect(result.box_id().to_str()).toEqual(
+      expect(result?.box_id().to_str()).toEqual(
         '7def746de14a14756002c3dcaf19b3192d9cfb9ecb76c8c48eb7a8f8648675c2'
       );
     });
@@ -129,7 +129,7 @@ describe('MinimumFeeBox', () => {
       );
       await minimumFeeBox.fetchBox();
       const result = minimumFeeBox.getBox();
-      expect(result.box_id().to_str()).toEqual(
+      expect(result?.box_id().to_str()).toEqual(
         'c65fad07c680589c80cddcc6c4a431317c647955aaf0f3ded6f73c42d805466c'
       );
     });
@@ -174,7 +174,7 @@ describe('MinimumFeeBox', () => {
       );
       await minimumFeeBox.fetchBox();
       const result = minimumFeeBox.getBox();
-      expect(result.box_id().to_str()).toEqual(
+      expect(result?.box_id().to_str()).toEqual(
         '7def746de14a14756002c3dcaf19b3192d9cfb9ecb76c8c48eb7a8f8648675c2'
       );
     });
@@ -201,7 +201,7 @@ describe('MinimumFeeBox', () => {
       );
       await minimumFeeBox.fetchBox();
       const result = minimumFeeBox.getBox();
-      expect(result.box_id().to_str()).toEqual(
+      expect(result?.box_id().to_str()).toEqual(
         'c65fad07c680589c80cddcc6c4a431317c647955aaf0f3ded6f73c42d805466c'
       );
     });
