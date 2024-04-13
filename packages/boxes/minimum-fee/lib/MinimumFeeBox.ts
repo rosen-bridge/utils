@@ -13,7 +13,7 @@ import { ERGO_NATIVE_TOKEN } from './constants';
 export class MinimumFeeBox {
   protected readonly BOX_FETCHING_PAGE_SIZE = 50;
   protected logger: AbstractLogger;
-  protected box: ErgoBox;
+  protected box: ErgoBox | undefined;
   protected tokenId: string;
   protected minimumFeeNFT: string;
   protected address: string;
@@ -43,12 +43,9 @@ export class MinimumFeeBox {
 
   /**
    * fetches the box from the blockchain
+   * @returns true if action was successful, otherwise false
    */
-  fetchBox = async (): Promise<void> => {
-    const boxes = this.explorerClient
-      ? await this.fetchBoxesUsingExplorer()
-      : await this.fetchBoxesUsingNode();
-
+  fetchBox = async (): Promise<boolean> => {
     const boxHasCorrectAddress = (box: ErgoBox) =>
       box.ergo_tree().to_base16_bytes() === this.ergoTree;
     const boxHasAppropriateTokens = (box: ErgoBox) => {
@@ -65,16 +62,34 @@ export class MinimumFeeBox {
       return hasCorrectTokens && hasMinimumFeeNFT && hasTargetToken;
     };
 
-    this.box = this.selectEligibleBox(
-      boxes.filter(
-        (box: ErgoBox) =>
-          boxHasCorrectAddress(box) && boxHasAppropriateTokens(box)
-      )
-    );
+    try {
+      const boxes = this.explorerClient
+        ? await this.fetchBoxesUsingExplorer()
+        : await this.fetchBoxesUsingNode();
+
+      this.box = this.selectEligibleBox(
+        boxes.filter(
+          (box: ErgoBox) =>
+            boxHasCorrectAddress(box) && boxHasAppropriateTokens(box)
+        )
+      );
+      return true;
+    } catch (e) {
+      if (e instanceof NotFoundError || e instanceof FailedError) {
+        this.logger.warn(`No valid minimum-fee box. reason: ${e}`);
+        this.box = undefined;
+      } else {
+        this.logger.warn(
+          `An error occurred while updating minimum-fee box: ${e}`
+        );
+        if (e instanceof Error && e.stack) this.logger.warn(e.stack);
+      }
+      return false;
+    }
   };
 
   /**
-   * returns fetched box or throws approprite error if found more or none
+   * returns fetched box or throws appropriate error if found more or none
    * @param eligibleBoxes
    */
   protected selectEligibleBox = (eligibleBoxes: Array<ErgoBox>): ErgoBox => {
@@ -86,15 +101,15 @@ export class MinimumFeeBox {
       )}`
     );
 
-    if (eligibleBoxes.length === 0)
+    if (eligibleBoxes.length === 0) {
       throw new NotFoundError(
         `Found no minimum-fee box for token [${this.tokenId}] and address [${this.address}]`
       );
-    else if (eligibleBoxes.length > 1)
+    } else if (eligibleBoxes.length > 1) {
       throw new FailedError(
         `Found [${eligibleBoxes.length}] minimum-fee boxes for token [${this.tokenId}] and address [${this.address}]`
       );
-    else {
+    } else {
       this.logger.debug(
         `Found minimum-fee box [${eligibleBoxes[0]
           .box_id()
@@ -212,7 +227,7 @@ export class MinimumFeeBox {
   /**
    * returns fetched config box
    */
-  getBox = (): ErgoBox => this.box;
+  getBox = (): ErgoBox | undefined => this.box;
 
   /**
    * gets corresponding config for two chains and height
@@ -227,7 +242,7 @@ export class MinimumFeeBox {
   ): ChainMinimumFee => {
     if (!this.box) throw Error(`Box is not fetched yet`);
 
-    const fees = this.extractFeeFromBox().reverse();
+    const fees = this.extractFeeFromBox(this.box).reverse();
     for (const fee of fees) {
       if (!Object.hasOwn(fee.heights, fromChain))
         throw new NotFoundError(
@@ -256,18 +271,19 @@ export class MinimumFeeBox {
 
   /**
    * extracts Fee config from box registers
+   * @param box
    */
-  protected extractFeeFromBox = (): Array<Fee> => {
-    const R4 = this.box.register_value(4);
-    const R5 = this.box.register_value(5);
-    const R6 = this.box.register_value(6);
-    const R7 = this.box.register_value(7);
-    const R8 = this.box.register_value(8);
-    const R9 = this.box.register_value(9);
+  protected extractFeeFromBox = (box: ErgoBox): Array<Fee> => {
+    const R4 = box.register_value(4);
+    const R5 = box.register_value(5);
+    const R6 = box.register_value(6);
+    const R7 = box.register_value(7);
+    const R8 = box.register_value(8);
+    const R9 = box.register_value(9);
 
     if (!R4 || !R5 || !R6 || !R7 || !R8 || !R9)
       throw Error(
-        `Incomplete register data for minimum-fee config box [${this.box
+        `Incomplete register data for minimum-fee config box [${box
           .box_id()
           .to_str()}]`
       );
@@ -306,7 +322,7 @@ export class MinimumFeeBox {
     }
 
     this.logger.debug(
-      `Extracted fee config from box [${this.box
+      `Extracted fee config from box [${box
         .box_id()
         .to_str()}]: ${JsonBigInt.stringify(fees)}`
     );
@@ -319,11 +335,13 @@ export class MinimumFeeBox {
    *  note that 'height' parameter of builder won't be set
    */
   toBuilder = (): MinimumFeeBoxBuilder => {
+    if (!this.box) throw Error(`Box is not fetched yet`);
+
     const builder = new MinimumFeeBoxBuilder(this.minimumFeeNFT, this.address)
       .setValue(BigInt(this.box.value().as_i64().to_str()))
       .setToken(this.tokenId);
 
-    this.extractFeeFromBox().forEach((fee) => {
+    this.extractFeeFromBox(this.box).forEach((fee) => {
       const chainFee = new MinimumFeeConfig();
       Object.keys(fee.heights).forEach((chain) => {
         if (Object.hasOwn(fee.configs, chain))
