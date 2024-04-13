@@ -43,12 +43,9 @@ export class MinimumFeeBox {
 
   /**
    * fetches the box from the blockchain
+   * @returns true if action was successful, otherwise false
    */
-  fetchBox = async (): Promise<void> => {
-    const boxes = this.explorerClient
-      ? await this.fetchBoxesUsingExplorer()
-      : await this.fetchBoxesUsingNode();
-
+  fetchBox = async (): Promise<boolean> => {
     const boxHasCorrectAddress = (box: ErgoBox) =>
       box.ergo_tree().to_base16_bytes() === this.ergoTree;
     const boxHasAppropriateTokens = (box: ErgoBox) => {
@@ -65,12 +62,30 @@ export class MinimumFeeBox {
       return hasCorrectTokens && hasMinimumFeeNFT && hasTargetToken;
     };
 
-    this.box = this.selectEligibleBox(
-      boxes.filter(
-        (box: ErgoBox) =>
-          boxHasCorrectAddress(box) && boxHasAppropriateTokens(box)
-      )
-    );
+    try {
+      const boxes = this.explorerClient
+        ? await this.fetchBoxesUsingExplorer()
+        : await this.fetchBoxesUsingNode();
+
+      this.box = this.selectEligibleBox(
+        boxes.filter(
+          (box: ErgoBox) =>
+            boxHasCorrectAddress(box) && boxHasAppropriateTokens(box)
+        )
+      );
+      return true;
+    } catch (e) {
+      if (e instanceof NotFoundError || e instanceof FailedError) {
+        this.logger.warn(`No valid minimum-fee box. reason: ${e}`);
+        this.box = undefined;
+      } else {
+        this.logger.warn(
+          `An error occurred while updating minimum-fee box: ${e}`
+        );
+        if (e instanceof Error && e.stack) this.logger.warn(e.stack);
+      }
+      return false;
+    }
   };
 
   /**
@@ -87,15 +102,13 @@ export class MinimumFeeBox {
     );
 
     if (eligibleBoxes.length === 0) {
-      this.box = undefined;
-      const errorMessage = `Found no minimum-fee box for token [${this.tokenId}] and address [${this.address}]`;
-      this.logger.warn(errorMessage);
-      throw new NotFoundError(errorMessage);
+      throw new NotFoundError(
+        `Found no minimum-fee box for token [${this.tokenId}] and address [${this.address}]`
+      );
     } else if (eligibleBoxes.length > 1) {
-      this.box = undefined;
-      const errorMessage = `Found [${eligibleBoxes.length}] minimum-fee boxes for token [${this.tokenId}] and address [${this.address}]`;
-      this.logger.warn(errorMessage);
-      throw new FailedError(errorMessage);
+      throw new FailedError(
+        `Found [${eligibleBoxes.length}] minimum-fee boxes for token [${this.tokenId}] and address [${this.address}]`
+      );
     } else {
       this.logger.debug(
         `Found minimum-fee box [${eligibleBoxes[0]
