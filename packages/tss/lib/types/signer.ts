@@ -19,7 +19,6 @@ export interface SignerBaseConfig {
   thresholdTTL?: number;
   responseDelay?: number;
   signPerRoundLimit?: number;
-  chainCode: string;
 }
 
 export interface SignerConfig extends SignerBaseConfig {
@@ -27,7 +26,6 @@ export interface SignerConfig extends SignerBaseConfig {
 }
 
 export interface EcdsaConfig extends SignerBaseConfig {
-  derivationPath: number[];
   secret: string;
 }
 
@@ -51,6 +49,8 @@ export interface Sign {
   signs: Array<string>;
   addedTime: number;
   posted: boolean;
+  chainCode: string;
+  derivationPath?: number[];
 }
 
 export interface PendingSign {

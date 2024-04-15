@@ -119,13 +119,19 @@ export class TestTssSigner extends TssSigner {
   mockedUpdateThreshold = () => this.updateThreshold();
 
   /**
-   * gets extra data required in sign message
-   * extra data: none
+   * calls protected function sign
+   * @param msg
+   * @param callback
+   * @param chainCode
+   * @param derivationPath
    * @returns
    */
-  getSignExtraData = (): Record<string, any> => {
-    return {};
-  };
+  callSign = async (
+    msg: string,
+    callback: (status: boolean, message?: string, args?: string) => unknown,
+    chainCode: string,
+    derivationPath?: number[]
+  ) => this.sign(msg, callback, chainCode, derivationPath);
 
   /**
    * handles signing data callback in case of successful sign
@@ -143,5 +149,31 @@ export class TestTssSigner extends TssSigner {
     } else {
       throw Error('signature is required when sign is successful');
     }
+  };
+
+  /**
+   * sign message and return promise
+   * @param message
+   * @param chainCode
+   * @param derivationPath
+   */
+  signPromised = (
+    message: string,
+    chainCode: string,
+    derivationPath?: number[]
+  ): Promise<string> => {
+    return new Promise<string>((resolve, reject) => {
+      this.sign(
+        message,
+        (status: boolean, message?: string, args?: string) => {
+          if (status && args) resolve(args);
+          reject(message);
+        },
+        chainCode,
+        derivationPath
+      )
+        .then(() => null)
+        .catch((e) => reject(e));
+    });
   };
 }

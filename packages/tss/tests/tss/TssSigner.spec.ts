@@ -42,7 +42,6 @@ describe('TssSigner', () => {
       tssApiUrl: '',
       getPeerId: () => Promise.resolve('myPeerId'),
       shares: signers.guardPks,
-      chainCode: 'chainCode',
     });
   });
 
@@ -65,6 +64,7 @@ describe('TssSigner', () => {
         addedTime: Math.floor(currentTime / 1000) - 5 * 60 - 1,
         callback: () => null,
         posted: false,
+        chainCode: 'chainCode',
       });
       await (signer as any).cleanup();
       expect(signer.getSigns().length).toEqual(0);
@@ -88,6 +88,7 @@ describe('TssSigner', () => {
         posted: false,
         addedTime: Math.floor(currentTime / 1000) - 5 * 60 + 1,
         callback: () => null,
+        chainCode: 'chainCode',
       });
       await (signer as any).cleanup();
       expect(signer.getSigns().length).toEqual(1);
@@ -148,6 +149,7 @@ describe('TssSigner', () => {
         callback: jest.fn(),
         signs: [],
         addedTime: currentTime,
+        chainCode: 'chainCode',
       });
     });
     /**
@@ -266,6 +268,7 @@ describe('TssSigner', () => {
           callback: jest.fn(),
           signs: [],
           addedTime: currentTime + i * 10,
+          chainCode: 'chainCode',
         });
       }
       await signer.update();
@@ -356,7 +359,7 @@ describe('TssSigner', () => {
      * - an element with entered msg must add to sign list
      */
     it('should add new sign to list', async () => {
-      await signer.sign('msg', jest.fn());
+      await signer.callSign('msg', jest.fn(), 'chainCode');
       expect(
         signer.getSigns().filter((item) => item.msg === 'msg').length
       ).toEqual(1);
@@ -382,7 +385,7 @@ describe('TssSigner', () => {
       const mockedHandleRequest = jest
         .spyOn(signer as any, 'handleRequestMessage')
         .mockReturnValue(null);
-      await signer.sign('signing message', jest.fn());
+      await signer.callSign('signing message', jest.fn(), 'chainCode');
       expect(mockedHandleRequest).toHaveBeenCalledTimes(1);
       expect(mockedHandleRequest).toHaveBeenCalledWith(
         {
@@ -525,6 +528,7 @@ describe('TssSigner', () => {
         addedTime: currentTime,
         callback: jest.fn(),
         posted: false,
+        chainCode: 'chainCode',
       });
     });
     /**
@@ -818,6 +822,7 @@ describe('TssSigner', () => {
         addedTime: currentTime,
         callback: jest.fn,
         posted: false,
+        chainCode: 'chainCode',
       });
       const sign = signer.mockedGetSign('msg1');
       expect(sign).toBeDefined();
@@ -841,6 +846,7 @@ describe('TssSigner', () => {
         addedTime: currentTime,
         callback: jest.fn,
         posted: false,
+        chainCode: 'chainCode',
       });
       const sign = signer.mockedGetSign('msg2');
       expect(sign).toBeUndefined();
@@ -913,6 +919,7 @@ describe('TssSigner', () => {
           timestamp,
         },
         posted: false,
+        chainCode: 'chainCode',
       });
     });
 
@@ -1127,6 +1134,7 @@ describe('TssSigner', () => {
         addedTime: timestamp,
         callback: jest.fn(),
         posted: false,
+        chainCode: 'chainCode',
       });
       activeGuards = await Promise.all(
         guardSigners.map(async (item, index) => ({
@@ -1294,6 +1302,7 @@ describe('TssSigner', () => {
         signs: [],
         addedTime: 0,
         posted: true,
+        chainCode: 'chainCode',
       });
     });
 

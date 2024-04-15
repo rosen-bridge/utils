@@ -22,18 +22,36 @@ export class EddsaSigner extends TssSigner {
       thresholdTTL: config.thresholdTTL,
       responseDelay: config.responseDelay,
       signPerRoundLimit: config.signPerRoundLimit,
-      chainCode: config.chainCode,
       signer: new EdDSA(config.secret),
     });
   }
 
   /**
-   * gets extra data required in sign message
-   * extra data: none
-   * @returns
+   * sign message and return promise
+   * @param message
+   * @param chainCode
+   * @param derivationPath
    */
-  getSignExtraData = (): Record<string, any> => {
-    return {};
+  signPromised = (
+    message: string,
+    chainCode: string,
+    derivationPath?: number[]
+  ): Promise<string> => {
+    return new Promise<string>((resolve, reject) => {
+      if (derivationPath)
+        throw Error(`derivationPath is not supported in EdDSA signing`);
+      this.sign(
+        message,
+        (status: boolean, message?: string, args?: string) => {
+          if (status && args) resolve(args);
+          reject(message);
+        },
+        chainCode,
+        derivationPath
+      )
+        .then(() => null)
+        .catch((e) => reject(e));
+    });
   };
 
   /**
