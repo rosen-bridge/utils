@@ -1,5 +1,11 @@
 # @rosen-bridge/rosen-extractor
 
+## 4.1.1
+
+### Patch Changes
+
+- fix bitcoin rosen-extractors (remove PUSH_DATA1 opcode from expected OP_RETURN script)
+
 ## 4.1.0
 
 ### Minor Changes

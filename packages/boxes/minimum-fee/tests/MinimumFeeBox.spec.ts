@@ -3,7 +3,7 @@ import {
   ChainMinimumFee,
   ErgoNetworkType,
   FailedError,
-  InvalidConfig,
+  NetworkError,
   NotFoundError,
 } from '../lib';
 import { TestMinimumFeeBox } from './TestMinimumFeeBox';
@@ -94,15 +94,17 @@ describe('MinimumFeeBox', () => {
      * - mock explorer client to return test boxes
      * - run test
      * - check returned value
+     * - check object box
      * @expected
-     * - returned box id should be as expected
+     * - it should return true
+     * - updated box id should be as expected
      */
     it('should fetch and select Erg config box from explorer client successfully', async () => {
       mockExplorerGetApiV1BoxesUnspentByaddressP1();
       const minimumFeeBox = generateDefaultMinimumFeeBox();
-      await minimumFeeBox.fetchBox();
-      const result = minimumFeeBox.getBox();
-      expect(result.box_id().to_str()).toEqual(
+      const res = await minimumFeeBox.fetchBox();
+      expect(res).toEqual(true);
+      expect(minimumFeeBox.getBox()?.box_id().to_str()).toEqual(
         '7def746de14a14756002c3dcaf19b3192d9cfb9ecb76c8c48eb7a8f8648675c2'
       );
     });
@@ -115,8 +117,10 @@ describe('MinimumFeeBox', () => {
      * - mock explorer client to return test boxes
      * - run test
      * - check returned value
+     * - check object box
      * @expected
-     * - returned box id should be as expected
+     * - it should return true
+     * - updated box id should be as expected
      */
     it('should fetch and select token config box from explorer client successfully', async () => {
       mockExplorerGetApiV1BoxesUnspentByaddressP1();
@@ -127,29 +131,11 @@ describe('MinimumFeeBox', () => {
         ErgoNetworkType.explorer,
         ''
       );
-      await minimumFeeBox.fetchBox();
-      const result = minimumFeeBox.getBox();
-      expect(result.box_id().to_str()).toEqual(
+      const res = await minimumFeeBox.fetchBox();
+      expect(res).toEqual(true);
+      expect(minimumFeeBox.getBox()?.box_id().to_str()).toEqual(
         'c65fad07c680589c80cddcc6c4a431317c647955aaf0f3ded6f73c42d805466c'
       );
-    });
-
-    /**
-     * @target MinimumFeeBox.fetchBox should throw NotFoundError
-     * when got no config box from explorer client
-     * @dependencies
-     * @scenario
-     * - mock explorer client to return test boxes
-     * - run test & check thrown exception
-     * @expected
-     * - NotFoundError should be thrown
-     */
-    it('should throw NotFoundError when got no config box from explorer client successfully', async () => {
-      mockExplorerGetApiV1BoxesUnspentByaddressP1(false);
-      const minimumFeeBox = generateDefaultMinimumFeeBox();
-      await expect(async () => {
-        await minimumFeeBox.fetchBox();
-      }).rejects.toThrow(NotFoundError);
     });
 
     /**
@@ -160,8 +146,10 @@ describe('MinimumFeeBox', () => {
      * - mock node client to return test boxes
      * - run test
      * - check returned value
+     * - check object box
      * @expected
-     * - returned box id should be as expected
+     * - it should return true
+     * - updated box id should be as expected
      */
     it('should fetch and select Erg config box from node client successfully', async () => {
       mockNodeGetBoxesByAddressUnspent();
@@ -172,9 +160,9 @@ describe('MinimumFeeBox', () => {
         ErgoNetworkType.node,
         ''
       );
-      await minimumFeeBox.fetchBox();
-      const result = minimumFeeBox.getBox();
-      expect(result.box_id().to_str()).toEqual(
+      const res = await minimumFeeBox.fetchBox();
+      expect(res).toEqual(true);
+      expect(minimumFeeBox.getBox()?.box_id().to_str()).toEqual(
         '7def746de14a14756002c3dcaf19b3192d9cfb9ecb76c8c48eb7a8f8648675c2'
       );
     });
@@ -187,8 +175,10 @@ describe('MinimumFeeBox', () => {
      * - mock node client to return test boxes
      * - run test
      * - check returned value
+     * - check object box
      * @expected
-     * - returned box id should be as expected
+     * - it should return true
+     * - updated box id should be as expected
      */
     it('should fetch and select token config box from node client successfully', async () => {
       mockNodeGetBoxesByAddressUnspent();
@@ -201,33 +191,86 @@ describe('MinimumFeeBox', () => {
       );
       await minimumFeeBox.fetchBox();
       const result = minimumFeeBox.getBox();
-      expect(result.box_id().to_str()).toEqual(
+      expect(result?.box_id().to_str()).toEqual(
         'c65fad07c680589c80cddcc6c4a431317c647955aaf0f3ded6f73c42d805466c'
       );
     });
 
     /**
-     * @target MinimumFeeBox.fetchBox should throw NotFoundError
-     * when got no config box from node client
+     * @target MinimumFeeBox.fetchBox should update box to undefined
+     * when got no config box
      * @dependencies
      * @scenario
-     * - mock node client to return test boxes
-     * - run test & check thrown exception
+     * - mock explorer client
+     * - mock object box with an ErgoBox with normal fee
+     * - run test
+     * - check returned value
+     * - check object box
      * @expected
-     * - NotFoundError should be thrown
+     * - it should return false
+     * - box should be updated to undefined
      */
-    it('should throw NotFoundError when got no config box from node client successfully', async () => {
-      mockNodeGetBoxesByAddressUnspentToThrow();
-      const minimumFeeBox = new TestMinimumFeeBox(
-        nativeTokenId,
-        defaultMinimumFeeNFT,
-        defaultAddress,
-        ErgoNetworkType.node,
-        ''
-      );
-      await expect(async () => {
-        await minimumFeeBox.fetchBox();
-      }).rejects.toThrow(NotFoundError);
+    it('should update box to undefined when got no config box', async () => {
+      mockExplorerGetApiV1BoxesUnspentByaddressP1(false);
+      const minimumFeeBox = generateDefaultMinimumFeeBox();
+      minimumFeeBox.setBox(ErgoBox.from_json(testData.normalFeeBox));
+      const res = await minimumFeeBox.fetchBox();
+      expect(res).toEqual(false);
+      expect(minimumFeeBox.getBox()).toBeUndefined();
+    });
+
+    /**
+     * @target MinimumFeeBox.fetchBox should update box to undefined
+     * when received FailedError while fetching or selecting the box
+     * @dependencies
+     * @scenario
+     * - mock explorer client
+     * - mock object box with an ErgoBox with normal fee
+     * - mock `fetchBoxesUsingExplorer` to throw FailedError
+     * - run test
+     * - check returned value
+     * - check object box
+     * @expected
+     * - it should return false
+     * - box should be updated to undefined
+     */
+    it('should update box to undefined when received FailedError while fetching or selecting the box', async () => {
+      mockExplorerGetApiV1BoxesUnspentByaddressP1(false);
+      const minimumFeeBox = generateDefaultMinimumFeeBox();
+      jest
+        .spyOn(minimumFeeBox as any, 'fetchBoxesUsingExplorer')
+        .mockRejectedValueOnce(new FailedError(`test FailedError`));
+      minimumFeeBox.setBox(ErgoBox.from_json(testData.normalFeeBox));
+      const res = await minimumFeeBox.fetchBox();
+      expect(res).toEqual(false);
+      expect(minimumFeeBox.getBox()).toBeUndefined();
+    });
+
+    /**
+     * @target MinimumFeeBox.fetchBox should not update the box
+     * when received NetworkError while fetching the box
+     * @dependencies
+     * @scenario
+     * - mock explorer client
+     * - mock object box with an ErgoBox with normal fee
+     * - mock `fetchBoxesUsingExplorer` to throw NetworkError
+     * - run test
+     * - check returned value
+     * - check object box
+     * @expected
+     * - it should return false
+     * - box should be updated to undefined
+     */
+    it('should not update the box when received NetworkError while fetching the box', async () => {
+      mockExplorerGetApiV1BoxesUnspentByaddressP1(false);
+      const minimumFeeBox = generateDefaultMinimumFeeBox();
+      jest
+        .spyOn(minimumFeeBox as any, 'fetchBoxesUsingExplorer')
+        .mockRejectedValueOnce(new NetworkError(`test NetworkError`));
+      minimumFeeBox.setBox(ErgoBox.from_json(testData.normalFeeBox));
+      const res = await minimumFeeBox.fetchBox();
+      expect(res).toEqual(false);
+      expect(minimumFeeBox.getBox()).toBeDefined();
     });
   });
 
