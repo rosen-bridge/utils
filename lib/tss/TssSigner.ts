@@ -9,6 +9,7 @@ import {
   SignRequestPayload,
   SignStartPayload,
   StatusEnum,
+  SignResult,
 } from '../types/signer';
 import { GuardDetection } from '../detection/GuardDetection';
 import {
@@ -262,7 +263,7 @@ export abstract class TssSigner extends Communicator {
     message: string,
     chainCode: string,
     derivationPath?: number[]
-  ) => Promise<string>;
+  ) => Promise<SignResult>;
 
   /**
    * process new message
