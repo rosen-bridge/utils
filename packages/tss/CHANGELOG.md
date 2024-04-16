@@ -1,5 +1,11 @@
 # @rosen-bridge/tss
 
+## 3.0.1
+
+### Patch Changes
+
+- fix signPromised return type
+
 ## 3.0.0
 
 ### Major Changes
