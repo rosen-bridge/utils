@@ -1,5 +1,5 @@
 import { ECDSA } from '../enc';
-import { EcdsaConfig, Sign } from '../types/signer';
+import { EcdsaConfig, Sign, SignResult } from '../types/signer';
 import { TssSigner } from './TssSigner';
 
 export class EcdsaSigner extends TssSigner {
@@ -36,14 +36,23 @@ export class EcdsaSigner extends TssSigner {
     message: string,
     chainCode: string,
     derivationPath?: number[]
-  ): Promise<string> => {
-    return new Promise<string>((resolve, reject) => {
+  ): Promise<SignResult> => {
+    return new Promise<SignResult>((resolve, reject) => {
       if (!derivationPath)
         throw Error(`derivationPath is required in ECDSA signing`);
       this.sign(
         message,
-        (status: boolean, message?: string, args?: string) => {
-          if (status && args) resolve(args);
+        (
+          status: boolean,
+          message?: string,
+          signature?: string,
+          signatureRecovery?: string
+        ) => {
+          if (status && signature && signatureRecovery)
+            resolve({
+              signature,
+              signatureRecovery,
+            });
           reject(message);
         },
         chainCode,

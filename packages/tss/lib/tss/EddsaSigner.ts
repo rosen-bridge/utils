@@ -1,5 +1,5 @@
 import { EdDSA } from '../enc';
-import { EddsaConfig, Sign } from '../types/signer';
+import { EddsaConfig, Sign, SignResult } from '../types/signer';
 import { TssSigner } from './TssSigner';
 
 export class EddsaSigner extends TssSigner {
@@ -36,14 +36,18 @@ export class EddsaSigner extends TssSigner {
     message: string,
     chainCode: string,
     derivationPath?: number[]
-  ): Promise<string> => {
-    return new Promise<string>((resolve, reject) => {
+  ): Promise<SignResult> => {
+    return new Promise<SignResult>((resolve, reject) => {
       if (derivationPath)
         throw Error(`derivationPath is not supported in EdDSA signing`);
       this.sign(
         message,
-        (status: boolean, message?: string, args?: string) => {
-          if (status && args) resolve(args);
+        (status: boolean, message?: string, signature?: string) => {
+          if (status && signature)
+            resolve({
+              signature: signature,
+              signatureRecovery: undefined,
+            });
           reject(message);
         },
         chainCode,
@@ -62,11 +66,10 @@ export class EddsaSigner extends TssSigner {
    */
   handleSuccessfulSign = async (
     sign: Sign,
-    signature?: string,
-    signatureRecovery?: string
+    signature?: string
   ): Promise<void> => {
     if (signature) {
-      sign.callback(true, undefined, signature, signatureRecovery);
+      sign.callback(true, undefined, signature);
     } else {
       throw Error('signature is required when EdDSA sign is successful');
     }
