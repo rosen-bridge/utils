@@ -88,3 +88,8 @@ export interface Threshold {
   value: number;
   expiry: number;
 }
+
+export interface SignResult {
+  signature: string;
+  signatureRecovery: string | undefined;
+}

@@ -4,6 +4,7 @@ import {
   Sign,
   SignApprovePayload,
   SignRequestPayload,
+  SignResult,
   SignStartPayload,
   TssSigner,
 } from '../../lib';
@@ -161,12 +162,21 @@ export class TestTssSigner extends TssSigner {
     message: string,
     chainCode: string,
     derivationPath?: number[]
-  ): Promise<string> => {
-    return new Promise<string>((resolve, reject) => {
+  ): Promise<SignResult> => {
+    return new Promise<SignResult>((resolve, reject) => {
       this.sign(
         message,
-        (status: boolean, message?: string, args?: string) => {
-          if (status && args) resolve(args);
+        (
+          status: boolean,
+          message?: string,
+          signature?: string,
+          signatureRecovery?: string
+        ) => {
+          if (status && signature)
+            resolve({
+              signature,
+              signatureRecovery,
+            });
           reject(message);
         },
         chainCode,
