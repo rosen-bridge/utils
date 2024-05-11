@@ -138,22 +138,6 @@ yargs(hideBin(process.argv))
             }
             return;
         }
-        // if (argv.generate.type && argv.type.toLowerCase() === 'eddsa') {
-        //     const secret = await EdDSA.randomKey();
-        //     const eddsa = new EdDSA(secret);
-        //
-        //     console.log(`EdDSA SECRET: ${secret}`);
-        //     console.log(`EdDSA PK: ${await eddsa.getPk()}`);
-        // } else if (argv.type && argv.type.toLowerCase() === 'ecdsa') {
-        //     const secret = await ECDSA.randomKey();
-        //     const ecdsa = new ECDSA(secret);
-        //
-        //     console.log(`ECDSA SECRET: ${secret}`);
-        //     console.log(`ECDSA PK: ${await ecdsa.getPk()}`);
-        // } else
-        //     console.error(
-        //         `Type of your secret is wrong should be one of 'ecdsa', 'eddsa'`
-        //     );
       }
     }
   )
