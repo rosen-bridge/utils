@@ -1,4 +1,4 @@
-#!/usr/bin/env -S node --experimental-specifier-resolution=node
+#!/usr/bin/env -S node --no-warnings --experimental-specifier-resolution=node
 
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
@@ -64,33 +64,81 @@ yargs(hideBin(process.argv))
     }
   )
   .command(
-    'tss-secret-generate',
-    'generate Tss publicKey/secret',
+    'tss-secret <action> [input]',
+    'Tss publicKey/secret',
     (yargs) => {
-      return yargs.option('type', {
-        alias: 't',
-        description: "type of publicKey/secret 'ecdsa' or 'eddsa'",
-        type: 'string',
-        demandOption: true,
-      });
+      yargs
+        .positional('action', {
+          type: 'string',
+          demandOption: 'true',
+          choices: ['generate', 'convert-to-pk'],
+        })
+        .positional('input', {
+          type: 'string',
+        })
+        .option('type', {
+          alias: 't',
+          description: "type of publicKey/secret 'ecdsa' or 'eddsa'",
+          type: 'string',
+          choices: ['ecdsa', 'eddsa'],
+          demandOption: true,
+        });
+
+      return yargs;
     },
     async (argv) => {
-      if (argv.type && argv.type.toLowerCase() === 'eddsa') {
-        const secret = await EdDSA.randomKey();
-        const eddsa = new EdDSA(secret);
+      if (argv.action) {
+        switch (argv.action) {
+          case 'generate':
+            switch (argv.type) {
+              case 'eddsa': {
+                const ecdsaSecret = await EdDSA.randomKey();
+                const eddsa = new EdDSA(ecdsaSecret);
 
-        console.log(`EdDSA SECRET: ${secret}`);
-        console.log(`EdDSA PK: ${await eddsa.getPk()}`);
-      } else if (argv.type && argv.type.toLowerCase() === 'ecdsa') {
-        const secret = await ECDSA.randomKey();
-        const ecdsa = new ECDSA(secret);
+                console.log(`EdDSA SECRET: ${ecdsaSecret}`);
+                console.log(`EdDSA PK: ${await eddsa.getPk()}`);
+                return;
+              }
+              case 'ecdsa': {
+                const eddsaSecret = await ECDSA.randomKey();
+                const ecdsa = new ECDSA(eddsaSecret);
 
-        console.log(`ECDSA SECRET: ${secret}`);
-        console.log(`ECDSA PK: ${await ecdsa.getPk()}`);
-      } else
-        console.error(
-          `Type of your secret is wrong should be one of 'ecdsa', 'eddsa'`
-        );
+                console.log(`ECDSA SECRET: ${eddsaSecret}`);
+                console.log(`ECDSA PK: ${await ecdsa.getPk()}`);
+                return;
+              }
+              default:
+                console.error(
+                  `Type of your secret is wrong should be one of 'ecdsa', 'eddsa'`
+                );
+                return;
+            }
+          case 'convert-to-pk':
+            if (argv.input) {
+              const secret = argv.input as string;
+              switch (argv.type) {
+                case 'eddsa': {
+                  const eddsa = new EdDSA(secret);
+                  console.log(`EdDSA PK: ${await eddsa.getPk()}`);
+                  return;
+                }
+                case 'ecdsa': {
+                  const ecdsa = new ECDSA(secret);
+                  console.log(`ECDSA PK: ${await ecdsa.getPk()}`);
+                  return;
+                }
+                default:
+                  console.error(
+                    `Type of your secret is wrong should be one of 'ecdsa', 'eddsa'`
+                  );
+                  return;
+              }
+            } else {
+              console.error("Please input your 'ecdsa' or 'eddsa' secret");
+            }
+            return;
+        }
+      }
     }
   )
   .command(
