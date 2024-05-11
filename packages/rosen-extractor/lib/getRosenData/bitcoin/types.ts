@@ -62,3 +62,36 @@ export interface BitcoinTx {
   inputs: BitcoinTxInput[];
   outputs: BitcoinTxOutput[];
 }
+
+export interface BitcoinRpcTxInput {
+  txid: string;
+  vout: number;
+  scriptSig: {
+    asm: string;
+    hex: string;
+  };
+  txinwitness: Array<string>;
+  sequence: number;
+}
+
+export interface BitcoinRpcTxOutput {
+  value: number;
+  n: number;
+  scriptPubKey: {
+    asm: string;
+    hex: string;
+  };
+}
+
+export interface BitcoinRpcTransaction {
+  txid: string;
+  hash: string;
+  version: number;
+  size: number;
+  vsize: number;
+  weight: number;
+  locktime: number;
+  vin: Array<BitcoinRpcTxInput>;
+  vout: Array<BitcoinRpcTxOutput>;
+  hex: string;
+}
