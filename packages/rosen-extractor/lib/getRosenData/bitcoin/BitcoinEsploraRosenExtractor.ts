@@ -83,7 +83,7 @@ export class BitcoinEsploraRosenExtractor extends AbstractRosenDataExtractor<Bit
         return undefined;
       }
 
-      const fromAddress = transaction.vin[0].prevout.scriptpubkey_address;
+      const fromAddress = `box:${transaction.vin[0].txid}.${transaction.vin[0].vout}`;
       return {
         toChain: opReturnData.toChain,
         toAddress: opReturnData.toAddress,

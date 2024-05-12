@@ -99,7 +99,8 @@ export const rosenData = {
   toAddress: '9iMjQx8PzwBKXRvsFUJFJAPoy31znfEeBUGz8DRkcnJX4rJYjVd',
   bridgeFee: '1968503938',
   networkFee: '9842520',
-  fromAddress: 'bc1qhuv3dhpnm0wktasd3v0kt6e4aqfqsd0uhfdu7d',
+  fromAddress:
+    'box:eff4900465d1603d12c1dc8f231a07ce2196c04196aa26bb80147bb152137aaf.0',
   sourceChainTokenId: 'btc',
   amount: '3000000000',
   targetChainTokenId:
