@@ -1,5 +1,11 @@
 # @rosen-bridge/cli
 
+## 0.5.0
+
+### Minor Changes
+
+- Change tss-secret-generate to tss-secret generate/convert-to-pk
+
 ## 0.4.1
 
 ### Patch Changes
