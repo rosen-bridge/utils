@@ -17,7 +17,7 @@ import { ERGO_NATIVE_TOKEN } from './constants';
 export class MinimumFeeBoxBuilder {
   protected fees: Array<Fee>;
   protected boxValue: BoxValue;
-  protected boxheight: number;
+  protected boxHeight: number;
   protected tokenId: string;
   protected minimumFeeNFT: string;
   protected address: string;
@@ -61,7 +61,7 @@ export class MinimumFeeBoxBuilder {
    * @param currentHeight
    */
   setHeight = (currentHeight: number): MinimumFeeBoxBuilder => {
-    this.boxheight = currentHeight;
+    this.boxHeight = currentHeight;
     return this;
   };
 
@@ -80,7 +80,7 @@ export class MinimumFeeBoxBuilder {
   protected validate = (): void => {
     if (!this.boxValue)
       throw new InvalidConfig(`Box value argument is not defined`);
-    if (!this.boxheight)
+    if (!this.boxHeight)
       throw new InvalidConfig(`Box creation height argument is not defined`);
     if (!this.tokenId)
       throw new InvalidConfig(`Config token id is not defined`);
@@ -118,7 +118,7 @@ export class MinimumFeeBoxBuilder {
     const boxBuilder = new ErgoBoxCandidateBuilder(
       this.boxValue,
       Contract.new(Address.from_base58(this.address).to_ergo_tree()),
-      this.boxheight
+      this.boxHeight
     );
 
     // add box tokens
@@ -143,13 +143,13 @@ export class MinimumFeeBoxBuilder {
     chains.sort();
     //  extract configs
     const heights: Array<Array<number>> = [];
-    const brdigeFees: Array<Array<string>> = [];
+    const bridgeFees: Array<Array<string>> = [];
     const networkFees: Array<Array<string>> = [];
     const rsnRatios: Array<Array<Array<string>>> = [];
     const feeRatios: Array<Array<string>> = [];
     this.fees.forEach((fee) => {
       const heightsConfigs: Array<number> = [];
-      const brdigeFeesConfigs: Array<string> = [];
+      const bridgeFeesConfigs: Array<string> = [];
       const networkFeesConfigs: Array<string> = [];
       const rsnRatiosConfigs: Array<Array<string>> = [];
       const feeRatiosConfigs: Array<string> = [];
@@ -160,7 +160,7 @@ export class MinimumFeeBoxBuilder {
         else heightsConfigs.push(-1);
 
         if (Object.hasOwn(fee.configs, chain)) {
-          brdigeFeesConfigs.push(fee.configs[chain].bridgeFee.toString());
+          bridgeFeesConfigs.push(fee.configs[chain].bridgeFee.toString());
           networkFeesConfigs.push(fee.configs[chain].networkFee.toString());
           rsnRatiosConfigs.push([
             fee.configs[chain].rsnRatio.toString(),
@@ -168,7 +168,7 @@ export class MinimumFeeBoxBuilder {
           ]);
           feeRatiosConfigs.push(fee.configs[chain].feeRatio.toString());
         } else {
-          brdigeFeesConfigs.push('-1');
+          bridgeFeesConfigs.push('-1');
           networkFeesConfigs.push('-1');
           rsnRatiosConfigs.push(['-1', '-1']);
           feeRatiosConfigs.push('-1');
@@ -176,7 +176,7 @@ export class MinimumFeeBoxBuilder {
       });
 
       heights.push(heightsConfigs);
-      brdigeFees.push(brdigeFeesConfigs);
+      bridgeFees.push(bridgeFeesConfigs);
       networkFees.push(networkFeesConfigs);
       rsnRatios.push(rsnRatiosConfigs);
       feeRatios.push(feeRatiosConfigs);
@@ -188,7 +188,7 @@ export class MinimumFeeBoxBuilder {
       Constant.from_coll_coll_byte(chains.map((chain) => Buffer.from(chain)))
     );
     boxBuilder.set_register_value(5, Constant.from_js(heights));
-    boxBuilder.set_register_value(6, Constant.from_js(brdigeFees));
+    boxBuilder.set_register_value(6, Constant.from_js(bridgeFees));
     boxBuilder.set_register_value(7, Constant.from_js(networkFees));
     boxBuilder.set_register_value(8, Constant.from_js(rsnRatios));
     boxBuilder.set_register_value(9, Constant.from_js(feeRatios));

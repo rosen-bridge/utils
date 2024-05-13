@@ -1,4 +1,4 @@
-import { Address, ErgoBox } from 'ergo-lib-wasm-nodejs';
+import { Address, ErgoBox, NetworkPrefix } from 'ergo-lib-wasm-nodejs';
 import { ChainMinimumFee, ErgoNetworkType, Fee } from './types';
 import { FailedError, NotFoundError } from './errors';
 import ergoExplorerClientFactory from '@rosen-clients/ergo-explorer';
@@ -16,25 +16,18 @@ export class MinimumFeeBox {
   protected box: ErgoBox | undefined;
   protected tokenId: string;
   protected minimumFeeNFT: string;
-  protected address: string;
-  protected ergoTree: string;
   protected explorerClient: ReturnType<typeof ergoExplorerClientFactory>;
   protected nodeClient: ReturnType<typeof ergoNodeClientFactory>;
 
   constructor(
     tokenId: string,
     minimumFeeNFT: string,
-    address: string,
     networkType: ErgoNetworkType,
     networkUrl: string,
     logger?: AbstractLogger
   ) {
     this.tokenId = tokenId;
     this.minimumFeeNFT = minimumFeeNFT;
-    this.address = address;
-    this.ergoTree = Address.from_base58(this.address)
-      .to_ergo_tree()
-      .to_base16_bytes();
     if (networkType === ErgoNetworkType.explorer)
       this.explorerClient = ergoExplorerClientFactory(networkUrl);
     else this.nodeClient = ergoNodeClientFactory(networkUrl);
@@ -46,8 +39,6 @@ export class MinimumFeeBox {
    * @returns true if action was successful, otherwise false
    */
   fetchBox = async (): Promise<boolean> => {
-    const boxHasCorrectAddress = (box: ErgoBox) =>
-      box.ergo_tree().to_base16_bytes() === this.ergoTree;
     const boxHasAppropriateTokens = (box: ErgoBox) => {
       const tokenLen = box.tokens().len();
       let hasMinimumFeeNFT = false;
@@ -68,10 +59,7 @@ export class MinimumFeeBox {
         : await this.fetchBoxesUsingNode();
 
       this.box = this.selectEligibleBox(
-        boxes.filter(
-          (box: ErgoBox) =>
-            boxHasCorrectAddress(box) && boxHasAppropriateTokens(box)
-        )
+        boxes.filter((box: ErgoBox) => boxHasAppropriateTokens(box))
       );
       return true;
     } catch (e) {
@@ -103,17 +91,17 @@ export class MinimumFeeBox {
 
     if (eligibleBoxes.length === 0) {
       throw new NotFoundError(
-        `Found no minimum-fee box for token [${this.tokenId}] and address [${this.address}]`
+        `Found no minimum-fee box for token [${this.tokenId}]`
       );
     } else if (eligibleBoxes.length > 1) {
       throw new FailedError(
-        `Found [${eligibleBoxes.length}] minimum-fee boxes for token [${this.tokenId}] and address [${this.address}]`
+        `Found [${eligibleBoxes.length}] minimum-fee boxes for token [${this.tokenId}]`
       );
     } else {
       this.logger.debug(
         `Found minimum-fee box [${eligibleBoxes[0]
           .box_id()
-          .to_str()}] for token [${this.tokenId}] and address [${this.address}]`
+          .to_str()}] for token [${this.tokenId}]`
       );
       return eligibleBoxes[0];
     }
@@ -127,16 +115,16 @@ export class MinimumFeeBox {
     try {
       let currentPage = 0;
       let boxesPage =
-        await this.explorerClient.v1.getApiV1BoxesUnspentByaddressP1(
-          this.address,
+        await this.explorerClient.v1.getApiV1BoxesUnspentBytokenidP1(
+          this.tokenId,
           {
             offset: currentPage * this.BOX_FETCHING_PAGE_SIZE,
             limit: this.BOX_FETCHING_PAGE_SIZE,
           }
         );
       this.logger.debug(
-        `requested 'explorerClient.getApiV1BoxesUnspentByaddressP1' for address [${
-          this.address
+        `requested 'explorerClient.getApiV1BoxesUnspentBytokenidP1' for address [${
+          this.tokenId
         }]. res: ${JsonBigInt.stringify(boxesPage)}`
       );
       while (boxesPage.items?.length) {
@@ -147,16 +135,16 @@ export class MinimumFeeBox {
         );
         currentPage++;
         boxesPage =
-          await this.explorerClient.v1.getApiV1BoxesUnspentByaddressP1(
-            this.address,
+          await this.explorerClient.v1.getApiV1BoxesUnspentBytokenidP1(
+            this.tokenId,
             {
               offset: currentPage * this.BOX_FETCHING_PAGE_SIZE,
               limit: this.BOX_FETCHING_PAGE_SIZE,
             }
           );
         this.logger.debug(
-          `requested 'explorerClient.getApiV1BoxesUnspentByaddressP1' for address [${
-            this.address
+          `requested 'explorerClient.getApiV1BoxesUnspentBytokenidP1' for address [${
+            this.tokenId
           }]. res: ${JsonBigInt.stringify(boxesPage)}`
         );
       }
@@ -177,16 +165,16 @@ export class MinimumFeeBox {
     const boxes: Array<ErgoBox> = [];
     try {
       let currentPage = 0;
-      let boxesPage = await this.nodeClient.getBoxesByAddressUnspent(
-        this.address,
+      let boxesPage = await this.nodeClient.getBoxesByTokenIdUnspent(
+        this.tokenId,
         {
           offset: currentPage * this.BOX_FETCHING_PAGE_SIZE,
           limit: this.BOX_FETCHING_PAGE_SIZE,
         }
       );
       this.logger.debug(
-        `requested 'nodeClient.getBoxesByAddressUnspent' for address [${
-          this.address
+        `requested 'nodeClient.getBoxesByTokenIdUnspent' for address [${
+          this.tokenId
         }]. res: ${JsonBigInt.stringify(boxesPage)}`
       );
       while (boxesPage.length !== 0) {
@@ -196,16 +184,16 @@ export class MinimumFeeBox {
           )
         );
         currentPage++;
-        boxesPage = await this.nodeClient.getBoxesByAddressUnspent(
-          this.address,
+        boxesPage = await this.nodeClient.getBoxesByTokenIdUnspent(
+          this.tokenId,
           {
             offset: currentPage * this.BOX_FETCHING_PAGE_SIZE,
             limit: this.BOX_FETCHING_PAGE_SIZE,
           }
         );
         this.logger.debug(
-          `requested 'nodeClient.getBoxesByAddressUnspent' for address [${
-            this.address
+          `requested 'nodeClient.getBoxesByTokenIdUnspent' for address [${
+            this.tokenId
           }]. res: ${JsonBigInt.stringify(boxesPage)}`
         );
       }
@@ -337,7 +325,12 @@ export class MinimumFeeBox {
   toBuilder = (): MinimumFeeBoxBuilder => {
     if (!this.box) throw Error(`Box is not fetched yet`);
 
-    const builder = new MinimumFeeBoxBuilder(this.minimumFeeNFT, this.address)
+    const builder = new MinimumFeeBoxBuilder(
+      this.minimumFeeNFT,
+      Address.recreate_from_ergo_tree(this.box.ergo_tree()).to_base58(
+        NetworkPrefix.Mainnet
+      )
+    )
       .setValue(BigInt(this.box.value().as_i64().to_str()))
       .setToken(this.tokenId);
 
