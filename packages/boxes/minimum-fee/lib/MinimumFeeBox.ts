@@ -123,7 +123,7 @@ export class MinimumFeeBox {
           }
         );
       this.logger.debug(
-        `requested 'explorerClient.getApiV1BoxesUnspentBytokenidP1' for address [${
+        `requested 'explorerClient.getApiV1BoxesUnspentBytokenidP1' for token [${
           this.tokenId
         }]. res: ${JsonBigInt.stringify(boxesPage)}`
       );
@@ -143,7 +143,7 @@ export class MinimumFeeBox {
             }
           );
         this.logger.debug(
-          `requested 'explorerClient.getApiV1BoxesUnspentBytokenidP1' for address [${
+          `requested 'explorerClient.getApiV1BoxesUnspentBytokenidP1' for token [${
             this.tokenId
           }]. res: ${JsonBigInt.stringify(boxesPage)}`
         );
@@ -173,7 +173,7 @@ export class MinimumFeeBox {
         }
       );
       this.logger.debug(
-        `requested 'nodeClient.getBoxesByTokenIdUnspent' for address [${
+        `requested 'nodeClient.getBoxesByTokenIdUnspent' for token [${
           this.tokenId
         }]. res: ${JsonBigInt.stringify(boxesPage)}`
       );
@@ -192,7 +192,7 @@ export class MinimumFeeBox {
           }
         );
         this.logger.debug(
-          `requested 'nodeClient.getBoxesByTokenIdUnspent' for address [${
+          `requested 'nodeClient.getBoxesByTokenIdUnspent' for token [${
             this.tokenId
           }]. res: ${JsonBigInt.stringify(boxesPage)}`
         );

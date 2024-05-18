@@ -1,6 +1,10 @@
 # @rosen-bridge/minimum-fee
 
-## 1.0.3
+## 2.0.0
+
+### Major Changes
+
+- Update api calls to use token and remove required address
 
 ### Patch Changes
 
