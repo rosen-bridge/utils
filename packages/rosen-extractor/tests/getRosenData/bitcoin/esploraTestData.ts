@@ -73,9 +73,9 @@ export const txUtxos = {
   noOpReturn: {
     vout: [
       {
-        scriptpubkey: '0014b20272a6591937ba7d687dc889f3637ed40efa6a',
+        scriptpubkey: '001490e17f3b1763f70ac2de508981b91c43b3f4c243',
         scriptpubkey_asm:
-          'OP_0 OP_PUSHBYTES_20 b20272a6591937ba7d687dc889f3637ed40efa6a',
+          'OP_0 OP_PUSHBYTES_20 90e17f3b1763f70ac2de508981b91c43b3f4c243',
         scriptpubkey_type: 'v0_p2wpkh',
         scriptpubkey_address: 'bc1qjrsh7wchv0ms4sk72zycrwgugwelfsjrqyvd8t',
         value: 1000000,
@@ -103,7 +103,7 @@ export const txUtxos = {
       {
         scriptpubkey: '001490e17f3b1763f70ac2de508981b91c43b3f4c243',
         scriptpubkey_asm:
-          'OP_0 OP_PUSHBYTES_20 b20272a6591937ba7d687dc889f3637ed40efa6a',
+          'OP_0 OP_PUSHBYTES_20 90e17f3b1763f70ac2de508981b91c43b3f4c243',
         scriptpubkey_type: 'v0_p2wpkh',
         scriptpubkey_address: 'bc1qjrsh7wchv0ms4sk72zycrwgugwelfsjrqyvd8t',
         value: 1325220,
@@ -159,7 +159,8 @@ export const rosenData = {
   toAddress: '9iMjQx8PzwBKXRvsFUJFJAPoy31znfEeBUGz8DRkcnJX4rJYjVd',
   bridgeFee: '1968503938',
   networkFee: '9842520',
-  fromAddress: 'bc1qhuv3dhpnm0wktasd3v0kt6e4aqfqsd0uhfdu7d',
+  fromAddress:
+    'box:eff4900465d1603d12c1dc8f231a07ce2196c04196aa26bb80147bb152137aaf.0',
   sourceChainTokenId: 'btc',
   amount: '3000000000',
   targetChainTokenId:
@@ -169,9 +170,9 @@ export const rosenData = {
 };
 
 export const lockUtxo = {
-  scriptpubkey: '0014b20272a6591937ba7d687dc889f3637ed40efa6a',
+  scriptpubkey: '001490e17f3b1763f70ac2de508981b91c43b3f4c243',
   scriptpubkey_asm:
-    'OP_0 OP_PUSHBYTES_20 b20272a6591937ba7d687dc889f3637ed40efa6a',
+    'OP_0 OP_PUSHBYTES_20 90e17f3b1763f70ac2de508981b91c43b3f4c243',
   scriptpubkey_type: 'v0_p2wpkh',
   scriptpubkey_address: 'bc1qjrsh7wchv0ms4sk72zycrwgugwelfsjrqyvd8t',
   value: 3000000000,
