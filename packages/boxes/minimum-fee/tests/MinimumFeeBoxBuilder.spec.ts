@@ -1,10 +1,5 @@
 import { Address } from 'ergo-lib-wasm-nodejs';
-import {
-  Fee,
-  InvalidConfig,
-  MinimumFeeBoxBuilder,
-  MinimumFeeConfig,
-} from '../lib';
+import { InvalidConfig, MinimumFeeBoxBuilder, MinimumFeeConfig } from '../lib';
 import * as testData from './testData';
 
 describe('MinimumFeeBoxBuilder', () => {

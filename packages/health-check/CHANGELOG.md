@@ -1,5 +1,12 @@
 # @rosen-bridge/health-check
 
+## 4.0.2
+
+### Patch Changes
+
+- update ergo explorer and node clients
+- update scanner and cardano ogmios client
+
 ## 4.0.1
 
 ### Patch Changes

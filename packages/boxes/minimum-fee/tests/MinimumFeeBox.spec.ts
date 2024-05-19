@@ -27,22 +27,21 @@ describe('MinimumFeeBox', () => {
     new TestMinimumFeeBox(
       nativeTokenId,
       defaultMinimumFeeNFT,
-      defaultAddress,
       ErgoNetworkType.explorer,
       ''
     );
 
   describe('fetchBox', () => {
     /**
-     * mocks `getApiV1BoxesUnspentByaddressP1` of ergo explorer client
+     * mocks `getApiV1BoxesUnspentBytokenidP1` of ergo explorer client
      */
-    const mockExplorerGetApiV1BoxesUnspentByaddressP1 = (
+    const mockExplorergetApiV1BoxesUnspentBytokenidP1 = (
       shouldIncludeItemsField = true
     ) =>
       jest.mocked(ergoExplorerClientFactory).mockReturnValueOnce({
         v1: {
-          getApiV1BoxesUnspentByaddressP1: async (
-            address: string,
+          getApiV1BoxesUnspentBytokenidP1: async (
+            tokenId: string,
             {
               offset,
               limit,
@@ -63,11 +62,11 @@ describe('MinimumFeeBox', () => {
       } as any);
 
     /**
-     * mocks `getBoxesByAddressUnspent` of ergo node client
+     * mocks `getBoxesByTokenIdUnspent` of ergo node client
      */
-    const mockNodeGetBoxesByAddressUnspent = () =>
+    const mockNodegetBoxesByTokenIdUnspent = () =>
       jest.mocked(ergoNodeClientFactory).mockReturnValueOnce({
-        getBoxesByAddressUnspent: async (
+        getBoxesByTokenIdUnspent: async (
           address: string,
           { offset, limit }: { offset: number; limit: number }
         ) =>
@@ -75,11 +74,11 @@ describe('MinimumFeeBox', () => {
       } as any);
 
     /**
-     * mocks `getBoxesByAddressUnspent` of ergo node client to throw error with status 400
+     * mocks `getBoxesByTokenIdUnspent` of ergo node client to throw error with status 400
      */
-    const mockNodeGetBoxesByAddressUnspentToThrow = () =>
+    const mockNodegetBoxesByTokenIdUnspentToThrow = () =>
       jest.mocked(ergoNodeClientFactory).mockReturnValueOnce({
-        getBoxesByAddressUnspent: jest.fn().mockRejectedValueOnce({
+        getBoxesByTokenIdUnspent: jest.fn().mockRejectedValueOnce({
           response: {
             status: 400,
           },
@@ -100,7 +99,7 @@ describe('MinimumFeeBox', () => {
      * - updated box id should be as expected
      */
     it('should fetch and select Erg config box from explorer client successfully', async () => {
-      mockExplorerGetApiV1BoxesUnspentByaddressP1();
+      mockExplorergetApiV1BoxesUnspentBytokenidP1();
       const minimumFeeBox = generateDefaultMinimumFeeBox();
       const res = await minimumFeeBox.fetchBox();
       expect(res).toEqual(true);
@@ -123,11 +122,10 @@ describe('MinimumFeeBox', () => {
      * - updated box id should be as expected
      */
     it('should fetch and select token config box from explorer client successfully', async () => {
-      mockExplorerGetApiV1BoxesUnspentByaddressP1();
+      mockExplorergetApiV1BoxesUnspentBytokenidP1();
       const minimumFeeBox = new TestMinimumFeeBox(
         tokenId,
         defaultMinimumFeeNFT,
-        defaultAddress,
         ErgoNetworkType.explorer,
         ''
       );
@@ -152,11 +150,10 @@ describe('MinimumFeeBox', () => {
      * - updated box id should be as expected
      */
     it('should fetch and select Erg config box from node client successfully', async () => {
-      mockNodeGetBoxesByAddressUnspent();
+      mockNodegetBoxesByTokenIdUnspent();
       const minimumFeeBox = new TestMinimumFeeBox(
         nativeTokenId,
         defaultMinimumFeeNFT,
-        defaultAddress,
         ErgoNetworkType.node,
         ''
       );
@@ -181,11 +178,10 @@ describe('MinimumFeeBox', () => {
      * - updated box id should be as expected
      */
     it('should fetch and select token config box from node client successfully', async () => {
-      mockNodeGetBoxesByAddressUnspent();
+      mockNodegetBoxesByTokenIdUnspent();
       const minimumFeeBox = new TestMinimumFeeBox(
         tokenId,
         defaultMinimumFeeNFT,
-        defaultAddress,
         ErgoNetworkType.node,
         ''
       );
@@ -211,7 +207,7 @@ describe('MinimumFeeBox', () => {
      * - box should be updated to undefined
      */
     it('should update box to undefined when got no config box', async () => {
-      mockExplorerGetApiV1BoxesUnspentByaddressP1(false);
+      mockExplorergetApiV1BoxesUnspentBytokenidP1(false);
       const minimumFeeBox = generateDefaultMinimumFeeBox();
       minimumFeeBox.setBox(ErgoBox.from_json(testData.normalFeeBox));
       const res = await minimumFeeBox.fetchBox();
@@ -235,7 +231,7 @@ describe('MinimumFeeBox', () => {
      * - box should be updated to undefined
      */
     it('should update box to undefined when received FailedError while fetching or selecting the box', async () => {
-      mockExplorerGetApiV1BoxesUnspentByaddressP1(false);
+      mockExplorergetApiV1BoxesUnspentBytokenidP1(false);
       const minimumFeeBox = generateDefaultMinimumFeeBox();
       jest
         .spyOn(minimumFeeBox as any, 'fetchBoxesUsingExplorer')
@@ -262,7 +258,7 @@ describe('MinimumFeeBox', () => {
      * - box should be updated to undefined
      */
     it('should not update the box when received NetworkError while fetching the box', async () => {
-      mockExplorerGetApiV1BoxesUnspentByaddressP1(false);
+      mockExplorergetApiV1BoxesUnspentBytokenidP1(false);
       const minimumFeeBox = generateDefaultMinimumFeeBox();
       jest
         .spyOn(minimumFeeBox as any, 'fetchBoxesUsingExplorer')
