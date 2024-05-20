@@ -1,5 +1,11 @@
 # @rosen-bridge/rosen-extractor
 
+## 5.0.1
+
+### Patch Changes
+
+- Fix btc rpc extractor to extract amount without decimal
+
 ## 5.0.0
 
 ### Major Changes
