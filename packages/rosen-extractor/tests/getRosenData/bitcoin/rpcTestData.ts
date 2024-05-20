@@ -38,7 +38,7 @@ export const txUtxos = {
         },
       },
       {
-        value: 3000000000,
+        value: 30,
         n: 1,
         scriptPubKey: {
           asm: '0 b20272a6591937ba7d687dc889f3637ed40efa6a',
@@ -52,7 +52,7 @@ export const txUtxos = {
   lessBoxes: {
     vout: [
       {
-        value: 1325220,
+        value: 0.0132522,
         n: 0,
         scriptPubKey: {
           asm: '0 b20272a6591937ba7d687dc889f3637ed40efa6a',
@@ -66,7 +66,7 @@ export const txUtxos = {
   noOpReturn: {
     vout: [
       {
-        value: 1000000,
+        value: 0.01,
         n: 0,
         scriptPubKey: {
           asm: '0 90e17f3b1763f70ac2de508981b91c43b3f4c243',
@@ -76,7 +76,7 @@ export const txUtxos = {
         },
       },
       {
-        value: 325220,
+        value: 0.0032522,
         n: 1,
         scriptPubKey: {
           asm: '0 b20272a6591937ba7d687dc889f3637ed40efa6a',
@@ -99,7 +99,7 @@ export const txUtxos = {
         },
       },
       {
-        value: 1325220,
+        value: 0.00132522,
         n: 1,
         scriptPubKey: {
           asm: '0 90e17f3b1763f70ac2de508981b91c43b3f4c243',
@@ -122,7 +122,7 @@ export const txUtxos = {
         },
       },
       {
-        value: 3000000000,
+        value: 30,
         n: 1,
         scriptPubKey: {
           asm: '0 b20272a6591937ba7d687dc889f3637ed40efa6a',
@@ -173,7 +173,7 @@ export const rosenData = {
 };
 
 export const lockUtxo = {
-  value: 3000000000,
+  value: 30,
   n: 1,
   scriptPubKey: {
     asm: '0 90e17f3b1763f70ac2de508981b91c43b3f4c243',
