@@ -1,5 +1,11 @@
 # @rosen-bridge/minimum-fee
 
+## 2.0.1
+
+### Patch Changes
+
+- fix fetching config box for Erg
+
 ## 2.0.0
 
 ### Major Changes
