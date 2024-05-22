@@ -68,7 +68,7 @@ export class MinimumFeeBox {
         this.box = undefined;
       } else {
         this.logger.warn(
-          `An error occurred while updating minimum-fee box: ${e}`
+          `An error occurred while updating minimum-fee box for token [${this.tokenId}]: ${e}`
         );
         if (e instanceof Error && e.stack) this.logger.warn(e.stack);
       }
@@ -116,7 +116,7 @@ export class MinimumFeeBox {
       let currentPage = 0;
       let boxesPage =
         await this.explorerClient.v1.getApiV1BoxesUnspentBytokenidP1(
-          this.tokenId,
+          this.minimumFeeNFT,
           {
             offset: currentPage * this.BOX_FETCHING_PAGE_SIZE,
             limit: this.BOX_FETCHING_PAGE_SIZE,
@@ -124,7 +124,7 @@ export class MinimumFeeBox {
         );
       this.logger.debug(
         `requested 'explorerClient.getApiV1BoxesUnspentBytokenidP1' for token [${
-          this.tokenId
+          this.minimumFeeNFT
         }]. res: ${JsonBigInt.stringify(boxesPage)}`
       );
       while (boxesPage.items?.length) {
@@ -136,7 +136,7 @@ export class MinimumFeeBox {
         currentPage++;
         boxesPage =
           await this.explorerClient.v1.getApiV1BoxesUnspentBytokenidP1(
-            this.tokenId,
+            this.minimumFeeNFT,
             {
               offset: currentPage * this.BOX_FETCHING_PAGE_SIZE,
               limit: this.BOX_FETCHING_PAGE_SIZE,
@@ -144,7 +144,7 @@ export class MinimumFeeBox {
           );
         this.logger.debug(
           `requested 'explorerClient.getApiV1BoxesUnspentBytokenidP1' for token [${
-            this.tokenId
+            this.minimumFeeNFT
           }]. res: ${JsonBigInt.stringify(boxesPage)}`
         );
       }
@@ -166,7 +166,7 @@ export class MinimumFeeBox {
     try {
       let currentPage = 0;
       let boxesPage = await this.nodeClient.getBoxesByTokenIdUnspent(
-        this.tokenId,
+        this.minimumFeeNFT,
         {
           offset: currentPage * this.BOX_FETCHING_PAGE_SIZE,
           limit: this.BOX_FETCHING_PAGE_SIZE,
@@ -174,7 +174,7 @@ export class MinimumFeeBox {
       );
       this.logger.debug(
         `requested 'nodeClient.getBoxesByTokenIdUnspent' for token [${
-          this.tokenId
+          this.minimumFeeNFT
         }]. res: ${JsonBigInt.stringify(boxesPage)}`
       );
       while (boxesPage.length !== 0) {
@@ -185,7 +185,7 @@ export class MinimumFeeBox {
         );
         currentPage++;
         boxesPage = await this.nodeClient.getBoxesByTokenIdUnspent(
-          this.tokenId,
+          this.minimumFeeNFT,
           {
             offset: currentPage * this.BOX_FETCHING_PAGE_SIZE,
             limit: this.BOX_FETCHING_PAGE_SIZE,
@@ -193,7 +193,7 @@ export class MinimumFeeBox {
         );
         this.logger.debug(
           `requested 'nodeClient.getBoxesByTokenIdUnspent' for token [${
-            this.tokenId
+            this.minimumFeeNFT
           }]. res: ${JsonBigInt.stringify(boxesPage)}`
         );
       }
