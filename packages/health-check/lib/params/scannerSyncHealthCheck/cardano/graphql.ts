@@ -1,6 +1,7 @@
 import { AbstractScannerSyncHealthCheckParam } from '../AbstractScannerSyncHealthCheck';
 import { DataSource } from 'typeorm';
-import { ApolloClient, InMemoryCache, HttpLink } from '@apollo/client/core';
+import { ApolloClient, InMemoryCache } from '@apollo/client/core';
+import { HttpLink } from '@apollo/client/link/http';
 import { CurrentHeightQuery, currentHeightQuery } from './graphQLTypes';
 import fetch from 'cross-fetch';
 
