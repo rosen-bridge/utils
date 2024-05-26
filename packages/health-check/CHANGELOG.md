@@ -1,5 +1,11 @@
 # @rosen-bridge/health-check
 
+## 4.0.4
+
+### Patch Changes
+
+- Update cardano graphql httplink import to fix unit test errors
+
 ## 4.0.3
 
 ### Patch Changes
