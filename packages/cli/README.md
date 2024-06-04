@@ -65,18 +65,32 @@ names.
 npx @rosen-bridge/cli download-assets -c testnet -o rosen --include-prereleases --suffix foo
 ```
 
-### `tss-secret-generate`
+### `tss-secret`
 
-Generate Tss publicKey/secret
+Generate Tss publicKey/secret for ecdsa or eddsa.
 
 ```sh
-npx @rosen-bridge/cli tss-secret-generate
+npx @rosen-bridge/cli tss-secret -t ecdsa generate
+npx @rosen-bridge/cli tss-secret -t eddsa generate
 ```
 
-docker solution:
+docker solution for `ecdsa`:
 
 ```shell
-docker run -it --rm node:18.16 npx --yes @rosen-bridge/cli tss-secret-genrate
+docker run -it --rm node:18.16 npx --yes @rosen-bridge/cli tss-secret -t ecdsa generate
+```
+
+Convert secret to pk:
+
+```sh
+npx @rosen-bridge/cli tss-secret -t ecdsa convert-to-pk YOUR_TSS_SECRET
+npx @rosen-bridge/cli tss-secret -t eddsa convert-to-pk YOUR_TSS_SECRET
+```
+
+docker solution for `ecdsa`:
+
+```shell
+docker run -it --rm node:18.16 npx --yes @rosen-bridge/cli tss-secret -t ecdsa convert-to-pk YOUR_TSS_SECRET
 ```
 
 ### `blake2b-hash`
