@@ -1,5 +1,0 @@
-const ERGO_NATIVE_ASSET = 'erg';
-const CARDANO_NATIVE_ASSET = 'ada';
-const MAINNET = 'mainnet';
-
-export { ERGO_NATIVE_ASSET, CARDANO_NATIVE_ASSET, MAINNET };
