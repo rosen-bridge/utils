@@ -7,9 +7,10 @@ import { RosenAssetsDownloadError } from '../lib';
 import {
   mainNetPrereleaseRelease,
   mainNetStableRelease,
+  releases,
 } from './data/octokit.data';
 
-import { mockOctokit } from './mocks/octokit.mock';
+import { mockOctokit, mockOctokitGetReleaseByTag } from './mocks/octokit.mock';
 
 jest.mock('download');
 
@@ -71,7 +72,10 @@ describe('downloadRosenAssets', () => {
    *    corresponding truncated asset name
    */
   it('should download Rosen assets correctly when including prereleases', async () => {
-    await downloadRosenAssets('mainnet', 'rosen', true);
+    jest.mocked(download).mockClear();
+    await downloadRosenAssets('mainnet', 'rosen', {
+      includePrereleases: true,
+    });
 
     expect(download).toHaveBeenCalledWith(
       mainNetPrereleaseRelease.assets[0].browser_download_url,
@@ -107,7 +111,9 @@ describe('downloadRosenAssets', () => {
    *    truncated asset name
    */
   it('should download Rosen assets and add a suffix correctly', async () => {
-    await downloadRosenAssets('mainnet', 'rosen', false, 'suffix');
+    await downloadRosenAssets('mainnet', 'rosen', {
+      nameSuffix: 'suffix',
+    });
 
     expect(download).toHaveBeenCalledWith(
       mainNetStableRelease.assets[0].browser_download_url,
@@ -121,6 +127,30 @@ describe('downloadRosenAssets', () => {
       'rosen',
       {
         filename: 'tokensMap-suffix.json',
+      }
+    );
+  });
+
+  /**
+   * @target `downloadRosenAssets` should download a Rosen asset by tag
+   * @dependencies
+   * - mocked `getReleaseByTag` of Octokit
+   * @scenario
+   * - call `downloadRosenAssets` with a specific tag
+   * @expected
+   * - `download` should be called with the assets of "3" tag release
+   */
+  it('should download a Rosen asset by tag', async () => {
+    mockOctokitGetReleaseByTag();
+    await downloadRosenAssets('mainnet', 'rosen', {
+      tag: '3',
+    });
+
+    expect(download).toHaveBeenCalledWith(
+      releases[2].assets[0].browser_download_url,
+      'rosen',
+      {
+        filename: 'contracts-awesomechain.json',
       }
     );
   });
