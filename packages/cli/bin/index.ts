@@ -42,19 +42,31 @@ yargs(hideBin(process.argv))
           alias: 's',
           description: 'a suffix to be appended to all downloaded file names',
           type: 'string',
+        })
+        .option('tag', {
+          alias: 't',
+          description: 'download release of this specific tag',
+          type: 'string',
         }),
     async (argv) => {
+      if (argv.tag && argv.includePrereleases) {
+        console.error(
+          chalk.red(
+            'Tag and prerelease arguments are mutually exclusive. Use either but not both.'
+          )
+        );
+        return;
+      }
       const spinner = ora();
       spinner.start(
         `downloading Rosen assets for "${argv.chainType}" chain type`
       );
 
-      await downloadRosenAssets(
-        argv.chainType,
-        argv.out,
-        argv.includePrereleases,
-        argv.suffix
-      );
+      await downloadRosenAssets(argv.chainType, argv.out, {
+        includePrereleases: argv.includePrereleases,
+        nameSuffix: argv.suffix,
+        tag: argv.tag,
+      });
 
       spinner.succeed(
         chalk.green(
