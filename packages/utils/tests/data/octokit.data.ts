@@ -4,6 +4,7 @@ export type PartialReleases = Partial<GithubRelease>[];
 
 export const mainNetPrereleaseRelease = {
   id: 1,
+  tag: '1',
   prerelease: true,
   assets: [
     {
@@ -20,6 +21,7 @@ export const mainNetPrereleaseRelease = {
 
 export const mainNetStableRelease = {
   id: 2,
+  tag: '2',
   prerelease: false,
   assets: [
     {
@@ -36,6 +38,7 @@ export const mainNetStableRelease = {
 
 export const testNetPrereleaseRelease = {
   id: 4,
+  tag: '4',
   prerelease: true,
   assets: [
     {
@@ -48,6 +51,7 @@ export const testNetPrereleaseRelease = {
 
 export const testNetStableRelease = {
   id: 5,
+  tag: '5',
   prerelease: false,
   assets: [
     {
@@ -63,6 +67,7 @@ export const releases = [
   mainNetStableRelease,
   {
     id: 3,
+    tag: '3',
     prerelease: false,
     assets: [
       {
@@ -76,6 +81,7 @@ export const releases = [
   testNetStableRelease,
   {
     id: 6,
+    tag: '6',
     prerelease: false,
     assets: [
       {
@@ -87,6 +93,7 @@ export const releases = [
   },
   {
     id: 7,
+    tag: '7',
     prerelease: false,
     assets: [
       {
@@ -98,6 +105,7 @@ export const releases = [
   },
   {
     id: 8,
+    tag: '8',
     prerelease: false,
     assets: [
       {
@@ -109,6 +117,7 @@ export const releases = [
   },
   {
     id: 9,
+    tag: '9',
     prerelease: false,
     assets: [
       {

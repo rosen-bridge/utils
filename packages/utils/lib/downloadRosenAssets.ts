@@ -1,6 +1,10 @@
 import download from 'download';
 
-import { findLatestRelease, findLatestStableRelease } from './utils/github';
+import {
+  findLatestRelease,
+  findLatestStableRelease,
+  getReleaseByTag,
+} from './utils/github';
 import { isValidAssetName, truncateAssetName } from './utils/rosen';
 
 import { RosenAssetsDownloadError } from './error';
@@ -9,19 +13,24 @@ import { RosenAssetsDownloadError } from './error';
  * Download all required Rosen assets (tokenMap and all chain address files) to a specific path
  * @param chainType chain type (e.g. mainnet, testnet, etc.)
  * @param includePrereleases weather to include prereleases into account when searching for a matching release in GitHub
- * @param destinationPath path to folder in which the files will be saved
- * @param nameSuffix an optional suffix to append to saved files names
+ * @param config configs for including prereleases, adding name suffix, and getting specific release by tag
  */
 const downloadRosenAssets = async (
   chainType: string,
   destinationPath: string,
-  includePrereleases = false,
-  nameSuffix?: string
+  config?: {
+    includePrereleases?: boolean;
+    nameSuffix?: string;
+    tag?: string;
+  }
 ) => {
+  const getRelease = () => {
+    if (config?.tag) return getReleaseByTag(config.tag);
+    if (config?.includePrereleases) return findLatestRelease(chainType);
+    return findLatestStableRelease(chainType);
+  };
   try {
-    const release = includePrereleases
-      ? await findLatestRelease(chainType)
-      : await findLatestStableRelease(chainType);
+    const release = await getRelease();
 
     if (release) {
       await Promise.all([
@@ -30,13 +39,13 @@ const downloadRosenAssets = async (
             .filter((asset) => isValidAssetName(chainType)(asset.name))
             .map(async (asset) =>
               download(asset.browser_download_url, destinationPath, {
-                filename: truncateAssetName(asset.name, nameSuffix),
+                filename: truncateAssetName(asset.name, config?.nameSuffix),
               })
             )),
       ]);
     } else {
       console.error(`No release found for [${chainType}] chain type.`);
-      if (!includePrereleases) {
+      if (!config?.includePrereleases) {
         console.error(
           'Please note that `includePrereleases` is set to false. There may be some matching releases in prereleases.'
         );

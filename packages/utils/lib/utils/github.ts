@@ -60,6 +60,21 @@ const findLastRelease = async (
 };
 
 /**
+ * get a GitHub release by its tag
+ * @param tag
+ */
+const getReleaseByTag = async (tag: string) => {
+  const octokit = new Octokit();
+  const release = await octokit.rest.repos.getReleaseByTag({
+    owner: ROSEN_BRIDGE_ORGANIZATION,
+    repo: CONTRACT_REPO_NAME,
+    tag,
+  });
+
+  return release.data;
+};
+
+/**
  * Return a function which checks if a release has at least one asset for a
  * specific chain type
  * @param chainType
@@ -98,6 +113,7 @@ export {
   findLastRelease,
   findLatestRelease,
   findLatestStableRelease,
+  getReleaseByTag,
   hasAssetForChainType,
   isStableReleaseForChainType,
 };

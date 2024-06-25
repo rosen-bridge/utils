@@ -5,6 +5,7 @@ import {
   findLastRelease,
   isStableReleaseForChainType,
   findLatestStableRelease,
+  getReleaseByTag,
 } from '../../lib/utils/github';
 
 import {
@@ -15,7 +16,7 @@ import {
   testNetStableRelease,
 } from '../data/octokit.data';
 
-import { mockOctokit } from '../mocks/octokit.mock';
+import { mockOctokit, mockOctokitGetReleaseByTag } from '../mocks/octokit.mock';
 
 describe('fetchReleasesPage', () => {
   /**
@@ -100,6 +101,25 @@ describe('findLastRelease', () => {
     const foundRelease = await findLastRelease((release) => release.id === 100);
 
     expect(foundRelease).toEqual(null);
+  });
+});
+
+describe('getReleaseByTag', () => {
+  /**
+   * @target `getReleaseByTag` should get release by tag
+   * @dependencies
+   * - mocked `getReleaseByTag` of Octokit
+   * @scenario
+   * - call the function
+   * @expected
+   * - the release should be the expected one
+   */
+  it('should get release by tag', async () => {
+    mockOctokitGetReleaseByTag();
+
+    const release = await getReleaseByTag('3');
+
+    expect(release.id).toEqual(3);
   });
 });
 

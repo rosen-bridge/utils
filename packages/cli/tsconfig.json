@@ -5,5 +5,8 @@
     "rootDir": "./"
   },
   "include": ["bin"],
-  "references": [{ "path": "../utils" }, { "path": "../tss" }]
+  "references": [
+    { "path": "../utils/tsconfig.build.json" },
+    { "path": "../tss" }
+  ]
 }

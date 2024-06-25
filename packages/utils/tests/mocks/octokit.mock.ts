@@ -21,3 +21,21 @@ export const mockOctokit = () =>
       },
     } as any;
   });
+
+/**
+ * mock `getReleaseByTag` of Octokit
+ */
+export const mockOctokitGetReleaseByTag = () =>
+  jest.mocked(Octokit).mockImplementation(() => {
+    return {
+      rest: {
+        repos: {
+          getReleaseByTag: async ({ tag }: { tag: string }) => {
+            return {
+              data: releases.find((release) => release.tag === tag),
+            };
+          },
+        },
+      },
+    } as any;
+  });
