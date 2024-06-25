@@ -1,5 +1,16 @@
 # @rosen-bridge/cli
 
+## 0.6.0
+
+### Minor Changes
+
+- Add "--tag" argument for downloading assets of specific tag (instead of latest)
+
+### Patch Changes
+
+- Updated dependencies
+  - @rosen-bridge/utils@0.1.0
+
 ## 0.5.0
 
 ### Minor Changes
