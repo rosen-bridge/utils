@@ -1,10 +1,10 @@
 import { Octokit } from 'octokit';
 
-import { releases } from '../data/octokit.data';
+import { contractReleases, PartialReleases } from '../data/octokit.data';
 
 import { DEFAULT_RELEASES_FETCHING_PAGE_SIZE } from '../../lib/constants';
 
-export const mockOctokit = () =>
+export const mockOctokit = (releases: any[]) =>
   jest.mocked(Octokit).mockImplementation(() => {
     let page = 0;
     return {
@@ -25,14 +25,14 @@ export const mockOctokit = () =>
 /**
  * mock `getReleaseByTag` of Octokit
  */
-export const mockOctokitGetReleaseByTag = () =>
+export const mockOctokitGetReleaseByTag = (releases: PartialReleases) =>
   jest.mocked(Octokit).mockImplementation(() => {
     return {
       rest: {
         repos: {
           getReleaseByTag: async ({ tag }: { tag: string }) => {
             return {
-              data: releases.find((release) => release.tag === tag),
+              data: releases.find((release) => release.tag_name === tag),
             };
           },
         },

@@ -7,6 +7,13 @@ export const isValidAssetName = (chainType: string) => (assetName: string) =>
   new RegExp(`(contracts-.+|tokensMap)-${chainType}-.+.json`).test(assetName);
 
 /**
+ * Check if an OS name is a valid supported tss OS
+ * @param OSName
+ */
+export const isValidOS = (OSName: string) => (releaseAssetName: string) =>
+  new RegExp(`(rosenTss-${OSName}-.+).zip`).test(releaseAssetName);
+
+/**
  * Remove chain type and tag from the asset name and optionally replaces them
  * with a suffix
  * @param assetName

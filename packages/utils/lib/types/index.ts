@@ -9,3 +9,5 @@ type GithubReleases = Awaited<
 >['data'];
 
 export type GithubRelease = ArrayElement<GithubReleases>;
+
+export type SupportedRepo = 'contract' | 'sign-protocols';
