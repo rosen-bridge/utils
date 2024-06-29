@@ -49,7 +49,7 @@ const downloadRosenAssets = async (
       console.error(`No release found for [${chainType}] chain type.`);
       if (!config?.includePrereleases) {
         console.error(
-          'Please note that `includePrereleases` is set to false. There may be some matching contractReleases in prereleases.'
+          'Please note that `includePrereleases` is set to false. There may be some matching releases in prereleases.'
         );
       }
     }
