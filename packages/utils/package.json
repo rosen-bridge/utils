@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/utils",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Misc utility functions used inside Rosen bridge projects",
   "main": "dist/lib/index.js",
   "types": "dist/lib/index.d.ts",

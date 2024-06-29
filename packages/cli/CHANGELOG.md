@@ -1,5 +1,16 @@
 # @rosen-bridge/cli
 
+## 0.7.0
+
+### Minor Changes
+
+- add download-tss command to cli to download tss binary via release tag
+
+### Patch Changes
+
+- Updated dependencies
+  - @rosen-bridge/utils@0.2.0
+
 ## 0.6.0
 
 ### Minor Changes
