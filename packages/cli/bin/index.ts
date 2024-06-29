@@ -8,7 +8,7 @@ import { zxcvbn, zxcvbnOptions } from '@zxcvbn-ts/core';
 import * as zxcvbnCommonPackage from '@zxcvbn-ts/language-common';
 import * as zxcvbnEnPackage from '@zxcvbn-ts/language-en';
 
-import { downloadRosenAssets } from '@rosen-bridge/utils';
+import { downloadRosenAssets, downloadTssBinary } from '@rosen-bridge/utils';
 import { ECDSA, EdDSA } from '@rosen-bridge/tss';
 import { blake2b } from 'blakejs';
 import { randomBytes } from 'crypto';
@@ -71,6 +71,61 @@ yargs(hideBin(process.argv))
       spinner.succeed(
         chalk.green(
           `downloaded Rosen assets for "${argv.chainType}" chain type successfully`
+        )
+      );
+    }
+  )
+  .command(
+    'download-tss',
+    'download tss binary from github',
+    (yargs) =>
+      yargs
+        .option('os-name', {
+          alias: 'n',
+          demandOption: true,
+          description: 'desired os type (linux, macOS, windows)',
+          type: 'string',
+        })
+        .option('tag', {
+          alias: 't',
+          demandOption: true,
+          description:
+            'download release of this specific tag or tag prefix (if you want set tag prefix set regex option)',
+          type: 'string',
+        })
+        .option('regex', {
+          alias: 'r',
+          description: 'check prefixTag instead of specific tag',
+          type: 'boolean',
+        })
+        .option('include-prereleases', {
+          alias: 'p',
+          description:
+            'include pre-releases when searching for a matching release',
+          type: 'boolean',
+        })
+        .option('out', {
+          alias: 'o',
+          demandOption: true,
+          description: 'output directory path',
+          type: 'string',
+        }),
+    async (argv) => {
+      const spinner = ora();
+      spinner.start(
+        `downloading Tss binary for "${argv.osName}" OSName and tag ${argv.tag}`
+      );
+
+      await downloadTssBinary(argv.out, {
+        osName: argv.osName,
+        regex: argv.regex ?? false,
+        tag: argv.tag,
+        includePrereleases: argv.includePrereleases,
+      });
+
+      spinner.succeed(
+        chalk.green(
+          `downloaded Tss binary for "${argv.osName}" OSName and tag ${argv.tag} successfully`
         )
       );
     }

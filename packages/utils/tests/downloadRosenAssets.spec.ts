@@ -7,7 +7,7 @@ import { RosenAssetsDownloadError } from '../lib';
 import {
   mainNetPrereleaseRelease,
   mainNetStableRelease,
-  releases,
+  contractReleases,
 } from './data/octokit.data';
 
 import { mockOctokit, mockOctokitGetReleaseByTag } from './mocks/octokit.mock';
@@ -16,7 +16,7 @@ jest.mock('download');
 
 describe('downloadRosenAssets', () => {
   beforeEach(() => {
-    mockOctokit();
+    mockOctokit(contractReleases);
   });
 
   /**
@@ -24,7 +24,7 @@ describe('downloadRosenAssets', () => {
    * @dependencies
    * - mocked Octokit
    * @scenario
-   * - mock Octokit `listReleases` to return 9 releases
+   * - mock Octokit `listReleases` to return 9 contractReleases
    * - call `downloadRosenAssets` with mainnet chain type and `rosen` download
    *   directory
    * @expected
@@ -60,7 +60,7 @@ describe('downloadRosenAssets', () => {
    * @dependencies
    * - mocked Octokit
    * @scenario
-   * - mock Octokit `listReleases` to return 9 releases
+   * - mock Octokit `listReleases` to return 9 contractReleases
    * - call `downloadRosenAssets` with mainnet chain type, `rosen` download
    *   directory and including prereleases
    * @expected
@@ -99,7 +99,7 @@ describe('downloadRosenAssets', () => {
    * @dependencies
    * - mocked Octokit
    * @scenario
-   * - mock Octokit `listReleases` to return 9 releases
+   * - mock Octokit `listReleases` to return 9 contractReleases
    * - call `downloadRosenAssets` with mainnet chain type, `rosen` download
    *   directory, including prereleases and a providing a suffix
    * @expected
@@ -141,13 +141,13 @@ describe('downloadRosenAssets', () => {
    * - `download` should be called with the assets of "3" tag release
    */
   it('should download a Rosen asset by tag', async () => {
-    mockOctokitGetReleaseByTag();
+    mockOctokitGetReleaseByTag(contractReleases);
     await downloadRosenAssets('mainnet', 'rosen', {
       tag: '3',
     });
 
     expect(download).toHaveBeenCalledWith(
-      releases[2].assets[0].browser_download_url,
+      contractReleases[2].assets[0].browser_download_url,
       'rosen',
       {
         filename: 'contracts-awesomechain.json',
@@ -162,7 +162,7 @@ describe('downloadRosenAssets', () => {
    * - mocked Octokit
    * - emptied mocked download package
    * @scenario
-   * - mock Octokit `listReleases` to return 9 releases
+   * - mock Octokit `listReleases` to return 9 contractReleases
    * - clear download package mock data (so that we can check calls count)
    * - call `downloadRosenAssets` with "no-release-net" chain type and `rosen`
    *   download directory
@@ -183,7 +183,7 @@ describe('downloadRosenAssets', () => {
    * - mocked Octokit
    * - mocked download package
    * @scenario
-   * - mock Octokit `listReleases` to return 9 releases
+   * - mock Octokit `listReleases` to return 9 contractReleases
    * - mock download package to throw an error
    * - call `downloadRosenAssets` with mainnet chain type and `rosen` download
    *   directory

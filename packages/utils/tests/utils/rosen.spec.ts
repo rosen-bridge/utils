@@ -1,4 +1,8 @@
-import { isValidAssetName, truncateAssetName } from '../../lib/utils/rosen';
+import {
+  isValidAssetName,
+  isValidOS,
+  truncateAssetName,
+} from '../../lib/utils/rosen';
 
 describe('isValidAssetName', () => {
   /**
@@ -141,5 +145,39 @@ describe('truncateAssetName', () => {
     expect(truncatedNameWithSuffix).toEqual(
       'contracts-awesomechain-suffix.json'
     );
+  });
+});
+
+describe('isValidOS', () => {
+  /**
+   * @target
+   * `isValidOS` should return `true` if an asset file name matches an OS name
+   * @dependencies
+   * @scenario
+   * - get result by calling `isValidOS('linux')` with a linux tss-api file name
+   * @expected
+   * - result should be true
+   */
+  it('should return `true` if an os name matches a tss-api asset file', () => {
+    const matchOSName = 'rosenTss-linux-4.0.0.zip';
+    const isMatchingAssetName = isValidOS('linux')(matchOSName);
+
+    expect(isMatchingAssetName).toEqual(true);
+  });
+
+  /**
+   * @target
+   * `isValidOS` should return `false` if an asset file name does not match an OS name
+   * @dependencies
+   * @scenario
+   * - get result by calling `isValidOS('linux')` with a linux tss-api file name
+   * @expected
+   * - result should be false
+   */
+  it('should return `false` if an os name does not match a tss-api asset file', () => {
+    const notMatchOSName = 'rosenTss-pi-4.0.0.zip';
+    const isMatchingAssetName = isValidOS('linux')(notMatchOSName);
+
+    expect(isMatchingAssetName).toEqual(false);
   });
 });

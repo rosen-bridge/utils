@@ -9,6 +9,8 @@ import { isValidAssetName, truncateAssetName } from './utils/rosen';
 
 import { RosenAssetsDownloadError } from './error';
 
+const repo = 'contract';
+
 /**
  * Download all required Rosen assets (tokenMap and all chain address files) to a specific path
  * @param chainType chain type (e.g. mainnet, testnet, etc.)
@@ -25,9 +27,9 @@ const downloadRosenAssets = async (
   }
 ) => {
   const getRelease = () => {
-    if (config?.tag) return getReleaseByTag(config.tag);
-    if (config?.includePrereleases) return findLatestRelease(chainType);
-    return findLatestStableRelease(chainType);
+    if (config?.tag) return getReleaseByTag(repo, config.tag);
+    if (config?.includePrereleases) return findLatestRelease(repo, chainType);
+    return findLatestStableRelease(repo, chainType);
   };
   try {
     const release = await getRelease();

@@ -4,7 +4,7 @@ export type PartialReleases = Partial<GithubRelease>[];
 
 export const mainNetPrereleaseRelease = {
   id: 1,
-  tag: '1',
+  tag_name: '1',
   prerelease: true,
   assets: [
     {
@@ -21,7 +21,7 @@ export const mainNetPrereleaseRelease = {
 
 export const mainNetStableRelease = {
   id: 2,
-  tag: '2',
+  tag_name: '2',
   prerelease: false,
   assets: [
     {
@@ -36,9 +36,80 @@ export const mainNetStableRelease = {
   ],
 };
 
+export const tssTag1 = {
+  id: 1,
+  tag_name: 'tss-api-1.0.0',
+  name: 'tss-api-1.0.0',
+  prerelease: false,
+  assets: [
+    {
+      name: 'rosenTss-linux-tss-api-1.0.0.zip',
+      browser_download_url:
+        'https://example.com/sign-protocols/releases/download/tss-api-1.0.0/rosenTss-linux-tss-api-1.0.0.zip',
+    } as any,
+    {
+      name: 'rosenTss-macOS-tss-api-1.0.0.zip',
+      browser_download_url:
+        'https://example.com/sign-protocols/releases/download/tss-api-1.0.0/rosenTss-macOS-tss-api-1.0.0.zip',
+    } as any,
+    {
+      name: 'rosenTss-windows-tss-api-1.0.0.zip',
+      browser_download_url:
+        'https://example.com/sign-protocols/releases/download/tss-api-1.0.0/rosenTss-windows-tss-api-1.0.0.zip',
+    } as any,
+  ],
+};
+export const tssTag2 = {
+  id: 2,
+  tag_name: 'tss-api-2.0.0',
+  name: 'tss-api-2.0.0',
+  prerelease: false,
+  assets: [
+    {
+      name: 'rosenTss-linux-tss-api-2.0.0.zip',
+      browser_download_url:
+        'https://example.com/sign-protocols/releases/download/tss-api-2.0.0/rosenTss-linux-tss-api-2.0.0.zip',
+    } as any,
+    {
+      name: 'rosenTss-macOS-tss-api-2.0.0.zip',
+      browser_download_url:
+        'https://example.com/sign-protocols/releases/download/tss-api-2.0.0/rosenTss-macOS-tss-api-2.0.0.zip',
+    } as any,
+    {
+      name: 'rosenTss-windows-tss-api-2.0.0.zip',
+      browser_download_url:
+        'https://example.com/sign-protocols/releases/download/tss-api-2.0.0/rosenTss-windows-tss-api-2.0.0.zip',
+    } as any,
+  ],
+};
+
+export const tssTag3PreRelease = {
+  id: 3,
+  tag_name: 'tss-api-3.0.0',
+  name: 'tss-api-3.0.0',
+  prerelease: true,
+  assets: [
+    {
+      name: 'rosenTss-linux-tss-api-3.0.0.zip',
+      browser_download_url:
+        'https://example.com/sign-protocols/releases/download/tss-api-3.0.0/rosenTss-linux-tss-api-3.0.0.zip',
+    } as any,
+    {
+      name: 'rosenTss-macOS-tss-api-3.0.0.zip',
+      browser_download_url:
+        'https://example.com/sign-protocols/releases/download/tss-api-3.0.0/rosenTss-macOS-tss-api-3.0.0.zip',
+    } as any,
+    {
+      name: 'rosenTss-windows-tss-api-3.0.0.zip',
+      browser_download_url:
+        'https://example.com/sign-protocols/releases/download/tss-api-3.0.0/rosenTss-windows-tss-api-3.0.0.zip',
+    } as any,
+  ],
+};
+
 export const testNetPrereleaseRelease = {
   id: 4,
-  tag: '4',
+  tag_name: '4',
   prerelease: true,
   assets: [
     {
@@ -51,7 +122,7 @@ export const testNetPrereleaseRelease = {
 
 export const testNetStableRelease = {
   id: 5,
-  tag: '5',
+  tag_name: '5',
   prerelease: false,
   assets: [
     {
@@ -62,12 +133,12 @@ export const testNetStableRelease = {
   ],
 };
 
-export const releases = [
+export const contractReleases = [
   mainNetPrereleaseRelease,
   mainNetStableRelease,
   {
     id: 3,
-    tag: '3',
+    tag_name: '3',
     prerelease: false,
     assets: [
       {
@@ -81,7 +152,7 @@ export const releases = [
   testNetStableRelease,
   {
     id: 6,
-    tag: '6',
+    tag_name: '6',
     prerelease: false,
     assets: [
       {
@@ -93,7 +164,7 @@ export const releases = [
   },
   {
     id: 7,
-    tag: '7',
+    tag_name: '7',
     prerelease: false,
     assets: [
       {
@@ -105,7 +176,7 @@ export const releases = [
   },
   {
     id: 8,
-    tag: '8',
+    tag_name: '8',
     prerelease: false,
     assets: [
       {
@@ -117,7 +188,7 @@ export const releases = [
   },
   {
     id: 9,
-    tag: '9',
+    tag_name: '9',
     prerelease: false,
     assets: [
       {
@@ -127,4 +198,11 @@ export const releases = [
       } as any,
     ],
   },
+] satisfies PartialReleases;
+
+export const tssReleases = [
+  mainNetStableRelease, // in case of sign-protocols mono repo we have other tags
+  tssTag3PreRelease,
+  tssTag2,
+  tssTag1,
 ] satisfies PartialReleases;
