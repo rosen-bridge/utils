@@ -1,5 +1,4 @@
 ---
-'@rosen-bridge/utils': minor
 '@rosen-bridge/cli': minor
 ---
 

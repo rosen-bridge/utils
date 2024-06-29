@@ -41,7 +41,7 @@ describe('fetchReleasesPage', () => {
    * - third result value should be undefined
    * - third result done property should be true
    */
-  it('should generate contractReleases correctly', async () => {
+  it('should generate releases correctly', async () => {
     mockOctokit(contractReleases);
 
     const iterator = fetchReleasesPage('contract');
@@ -68,7 +68,7 @@ describe('findLastRelease', () => {
    * @expected
    * - result id should equal mainnet stable release id
    */
-  it('should find last contractReleases correctly when a predicate is provided', async () => {
+  it('should find last release correctly when a predicate is provided', async () => {
     const foundRelease = await findLastRelease(
       'contract',
       (release) => release.id === mainNetStableRelease.id

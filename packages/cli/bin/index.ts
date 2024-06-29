@@ -29,7 +29,7 @@ yargs(hideBin(process.argv))
         .option('include-prereleases', {
           alias: 'p',
           description:
-            'include pre-contractReleases when searching for a matching release',
+            'include pre-releases when searching for a matching release',
           type: 'boolean',
         })
         .option('out', {
@@ -83,7 +83,7 @@ yargs(hideBin(process.argv))
         .option('os-name', {
           alias: 'n',
           demandOption: true,
-          description: 'desire os type (linux, macOS, windiws)',
+          description: 'desired os type (linux, macOS, windows)',
           type: 'string',
         })
         .option('tag', {
@@ -101,7 +101,7 @@ yargs(hideBin(process.argv))
         .option('include-prereleases', {
           alias: 'p',
           description:
-            'include pre-contractReleases when searching for a matching release',
+            'include pre-releases when searching for a matching release',
           type: 'boolean',
         })
         .option('out', {

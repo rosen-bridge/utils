@@ -10,8 +10,8 @@ import {
 import { GithubRelease, SupportedRepo } from '../types';
 
 /**
- * Fetch a page of contractReleases from Github Api in each iteration until there are no
- * more contractReleases.
+ * Fetch a page of releases from Github Api in each iteration until there are no
+ * more releases.
  * @param repoName
  * @param pageSize
  */
@@ -41,7 +41,7 @@ async function* fetchReleasesPage(
 }
 
 /**
- * Find the last release matching the predicate. If all contractReleases are iterated and
+ * Find the last release matching the predicate. If all releases are iterated and
  * no matching release is found, return null.
  * @param repoName
  * @param predicate

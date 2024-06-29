@@ -26,7 +26,7 @@ describe('downloadTssBinary', () => {
    * - mocked Octokit GetReleaseByTag
    * @scenario
    * - mock Octokit `listReleases` to return tssReleases
-   * - mock Octokit GetReleaseByTag to return desire release
+   * - mock Octokit GetReleaseByTag to return desired release
    * - call `downloadTssBinary` with Windows OS name, `tss-api-1.0.0` and `rosen` download
    *   directory
    * @expected
