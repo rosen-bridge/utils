@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/cli",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "The official Rosen bridge cli, providing helpers for the tasks related to Rosen bridge",
   "main": "dist/bin/index.js",
   "bin": "dist/bin/index.js",
@@ -31,7 +31,7 @@
   ],
   "dependencies": {
     "@rosen-bridge/tss": "^3.0.0",
-    "@rosen-bridge/utils": "^0.1.0",
+    "@rosen-bridge/utils": "^0.2.0",
     "@zxcvbn-ts/core": "^3.0.4",
     "@zxcvbn-ts/language-common": "^3.0.4",
     "@zxcvbn-ts/language-en": "^3.0.2",
