@@ -45,6 +45,6 @@ export class ErgoRosenExtractor extends AbstractRosenDataExtractor<string> {
       return undefined;
     }
     const nodeTx = JsonBigInt.parse(transaction.to_json()) as NodeTransaction;
-    return this.nodeExtractor.get(nodeTx);
+    return this.nodeExtractor.extractRawData(nodeTx);
   };
 }

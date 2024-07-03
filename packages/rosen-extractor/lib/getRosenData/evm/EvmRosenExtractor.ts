@@ -44,6 +44,6 @@ export class EvmRosenExtractor extends AbstractRosenDataExtractor<string> {
       }
       return undefined;
     }
-    return this.rpcExtractor.get(transaction);
+    return this.rpcExtractor.extractRawData(transaction);
   };
 }
