@@ -270,13 +270,45 @@ describe('TokenMap', () => {
     });
   });
 
+  describe('getTokenSet', () => {
+    /**
+     * @target TokenMap.getTokenSet should return token set successfully
+     * @dependencies
+     * - RosenToken json
+     * @scenario
+     * - call getTokenSet
+     * @expected
+     * - should return the token set
+     */
+    it('should return token set successfully', function () {
+      const tokenMap = new TokenMap(firstTokenMap);
+      const result = tokenMap.getTokenSet('this is a simple ip');
+      expect(result).toEqual([firstTokenMap.tokens[1]]);
+    });
+
+    /**
+     * @target TokenMap.getTokenSet should return empty list when token is not found
+     * @dependencies
+     * - RosenToken json
+     * @scenario
+     * - call getTokenSet
+     * @expected
+     * - should return empty list
+     */
+    it('should return empty list when token is not found', function () {
+      const tokenMap = new TokenMap(firstTokenMap);
+      const result = tokenMap.getTokenSet('not.found');
+      expect(result).toEqual([]);
+    });
+  });
+
   describe('wrapAmount', () => {
     /**
      * @target TokenMap.wrapAmount should drop decimals successfully
      * @dependencies
      * - RosenToken json
      * @scenario
-     * - call wrapAmount for ergo chain
+     * - call wrapAmount for cardano chain
      * @expected
      * - should return amount with less digits
      */
@@ -284,8 +316,8 @@ describe('TokenMap', () => {
       const tokenMap = new TokenMap(multiDecimalTokenMap);
       const result = tokenMap.wrapAmount(
         'policyId3.assetName3',
-        'cardano',
-        123456789n
+        123456789n,
+        'cardano'
       );
       expect(result.amount).toEqual(1234n);
       expect(result.decimals).toEqual(3);
@@ -302,7 +334,7 @@ describe('TokenMap', () => {
      */
     it('should keep amount when it is already with significant decimals', function () {
       const tokenMap = new TokenMap(multiDecimalTokenMap);
-      const result = tokenMap.wrapAmount('tokenId', 'ergo', 123456789n);
+      const result = tokenMap.wrapAmount('tokenId', 123456789n, 'ergo');
       expect(result.amount).toEqual(123456789n);
       expect(result.decimals).toEqual(3);
     });
@@ -318,7 +350,7 @@ describe('TokenMap', () => {
      */
     it('should keep amount when token is not supported', function () {
       const tokenMap = new TokenMap(multiDecimalTokenMap);
-      const result = tokenMap.wrapAmount('not.supported', 'ergo', 123456789n);
+      const result = tokenMap.wrapAmount('not.supported', 123456789n, 'ergo');
       expect(result.amount).toEqual(123456789n);
       expect(result.decimals).toEqual(0);
     });
@@ -330,7 +362,7 @@ describe('TokenMap', () => {
      * @dependencies
      * - RosenToken json
      * @scenario
-     * - call unwrapAmount for ergo chain
+     * - call unwrapAmount for cardano chain
      * @expected
      * - should return amount with more digits
      */
@@ -338,8 +370,8 @@ describe('TokenMap', () => {
       const tokenMap = new TokenMap(multiDecimalTokenMap);
       const result = tokenMap.unwrapAmount(
         'policyId3.assetName3',
-        'cardano',
-        1234n
+        1234n,
+        'cardano'
       );
       expect(result.amount).toEqual(123400000n);
       expect(result.decimals).toEqual(8);
@@ -356,7 +388,7 @@ describe('TokenMap', () => {
      */
     it('should keep amount when it is already with significant decimals', function () {
       const tokenMap = new TokenMap(multiDecimalTokenMap);
-      const result = tokenMap.unwrapAmount('tokenId', 'ergo', 123456789n);
+      const result = tokenMap.unwrapAmount('tokenId', 123456789n, 'ergo');
       expect(result.amount).toEqual(123456789n);
       expect(result.decimals).toEqual(3);
     });
@@ -372,7 +404,7 @@ describe('TokenMap', () => {
      */
     it('should keep amount when token is not supported', function () {
       const tokenMap = new TokenMap(multiDecimalTokenMap);
-      const result = tokenMap.unwrapAmount('not.supported', 'ergo', 123456789n);
+      const result = tokenMap.unwrapAmount('not.supported', 123456789n, 'ergo');
       expect(result.amount).toEqual(123456789n);
       expect(result.decimals).toEqual(0);
     });

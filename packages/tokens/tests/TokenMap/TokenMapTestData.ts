@@ -4,6 +4,7 @@ export const firstTokenMap: RosenTokens = {
   idKeys: {
     ergo: 'tokenId',
     cardano: 'tokenId',
+    binance: 'id',
   },
   tokens: [
     {

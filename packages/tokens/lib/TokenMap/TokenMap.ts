@@ -141,6 +141,19 @@ export class TokenMap {
   };
 
   /**
+   * get a token set by the id of one of them
+   * @param tokenId
+   */
+  getTokenSet = (tokenId: string): Record<string, RosenChainToken>[] => {
+    return this.tokensConfig.tokens.filter(
+      (tokenSet) =>
+        Object.keys(tokenSet).filter(
+          (chain) => tokenSet[chain][this.getIdKey(chain)] === tokenId
+        ).length
+    );
+  };
+
+  /**
    * wraps amount of a token on the given chain
    * @param tokenId
    * @param amount
@@ -148,12 +161,10 @@ export class TokenMap {
    */
   wrapAmount = (
     tokenId: string,
-    chain: string,
-    amount: bigint
+    amount: bigint,
+    chain: string
   ): RosenAmount => {
-    const tokens = this.search(chain, {
-      [this.getIdKey(chain)]: tokenId,
-    });
+    const tokens = this.getTokenSet(tokenId);
 
     if (tokens.length === 0) {
       // token is not supported, no decimals drop
@@ -181,16 +192,14 @@ export class TokenMap {
    * wraps amount of a token on the given chain
    * @param tokenId
    * @param amount
-   * @param chain
+   * @param toChain
    */
   unwrapAmount = (
     tokenId: string,
-    toChain: string,
-    amount: bigint
+    amount: bigint,
+    toChain: string
   ): RosenAmount => {
-    const tokens = this.search(toChain, {
-      [this.getIdKey(toChain)]: tokenId,
-    });
+    const tokens = this.getTokenSet(tokenId);
 
     if (tokens.length === 0) {
       // token is not supported, no decimals added
