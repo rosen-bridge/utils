@@ -10,11 +10,14 @@ import {
 import JsonBigInt from '@rosen-bridge/json-bigint';
 
 export class CardanoBlockFrostRosenExtractor extends AbstractRosenDataExtractor<BlockFrostTransaction> {
+  readonly chain = CARDANO_CHAIN;
   /**
    * extracts RosenData from given lock transaction in blockfrost format
    * @param transaction the lock transaction in blockfrost format
    */
-  get = (transaction: BlockFrostTransaction): RosenData | undefined => {
+  extractRawData = (
+    transaction: BlockFrostTransaction
+  ): RosenData | undefined => {
     const baseError = `No rosen data found for tx [${transaction.utxos.hash}]`;
     const metadata = transaction.metadata;
     try {

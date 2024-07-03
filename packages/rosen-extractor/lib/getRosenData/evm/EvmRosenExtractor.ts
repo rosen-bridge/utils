@@ -6,8 +6,8 @@ import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import { EvmRpcRosenExtractor } from './EvmRpcRosenExtractor';
 
 export class EvmRosenExtractor extends AbstractRosenDataExtractor<string> {
+  chain: string;
   protected rpcExtractor: EvmRpcRosenExtractor;
-  protected chain: string;
 
   constructor(
     lockAddress: string,
@@ -31,7 +31,7 @@ export class EvmRosenExtractor extends AbstractRosenDataExtractor<string> {
    * extracts RosenData from given lock transaction in ethers Transaction format
    * @param serializedTransaction signed serialized transaction in ethers Transaction format
    */
-  get = (serializedTransaction: string): RosenData | undefined => {
+  extractRawData = (serializedTransaction: string): RosenData | undefined => {
     let transaction: Transaction;
     try {
       transaction = Transaction.from(serializedTransaction);

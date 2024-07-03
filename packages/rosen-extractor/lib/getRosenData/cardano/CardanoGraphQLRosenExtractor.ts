@@ -10,11 +10,12 @@ import {
 import JsonBigInt from '@rosen-bridge/json-bigint';
 
 export class CardanoGraphQLRosenExtractor extends AbstractRosenDataExtractor<GraphQLTransaction> {
+  readonly chain = CARDANO_CHAIN;
   /**
    * extracts RosenData from given lock transaction in graphql format
    * @param transaction the lock transaction in graphql format
    */
-  get = (transaction: GraphQLTransaction): RosenData | undefined => {
+  extractRawData = (transaction: GraphQLTransaction): RosenData | undefined => {
     const baseError = `No rosen data found for tx [${transaction.hash}]`;
     const metadata = transaction.metadata;
     try {

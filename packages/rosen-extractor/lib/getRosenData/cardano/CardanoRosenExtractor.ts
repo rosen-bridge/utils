@@ -9,11 +9,12 @@ import { CARDANO_CHAIN, CARDANO_NATIVE_TOKEN } from '../const';
 import JsonBigInt from '@rosen-bridge/json-bigint';
 
 export class CardanoRosenExtractor extends AbstractRosenDataExtractor<string> {
+  readonly chain = CARDANO_CHAIN;
   /**
    * extracts RosenData from given lock transaction in CardanoTx format
    * @param serializedTransaction stringified transaction in CardanoTx format
    */
-  get = (serializedTransaction: string): RosenData | undefined => {
+  extractRawData = (serializedTransaction: string): RosenData | undefined => {
     let transaction: CardanoTx;
     try {
       transaction = JsonBigInt.parse(serializedTransaction);
