@@ -1,5 +1,5 @@
 import { NATIVE_RESIDENCY } from './constants';
-import { RosenChainToken, RosenTokens } from './types';
+import { RosenAmount, RosenChainToken, RosenTokens } from './types';
 
 /**
  * TokenMap class searches for different assets properties in different chains
@@ -138,5 +138,77 @@ export class TokenMap {
           token[chain].metaData.residency == NATIVE_RESIDENCY
       )
       .map((token) => token[chain]);
+  };
+
+  /**
+   * wraps amount of a token on the given chain
+   * @param tokenId
+   * @param amount
+   * @param chain
+   */
+  wrapAmount = (
+    tokenId: string,
+    chain: string,
+    amount: bigint
+  ): RosenAmount => {
+    const tokens = this.search(chain, {
+      [this.getIdKey(chain)]: tokenId,
+    });
+
+    if (tokens.length === 0) {
+      // token is not supported, no decimals drop
+      return {
+        amount: amount,
+        decimals: 0,
+      };
+    } else {
+      const significantDecimals = Math.min(
+        ...Object.keys(tokens[0]).map(
+          (supportedChain) => tokens[0][supportedChain].decimals
+        )
+      );
+      const result =
+        amount /
+        BigInt(10 ** (tokens[0][chain].decimals - significantDecimals));
+      return {
+        amount: result,
+        decimals: significantDecimals,
+      };
+    }
+  };
+
+  /**
+   * wraps amount of a token on the given chain
+   * @param tokenId
+   * @param amount
+   * @param chain
+   */
+  unwrapAmount = (
+    tokenId: string,
+    toChain: string,
+    amount: bigint
+  ): RosenAmount => {
+    const tokens = this.search(toChain, {
+      [this.getIdKey(toChain)]: tokenId,
+    });
+
+    if (tokens.length === 0) {
+      // token is not supported, no decimals added
+      return {
+        amount: amount,
+        decimals: 0,
+      };
+    } else {
+      const significantDecimals = Math.min(
+        ...Object.keys(tokens[0]).map((chain) => tokens[0][chain].decimals)
+      );
+      const result =
+        amount *
+        BigInt(10 ** (tokens[0][toChain].decimals - significantDecimals));
+      return {
+        amount: result,
+        decimals: tokens[0][toChain].decimals,
+      };
+    }
   };
 }

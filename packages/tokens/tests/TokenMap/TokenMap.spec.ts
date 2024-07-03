@@ -3,6 +3,7 @@ import { TokenMap } from '../../lib';
 import {
   firstToken,
   firstTokenMap,
+  multiDecimalTokenMap,
   secondToken,
   secondTokenMap,
 } from './TokenMapTestData';
@@ -266,6 +267,114 @@ describe('TokenMap', () => {
         firstTokenMap.tokens[0]['ergo'],
         firstTokenMap.tokens[1]['ergo'],
       ]);
+    });
+  });
+
+  describe('wrapAmount', () => {
+    /**
+     * @target TokenMap.wrapAmount should drop decimals successfully
+     * @dependencies
+     * - RosenToken json
+     * @scenario
+     * - call wrapAmount for ergo chain
+     * @expected
+     * - should return amount with less digits
+     */
+    it('should drop decimals successfully', function () {
+      const tokenMap = new TokenMap(multiDecimalTokenMap);
+      const result = tokenMap.wrapAmount(
+        'policyId3.assetName3',
+        'cardano',
+        123456789n
+      );
+      expect(result.amount).toEqual(1234n);
+      expect(result.decimals).toEqual(3);
+    });
+
+    /**
+     * @target TokenMap.wrapAmount should keep amount when it is already with significant decimals
+     * @dependencies
+     * - RosenToken json
+     * @scenario
+     * - call wrapAmount for ergo chain
+     * @expected
+     * - should return amount with same digits
+     */
+    it('should keep amount when it is already with significant decimals', function () {
+      const tokenMap = new TokenMap(multiDecimalTokenMap);
+      const result = tokenMap.wrapAmount('tokenId', 'ergo', 123456789n);
+      expect(result.amount).toEqual(123456789n);
+      expect(result.decimals).toEqual(3);
+    });
+
+    /**
+     * @target TokenMap.wrapAmount should keep amount when token is not supported
+     * @dependencies
+     * - RosenToken json
+     * @scenario
+     * - call wrapAmount for ergo chain
+     * @expected
+     * - should return amount with same digits and 0 decimals
+     */
+    it('should keep amount when token is not supported', function () {
+      const tokenMap = new TokenMap(multiDecimalTokenMap);
+      const result = tokenMap.wrapAmount('not.supported', 'ergo', 123456789n);
+      expect(result.amount).toEqual(123456789n);
+      expect(result.decimals).toEqual(0);
+    });
+  });
+
+  describe('unwrapAmount', () => {
+    /**
+     * @target TokenMap.unwrapAmount should add decimals successfully
+     * @dependencies
+     * - RosenToken json
+     * @scenario
+     * - call unwrapAmount for ergo chain
+     * @expected
+     * - should return amount with more digits
+     */
+    it('should add decimals successfully', function () {
+      const tokenMap = new TokenMap(multiDecimalTokenMap);
+      const result = tokenMap.unwrapAmount(
+        'policyId3.assetName3',
+        'cardano',
+        1234n
+      );
+      expect(result.amount).toEqual(123400000n);
+      expect(result.decimals).toEqual(8);
+    });
+
+    /**
+     * @target TokenMap.unwrapAmount should keep amount when it is already with significant decimals
+     * @dependencies
+     * - RosenToken json
+     * @scenario
+     * - call unwrapAmount for ergo chain
+     * @expected
+     * - should return amount with same digits
+     */
+    it('should keep amount when it is already with significant decimals', function () {
+      const tokenMap = new TokenMap(multiDecimalTokenMap);
+      const result = tokenMap.unwrapAmount('tokenId', 'ergo', 123456789n);
+      expect(result.amount).toEqual(123456789n);
+      expect(result.decimals).toEqual(3);
+    });
+
+    /**
+     * @target TokenMap.unwrapAmount should keep amount when token is not supported
+     * @dependencies
+     * - RosenToken json
+     * @scenario
+     * - call unwrapAmount for ergo chain
+     * @expected
+     * - should return amount with same digits and 0 decimals
+     */
+    it('should keep amount when token is not supported', function () {
+      const tokenMap = new TokenMap(multiDecimalTokenMap);
+      const result = tokenMap.unwrapAmount('not.supported', 'ergo', 123456789n);
+      expect(result.amount).toEqual(123456789n);
+      expect(result.decimals).toEqual(0);
     });
   });
 });
