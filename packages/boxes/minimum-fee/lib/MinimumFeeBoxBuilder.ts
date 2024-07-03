@@ -47,6 +47,13 @@ export class MinimumFeeBoxBuilder {
   };
 
   /**
+   * gets current feeConfig
+   */
+  getConfigs = (): Array<Fee> => {
+    return this.fees;
+  };
+
+  /**
    * sets ErgoBox Erg value
    * @param nanoErg
    * @returns
