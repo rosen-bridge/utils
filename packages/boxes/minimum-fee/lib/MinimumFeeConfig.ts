@@ -3,11 +3,13 @@ import { ChainFee, Fee } from './types';
 export class MinimumFeeConfig {
   protected fee: Fee;
 
-  constructor() {
-    this.fee = {
-      heights: {},
-      configs: {},
-    };
+  constructor(fee?: Fee) {
+    this.fee = fee
+      ? fee
+      : {
+          heights: {},
+          configs: {},
+        };
   }
 
   /**

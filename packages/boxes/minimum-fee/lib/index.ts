@@ -1,3 +1,4 @@
+export { FEE_RATIO_DIVISOR } from './constants';
 export * from './types';
 export * from './errors';
 export { MinimumFeeConfig } from './MinimumFeeConfig';
