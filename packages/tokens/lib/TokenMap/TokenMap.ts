@@ -144,13 +144,17 @@ export class TokenMap {
    * get a token set by the id of one of them
    * @param tokenId
    */
-  getTokenSet = (tokenId: string): Record<string, RosenChainToken>[] => {
-    return this.tokensConfig.tokens.filter(
+  getTokenSet = (
+    tokenId: string
+  ): Record<string, RosenChainToken> | undefined => {
+    const result = this.tokensConfig.tokens.filter(
       (tokenSet) =>
         Object.keys(tokenSet).filter(
           (chain) => tokenSet[chain][this.getIdKey(chain)] === tokenId
         ).length
     );
+    if (result.length === 0) return undefined;
+    return result[0];
   };
 
   /**
@@ -166,7 +170,7 @@ export class TokenMap {
   ): RosenAmount => {
     const tokens = this.getTokenSet(tokenId);
 
-    if (tokens.length === 0) {
+    if (tokens === undefined) {
       // token is not supported, no decimals drop
       return {
         amount: amount,
@@ -174,13 +178,12 @@ export class TokenMap {
       };
     } else {
       const significantDecimals = Math.min(
-        ...Object.keys(tokens[0]).map(
-          (supportedChain) => tokens[0][supportedChain].decimals
+        ...Object.keys(tokens).map(
+          (supportedChain) => tokens[supportedChain].decimals
         )
       );
       const result =
-        amount /
-        BigInt(10 ** (tokens[0][chain].decimals - significantDecimals));
+        amount / BigInt(10 ** (tokens[chain].decimals - significantDecimals));
       return {
         amount: result,
         decimals: significantDecimals,
@@ -201,7 +204,7 @@ export class TokenMap {
   ): RosenAmount => {
     const tokens = this.getTokenSet(tokenId);
 
-    if (tokens.length === 0) {
+    if (tokens === undefined) {
       // token is not supported, no decimals added
       return {
         amount: amount,
@@ -209,14 +212,13 @@ export class TokenMap {
       };
     } else {
       const significantDecimals = Math.min(
-        ...Object.keys(tokens[0]).map((chain) => tokens[0][chain].decimals)
+        ...Object.keys(tokens).map((chain) => tokens[chain].decimals)
       );
       const result =
-        amount *
-        BigInt(10 ** (tokens[0][toChain].decimals - significantDecimals));
+        amount * BigInt(10 ** (tokens[toChain].decimals - significantDecimals));
       return {
         amount: result,
-        decimals: tokens[0][toChain].decimals,
+        decimals: tokens[toChain].decimals,
       };
     }
   };

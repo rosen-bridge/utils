@@ -283,22 +283,22 @@ describe('TokenMap', () => {
     it('should return token set successfully', function () {
       const tokenMap = new TokenMap(firstTokenMap);
       const result = tokenMap.getTokenSet('this is a simple ip');
-      expect(result).toEqual([firstTokenMap.tokens[1]]);
+      expect(result).toEqual(firstTokenMap.tokens[1]);
     });
 
     /**
-     * @target TokenMap.getTokenSet should return empty list when token is not found
+     * @target TokenMap.getTokenSet should return undefined when token is not found
      * @dependencies
      * - RosenToken json
      * @scenario
      * - call getTokenSet
      * @expected
-     * - should return empty list
+     * - should return undefined
      */
-    it('should return empty list when token is not found', function () {
+    it('should return undefined when token is not found', function () {
       const tokenMap = new TokenMap(firstTokenMap);
       const result = tokenMap.getTokenSet('not.found');
-      expect(result).toEqual([]);
+      expect(result).toBeUndefined();
     });
   });
 
