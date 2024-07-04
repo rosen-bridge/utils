@@ -6,7 +6,7 @@ import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import { EvmRpcRosenExtractor } from './EvmRpcRosenExtractor';
 
 export class EvmRosenExtractor extends AbstractRosenDataExtractor<string> {
-  chain: string;
+  readonly chain: string;
   protected rpcExtractor: EvmRpcRosenExtractor;
 
   constructor(

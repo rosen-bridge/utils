@@ -6,7 +6,7 @@ import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import { parseRosenData } from './utils';
 
 export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<Transaction> {
-  chain: string;
+  readonly chain: string;
   protected nativeToken: string;
 
   constructor(

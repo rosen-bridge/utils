@@ -3,7 +3,7 @@ import { RosenData } from './types';
 import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
 
 export default abstract class AbstractRosenDataExtractor<TransactionType> {
-  abstract chain: string;
+  abstract readonly chain: string;
   protected readonly logger: AbstractLogger;
   protected readonly tokens: TokenMap;
   protected readonly lockAddress: string;
