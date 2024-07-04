@@ -1,5 +1,16 @@
 # @rosen-bridge/minimum-fee
 
+## 2.1.0
+
+### Minor Changes
+
+- add a function to get fee from MinimumFeeBox
+- add a function to get fee from MinimumFeeBoxBuilder
+- enable MinimumFeeConfig initialization from fee config
+- export fee ratio divisor constant
+- export a function to extract fee config from ErgoBox
+- export a function to convert fee config to register values
+
 ## 2.0.1
 
 ### Patch Changes
