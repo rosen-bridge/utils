@@ -9,6 +9,7 @@ import { parseRosenData } from './utils';
 import JsonBigInt from '@rosen-bridge/json-bigint';
 
 export class BitcoinRosenExtractor extends AbstractRosenDataExtractor<string> {
+  readonly chain = BITCOIN_CHAIN;
   protected lockScriptPubKey: string;
 
   constructor(
@@ -24,7 +25,7 @@ export class BitcoinRosenExtractor extends AbstractRosenDataExtractor<string> {
    * extracts RosenData from given lock transaction in BitcoinTx format
    * @param serializedTransaction stringified transaction in BitcoinTx format
    */
-  get = (serializedTransaction: string): RosenData | undefined => {
+  extractRawData = (serializedTransaction: string): RosenData | undefined => {
     let transaction: BitcoinTx;
     try {
       transaction = JsonBigInt.parse(serializedTransaction);

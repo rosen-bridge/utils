@@ -186,4 +186,38 @@ export default class TestUtils {
       },
     ],
   };
+
+  static multiDecimals: RosenTokens = {
+    idKeys: {
+      ergo: 'tokenId',
+      cardano: 'tokenId',
+      bitcoin: 'tokenId',
+      ethereum: 'tokenId',
+    },
+    tokens: [
+      {
+        [ERGO_CHAIN]: {
+          tokenId: ERGO_NATIVE_TOKEN,
+          name: ERGO_NATIVE_TOKEN,
+          decimals: 9,
+          metaData: {
+            type: 'tokenType',
+            residency: 'tokenResidency',
+          },
+        },
+        [CARDANO_CHAIN]: {
+          tokenId:
+            'ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2.7369676d61',
+          policyId: 'ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2',
+          assetName: '7369676d61',
+          name: 'Wrapped Erg',
+          decimals: 3,
+          metaData: {
+            type: 'tokenType',
+            residency: 'tokenResidency',
+          },
+        },
+      },
+    ],
+  };
 }

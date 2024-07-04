@@ -6,11 +6,12 @@ import { CardanoMetadataRosenData, KoiosTransaction, Utxo } from './types';
 import JsonBigInt from '@rosen-bridge/json-bigint';
 
 export class CardanoKoiosRosenExtractor extends AbstractRosenDataExtractor<KoiosTransaction> {
+  readonly chain = CARDANO_CHAIN;
   /**
    * extracts RosenData from given lock transaction in Koios format
    * @param transaction the lock transaction in Koios format
    */
-  get = (transaction: KoiosTransaction): RosenData | undefined => {
+  extractRawData = (transaction: KoiosTransaction): RosenData | undefined => {
     const baseError = `No rosen data found for tx [${transaction.tx_hash}]`;
     const metadata = transaction.metadata;
     try {

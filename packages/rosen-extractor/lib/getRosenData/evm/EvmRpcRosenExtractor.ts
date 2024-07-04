@@ -6,7 +6,7 @@ import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import { parseRosenData } from './utils';
 
 export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<Transaction> {
-  protected chain: string;
+  readonly chain: string;
   protected nativeToken: string;
 
   constructor(
@@ -35,7 +35,7 @@ export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<Transaction
    *         5. bytes after 69 must represent a valid CallDataRosenData
    * @param transaction the lock transaction in ethers Transaction object
    */
-  get = (transaction: Transaction): RosenData | undefined => {
+  extractRawData = (transaction: Transaction): RosenData | undefined => {
     const baseError = `No rosen data found for tx [${transaction.hash}]`;
     try {
       if (transaction.from == null || transaction.hash == null) {
