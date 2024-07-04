@@ -3,6 +3,7 @@ import { TokenMap } from '../../lib';
 import {
   firstToken,
   firstTokenMap,
+  multiDecimalTokenMap,
   secondToken,
   secondTokenMap,
 } from './TokenMapTestData';
@@ -266,6 +267,146 @@ describe('TokenMap', () => {
         firstTokenMap.tokens[0]['ergo'],
         firstTokenMap.tokens[1]['ergo'],
       ]);
+    });
+  });
+
+  describe('getTokenSet', () => {
+    /**
+     * @target TokenMap.getTokenSet should return token set successfully
+     * @dependencies
+     * - RosenToken json
+     * @scenario
+     * - call getTokenSet
+     * @expected
+     * - should return the token set
+     */
+    it('should return token set successfully', function () {
+      const tokenMap = new TokenMap(firstTokenMap);
+      const result = tokenMap.getTokenSet('this is a simple ip');
+      expect(result).toEqual(firstTokenMap.tokens[1]);
+    });
+
+    /**
+     * @target TokenMap.getTokenSet should return undefined when token is not found
+     * @dependencies
+     * - RosenToken json
+     * @scenario
+     * - call getTokenSet
+     * @expected
+     * - should return undefined
+     */
+    it('should return undefined when token is not found', function () {
+      const tokenMap = new TokenMap(firstTokenMap);
+      const result = tokenMap.getTokenSet('not.found');
+      expect(result).toBeUndefined();
+    });
+  });
+
+  describe('wrapAmount', () => {
+    /**
+     * @target TokenMap.wrapAmount should drop decimals successfully
+     * @dependencies
+     * - RosenToken json
+     * @scenario
+     * - call wrapAmount for cardano chain
+     * @expected
+     * - should return amount with less digits
+     */
+    it('should drop decimals successfully', function () {
+      const tokenMap = new TokenMap(multiDecimalTokenMap);
+      const result = tokenMap.wrapAmount(
+        'policyId3.assetName3',
+        123456789n,
+        'cardano'
+      );
+      expect(result.amount).toEqual(1234n);
+      expect(result.decimals).toEqual(3);
+    });
+
+    /**
+     * @target TokenMap.wrapAmount should keep amount when it is already with significant decimals
+     * @dependencies
+     * - RosenToken json
+     * @scenario
+     * - call wrapAmount for ergo chain
+     * @expected
+     * - should return amount with same digits
+     */
+    it('should keep amount when it is already with significant decimals', function () {
+      const tokenMap = new TokenMap(multiDecimalTokenMap);
+      const result = tokenMap.wrapAmount('tokenId', 123456789n, 'ergo');
+      expect(result.amount).toEqual(123456789n);
+      expect(result.decimals).toEqual(3);
+    });
+
+    /**
+     * @target TokenMap.wrapAmount should keep amount when token is not supported
+     * @dependencies
+     * - RosenToken json
+     * @scenario
+     * - call wrapAmount for ergo chain
+     * @expected
+     * - should return amount with same digits and 0 decimals
+     */
+    it('should keep amount when token is not supported', function () {
+      const tokenMap = new TokenMap(multiDecimalTokenMap);
+      const result = tokenMap.wrapAmount('not.supported', 123456789n, 'ergo');
+      expect(result.amount).toEqual(123456789n);
+      expect(result.decimals).toEqual(0);
+    });
+  });
+
+  describe('unwrapAmount', () => {
+    /**
+     * @target TokenMap.unwrapAmount should add decimals successfully
+     * @dependencies
+     * - RosenToken json
+     * @scenario
+     * - call unwrapAmount for cardano chain
+     * @expected
+     * - should return amount with more digits
+     */
+    it('should add decimals successfully', function () {
+      const tokenMap = new TokenMap(multiDecimalTokenMap);
+      const result = tokenMap.unwrapAmount(
+        'policyId3.assetName3',
+        1234n,
+        'cardano'
+      );
+      expect(result.amount).toEqual(123400000n);
+      expect(result.decimals).toEqual(8);
+    });
+
+    /**
+     * @target TokenMap.unwrapAmount should keep amount when it is already with significant decimals
+     * @dependencies
+     * - RosenToken json
+     * @scenario
+     * - call unwrapAmount for ergo chain
+     * @expected
+     * - should return amount with same digits
+     */
+    it('should keep amount when it is already with significant decimals', function () {
+      const tokenMap = new TokenMap(multiDecimalTokenMap);
+      const result = tokenMap.unwrapAmount('tokenId', 123456789n, 'ergo');
+      expect(result.amount).toEqual(123456789n);
+      expect(result.decimals).toEqual(3);
+    });
+
+    /**
+     * @target TokenMap.unwrapAmount should keep amount when token is not supported
+     * @dependencies
+     * - RosenToken json
+     * @scenario
+     * - call unwrapAmount for ergo chain
+     * @expected
+     * - should return amount with same digits and 0 decimals
+     */
+    it('should keep amount when token is not supported', function () {
+      const tokenMap = new TokenMap(multiDecimalTokenMap);
+      const result = tokenMap.unwrapAmount('not.supported', 123456789n, 'ergo');
+      expect(result.amount).toEqual(123456789n);
+      expect(result.decimals).toEqual(0);
     });
   });
 });

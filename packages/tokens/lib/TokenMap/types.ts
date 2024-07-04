@@ -14,3 +14,8 @@ export type ChainTokenMetadata = {
   type: string;
   residency: string;
 };
+
+export type RosenAmount = {
+  amount: bigint;
+  decimals: number;
+};

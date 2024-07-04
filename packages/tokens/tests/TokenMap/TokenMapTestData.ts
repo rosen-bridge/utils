@@ -4,6 +4,7 @@ export const firstTokenMap: RosenTokens = {
   idKeys: {
     ergo: 'tokenId',
     cardano: 'tokenId',
+    binance: 'id',
   },
   tokens: [
     {
@@ -96,6 +97,37 @@ export const secondTokenMap: RosenTokens = {
         assetName: 'assetName3',
         name: 'asset3',
         decimals: 0,
+        metaData: {
+          type: 'tokenType',
+          residency: 'wrapped',
+        },
+      },
+    },
+  ],
+};
+
+export const multiDecimalTokenMap: RosenTokens = {
+  idKeys: {
+    ergo: 'tokenId',
+    cardano: 'tokenId',
+  },
+  tokens: [
+    {
+      ergo: {
+        tokenId: 'tokenId',
+        name: 'test token3',
+        decimals: 3,
+        metaData: {
+          type: 'tokenType',
+          residency: 'native',
+        },
+      },
+      cardano: {
+        tokenId: 'policyId3.assetName3',
+        policyId: 'policyId3',
+        assetName: 'assetName3',
+        name: 'asset3',
+        decimals: 8,
         metaData: {
           type: 'tokenType',
           residency: 'wrapped',

@@ -1,5 +1,5 @@
 import { NATIVE_RESIDENCY } from './constants';
-import { RosenChainToken, RosenTokens } from './types';
+import { RosenAmount, RosenChainToken, RosenTokens } from './types';
 
 /**
  * TokenMap class searches for different assets properties in different chains
@@ -138,5 +138,88 @@ export class TokenMap {
           token[chain].metaData.residency == NATIVE_RESIDENCY
       )
       .map((token) => token[chain]);
+  };
+
+  /**
+   * get a token set by the id of one of them
+   * @param tokenId
+   */
+  getTokenSet = (
+    tokenId: string
+  ): Record<string, RosenChainToken> | undefined => {
+    const result = this.tokensConfig.tokens.filter(
+      (tokenSet) =>
+        Object.keys(tokenSet).filter(
+          (chain) => tokenSet[chain][this.getIdKey(chain)] === tokenId
+        ).length
+    );
+    if (result.length === 0) return undefined;
+    return result[0];
+  };
+
+  /**
+   * wraps amount of a token on the given chain
+   * @param tokenId
+   * @param amount
+   * @param chain
+   */
+  wrapAmount = (
+    tokenId: string,
+    amount: bigint,
+    chain: string
+  ): RosenAmount => {
+    const tokens = this.getTokenSet(tokenId);
+
+    if (tokens === undefined) {
+      // token is not supported, no decimals drop
+      return {
+        amount: amount,
+        decimals: 0,
+      };
+    } else {
+      const significantDecimals = Math.min(
+        ...Object.keys(tokens).map(
+          (supportedChain) => tokens[supportedChain].decimals
+        )
+      );
+      const result =
+        amount / BigInt(10 ** (tokens[chain].decimals - significantDecimals));
+      return {
+        amount: result,
+        decimals: significantDecimals,
+      };
+    }
+  };
+
+  /**
+   * wraps amount of a token on the given chain
+   * @param tokenId
+   * @param amount
+   * @param toChain
+   */
+  unwrapAmount = (
+    tokenId: string,
+    amount: bigint,
+    toChain: string
+  ): RosenAmount => {
+    const tokens = this.getTokenSet(tokenId);
+
+    if (tokens === undefined) {
+      // token is not supported, no decimals added
+      return {
+        amount: amount,
+        decimals: 0,
+      };
+    } else {
+      const significantDecimals = Math.min(
+        ...Object.keys(tokens).map((chain) => tokens[chain].decimals)
+      );
+      const result =
+        amount * BigInt(10 ** (tokens[toChain].decimals - significantDecimals));
+      return {
+        amount: result,
+        decimals: tokens[toChain].decimals,
+      };
+    }
   };
 }
