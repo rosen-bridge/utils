@@ -1,5 +1,16 @@
 # @rosen-bridge/rosen-extractor
 
+## 6.0.0
+
+### Major Changes
+
+- consider decimals drop in AbstractRosenDataExtractor
+
+### Patch Changes
+
+- Updated dependencies
+  - @rosen-bridge/tokens@1.2.0
+
 ## 5.0.1
 
 ### Patch Changes
