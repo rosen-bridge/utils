@@ -16,7 +16,7 @@ describe('AbstractRosenDataExtractor', () => {
       const extractor = new TestRosenDataExtractor('', TestUtils.multiDecimals);
       const result = extractor.get('');
 
-      expect(result?.amount).toEqual('123');
+      expect(result?.amount).toEqual('124');
     });
   });
 });

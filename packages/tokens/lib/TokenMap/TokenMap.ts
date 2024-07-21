@@ -183,7 +183,10 @@ export class TokenMap {
         )
       );
       const result =
-        amount / BigInt(10 ** (tokens[chain].decimals - significantDecimals));
+        amount / BigInt(10 ** (tokens[chain].decimals - significantDecimals)) +
+        (amount % BigInt(10 ** (tokens[chain].decimals - significantDecimals))
+          ? 1n
+          : 0n);
       return {
         amount: result,
         decimals: significantDecimals,
@@ -221,5 +224,20 @@ export class TokenMap {
         decimals: tokens[toChain].decimals,
       };
     }
+  };
+
+  /**
+   * returns significant decimals (decimals of the wrapped value) for a token
+   * @param tokenId
+   */
+  getSignificantDecimals = (tokenId: string): number | undefined => {
+    const tokens = this.getTokenSet(tokenId);
+    if (tokens === undefined) {
+      // token is not supported, no decimals added
+      return undefined;
+    }
+    return Math.min(
+      ...Object.keys(tokens).map((chain) => tokens[chain].decimals)
+    );
   };
 }

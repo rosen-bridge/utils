@@ -1,5 +1,12 @@
 # @rosen-bridge/rosen-extractor
 
+## 6.0.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @rosen-bridge/tokens@1.2.1
+
 ## 6.0.0
 
 ### Major Changes

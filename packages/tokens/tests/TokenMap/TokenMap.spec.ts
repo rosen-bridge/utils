@@ -319,6 +319,26 @@ describe('TokenMap', () => {
         123456789n,
         'cardano'
       );
+      expect(result.amount).toEqual(1235n);
+      expect(result.decimals).toEqual(3);
+    });
+
+    /**
+     * @target TokenMap.wrapAmount should drop decimals without rounding successfully
+     * @dependencies
+     * - RosenToken json
+     * @scenario
+     * - call wrapAmount for cardano chain
+     * @expected
+     * - should return amount with less and without rounding
+     */
+    it('should drop decimals without rounding successfully', function () {
+      const tokenMap = new TokenMap(multiDecimalTokenMap);
+      const result = tokenMap.wrapAmount(
+        'policyId3.assetName3',
+        123400000n,
+        'cardano'
+      );
       expect(result.amount).toEqual(1234n);
       expect(result.decimals).toEqual(3);
     });
@@ -407,6 +427,38 @@ describe('TokenMap', () => {
       const result = tokenMap.unwrapAmount('not.supported', 123456789n, 'ergo');
       expect(result.amount).toEqual(123456789n);
       expect(result.decimals).toEqual(0);
+    });
+  });
+
+  describe('getSignificantDecimals', () => {
+    /**
+     * @target TokenMap.getSignificantDecimals should return significant decimals successfully
+     * @dependencies
+     * - RosenToken json
+     * @scenario
+     * - call getSignificantDecimals for a supported token with multiple decimals
+     * @expected
+     * - should return the minimum decimals in the token set
+     */
+    it('should return significant decimals successfully', function () {
+      const tokenMap = new TokenMap(multiDecimalTokenMap);
+      const result = tokenMap.getSignificantDecimals('policyId3.assetName3');
+      expect(result).toEqual(3);
+    });
+
+    /**
+     * @target TokenMap.getSignificantDecimals should keep amount when token is not supported
+     * @dependencies
+     * - RosenToken json
+     * @scenario
+     * - call getSignificantDecimals for an unsupported token
+     * @expected
+     * - should return undefined
+     */
+    it('should keep amount when token is not supported', function () {
+      const tokenMap = new TokenMap(multiDecimalTokenMap);
+      const result = tokenMap.getSignificantDecimals('not.supported');
+      expect(result).toBeUndefined();
     });
   });
 });

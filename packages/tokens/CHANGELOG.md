@@ -1,5 +1,12 @@
 # @rosen-bridge/tokens
 
+## 1.2.1
+
+### Patch Changes
+
+- - add function to get significant decimals for a token
+  - change wrapAmount logic to ceiling
+
 ## 1.2.0
 
 ### Minor Changes
