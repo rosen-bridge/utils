@@ -1,5 +1,11 @@
 # @rosen-bridge/rosen-extractor
 
+## 6.1.0
+
+### Minor Changes
+
+- add EvmEthersRosenExtractor
+
 ## 6.0.1
 
 ### Patch Changes
