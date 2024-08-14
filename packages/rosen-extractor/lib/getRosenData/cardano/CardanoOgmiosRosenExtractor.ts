@@ -6,9 +6,8 @@ import {
   Transaction,
   TransactionOutput,
 } from '@cardano-ogmios/schema';
-import { CardanoMetadataRosenData } from './types';
-import { isArray, isString } from 'lodash-es';
 import JsonBigInt from '@rosen-bridge/json-bigint';
+import { parseRosenData } from './utils';
 
 export class CardanoOgmiosRosenExtractor extends AbstractRosenDataExtractor<Transaction> {
   readonly chain = CARDANO_CHAIN;
@@ -24,31 +23,19 @@ export class CardanoOgmiosRosenExtractor extends AbstractRosenDataExtractor<Tran
         const blob = metadata.labels;
         if (blob && blob['0'] && blob['0'].json) {
           const data = blob['0'].json as ObjectNoSchema;
-          if (
-            isString(data.to) &&
-            isString(data.networkFee) &&
-            isString(data.bridgeFee) &&
-            isString(data.toAddress) &&
-            isArray(data.fromAddress) &&
-            data.fromAddress.every(isString)
-          ) {
-            const rosenData = data as unknown as CardanoMetadataRosenData;
-
+          const rosenData = parseRosenData(data);
+          if (rosenData) {
             const lockOutputs = transaction.outputs.filter(
               (output) => output.address === this.lockAddress
             );
             for (const output of lockOutputs) {
               const assetTransformation = this.getAssetTransformation(
                 output,
-                rosenData.to
+                rosenData.toChain
               );
               if (assetTransformation) {
                 return {
-                  toChain: rosenData.to,
-                  toAddress: rosenData.toAddress,
-                  bridgeFee: rosenData.bridgeFee,
-                  networkFee: rosenData.networkFee,
-                  fromAddress: rosenData.fromAddress.join(''),
+                  ...rosenData,
                   sourceChainTokenId: assetTransformation.from,
                   amount: assetTransformation.amount,
                   targetChainTokenId: assetTransformation.to,

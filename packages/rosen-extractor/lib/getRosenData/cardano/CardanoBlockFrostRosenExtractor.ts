@@ -2,12 +2,9 @@ import { isPlainObject } from 'lodash-es';
 import { RosenData, TokenTransformation } from '../abstract/types';
 import AbstractRosenDataExtractor from '../abstract/AbstractRosenDataExtractor';
 import { CARDANO_CHAIN, CARDANO_NATIVE_TOKEN } from '../const';
-import {
-  CardanoMetadataRosenData,
-  BlockFrostOutputBox,
-  BlockFrostTransaction,
-} from './types';
+import { BlockFrostOutputBox, BlockFrostTransaction } from './types';
 import JsonBigInt from '@rosen-bridge/json-bigint';
+import { parseRosenData } from './utils';
 
 export class CardanoBlockFrostRosenExtractor extends AbstractRosenDataExtractor<BlockFrostTransaction> {
   readonly chain = CARDANO_CHAIN;
@@ -26,22 +23,8 @@ export class CardanoBlockFrostRosenExtractor extends AbstractRosenDataExtractor<
         return undefined;
       }
       const data = metadata.find((data) => data.label === '0')?.json_metadata;
-      if (!data || !isPlainObject(data)) {
-        this.logger.debug(
-          baseError + `: Invalid metadata: ${JsonBigInt.stringify(metadata)}`
-        );
-        return undefined;
-      }
-      const objectKeys = Object.keys(data);
-      if (
-        objectKeys.includes('to') &&
-        objectKeys.includes('bridgeFee') &&
-        objectKeys.includes('networkFee') &&
-        objectKeys.includes('toAddress') &&
-        objectKeys.includes('fromAddress')
-      ) {
-        const rosenData = data as unknown as CardanoMetadataRosenData;
-
+      const rosenData = parseRosenData(data);
+      if (rosenData) {
         const lockOutputs = transaction.utxos.outputs.filter(
           (output) => output.address === this.lockAddress
         );
@@ -49,15 +32,11 @@ export class CardanoBlockFrostRosenExtractor extends AbstractRosenDataExtractor<
           const output = lockOutputs[i];
           const assetTransformation = this.getAssetTransformation(
             output,
-            rosenData.to
+            rosenData.toChain
           );
           if (assetTransformation) {
             return {
-              toChain: rosenData.to,
-              toAddress: rosenData.toAddress,
-              bridgeFee: rosenData.bridgeFee,
-              networkFee: rosenData.networkFee,
-              fromAddress: rosenData.fromAddress.join(''),
+              ...rosenData,
               sourceChainTokenId: assetTransformation.from,
               amount: assetTransformation.amount,
               targetChainTokenId: assetTransformation.to,

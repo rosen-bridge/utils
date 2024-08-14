@@ -6,6 +6,7 @@ import { RosenTokens } from '@rosen-bridge/tokens';
 import { Address, Constant } from 'ergo-lib-wasm-nodejs';
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import JsonBigInt from '@rosen-bridge/json-bigint';
+import { decodeAddress } from '@rosen-bridge/address-codec';
 
 export class ErgoNodeRosenExtractor extends AbstractRosenDataExtractor<NodeTransaction> {
   readonly chain = ERGO_CHAIN;
@@ -37,6 +38,10 @@ export class ErgoNodeRosenExtractor extends AbstractRosenDataExtractor<NodeTrans
             const R4Serialized = R4.to_coll_coll_byte();
             if (R4Serialized.length >= 5) {
               const toChain = Buffer.from(R4Serialized[0]).toString();
+              const toAddress = decodeAddress(
+                toChain,
+                Buffer.from(R4Serialized[1]).toString()
+              );
 
               const assetTransformation = this.getAssetTransformation(
                 box,
@@ -45,7 +50,7 @@ export class ErgoNodeRosenExtractor extends AbstractRosenDataExtractor<NodeTrans
               if (assetTransformation) {
                 return {
                   toChain: toChain,
-                  toAddress: Buffer.from(R4Serialized[1]).toString(),
+                  toAddress: toAddress,
                   bridgeFee: Buffer.from(R4Serialized[3]).toString(),
                   networkFee: Buffer.from(R4Serialized[2]).toString(),
                   fromAddress: Buffer.from(R4Serialized[4]).toString(),
