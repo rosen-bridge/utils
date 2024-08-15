@@ -6,7 +6,10 @@ import { RosenTokens } from '@rosen-bridge/tokens';
 import { Address, Constant } from 'ergo-lib-wasm-nodejs';
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import JsonBigInt from '@rosen-bridge/json-bigint';
-import { decodeAddress } from '@rosen-bridge/address-codec';
+import {
+  validateAddress,
+  UnsupportedAddressError,
+} from '@rosen-bridge/address-codec';
 
 export class ErgoNodeRosenExtractor extends AbstractRosenDataExtractor<NodeTransaction> {
   readonly chain = ERGO_CHAIN;
@@ -36,12 +39,14 @@ export class ErgoNodeRosenExtractor extends AbstractRosenDataExtractor<NodeTrans
           const R4 = Constant.decode_from_base16(box.additionalRegisters.R4);
           if (R4) {
             const R4Serialized = R4.to_coll_coll_byte();
-            if (R4Serialized.length >= 5) {
-              const toChain = Buffer.from(R4Serialized[0]).toString();
-              const toAddress = decodeAddress(
-                toChain,
+            if (
+              R4Serialized.length >= 5 &&
+              validateAddress(
+                Buffer.from(R4Serialized[0]).toString(),
                 Buffer.from(R4Serialized[1]).toString()
-              );
+              )
+            ) {
+              const toChain = Buffer.from(R4Serialized[0]).toString();
 
               const assetTransformation = this.getAssetTransformation(
                 box,
@@ -50,7 +55,7 @@ export class ErgoNodeRosenExtractor extends AbstractRosenDataExtractor<NodeTrans
               if (assetTransformation) {
                 return {
                   toChain: toChain,
-                  toAddress: toAddress,
+                  toAddress: Buffer.from(R4Serialized[1]).toString(),
                   bridgeFee: Buffer.from(R4Serialized[3]).toString(),
                   networkFee: Buffer.from(R4Serialized[2]).toString(),
                   fromAddress: Buffer.from(R4Serialized[4]).toString(),
@@ -79,6 +84,12 @@ export class ErgoNodeRosenExtractor extends AbstractRosenDataExtractor<NodeTrans
         baseError + `: No valid rosen data found in any output box registers`
       );
     } catch (e) {
+      if (e instanceof UnsupportedAddressError) {
+        this.logger.debug(
+          `Invalid register data, toAddress is not valid and validation failed with error: ${e.message}`
+        );
+        return undefined;
+      }
       this.logger.debug(
         `An error occurred while getting Ergo rosen data: ${e}`
       );

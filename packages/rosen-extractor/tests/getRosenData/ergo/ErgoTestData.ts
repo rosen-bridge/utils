@@ -95,7 +95,7 @@ class ErgoTestData {
           },
         ],
         additionalRegisters: {
-          R4: '1a050763617264616e6f0a746f41646472657373340631303030303004323530300b66726f6d41646472657373',
+          R4: '1a050763617264616e6f6761646472317138686d70357a6a7a7676377337706d67656d7a336d76726b64326e7537363039687767737161306175663668376833723678366a6e327a727438787333656e633533663461716b733776356735743235346675326e38737a3277736c6132393361093235303030303030300932353030303030303033396944356a4d6f4c6a4b39617a546469677954387a3151593671487241366756724a616d4d46384d4a3271743435704a704463',
         },
         spentTransactionId: null,
         mainChain: true,
@@ -190,7 +190,7 @@ class ErgoTestData {
           '2CBjjwbY9Rokj7Ue9qT2pbMR2WhLDmdcL2V9pRgCEEMks9QRXiQ7K73wNANLAczY1XLimkNBu6Nt3hW1zACrk4zQxu',
         assets: [],
         additionalRegisters: {
-          R4: '1a050763617264616e6f0a746f41646472657373340631303030303004323530300b66726f6d41646472657373',
+          R4: '1a050763617264616e6f6761646472317138717474733479656c70727174753934377936346e6633616461656475726b376c36617965343474657238723365636d72796432706835357638666c79686e766439687376683073643065326e7a6b387664793564686465646c736e727076346c093235303030303030300932353030303030303033396647727a45376735537a5972387552474356787632556a6245734d64573650726656544b4259355a77437956783155335558',
         },
         spentTransactionId: null,
         mainChain: true,
@@ -663,10 +663,11 @@ class ErgoTestData {
   static nodeRosenData = {
     validTokenLock: {
       toChain: 'cardano',
-      toAddress: 'toAddress4',
-      bridgeFee: '2500',
-      networkFee: '100000',
-      fromAddress: 'fromAddress',
+      toAddress:
+        'addr1q8hmp5zjzvv7s7pmgemz3mvrkd2nu7609hwgsqa0auf6h7h3r6x6jn2zrt8xs3enc53f4aqks7v5g5t254fu2n8sz2wsla293a',
+      bridgeFee: '250000000',
+      networkFee: '250000000',
+      fromAddress: '9iD5jMoLjK9azTdigyT8z1QY6qHrA6gVrJamMF8MJ2qt45pJpDc',
       sourceChainTokenId:
         'f6a69529b12a7e2326acffee8383e0c44408f87a872886fadf410fe8498006d3',
       amount: '2000000',
@@ -676,10 +677,11 @@ class ErgoTestData {
     },
     validErgLock: {
       toChain: 'cardano',
-      toAddress: 'toAddress4',
-      bridgeFee: '2500',
-      networkFee: '100000',
-      fromAddress: 'fromAddress',
+      toAddress:
+        'addr1q8qtts4yelprqtu947y64nf3adaedurk7l6aye44ter8r3ecmryd2ph55v8flyhnvd9hsvh0sd0e2nzk8vdy5dhdedlsnrpv4l',
+      bridgeFee: '250000000',
+      networkFee: '250000000',
+      fromAddress: '9fGrzE7g5SzYr8uRGCVxv2UjbEsMdW6PrfVTKBY5ZwCyVx1U3UX',
       sourceChainTokenId: 'erg',
       amount: '11100000',
       targetChainTokenId:

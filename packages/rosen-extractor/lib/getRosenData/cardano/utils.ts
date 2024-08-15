@@ -1,5 +1,5 @@
 import { isArray, isString, isPlainObject } from 'lodash-es';
-import { decodeAddress } from '@rosen-bridge/address-codec';
+import { validateAddress } from '@rosen-bridge/address-codec';
 
 export const parseRosenData = (data: any) => {
   if (
@@ -10,12 +10,12 @@ export const parseRosenData = (data: any) => {
     isString(data.bridgeFee) &&
     isString(data.toAddress) &&
     isArray(data.fromAddress) &&
-    data.fromAddress.every(isString)
+    data.fromAddress.every(isString) &&
+    validateAddress(data.to, data.toAddress)
   ) {
-    const toAddress = decodeAddress(data.to, data.toAddress);
     return {
       toChain: data.to,
-      toAddress: toAddress,
+      toAddress: data.toAddress,
       bridgeFee: data.bridgeFee,
       networkFee: data.networkFee,
       fromAddress: data.fromAddress.join(''),

@@ -21,7 +21,7 @@ export class TestRosenDataExtractor extends AbstractRosenDataExtractor<string> {
   extractRawData = (transaction: string): RosenData | undefined => {
     return {
       toChain: 'cardano',
-      toAddress: 'toAddress4',
+      toAddress: 'addr1v83t6pz7yhz3y2qu0ffe5kc0frl6wrud8l3aehs9axz35dgfl8z2x',
       bridgeFee: '2500',
       networkFee: '100000',
       fromAddress: 'fromAddress',

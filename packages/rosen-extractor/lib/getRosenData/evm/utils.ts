@@ -1,5 +1,5 @@
 import { SUPPORTED_CHAINS } from './../const';
-import { decodeAddress } from '@rosen-bridge/address-codec';
+import { decodeAddress, validateAddress } from '@rosen-bridge/address-codec';
 
 interface CallDataRosenData {
   toChain: string;
@@ -36,6 +36,7 @@ export const parseRosenData = (callData: string): CallDataRosenData => {
     36 + parseInt(addressLengthCode, 16) * 2
   );
   const toAddress = decodeAddress(toChain, addressHex);
+  validateAddress(toChain, toAddress);
 
   return {
     toChain,

@@ -92,7 +92,7 @@ export const blockFrostTransactions = {
         json_metadata: {
           to: 'ergo',
           bridgeFee: '1968503938',
-          toAddress: 'ergoAddress',
+          toAddress: '9hZxV3YNSfbCqS6GEses7DhAVSatvaoNtdsiNvkimPGG2c8fzkG',
           networkFee: '9842520',
           fromAddress: [
             'addr_test1vzg07d2qp3xje0w77f982zkhqey50gjxrsdqh89yx8r7nasu97hr0',
@@ -188,7 +188,7 @@ export const blockFrostTransactions = {
         json_metadata: {
           to: 'ergo',
           bridgeFee: '10000000',
-          toAddress: 'ergoAddress',
+          toAddress: '9hZxV3YNSfbCqS6GEses7DhAVSatvaoNtdsiNvkimPGG2c8fzkG',
           networkFee: '4000000',
           fromAddress: [
             'addr_test1vzg07d2qp3xje0w77f982zkhqey50gjxrsdqh89yx8r7nasu97hr0',
@@ -482,7 +482,7 @@ export const blockFrostTransactions = {
 export const blockFrostRosenData = {
   validTokenLock: {
     toChain: 'ergo',
-    toAddress: 'ergoAddress',
+    toAddress: '9hZxV3YNSfbCqS6GEses7DhAVSatvaoNtdsiNvkimPGG2c8fzkG',
     bridgeFee: '1968503938',
     networkFee: '9842520',
     fromAddress:
@@ -496,7 +496,7 @@ export const blockFrostRosenData = {
   },
   validAdaLock: {
     toChain: 'ergo',
-    toAddress: 'ergoAddress',
+    toAddress: '9hZxV3YNSfbCqS6GEses7DhAVSatvaoNtdsiNvkimPGG2c8fzkG',
     bridgeFee: '10000000',
     networkFee: '4000000',
     fromAddress:
