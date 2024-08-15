@@ -135,6 +135,20 @@ describe('validateAddress', () => {
   });
 
   /**
+   * @target `validateAddress` should not validate Ethereum address with checksum
+   * @dependencies
+   * @scenario
+   * - run test
+   * @expected
+   * - not to validate Ethereum address with checksum
+   */
+  it('should not validate Ethereum address with checksum', () => {
+    expect(() => {
+      validateAddress(ETHEREUM_CHAIN, testData.invalidEthereumChecksumAddress);
+    }).toThrow(UnsupportedAddressError);
+  });
+
+  /**
    * @target `validateAddress` should not validate wrong Ethereum address
    * @dependencies
    * @scenario

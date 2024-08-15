@@ -32,3 +32,5 @@ export const encodedEthereumAddress =
 export const invalidEthereumAddressLength =
   '0xb416c8a7ec94706a9ae2c26c11d320519482b1';
 export const invalidEthereumIcapAddress = 'XE65GB6LDNXYOFTX0NSV3FUWKOWIXAMJK36';
+export const invalidEthereumChecksumAddress =
+  '0x4838B106FCe9647Bdf1E7877BF73cE8B0BAD5f97';
