@@ -1,5 +1,11 @@
 # @rosen-bridge/rosen-extractor
 
+## 6.1.1
+
+### Patch Changes
+
+- fix EvmRosenExtractor serialization
+
 ## 6.1.0
 
 ### Minor Changes
