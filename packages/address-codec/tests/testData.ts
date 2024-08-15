@@ -2,13 +2,21 @@ export const ergoAddress =
   '9iMjQx8PzwBKXRvsFUJFJAPoy31znfEeBUGz8DRkcnJX4rJYjVd';
 export const encodedErgoAddress =
   '03f999da8e6e42660e4464d17d29e63bc006734a6710a24eb489b466323d3a9339';
+export const invalidErgoAddress =
+  '9iMjQx8PzwBKXRvsFUJFJAPoy31znfEeBUGz8DRkcnJX4rJYjVD';
 
 export const cardanoAddress =
   'addr1qxxa3kfnnh40yqtepa5frt0tkw4a0rys7v33422lzt8glx43sqtd4vkhjzawajej8aujh27p5a54zx62xf3wvuplynqs3fsqet';
 export const encodedCardanoAddress =
   '018dd8d9339deaf201790f6891adebb3abd78c90f3231aa95f12ce8f9ab18016dab2d790baeecb323f792babc1a769511b4a3262e6703f24c1';
+export const invalidCardanoAddress =
+  'addr1qxxa3kfnnh40yqtepa5frt0tkw4a0rys7v33422lzt8glx43sqtd4vkhjzawajej8aujh27p5a54zx62xf3wvuplynqs3fsqee';
 
 export const bitcoinAddress = 'bc1qkgp89fjerymm5ltg0hygnumr0m2qa7n22gyw6h';
+export const invalidBitcoinAddressLength =
+  'bc1qkgp89fjerymm5ltg0hygnumr0m2qa7n22gyw6';
+export const tapRootBitcoinAddress =
+  'bc1pxhtmm7mjrafdkw46wc7lmjn3gyrmdm4q0dnmw8j225gxtwtq7mwqd7e24v';
 export const encodedBitcoinAddress =
   '0014b20272a6591937ba7d687dc889f3637ed40efa6a';
 
@@ -23,3 +31,4 @@ export const encodedEthereumAddress =
 
 export const invalidEthereumAddressLength =
   '0xb416c8a7ec94706a9ae2c26c11d320519482b1';
+export const invalidEthereumIcapAddress = 'XE65GB6LDNXYOFTX0NSV3FUWKOWIXAMJK36';

@@ -8,7 +8,6 @@ import { UnsupportedAddressError, UnsupportedChainError } from './types';
 import * as ergoLib from 'ergo-lib-wasm-nodejs';
 import * as cardanoLib from '@emurgo/cardano-serialization-lib-nodejs';
 import * as bitcoinLib from 'bitcoinjs-lib';
-import * as ethereumLib from 'ethers';
 
 /**
  * decodes address of a chain
@@ -32,17 +31,11 @@ export const decodeAddress = (
         Buffer.from(encodedAddress, 'hex')
       ).to_bech32();
     case BITCOIN_CHAIN:
-      if (encodedAddress.slice(0, 4) != 'bc1q')
-        throw new UnsupportedAddressError(chain, encodedAddress);
       return bitcoinLib.address.fromOutputScript(
         Buffer.from(encodedAddress, 'hex')
       );
     case ETHEREUM_CHAIN:
-      if (
-        encodedAddress.length != 40 ||
-        !ethereumLib.isAddress('0x' + encodedAddress) ||
-        encodedAddress != encodedAddress.toLowerCase()
-      ) {
+      if (encodedAddress.length != 40) {
         throw new UnsupportedAddressError(chain, encodedAddress);
       }
       return '0x' + encodedAddress;
