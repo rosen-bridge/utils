@@ -34,7 +34,7 @@ export class EvmRosenExtractor extends AbstractRosenDataExtractor<string> {
   extractRawData = (serializedTransaction: string): RosenData | undefined => {
     let transaction: Transaction;
     try {
-      transaction = Transaction.from(serializedTransaction);
+      transaction = Transaction.from('0x' + serializedTransaction);
     } catch (e) {
       this.logger.debug(
         `An error occurred while deserializing ${this.chain} tx to extract rosen data: ${e}`
