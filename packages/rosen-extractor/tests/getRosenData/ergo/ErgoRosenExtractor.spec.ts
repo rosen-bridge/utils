@@ -1,6 +1,14 @@
 import { ErgoRosenExtractor } from '../../../lib';
 import ErgoTestData from './ErgoTestData';
 import TestUtils from '../TestUtils';
+import * as addressCodec from '@rosen-bridge/address-codec';
+
+jest.mock('@rosen-bridge/address-codec', () => {
+  return {
+    __esModule: true,
+    ...jest.requireActual('@rosen-bridge/address-codec'),
+  };
+});
 
 describe('ErgoRosenExtractor', () => {
   const lockAddress =
@@ -75,6 +83,30 @@ describe('ErgoRosenExtractor', () => {
       const result = extractor.get(invalidBytes);
 
       // check return value
+      expect(result).toBeUndefined();
+    });
+
+    /**
+     * @target `ErgoNodeRosenExtractor.get` should return undefined when
+     * validateAddress throws error
+     * @dependencies
+     * @scenario
+     * - mock valid rosen data tx
+     * - mock `validateAddress` to throw error
+     * - run test
+     * - check returned value
+     * @expected
+     * - to return undefined
+     */
+    it('should return undefined when validateAddress throws error', () => {
+      const validLockTx = ErgoTestData.ergoSerializedTxs.lockTx;
+      jest.spyOn(addressCodec, 'validateAddress').mockImplementation(() => {
+        throw addressCodec.UnsupportedAddressError;
+      });
+
+      const extractor = new ErgoRosenExtractor(lockAddress, TestUtils.tokens);
+      const result = extractor.get(validLockTx);
+
       expect(result).toBeUndefined();
     });
   });

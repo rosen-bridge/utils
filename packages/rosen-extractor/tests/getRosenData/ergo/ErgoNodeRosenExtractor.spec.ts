@@ -3,6 +3,14 @@ import ErgoTestData from './ErgoTestData';
 import TestUtils from '../TestUtils';
 import { NodeTransaction } from '../../../lib/getRosenData/ergo/types';
 import { CARDANO_CHAIN } from '../../../lib/getRosenData/const';
+import * as addressCodec from '@rosen-bridge/address-codec';
+
+jest.mock('@rosen-bridge/address-codec', () => {
+  return {
+    __esModule: true,
+    ...jest.requireActual('@rosen-bridge/address-codec'),
+  };
+});
 
 describe('ErgoNodeRosenExtractor', () => {
   describe('get', () => {
@@ -137,6 +145,35 @@ describe('ErgoNodeRosenExtractor', () => {
       const result = extractor.get(noRegister as unknown as NodeTransaction);
 
       // check return value
+      expect(result).toBeUndefined();
+    });
+
+    /**
+     * @target `ErgoNodeRosenExtractor.get` should return undefined when
+     * validateAddress throws error
+     * @dependencies
+     * @scenario
+     * - mock valid rosen data tx
+     * - mock `validateAddress` to throw error
+     * - run test
+     * - check returned value
+     * @expected
+     * - to return undefined
+     */
+    it('should return undefined when validateAddress throws error', () => {
+      const validTokenLockTx = ErgoTestData.nodeTransactions.validTokenLock;
+      jest.spyOn(addressCodec, 'validateAddress').mockImplementation(() => {
+        throw addressCodec.UnsupportedAddressError;
+      });
+
+      const extractor = new ErgoNodeRosenExtractor(
+        ErgoTestData.lockAddress,
+        TestUtils.tokens
+      );
+      const result = extractor.get(
+        validTokenLockTx as unknown as NodeTransaction
+      );
+
       expect(result).toBeUndefined();
     });
   });

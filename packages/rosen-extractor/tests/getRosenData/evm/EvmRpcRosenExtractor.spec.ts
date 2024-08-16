@@ -2,6 +2,14 @@ import { EvmRpcRosenExtractor } from '../../../lib';
 import * as testData from './testData';
 import TestUtils from '../TestUtils';
 import { Transaction, Signature, TransactionLike } from 'ethers';
+import * as addressCodec from '@rosen-bridge/address-codec';
+
+jest.mock('@rosen-bridge/address-codec', () => {
+  return {
+    __esModule: true,
+    ...jest.requireActual('@rosen-bridge/address-codec'),
+  };
+});
 
 describe('EvmRpcRosenExtractor', () => {
   describe('get', () => {
@@ -227,6 +235,28 @@ describe('EvmRpcRosenExtractor', () => {
       const len = invalidTx.data!.length;
       invalidTx.data = invalidTx.data!.substring(0, len - 10);
       const result = extractor.get(txLikeToTxResponse(invalidTx));
+      expect(result).toBeUndefined();
+    });
+
+    /**
+     * @target `EvmRosenExtractor.get` should return undefined when
+     * validateAddress throws error
+     * @dependencies
+     * @scenario
+     * - mock valid rosen data tx
+     * - mock `validateAddress` to throw error
+     * - run test
+     * - check returned value
+     * @expected
+     * - to return undefined
+     */
+    it('should return undefined when validateAddress throws error', () => {
+      const txRes = txLikeToTxResponse(testData.validErc20LockTx);
+      jest.spyOn(addressCodec, 'validateAddress').mockImplementation(() => {
+        throw addressCodec.UnsupportedAddressError;
+      });
+      const result = extractor.get(txRes);
+
       expect(result).toBeUndefined();
     });
   });

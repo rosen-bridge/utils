@@ -3,6 +3,14 @@ import * as testData from './rpcTestData';
 import TestUtils from '../TestUtils';
 import { ERGO_CHAIN, CARDANO_CHAIN } from '../../../lib/getRosenData/const';
 import { BitcoinRpcTransaction } from '../../../lib/getRosenData/bitcoin/types';
+import * as addressCodec from '@rosen-bridge/address-codec';
+
+jest.mock('@rosen-bridge/address-codec', () => {
+  return {
+    __esModule: true,
+    ...jest.requireActual('@rosen-bridge/address-codec'),
+  };
+});
 
 describe('BitcoinRpcRosenExtractor', () => {
   describe('get', () => {
@@ -141,6 +149,33 @@ describe('BitcoinRpcRosenExtractor', () => {
         TestUtils.noNativeTokens
       );
       const result = extractor.get(invalidTx as BitcoinRpcTransaction);
+
+      expect(result).toBeUndefined();
+    });
+
+    /**
+     * @target `BitcoinRpcRosenExtractor.get` should return undefined when
+     * validateAddress throws error
+     * @dependencies
+     * @scenario
+     * - mock valid rosen data tx
+     * - mock `validateAddress` to throw error
+     * - run test
+     * - check returned value
+     * @expected
+     * - to return undefined
+     */
+    it('should return undefined when validateAddress throws error', () => {
+      const validLockTx = testData.txs.lockTx;
+      jest.spyOn(addressCodec, 'validateAddress').mockImplementation(() => {
+        throw addressCodec.UnsupportedAddressError;
+      });
+
+      const extractor = new BitcoinRpcRosenExtractor(
+        testData.lockAddress,
+        TestUtils.tokens
+      );
+      const result = extractor.get(validLockTx as BitcoinRpcTransaction);
 
       expect(result).toBeUndefined();
     });
