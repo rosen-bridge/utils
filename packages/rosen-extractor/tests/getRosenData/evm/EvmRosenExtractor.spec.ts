@@ -35,7 +35,9 @@ describe('EvmRosenExtractor', () => {
      */
     it('should extract rosenData from EVM locking native-asset transfer tx successfully', () => {
       const validLockTx = testData.validNativeLockTx;
-      const result = extractor.get(Transaction.from(validLockTx).serialized);
+      const result = extractor.get(
+        Transaction.from(validLockTx).serialized.substring(2)
+      );
 
       expect(result).toStrictEqual(testData.rosenDataNative);
     });
@@ -53,7 +55,9 @@ describe('EvmRosenExtractor', () => {
      */
     it('should return undefined when recipient is not the lock address and call data does not start with `transfer` signature', () => {
       const invalidTx = testData.noLockNoTransfer;
-      const result = extractor.get(Transaction.from(invalidTx).serialized);
+      const result = extractor.get(
+        Transaction.from(invalidTx).serialized.substring(2)
+      );
 
       expect(result).toBeUndefined();
     });
@@ -72,7 +76,7 @@ describe('EvmRosenExtractor', () => {
     it('should return undefined when serialized transaction is invalid', () => {
       const validTx = testData.validNativeLockTx;
       const result = extractor.get(
-        Transaction.from(validTx).serialized + '0000'
+        Transaction.from(validTx).serialized.substring(2) + '0000'
       );
 
       expect(result).toBeUndefined();
