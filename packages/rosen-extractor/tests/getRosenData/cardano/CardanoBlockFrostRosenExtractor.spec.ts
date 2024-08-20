@@ -2,14 +2,6 @@ import { CardanoBlockFrostRosenExtractor } from '../../../lib';
 import * as testData from './BlockFrostTestData';
 import TestUtils from '../TestUtils';
 import { ERGO_CHAIN } from '../../../lib/getRosenData/const';
-import * as addressCodec from '@rosen-bridge/address-codec';
-
-jest.mock('@rosen-bridge/address-codec', () => {
-  return {
-    __esModule: true,
-    ...jest.requireActual('@rosen-bridge/address-codec'),
-  };
-});
 
 describe('BlockFrostRosenExtractor', () => {
   describe('get', () => {
@@ -200,33 +192,6 @@ describe('BlockFrostRosenExtractor', () => {
       const result = extractor.get(stringMetadata);
 
       // check return value
-      expect(result).toBeUndefined();
-    });
-
-    /**
-     * @target `BlockFrostRosenExtractor.get` should return undefined when
-     * validateAddress throws error
-     * @dependencies
-     * @scenario
-     * - mock valid rosen data tx
-     * - mock `validateAddress` to throw error
-     * - run test
-     * - check returned value
-     * @expected
-     * - to return undefined
-     */
-    it('should return undefined when validateAddress throws error', () => {
-      const validTokenLockTx = testData.blockFrostTransactions.validTokenLock;
-      jest.spyOn(addressCodec, 'validateAddress').mockImplementation(() => {
-        throw addressCodec.UnsupportedAddressError;
-      });
-
-      const extractor = new CardanoBlockFrostRosenExtractor(
-        testData.lockAddress,
-        TestUtils.tokens
-      );
-      const result = extractor.get(validTokenLockTx);
-
       expect(result).toBeUndefined();
     });
   });

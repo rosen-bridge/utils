@@ -5,7 +5,6 @@ import { CARDANO_CHAIN, CARDANO_NATIVE_TOKEN } from '../const';
 import { GraphQLTransaction, GraphQLTxOutput } from './types';
 import JsonBigInt from '@rosen-bridge/json-bigint';
 import { parseRosenData } from './utils';
-import { UnsupportedAddressError } from '@rosen-bridge/address-codec';
 
 export class CardanoGraphQLRosenExtractor extends AbstractRosenDataExtractor<GraphQLTransaction> {
   readonly chain = CARDANO_CHAIN;
@@ -65,12 +64,6 @@ export class CardanoGraphQLRosenExtractor extends AbstractRosenDataExtractor<Gra
             )}, data: ${JsonBigInt.stringify(data)}`
         );
     } catch (e) {
-      if (e instanceof UnsupportedAddressError) {
-        this.logger.debug(
-          `Invalid metadata, toAddress is not valid and validation failed with error: ${e.message}`
-        );
-        return undefined;
-      }
       this.logger.debug(
         `An error occurred while getting Cardano rosen data from GraphQL: ${e}`
       );

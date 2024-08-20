@@ -1,14 +1,9 @@
 import AbstractRosenDataExtractor from '../abstract/AbstractRosenDataExtractor';
 import { RosenData, TokenTransformation } from '../abstract/types';
-import {
-  CardanoBoxCandidate,
-  CardanoMetadataRosenData,
-  CardanoTx,
-} from './types';
+import { CardanoBoxCandidate, CardanoTx } from './types';
 import { CARDANO_CHAIN, CARDANO_NATIVE_TOKEN } from '../const';
 import JsonBigInt from '@rosen-bridge/json-bigint';
 import { parseRosenData } from './utils';
-import { UnsupportedAddressError } from '@rosen-bridge/address-codec';
 
 export class CardanoRosenExtractor extends AbstractRosenDataExtractor<string> {
   readonly chain = CARDANO_CHAIN;
@@ -59,12 +54,6 @@ export class CardanoRosenExtractor extends AbstractRosenDataExtractor<string> {
             )}`
         );
     } catch (e) {
-      if (e instanceof UnsupportedAddressError) {
-        this.logger.debug(
-          `Invalid metadata, toAddress is not valid and validation failed with error: ${e.message}`
-        );
-        return undefined;
-      }
       this.logger.debug(`An error occurred while extracting rosen data: ${e}`);
       if (e instanceof Error && e.stack) {
         this.logger.debug(e.stack);

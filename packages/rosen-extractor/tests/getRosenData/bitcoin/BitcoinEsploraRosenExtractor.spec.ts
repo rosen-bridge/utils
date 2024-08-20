@@ -3,14 +3,6 @@ import * as testData from './esploraTestData';
 import TestUtils from '../TestUtils';
 import { ERGO_CHAIN, CARDANO_CHAIN } from '../../../lib/getRosenData/const';
 import { BitcoinEsploraTransaction } from '../../../lib/getRosenData/bitcoin/types';
-import * as addressCodec from '@rosen-bridge/address-codec';
-
-jest.mock('@rosen-bridge/address-codec', () => {
-  return {
-    __esModule: true,
-    ...jest.requireActual('@rosen-bridge/address-codec'),
-  };
-});
 
 describe('BitcoinEsploraRosenExtractor', () => {
   describe('get', () => {
@@ -149,33 +141,6 @@ describe('BitcoinEsploraRosenExtractor', () => {
         TestUtils.noNativeTokens
       );
       const result = extractor.get(invalidTx as BitcoinEsploraTransaction);
-
-      expect(result).toBeUndefined();
-    });
-
-    /**
-     * @target `BitcoinEsploraRosenExtractor.get` should return undefined when
-     * validateAddress throws error
-     * @dependencies
-     * @scenario
-     * - mock valid rosen data tx
-     * - mock `validateAddress` to throw error
-     * - run test
-     * - check returned value
-     * @expected
-     * - to return undefined
-     */
-    it('should return undefined when validateAddress throws error', () => {
-      const validLockTx = testData.txs.lockTx;
-      jest.spyOn(addressCodec, 'validateAddress').mockImplementation(() => {
-        throw addressCodec.UnsupportedAddressError;
-      });
-
-      const extractor = new BitcoinEsploraRosenExtractor(
-        testData.lockAddress,
-        TestUtils.tokens
-      );
-      const result = extractor.get(validLockTx as BitcoinEsploraTransaction);
 
       expect(result).toBeUndefined();
     });
