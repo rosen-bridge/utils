@@ -26,14 +26,14 @@ describe('validateAddress', () => {
   });
 
   /**
-   * @target `validateAddress` should not validate wrong Ergo address
+   * @target `validateAddress` should throw error for wrong Ergo address
    * @dependencies
    * @scenario
    * - run test
    * @expected
-   * - not to validate wrong Ergo address
+   * - to throw error for wrong Ergo address
    */
-  it('should not validate wrong Ergo address', () => {
+  it('should throw error for wrong Ergo address', () => {
     expect(() => {
       validateAddress(ERGO_CHAIN, testData.invalidErgoAddress);
     }).toThrow();
@@ -53,14 +53,14 @@ describe('validateAddress', () => {
   });
 
   /**
-   * @target `validateAddress` should not validate wrong Cardano address
+   * @target `validateAddress` should throw error for wrong Cardano address
    * @dependencies
    * @scenario
    * - run test
    * @expected
-   * - not to validate wrong Cardano address
+   * - to throw error for wrong Cardano address
    */
-  it('should not validate wrong Cardano address', () => {
+  it('should throw error for wrong Cardano address', () => {
     expect(() => {
       validateAddress(CARDANO_CHAIN, testData.invalidCardanoAddress);
     }).toThrow();
@@ -80,28 +80,28 @@ describe('validateAddress', () => {
   });
 
   /**
-   * @target `validateAddress` should not validate Bitcoin taproot address
+   * @target `validateAddress` should throw error for Bitcoin taproot address
    * @dependencies
    * @scenario
    * - run test
    * @expected
-   * - not to validate Bitcoin taproot address
+   * - to throw error for Bitcoin taproot address
    */
-  it('should not validate Bitcoin taproot address', () => {
+  it('should throw error for Bitcoin taproot address', () => {
     expect(() => {
       validateAddress(BITCOIN_CHAIN, testData.tapRootBitcoinAddress);
     }).toThrow(UnsupportedAddressError);
   });
 
   /**
-   * @target `validateAddress` should not validate wrong Bitcoin address
+   * @target `validateAddress` should throw error for wrong Bitcoin address
    * @dependencies
    * @scenario
    * - run test
    * @expected
-   * - not to validate wrong Bitcoin address
+   * - to throw error for wrong Bitcoin address
    */
-  it('should not validate wrong Bitcoin address', () => {
+  it('should throw error for wrong Bitcoin address', () => {
     expect(() => {
       validateAddress(BITCOIN_CHAIN, testData.invalidBitcoinAddressLength);
     }).toThrowError();
@@ -121,42 +121,42 @@ describe('validateAddress', () => {
   });
 
   /**
-   * @target `validateAddress` should not validate ICAP Ethereum address
+   * @target `validateAddress` should throw error for ICAP Ethereum address
    * @dependencies
    * @scenario
    * - run test
    * @expected
-   * - not to validate ICAP Ethereum address
+   * - to throw error for ICAP Ethereum address
    */
-  it('should not validate ICAP Ethereum address', () => {
+  it('should throw error for ICAP Ethereum address', () => {
     expect(() => {
       validateAddress(ETHEREUM_CHAIN, testData.invalidEthereumIcapAddress);
     }).toThrow(UnsupportedAddressError);
   });
 
   /**
-   * @target `validateAddress` should not validate Ethereum address with checksum
+   * @target `validateAddress` should throw error for Ethereum address with checksum
    * @dependencies
    * @scenario
    * - run test
    * @expected
-   * - not to validate Ethereum address with checksum
+   * - to throw error for Ethereum address with checksum
    */
-  it('should not validate Ethereum address with checksum', () => {
+  it('should throw error for Ethereum address with checksum', () => {
     expect(() => {
       validateAddress(ETHEREUM_CHAIN, testData.invalidEthereumChecksumAddress);
     }).toThrow(UnsupportedAddressError);
   });
 
   /**
-   * @target `validateAddress` should not validate wrong Ethereum address
+   * @target `validateAddress` should throw error for wrong Ethereum address
    * @dependencies
    * @scenario
    * - run test
    * @expected
-   * - not to validate wrong Ethereum address
+   * - to throw error for wrong Ethereum address
    */
-  it('should not validate wrong Ethereum address', () => {
+  it('should throw error for wrong Ethereum address', () => {
     expect(() => {
       validateAddress(ETHEREUM_CHAIN, testData.invalidEthereumAddressLength);
     }).toThrow(UnsupportedAddressError);
