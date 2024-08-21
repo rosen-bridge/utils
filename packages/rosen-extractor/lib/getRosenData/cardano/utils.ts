@@ -1,5 +1,10 @@
 import { isArray, isString, isPlainObject } from 'lodash-es';
 
+/**
+ * Parse and validate Rosen data encoded in transaction metadata
+ * @param data
+ * @returns Rosen data or undefined if metadata is invalid
+ */
 export const parseRosenData = (data: any) => {
   if (
     data &&

@@ -13,7 +13,7 @@ export const invalidCardanoAddress =
   'addr1qxxa3kfnnh40yqtepa5frt0tkw4a0rys7v33422lzt8glx43sqtd4vkhjzawajej8aujh27p5a54zx62xf3wvuplynqs3fsqee';
 
 export const bitcoinAddress = 'bc1qkgp89fjerymm5ltg0hygnumr0m2qa7n22gyw6h';
-export const invalidBitcoinAddressLength =
+export const invalidBitcoinAddress =
   'bc1qkgp89fjerymm5ltg0hygnumr0m2qa7n22gyw6';
 export const tapRootBitcoinAddress =
   'bc1pxhtmm7mjrafdkw46wc7lmjn3gyrmdm4q0dnmw8j225gxtwtq7mwqd7e24v';

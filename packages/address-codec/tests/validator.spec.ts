@@ -103,7 +103,7 @@ describe('validateAddress', () => {
    */
   it('should throw error for wrong Bitcoin address', () => {
     expect(() => {
-      validateAddress(BITCOIN_CHAIN, testData.invalidBitcoinAddressLength);
+      validateAddress(BITCOIN_CHAIN, testData.invalidBitcoinAddress);
     }).toThrowError();
   });
 
