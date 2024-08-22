@@ -1,12 +1,9 @@
 import AbstractRosenDataExtractor from '../abstract/AbstractRosenDataExtractor';
 import { RosenData, TokenTransformation } from '../abstract/types';
-import {
-  CardanoBoxCandidate,
-  CardanoMetadataRosenData,
-  CardanoTx,
-} from './types';
+import { CardanoBoxCandidate, CardanoTx } from './types';
 import { CARDANO_CHAIN, CARDANO_NATIVE_TOKEN } from '../const';
 import JsonBigInt from '@rosen-bridge/json-bigint';
+import { parseRosenData } from './utils';
 
 export class CardanoRosenExtractor extends AbstractRosenDataExtractor<string> {
   readonly chain = CARDANO_CHAIN;
@@ -23,52 +20,45 @@ export class CardanoRosenExtractor extends AbstractRosenDataExtractor<string> {
         `Failed to parse transaction json to CardanoTx format while extracting rosen data: ${e}`
       );
     }
-    const baseError = `No rosen data found for tx [${transaction.id}]`;
-    const rosenMetadata = transaction.metadata?.['0'];
-    if (!rosenMetadata || typeof rosenMetadata === 'string') {
-      this.logger.debug(
-        baseError + `: Invalid metadata type: ${typeof rosenMetadata}`
-      );
-      return undefined;
-    }
-    if (
-      'to' in rosenMetadata &&
-      'bridgeFee' in rosenMetadata &&
-      'networkFee' in rosenMetadata &&
-      'toAddress' in rosenMetadata &&
-      'fromAddress' in rosenMetadata
-    ) {
-      const data = rosenMetadata as unknown as CardanoMetadataRosenData;
-      const lockOutputs = transaction.outputs.filter(
-        (output) => output.address === this.lockAddress
-      );
-      for (const output of lockOutputs) {
-        const assetTransformation = this.getAssetTransformation(
-          output,
-          data.to
+    try {
+      const baseError = `No rosen data found for tx [${transaction.id}]`;
+      const data = transaction.metadata?.['0'];
+      const rosenData = parseRosenData(data);
+      if (rosenData) {
+        const lockOutputs = transaction.outputs.filter(
+          (output) => output.address === this.lockAddress
         );
-        if (assetTransformation) {
-          return {
-            toChain: data.to,
-            toAddress: data.toAddress,
-            bridgeFee: data.bridgeFee,
-            networkFee: data.networkFee,
-            fromAddress: data.fromAddress.join(''),
-            sourceChainTokenId: assetTransformation.from,
-            amount: assetTransformation.amount,
-            targetChainTokenId: assetTransformation.to,
-            sourceTxId: transaction.id,
-          };
+        for (const output of lockOutputs) {
+          const assetTransformation = this.getAssetTransformation(
+            output,
+            rosenData.toChain
+          );
+          if (assetTransformation) {
+            return {
+              ...rosenData,
+              sourceChainTokenId: assetTransformation.from,
+              amount: assetTransformation.amount,
+              targetChainTokenId: assetTransformation.to,
+              sourceTxId: transaction.id,
+            };
+          }
         }
+        this.logger.debug(
+          baseError + `: No valid transformation found in any output boxes`
+        );
+      } else
+        this.logger.debug(
+          baseError +
+            `: Incomplete metadata: ${JsonBigInt.stringify(
+              transaction.metadata
+            )}`
+        );
+    } catch (e) {
+      this.logger.debug(`An error occurred while extracting rosen data: ${e}`);
+      if (e instanceof Error && e.stack) {
+        this.logger.debug(e.stack);
       }
-      this.logger.debug(
-        baseError + `: No valid transformation found in any output boxes`
-      );
-    } else
-      this.logger.debug(
-        baseError +
-          `: Incomplete metadata: ${JsonBigInt.stringify(transaction.metadata)}`
-      );
+    }
     return undefined;
   };
 

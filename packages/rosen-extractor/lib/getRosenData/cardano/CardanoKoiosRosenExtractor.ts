@@ -2,8 +2,9 @@ import { isPlainObject } from 'lodash-es';
 import { RosenData, TokenTransformation } from '../abstract/types';
 import AbstractRosenDataExtractor from '../abstract/AbstractRosenDataExtractor';
 import { CARDANO_CHAIN, CARDANO_NATIVE_TOKEN } from '../const';
-import { CardanoMetadataRosenData, KoiosTransaction, Utxo } from './types';
+import { KoiosTransaction, Utxo } from './types';
 import JsonBigInt from '@rosen-bridge/json-bigint';
+import { parseRosenData } from './utils';
 
 export class CardanoKoiosRosenExtractor extends AbstractRosenDataExtractor<KoiosTransaction> {
   readonly chain = CARDANO_CHAIN;
@@ -17,31 +18,19 @@ export class CardanoKoiosRosenExtractor extends AbstractRosenDataExtractor<Koios
     try {
       if (metadata && Object.prototype.hasOwnProperty.call(metadata, '0')) {
         const data = metadata['0'];
-        if (
-          isPlainObject(data) &&
-          'to' in data &&
-          'bridgeFee' in data &&
-          'networkFee' in data &&
-          'toAddress' in data &&
-          'fromAddress' in data
-        ) {
-          const rosenData = data as unknown as CardanoMetadataRosenData;
-
+        const rosenData = parseRosenData(data);
+        if (rosenData) {
           const lockOutputs = transaction.outputs.filter(
             (output) => output.payment_addr.bech32 === this.lockAddress
           );
           for (const output of lockOutputs) {
             const assetTransformation = this.getAssetTransformation(
               output,
-              rosenData.to
+              rosenData.toChain
             );
             if (assetTransformation) {
               return {
-                toChain: rosenData.to,
-                toAddress: rosenData.toAddress,
-                bridgeFee: rosenData.bridgeFee,
-                networkFee: rosenData.networkFee,
-                fromAddress: rosenData.fromAddress.join(''),
+                ...rosenData,
                 sourceChainTokenId: assetTransformation.from,
                 amount: assetTransformation.amount,
                 targetChainTokenId: assetTransformation.to,

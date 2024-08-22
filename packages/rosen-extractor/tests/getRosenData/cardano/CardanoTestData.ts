@@ -12,7 +12,7 @@ export default class CardanoTestData {
             '"to": "ergo",' +
             '"bridgeFee": "10000",' +
             '"networkFee": "10000",' +
-            '"toAddress": "ergoAddress",' +
+            '"toAddress": "9hZxV3YNSfbCqS6GEses7DhAVSatvaoNtdsiNvkimPGG2c8fzkG",' +
             ' "fromAddress": ["' +
             'addr_test1vzg07d2qp3xje0w77f982zkhqey50gjxrsdqh89yx8r7nasu97hr0' +
             '"] }'
@@ -106,7 +106,7 @@ export default class CardanoTestData {
             '"to": "ergo",' +
             '"bridgeFee": "10000",' +
             '"networkFee": "10000",' +
-            '"toAddress": "ergoAddress",' +
+            '"toAddress": "9hZxV3YNSfbCqS6GEses7DhAVSatvaoNtdsiNvkimPGG2c8fzkG",' +
             ' "fromAddress": ["' +
             'addr_test1vzg07d2qp3xje0w77f982zkhqey50gjxrsdqh89yx8r7nasu97hr0' +
             '"] }'
@@ -167,7 +167,7 @@ export default class CardanoTestData {
             '"to": "ergo",' +
             '"bridgeFee": "10000",' +
             '"networkFee": "10000",' +
-            '"toAddress": "ergoAddress",' +
+            '"toAddress": "9hZxV3YNSfbCqS6GEses7DhAVSatvaoNtdsiNvkimPGG2c8fzkG",' +
             ' "fromAddress": ["' +
             'addr_test1vzg07d2qp3xje0w77f982zkhqey50gjxrsdqh89yx8r7nasu97hr0' +
             '"] }'
@@ -343,7 +343,7 @@ export default class CardanoTestData {
             '"to": "ergo",' +
             '"bridgeFee": "10000",' +
             '"networkFee": "10000",' +
-            '"toAddress": "ergoAddress",' +
+            '"toAddress": "9hZxV3YNSfbCqS6GEses7DhAVSatvaoNtdsiNvkimPGG2c8fzkG",' +
             ' "fromAddress": ["' +
             'addr_test1vzg07d2qp3xje0w77f982zkhqey50gjxrsdqh89yx8r7nasu97hr0' +
             '"] }'
@@ -433,7 +433,7 @@ export default class CardanoTestData {
   static koiosRosenData = {
     validTokenLock: {
       toChain: 'ergo',
-      toAddress: 'ergoAddress',
+      toAddress: '9hZxV3YNSfbCqS6GEses7DhAVSatvaoNtdsiNvkimPGG2c8fzkG',
       bridgeFee: '10000',
       networkFee: '10000',
       fromAddress:
@@ -447,7 +447,7 @@ export default class CardanoTestData {
     },
     validAdaLock: {
       toChain: 'ergo',
-      toAddress: 'ergoAddress',
+      toAddress: '9hZxV3YNSfbCqS6GEses7DhAVSatvaoNtdsiNvkimPGG2c8fzkG',
       bridgeFee: '10000',
       networkFee: '10000',
       fromAddress:
