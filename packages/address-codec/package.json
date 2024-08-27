@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/address-codec",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "A Typescript package for encoding and decoding of addresses in Rosen bridge supported chains",
   "repository": "https://github.com/rosen-bridge/utils",
   "license": "GPL-3.0",
