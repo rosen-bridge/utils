@@ -1,5 +1,16 @@
 # @rosen-bridge/rosen-extractor
 
+## 6.2.0
+
+### Minor Changes
+
+- Verify destination address encoded in lock transactions
+
+### Patch Changes
+
+- Updated dependencies
+  - @rosen-bridge/address-codec@0.3.0
+
 ## 6.1.1
 
 ### Patch Changes

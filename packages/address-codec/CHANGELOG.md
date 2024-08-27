@@ -1,5 +1,11 @@
 # @rosen-bridge/address-codec
 
+## 0.3.0
+
+### Minor Changes
+
+- Add address verifier with respect to chain
+
 ## 0.2.1
 
 ### Patch Changes
