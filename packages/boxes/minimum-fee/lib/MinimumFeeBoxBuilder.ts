@@ -6,7 +6,6 @@ import {
   I64,
   TokenAmount,
   TokenId,
-  Constant,
   ErgoBoxCandidate,
 } from 'ergo-lib-wasm-nodejs';
 import { MinimumFeeConfig } from './MinimumFeeConfig';
@@ -114,6 +113,41 @@ export class MinimumFeeBoxBuilder {
           );
       });
     }
+  };
+
+  /**
+   * removes heights and configs of all chains which don't have any configs
+   */
+  prune = (): MinimumFeeBoxBuilder => {
+    const activeChains: string[] = [];
+
+    for (let i = 0; i < this.fees.length; i++) {
+      const chains = Object.keys(this.fees[i].heights);
+      chains.forEach((chain) => {
+        const feeConfig = this.fees[i].configs[chain];
+        if (
+          feeConfig &&
+          (feeConfig.bridgeFee !== -1n ||
+            feeConfig.networkFee !== -1n ||
+            feeConfig.rsnRatio !== -1n ||
+            feeConfig.rsnRatioDivisor !== -1n ||
+            feeConfig.feeRatio !== -1n)
+        )
+          activeChains.push(chain);
+      });
+    }
+
+    for (let i = 0; i < this.fees.length; i++) {
+      const chains = Object.keys(this.fees[i].heights);
+      chains.forEach((chain) => {
+        if (!activeChains.includes(chain)) {
+          delete this.fees[i].heights[chain];
+          delete this.fees[i].configs[chain];
+        }
+      });
+    }
+
+    return this;
   };
 
   /**

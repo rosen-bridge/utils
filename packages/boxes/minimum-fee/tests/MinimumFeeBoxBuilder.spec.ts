@@ -687,6 +687,99 @@ describe('MinimumFeeBoxBuilder', () => {
     });
   });
 
+  describe('prune', () => {
+    /**
+     * @target MinimumFeeBoxBuilder.prune should remove unused
+     * chain from config
+     * @dependencies
+     * @scenario
+     * - mock test data
+     * - run test
+     * - check builder config
+     * @expected
+     * - chain 'cardano' should be removed from config
+     */
+    it('should remove unused chain from config', () => {
+      // mock test data
+      const fees = testData.unusedCardanoChainFee;
+
+      const feeConfig: Array<MinimumFeeConfig> = [];
+      fees.forEach((fee) => {
+        const minimumFeeConfig = new MinimumFeeConfig();
+        Object.keys(fee.heights).forEach((chain) =>
+          minimumFeeConfig.setChainConfig(
+            chain,
+            fee.heights[chain],
+            fee.configs[chain]
+          )
+        );
+        feeConfig.push(minimumFeeConfig);
+      });
+
+      // run test
+      const builder = new MinimumFeeBoxBuilder(
+        defaultMinimumFeeNFT,
+        defaultAddress
+      )
+        .setValue(defaultValue)
+        .setHeight(defaultHeight)
+        .setToken(defaultTokenId);
+      feeConfig.forEach((fee) => builder.addConfig(fee));
+      builder.prune();
+
+      // check returned value
+      builder.getConfigs().forEach((fee) => {
+        expect(fee.heights['cardano']).toBeUndefined();
+        expect(fee.configs['cardano']).toBeUndefined();
+      });
+    });
+
+    /**
+     * @target MinimumFeeBoxBuilder.prune should NOT remove
+     * chain if has at least one active config
+     * @dependencies
+     * @scenario
+     * - mock test data
+     * - run test
+     * - check builder config
+     * @expected
+     * - chain 'cardano' should NOT be removed
+     */
+    it('should NOT remove chain if has at least one active config', () => {
+      // mock test data
+      const fees = testData.removedPreviousChainFee;
+
+      const feeConfig: Array<MinimumFeeConfig> = [];
+      fees.forEach((fee) => {
+        const minimumFeeConfig = new MinimumFeeConfig();
+        Object.keys(fee.heights).forEach((chain) =>
+          minimumFeeConfig.setChainConfig(
+            chain,
+            fee.heights[chain],
+            fee.configs[chain]
+          )
+        );
+        feeConfig.push(minimumFeeConfig);
+      });
+
+      // run test
+      const builder = new MinimumFeeBoxBuilder(
+        defaultMinimumFeeNFT,
+        defaultAddress
+      )
+        .setValue(defaultValue)
+        .setHeight(defaultHeight)
+        .setToken(defaultTokenId);
+      feeConfig.forEach((fee) => builder.addConfig(fee));
+      builder.prune();
+
+      // check returned value
+      builder.getConfigs().forEach((fee) => {
+        expect(fee.heights['cardano']).toBeDefined();
+      });
+    });
+  });
+
   describe('removeConfig', () => {
     /**
      * @target MinimumFeeBoxBuilder.removeConfig should remove
