@@ -1,5 +1,11 @@
 # @rosen-bridge/minimum-fee
 
+## 2.2.0
+
+### Minor Changes
+
+- add `prune` function to remove unused chains (i.e. chains without config)
+
 ## 2.1.0
 
 ### Minor Changes
