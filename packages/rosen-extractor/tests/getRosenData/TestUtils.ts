@@ -10,6 +10,8 @@ import {
   CARDANO_NATIVE_TOKEN,
   ERGO_CHAIN,
   ERGO_NATIVE_TOKEN,
+  DOGE_CHAIN,
+  DOGE_NATIVE_TOKEN,
 } from '../../lib/getRosenData/const';
 
 export default class TestUtils {
@@ -19,6 +21,7 @@ export default class TestUtils {
       cardano: 'tokenId',
       bitcoin: 'tokenId',
       ethereum: 'tokenId',
+      doge: 'tokenId',
     },
     tokens: [
       {
@@ -145,6 +148,27 @@ export default class TestUtils {
             'dcbda15f1361f5eeba41748193e059fce34f0c57499e9afe733ea0fd59cf63f48',
           name: 'rsETH',
           decimals: 18,
+          metaData: {
+            type: 'EIP-004',
+            residency: 'wrapped',
+          },
+        },
+      },
+      {
+        [DOGE_CHAIN]: {
+          tokenId: DOGE_NATIVE_TOKEN,
+          name: DOGE_NATIVE_TOKEN,
+          decimals: 8,
+          metaData: {
+            type: 'tokenType',
+            residency: 'tokenResidency',
+          },
+        },
+        [ERGO_CHAIN]: {
+          tokenId:
+            'dcbda15f1361f5eeba416dd63e059fce34f0c57499e9afe733ea0fd59cf63f48',
+          name: 'rsDOGE',
+          decimals: 8,
           metaData: {
             type: 'EIP-004',
             residency: 'wrapped',

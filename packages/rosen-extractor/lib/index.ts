@@ -13,3 +13,5 @@ export { CardanoGraphQLRosenExtractor } from './getRosenData/cardano/CardanoGrap
 export { ErgoRosenExtractor } from './getRosenData/ergo/ErgoRosenExtractor';
 export { ErgoNodeRosenExtractor } from './getRosenData/ergo/ErgoNodeRosenExtractor';
 export { RosenData } from './getRosenData/abstract/types';
+export { DogeEsploraRosenExtractor } from './getRosenData/doge/DogeEsploraRosenExtractor';
+export { DogeRosenExtractor } from './getRosenData/doge/DogeRosenExtractor';
