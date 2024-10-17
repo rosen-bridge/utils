@@ -27,4 +27,9 @@ export abstract class AbstractLoggerFactory {
    * @param filePath
    */
   getLogger: (filePath: string) => AbstractLogger;
+
+  /**
+   * get list of all child loggers
+   */
+  getChildLoggerList: () => Array<AbstractLogger>;
 }

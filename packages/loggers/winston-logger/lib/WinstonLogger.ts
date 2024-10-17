@@ -2,7 +2,10 @@ import path from 'path';
 import winston, { format } from 'winston';
 import 'winston-daily-rotate-file';
 
-import { AbstractLoggerFactory } from '@rosen-bridge/abstract-logger';
+import {
+  AbstractLogger,
+  AbstractLoggerFactory,
+} from '@rosen-bridge/abstract-logger';
 import JsonBigInt from '@rosen-bridge/json-bigint';
 
 import {
@@ -66,6 +69,7 @@ const logTransports = {
 
 class WinstonLogger extends AbstractLoggerFactory {
   protected static instance: WinstonLogger | undefined;
+  protected childs: Array<winston.Logger>;
 
   protected logger: winston.Logger | undefined;
 
@@ -90,6 +94,7 @@ class WinstonLogger extends AbstractLoggerFactory {
       handleRejections: true,
       handleExceptions: true,
     });
+    this.childs = [];
   }
 
   /**
@@ -125,9 +130,18 @@ class WinstonLogger extends AbstractLoggerFactory {
    * @param filePath
    */
   getLogger = (filePath: string) => {
-    return this.logger!.child({
+    const child = this.logger!.child({
       fileName: path.parse(filePath).name,
     }) as winston.Logger;
+    this.childs.push(child);
+    return child;
+  };
+
+  /**
+   * get list of all child loggers
+   */
+  getChildLoggerList = () => {
+    return [...this.childs];
   };
 }
 
