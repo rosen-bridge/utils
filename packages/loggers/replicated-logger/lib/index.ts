@@ -1,0 +1,1 @@
+export { ReplicatedLoggerFactory } from './replicatedLoggerFactory';
