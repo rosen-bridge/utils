@@ -15,7 +15,7 @@ export abstract class AbstractLoggerFactory {
 }
 
 export class DefaultLoggerFactory extends AbstractLoggerFactory {
-  protected instance: DefaultLoggerFactory;
+  protected static instance: DefaultLoggerFactory;
   constructor(protected loggerFactory: AbstractLoggerFactory) {
     super();
   }
@@ -32,7 +32,7 @@ export class DefaultLoggerFactory extends AbstractLoggerFactory {
    * get instance of the class
    * exist (only in case of absent `init` method)
    */
-  getInstance = () => {
+  static getInstance = () => {
     if (!this.instance)
       throw new Error(
         'You should call `DefaultLoggerFactory.init` before calling `DefaultLoggerFactory.getInstance`'
