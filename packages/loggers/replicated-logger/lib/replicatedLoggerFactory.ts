@@ -15,6 +15,13 @@ class ReplicatedLogger extends AbstractLogger {
   ) {
     super();
   }
+
+  /**
+   * new log for all log levels
+   * @param level
+   * @param message
+   * @param context
+   */
   log = (level: keyof AbstractLogger, message: string, context?: unknown) => {
     try {
       this.callback(level, message, context);
@@ -27,12 +34,15 @@ class ReplicatedLogger extends AbstractLogger {
   debug = (message: string, context?: unknown) => {
     this.log('debug', message, context);
   };
+
   info = (message: string, context?: unknown) => {
     this.log('info', message, context);
   };
+
   warn = (message: string, context?: unknown) => {
     this.log('warn', message, context);
   };
+
   error = (message: string, context?: unknown) => {
     this.log('error', message, context);
   };
@@ -40,12 +50,17 @@ class ReplicatedLogger extends AbstractLogger {
 
 export class ReplicatedLoggerFactory extends AbstractLoggerFactory {
   protected callbacks: Map<string, Array<LogCallback>> = new Map();
-  protected loggerCallbacks: Map<string, LogCallback> | undefined;
+  protected defaultLogger: AbstractLogger | undefined;
 
   constructor(protected instance: AbstractLoggerFactory) {
     super();
   }
 
+  /**
+   * register new callback for specific log level
+   * @param level
+   * @param callback
+   */
   registerCallback = (level: keyof AbstractLogger, callback: LogCallback) => {
     const levelCallbacks =
       this.callbacks.get(level) ?? ([] as Array<LogCallback>);
@@ -53,6 +68,12 @@ export class ReplicatedLoggerFactory extends AbstractLoggerFactory {
     this.callbacks.set(level, levelCallbacks);
   };
 
+  /**
+   * callback method used in all generated loggers. for each log
+   * @param level
+   * @param message
+   * @param context
+   */
   protected callback = (
     level: keyof AbstractLogger,
     message: string,
@@ -66,6 +87,24 @@ export class ReplicatedLoggerFactory extends AbstractLoggerFactory {
     }
   };
 
+  /**
+   * get default, file-agnostic logger
+   */
+  getDefaultLogger = () => {
+    if (!this.defaultLogger) {
+      this.defaultLogger = new ReplicatedLogger(
+        this.instance.getDefaultLogger(),
+        this.callback
+      );
+    }
+    return this.defaultLogger;
+  };
+
+  /**
+   * get a logger to be used in a specific file located under `filePath`
+   *
+   * @param filePath
+   */
   getLogger = (filePath: string) => {
     const logger = this.instance.getLogger(filePath);
     return new ReplicatedLogger(logger, this.callback);
