@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/logger-with-callback",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A new logger with callback method on each levels",
   "license": "GPL-3.0",
   "author": "Rosen Team",
@@ -31,6 +31,6 @@
     "node": ">=20.11.0"
   },
   "dependencies": {
-    "@rosen-bridge/abstract-logger": "^2.0.0"
+    "@rosen-bridge/abstract-logger": "^2.0.1"
   }
 }

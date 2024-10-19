@@ -1,5 +1,12 @@
 # @rosen-bridge/cardano-utxo-selection
 
+## 1.1.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @rosen-bridge/abstract-logger@2.0.1
+
 ## 1.1.1
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # @rosen-bridge/rosen-extractor
 
+## 6.2.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @rosen-bridge/abstract-logger@2.0.1
+
 ## 6.2.1
 
 ### Patch Changes

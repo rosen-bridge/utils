@@ -1,5 +1,12 @@
 # @rosen-bridge/rwt-repo
 
+## 2.0.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @rosen-bridge/abstract-logger@2.0.1
+
 ## 2.0.3
 
 ### Patch Changes
