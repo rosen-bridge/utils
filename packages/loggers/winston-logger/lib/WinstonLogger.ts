@@ -65,11 +65,9 @@ const logTransports = {
 } satisfies LogTransports;
 
 class WinstonLogger extends AbstractLoggerFactory {
-  protected static instance: WinstonLogger | undefined;
-
   protected logger: winston.Logger | undefined;
 
-  private constructor(transportsOptions: TransportOptions[]) {
+  constructor(transportsOptions: TransportOptions[]) {
     super();
 
     this.logger = winston.createLogger({
@@ -91,27 +89,6 @@ class WinstonLogger extends AbstractLoggerFactory {
       handleExceptions: true,
     });
   }
-
-  /**
-   * create an instance of the class
-   *
-   * @param transportsOptions
-   */
-  static init = (transportsOptions: TransportOptions[]) => {
-    this.instance = new WinstonLogger(transportsOptions);
-  };
-
-  /**
-   * get instance of the class
-   */
-  static getInstance = () => {
-    if (this.instance) {
-      return this.instance;
-    }
-    throw new Error(
-      'You should call `WinstonLogger.init` before calling `WinstonLogger.getInstance`'
-    );
-  };
 
   /**
    * get default logger
