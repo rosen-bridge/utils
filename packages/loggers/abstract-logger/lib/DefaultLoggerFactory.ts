@@ -11,7 +11,7 @@ export class DefaultLoggerFactory extends AbstractLoggerFactory {
    * @param factoryInstance
    */
   static init(factoryInstance: AbstractLoggerFactory): void {
-    const instance = new DefaultLoggerFactory(factoryInstance);
+    this.instance = new DefaultLoggerFactory(factoryInstance);
   }
 
   /**
