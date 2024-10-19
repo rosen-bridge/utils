@@ -4,7 +4,7 @@ import {
 } from '@rosen-bridge/abstract-logger';
 import { LogCallback } from './types';
 
-class ReplicatedLogger extends AbstractLogger {
+class LoggerWithCallback extends AbstractLogger {
   constructor(
     protected logger: AbstractLogger,
     protected callback: (
@@ -48,7 +48,7 @@ class ReplicatedLogger extends AbstractLogger {
   };
 }
 
-export class ReplicatedLoggerFactory extends AbstractLoggerFactory {
+export class LoggerWithCallbackFactory extends AbstractLoggerFactory {
   protected callbacks: Map<string, Array<LogCallback>> = new Map();
   protected defaultLogger: AbstractLogger | undefined;
 
@@ -92,7 +92,7 @@ export class ReplicatedLoggerFactory extends AbstractLoggerFactory {
    */
   getDefaultLogger = () => {
     if (!this.defaultLogger) {
-      this.defaultLogger = new ReplicatedLogger(
+      this.defaultLogger = new LoggerWithCallback(
         this.instance.getDefaultLogger(),
         this.callback
       );
@@ -107,6 +107,6 @@ export class ReplicatedLoggerFactory extends AbstractLoggerFactory {
    */
   getLogger = (filePath: string) => {
     const logger = this.instance.getLogger(filePath);
-    return new ReplicatedLogger(logger, this.callback);
+    return new LoggerWithCallback(logger, this.callback);
   };
 }

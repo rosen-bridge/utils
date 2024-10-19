@@ -16,7 +16,7 @@ export abstract class AbstractLoggerFactory {
 
 export class DefaultLoggerFactory extends AbstractLoggerFactory {
   protected static instance: DefaultLoggerFactory;
-  constructor(protected loggerFactory: AbstractLoggerFactory) {
+  protected constructor(protected loggerFactory: AbstractLoggerFactory) {
     super();
   }
 

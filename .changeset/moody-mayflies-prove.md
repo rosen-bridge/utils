@@ -1,5 +1,5 @@
 ---
-'@rosen-bridge/replicated-logger': minor
+'@rosen-bridge/logger-with-callback': minor
 ---
 
-Add replicated logger package, a logger with callback methods
+Add logger with callback package
