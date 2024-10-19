@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/service-manager",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "is a Typescript package to simplify auto-start and auto-stop service management in a hierarchical structure, ensuring proper startup order and dependency handling",
   "repository": "@rosen-bridge/service-manager",
   "license": "GPL-3.0",
@@ -33,7 +33,7 @@
     "node": ">=18.12.0"
   },
   "dependencies": {
-    "@rosen-bridge/abstract-logger": "^1.0.0",
+    "@rosen-bridge/abstract-logger": "^2.0.0",
     "await-semaphore": "^0.1.3"
   }
 }

@@ -1,5 +1,12 @@
 # @rosen-bridge/minimum-fee
 
+## 2.2.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @rosen-bridge/abstract-logger@2.0.0
+
 ## 2.2.0
 
 ### Minor Changes
