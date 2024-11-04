@@ -5,5 +5,5 @@
     "rootDir": "./"
   },
   "exclude": ["lib/**/*.spec.ts", "lib/**/*.test.ts", "lib/**/*.mock.ts"],
-  "include": ["lib/**/*"]
+  "include": ["lib/**/*", "vitest.config.ts"]
 }
