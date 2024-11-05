@@ -22,7 +22,7 @@ export class TokenMap {
    * @param toChain
    */
   getTokens = (fromChain: string, toChain: string): Array<RosenChainToken> => {
-    return this.tokensConfig.tokens
+    return this.tokensConfig
       .filter(
         (item) => Object.hasOwn(item, fromChain) && Object.hasOwn(item, toChain)
       )
@@ -33,7 +33,7 @@ export class TokenMap {
    * get a list of all supported network names
    */
   getAllChains = (): Array<string> => {
-    return this.tokensConfig.tokens
+    return this.tokensConfig
       .map((item) => Object.keys(item))
       .reduce(
         (allUniqChains, tokenChains) => [
@@ -48,7 +48,7 @@ export class TokenMap {
    * @param sourceChain
    */
   getSupportedChains = (sourceChain: string): Array<string> => {
-    return this.tokensConfig.tokens
+    return this.tokensConfig
       .filter((token) => Object.hasOwn(token, sourceChain))
       .map((token) => Object.keys(token))
       .reduce(
@@ -66,7 +66,7 @@ export class TokenMap {
    *  example: {tokenId:"tokenId"}
    */
   search = (chain: string, condition: { [key: string]: string }) => {
-    return this.tokensConfig.tokens.filter((token) => {
+    return this.tokensConfig.filter((token) => {
       if (Object.hasOwnProperty.call(token, chain)) {
         const resToken = token[chain];
         for (const [key, val] of Object.entries(condition)) {
@@ -89,10 +89,7 @@ export class TokenMap {
    * @param chain: one of supported tokens
    */
   getIdKey = (chain: string): string => {
-    if (Object.hasOwnProperty.call(this.tokensConfig.idKeys, chain)) {
-      return this.tokensConfig.idKeys[chain];
-    }
-    throw Error(`chain ${chain} not supported in current config`);
+    return 'tokenId';
   };
 
   /**
@@ -116,14 +113,7 @@ export class TokenMap {
     token: { [key: string]: RosenChainToken },
     chain: string
   ): string => {
-    if (Object.hasOwnProperty.call(this.tokensConfig.idKeys, chain)) {
-      const idKey = this.tokensConfig.idKeys[chain];
-      return token[chain][idKey] as string;
-    } else {
-      throw new Error(
-        `idKey of the ${chain} chain is missed in the config file`
-      );
-    }
+    return token[chain].tokenId;
   };
 
   /**
@@ -131,11 +121,11 @@ export class TokenMap {
    * @param chain: one of supported chains
    */
   getAllNativeTokens = (chain: string): RosenChainToken[] => {
-    return this.tokensConfig.tokens
+    return this.tokensConfig
       .filter(
         (token) =>
           Object.hasOwn(token, chain) &&
-          token[chain].metaData.residency == NATIVE_RESIDENCY
+          token[chain].residency == NATIVE_RESIDENCY
       )
       .map((token) => token[chain]);
   };
@@ -147,10 +137,10 @@ export class TokenMap {
   getTokenSet = (
     tokenId: string
   ): Record<string, RosenChainToken> | undefined => {
-    const result = this.tokensConfig.tokens.filter(
+    const result = this.tokensConfig.filter(
       (tokenSet) =>
         Object.keys(tokenSet).filter(
-          (chain) => tokenSet[chain][this.getIdKey(chain)] === tokenId
+          (chain) => tokenSet[chain].tokenId === tokenId
         ).length
     );
     if (result.length === 0) return undefined;

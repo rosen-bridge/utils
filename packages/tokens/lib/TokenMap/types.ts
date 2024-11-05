@@ -1,21 +1,21 @@
-export type RosenTokens = {
-  idKeys: Record<string, string>;
-  tokens: Array<Record<string, RosenChainToken>>;
-};
+export type RosenTokens = Array<
+  Record<string, RosenChainToken & Record<string, any>>
+>;
 
-export type RosenChainToken = {
-  [key: string]: any;
+export interface RosenChainToken {
+  tokenId: string;
   name: string;
   decimals: number;
-  metaData: ChainTokenMetadata;
-};
-
-export type ChainTokenMetadata = {
   type: string;
   residency: string;
-};
+}
 
-export type RosenAmount = {
+export interface CardanoChainToken extends RosenChainToken {
+  policyId: string;
+  assetName: string;
+}
+
+export interface RosenAmount {
   amount: bigint;
   decimals: number;
-};
+}

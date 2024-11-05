@@ -12,7 +12,7 @@ describe('TokenMap', () => {
   describe('search', () => {
     /**
      * @target TokenMap.search should return asset with condition on the policyId and assetName
-     * @dependencies
+     * @dependenciesw
      * - RosenToken json
      * @scenario
      * - call search with specific policyId and assetName
@@ -82,35 +82,6 @@ describe('TokenMap', () => {
       const res = tokenMap.getID(firstToken, 'ergo');
       expect(res).toEqual(firstToken.ergo.tokenId);
     });
-
-    /**
-     * @target TokenMap.getID should return cardano fingerprint of tha passed token
-     * @dependencies
-     * - RosenToken json
-     * @scenario
-     * - call getId for ergo chain
-     * @expected
-     * - return fingerprint for cardanoChain in specified token
-     */
-    it('should return cardano fingerprint of tha passed token', () => {
-      const tokenMap = new TokenMap(firstTokenMap);
-      const res = tokenMap.getID(secondToken, 'cardano');
-      expect(res).toEqual(secondToken.cardano.tokenId);
-    });
-
-    /**
-     * @target TokenMap.getID should return cardano fingerprint of tha passed token
-     * @dependencies
-     * - RosenToken json
-     * @scenario
-     * - call getId for ergo chain in wrong token
-     * @expected
-     * - must throw exception
-     */
-    it('tests that if idKeys is missed in the config throws error', () => {
-      const tokenMap = new TokenMap(secondTokenMap);
-      expect(() => tokenMap.getID(secondToken, 'ergo')).toThrow();
-    });
   });
 
   describe('getIdKey', () => {
@@ -127,20 +98,6 @@ describe('TokenMap', () => {
       const tokenMap = new TokenMap(firstTokenMap);
       expect(tokenMap.getIdKey('ergo')).toEqual('tokenId');
     });
-
-    /**
-     * @target TokenMap.getID should throw exception for unknown chain
-     * @dependencies
-     * - RosenToken json
-     * @scenario
-     * - call getIdKey for btc chain
-     * @expected
-     * - must throw exception
-     */
-    it('should throw exception for unknown chain', function () {
-      const tokenMap = new TokenMap(firstTokenMap);
-      expect(() => tokenMap.getIdKey('btc')).toThrow();
-    });
   });
 
   describe('getTokens', () => {
@@ -156,7 +113,7 @@ describe('TokenMap', () => {
     it('should return one ergo token from ergo to binance', () => {
       const tokenMap = new TokenMap(firstTokenMap);
       const res = tokenMap.getTokens('ergo', 'binance');
-      expect(res).toEqual([firstTokenMap.tokens[1].ergo]);
+      expect(res).toEqual([firstTokenMap[1].ergo]);
     });
 
     /**
@@ -249,7 +206,7 @@ describe('TokenMap', () => {
     it('should return all cardano native tokens', () => {
       const tokenMap = new TokenMap(firstTokenMap);
       expect(tokenMap.getAllNativeTokens('cardano')).toEqual([
-        firstTokenMap.tokens[2]['cardano'],
+        firstTokenMap[2]['cardano'],
       ]);
     });
 
@@ -264,8 +221,8 @@ describe('TokenMap', () => {
     it('should return all ergo native tokens', () => {
       const tokenMap = new TokenMap(firstTokenMap);
       expect(tokenMap.getAllNativeTokens('ergo')).toEqual([
-        firstTokenMap.tokens[0]['ergo'],
-        firstTokenMap.tokens[1]['ergo'],
+        firstTokenMap[0]['ergo'],
+        firstTokenMap[1]['ergo'],
       ]);
     });
   });
@@ -283,7 +240,7 @@ describe('TokenMap', () => {
     it('should return token set successfully', function () {
       const tokenMap = new TokenMap(firstTokenMap);
       const result = tokenMap.getTokenSet('this is a simple ip');
-      expect(result).toEqual(firstTokenMap.tokens[1]);
+      expect(result).toEqual(firstTokenMap[1]);
     });
 
     /**
