@@ -35,6 +35,9 @@
     "typescript": "^4.7.4",
     "vitest": "^2.0.5"
   },
+  "dependencies": {
+    "ergo-lib-wasm-nodejs": "^0.24.1"
+  },
   "directories": {
     "lib": "lib",
     "test": "tests"

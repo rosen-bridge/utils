@@ -1,20 +1,172 @@
-import { NATIVE_RESIDENCY } from './constants';
-import { RosenAmount, RosenChainToken, RosenTokens } from './types';
+import { ErgoBox } from 'ergo-lib-wasm-nodejs';
+import {
+  ERGO_CHAIN,
+  ERGO_SIDE_TOKEN_ID_KEY,
+  NATIVE_RESIDENCY,
+  REQUIRED_FIELDS,
+} from './constants';
+import {
+  CorruptedConfigError,
+  RosenAmount,
+  RosenChainToken,
+  RosenTokens,
+} from './types';
 
 /**
  * TokenMap class searches for different assets properties in different chains
  */
 export class TokenMap {
-  private tokensConfig: RosenTokens;
+  protected tokensConfig: RosenTokens;
+
+  constructor() {
+    this.tokensConfig = [];
+  }
 
   /**
-   * it takes input tokens list json and the default value is used for
-   *  production
-   * @param tokens tokens list as json
+   * returns tokens config
    */
-  constructor(tokens: RosenTokens) {
+  getConfig = () => {
+    return this.tokensConfig;
+  };
+
+  /**
+   * set tokens config by token map boxes
+   * @param tokens
+   */
+  updateConfigByBoxes = (serializedBoxes: string[]) => {
+    const tokens: RosenTokens = [];
+    const ergoConfigs: ErgoBox[] = [];
+    const nonErgoConfigs: ErgoBox[] = [];
+
+    serializedBoxes.forEach((serializedBox) => {
+      const box = ErgoBox.sigma_parse_bytes(
+        Uint8Array.from(Buffer.from(serializedBox, 'hex'))
+      );
+
+      const chain = Buffer.from(
+        box.register_value(4)?.to_byte_array() ?? []
+      ).toString();
+
+      if (chain === ERGO_CHAIN) ergoConfigs.push(box);
+      else nonErgoConfigs.push(box);
+    });
+
+    ergoConfigs.forEach((box) => {
+      const boxId = box.box_id().to_str();
+      const headers: string[] = (
+        box.register_value(5)?.to_coll_coll_byte() ?? []
+      ).map((_) => Buffer.from(_).toString());
+      const values: string[][] = box
+        .register_value(6)
+        ?.to_js()
+        .map((arr: Uint8Array[]) => arr.map((_) => Buffer.from(_).toString()));
+
+      if (!REQUIRED_FIELDS.every((field) => headers.includes(field)))
+        throw new CorruptedConfigError(
+          boxId,
+          `Headers does not contain all required fields. Found [${headers.join(
+            ','
+          )}]`
+        );
+      if (headers[0] !== ERGO_SIDE_TOKEN_ID_KEY)
+        throw new CorruptedConfigError(
+          boxId,
+          `Expected first header to be [${ERGO_SIDE_TOKEN_ID_KEY}] but found [${headers.join(
+            ','
+          )}]`
+        );
+
+      values.forEach((data) => {
+        if (data.length !== headers.length)
+          throw new CorruptedConfigError(
+            boxId,
+            `Mismatch between headers and data at [${values.indexOf(
+              data
+            )}]: Expected length [${headers.length}] found [${data.length}]`
+          );
+        if (tokens.find((token) => token.ergo.tokenId === data[0]))
+          throw new CorruptedConfigError(
+            boxId,
+            `Duplicate ergo token [${data[0]}] is found`
+          );
+
+        const chainToken: Record<string, any> = {};
+        for (let i = 0; i < headers.length; i++)
+          chainToken[headers[i]] = data[i];
+        chainToken.decimals = Number(chainToken.decimals);
+        tokens.push({ [ERGO_CHAIN]: chainToken as RosenChainToken });
+      });
+    });
+
+    nonErgoConfigs.forEach((box) => {
+      const boxId = box.box_id().to_str();
+      const chain = Buffer.from(
+        box.register_value(4)?.to_byte_array() ?? []
+      ).toString();
+      const headers: string[] = (
+        box.register_value(5)?.to_coll_coll_byte() ?? []
+      ).map((_) => Buffer.from(_).toString());
+      const values: string[][] = box
+        .register_value(6)
+        ?.to_js()
+        .map((arr: Uint8Array[]) => arr.map((_) => Buffer.from(_).toString()));
+
+      if (!REQUIRED_FIELDS.every((field) => headers.includes(field)))
+        throw new CorruptedConfigError(
+          boxId,
+          `Headers does not contain all required fields: Found [${headers.join(
+            ','
+          )}]`
+        );
+      if (headers[0] !== ERGO_SIDE_TOKEN_ID_KEY)
+        throw new CorruptedConfigError(
+          boxId,
+          `Expected first header to be [${ERGO_SIDE_TOKEN_ID_KEY}] but found [${headers.join(
+            ','
+          )}]`
+        );
+
+      values.forEach((data) => {
+        if (data.length !== headers.length)
+          throw new CorruptedConfigError(
+            boxId,
+            `Mismatch between headers and data at [${values.indexOf(
+              data
+            )}]: Expected length [${headers.length}] found [${data.length}]`
+          );
+        const index = tokens.findIndex(
+          (token) => token.ergo.tokenId === data[0]
+        );
+        if (index === -1)
+          throw new CorruptedConfigError(
+            boxId,
+            `Ergo token [${data[0]}] is not found`
+          );
+
+        const chainToken: Record<string, any> = {};
+        for (let i = 0; i < headers.length; i++)
+          chainToken[headers[i]] = data[i];
+        chainToken.decimals = Number(chainToken.decimals);
+
+        if (Object.hasOwn(tokens[index], chain))
+          throw new CorruptedConfigError(
+            boxId,
+            `Duplicate token for ergo token [${data[0]}] on chain [${chain}] is found: Have [${tokens[index][chain].tokenId}] found [${chainToken.tokenId}]`
+          );
+        tokens[index][chain] = chainToken as RosenChainToken;
+      });
+    });
+
     this.tokensConfig = tokens;
-  }
+  };
+
+  /**
+   * set tokens config by json
+   * @param tokens
+   */
+  updateConfigByJson = (tokens: RosenTokens) => {
+    this.tokensConfig = tokens;
+  };
 
   /**
    * Get a list of tokens that can be transferred between specific chains

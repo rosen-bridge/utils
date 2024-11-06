@@ -1,4 +1,3 @@
-import { RosenTokens } from '../../lib';
 import { TokenMap } from '../../lib';
 import {
   firstToken,
@@ -21,7 +20,8 @@ describe('TokenMap', () => {
      * - returned token must equal to specified token
      */
     it('should return asset with condition on the policyId and assetName', () => {
-      const tokenMap = new TokenMap(firstTokenMap);
+      const tokenMap = new TokenMap();
+      tokenMap.updateConfigByJson(firstTokenMap);
       const res = tokenMap.search('cardano', {
         policyId: 'policyId2',
         assetName: 'assetName2',
@@ -41,7 +41,8 @@ describe('TokenMap', () => {
      * - returned token must equal to specified token
      */
     it('should return asset with specific ergo tokenId', () => {
-      const tokenMap = new TokenMap(firstTokenMap);
+      const tokenMap = new TokenMap();
+      tokenMap.updateConfigByJson(firstTokenMap);
       const res = tokenMap.search('ergo', {
         tokenId: 'tokenId',
       });
@@ -59,7 +60,8 @@ describe('TokenMap', () => {
      * - must return empty list
      */
     it('should return empty array in case of wrong chain', () => {
-      const tokenMap = new TokenMap(firstTokenMap);
+      const tokenMap = new TokenMap();
+      tokenMap.updateConfigByJson(firstTokenMap);
       const res = tokenMap.search('bitcoin', {
         tokenId: 'tokenId',
       });
@@ -78,7 +80,8 @@ describe('TokenMap', () => {
      * - return tokenId for ergoChain in specified token
      */
     it('should return ergo tokenId of tha passed token', () => {
-      const tokenMap = new TokenMap(firstTokenMap);
+      const tokenMap = new TokenMap();
+      tokenMap.updateConfigByJson(firstTokenMap);
       const res = tokenMap.getID(firstToken, 'ergo');
       expect(res).toEqual(firstToken.ergo.tokenId);
     });
@@ -86,7 +89,7 @@ describe('TokenMap', () => {
 
   describe('getIdKey', () => {
     /**
-     * @target TokenMap.getID should return `tokenId`for ergo chain
+     * @target TokenMap.getID should return `tokenId` for ergo chain
      * @dependencies
      * - RosenToken json
      * @scenario
@@ -95,7 +98,8 @@ describe('TokenMap', () => {
      * - must return 'tokenId'
      */
     it('should return `tokenId`for ergo chain', function () {
-      const tokenMap = new TokenMap(firstTokenMap);
+      const tokenMap = new TokenMap();
+      tokenMap.updateConfigByJson(firstTokenMap);
       expect(tokenMap.getIdKey('ergo')).toEqual('tokenId');
     });
   });
@@ -111,7 +115,8 @@ describe('TokenMap', () => {
      * - must return one token with specified data
      */
     it('should return one ergo token from ergo to binance', () => {
-      const tokenMap = new TokenMap(firstTokenMap);
+      const tokenMap = new TokenMap();
+      tokenMap.updateConfigByJson(firstTokenMap);
       const res = tokenMap.getTokens('ergo', 'binance');
       expect(res).toEqual([firstTokenMap[1].ergo]);
     });
@@ -126,7 +131,8 @@ describe('TokenMap', () => {
      * - must return empty list
      */
     it('should return empty list when transfer token between chains not feasible', () => {
-      const tokenMap = new TokenMap(firstTokenMap);
+      const tokenMap = new TokenMap();
+      tokenMap.updateConfigByJson(firstTokenMap);
       const res = tokenMap.getTokens('cardano', 'binance');
       expect(res.length).toEqual(0);
     });
@@ -142,7 +148,8 @@ describe('TokenMap', () => {
      * - should return list of three supported network ['binance', 'cardano', 'ergo']
      */
     it('should return all supported chains', () => {
-      const tokenMap = new TokenMap(firstTokenMap);
+      const tokenMap = new TokenMap();
+      tokenMap.updateConfigByJson(firstTokenMap);
       expect(tokenMap.getAllChains().sort()).toEqual([
         'binance',
         'cardano',
@@ -152,7 +159,8 @@ describe('TokenMap', () => {
   });
 
   describe('getSupportedChains', () => {
-    const tokenMap: TokenMap = new TokenMap(firstTokenMap);
+    const tokenMap: TokenMap = new TokenMap();
+    tokenMap.updateConfigByJson(firstTokenMap);
 
     /**
      * @target TokenMap.getSupportedChains should not return source chain
@@ -204,7 +212,8 @@ describe('TokenMap', () => {
      * - should return one token of cardano
      */
     it('should return all cardano native tokens', () => {
-      const tokenMap = new TokenMap(firstTokenMap);
+      const tokenMap = new TokenMap();
+      tokenMap.updateConfigByJson(firstTokenMap);
       expect(tokenMap.getAllNativeTokens('cardano')).toEqual([
         firstTokenMap[2]['cardano'],
       ]);
@@ -219,7 +228,8 @@ describe('TokenMap', () => {
      * - should return two token of ergo
      */
     it('should return all ergo native tokens', () => {
-      const tokenMap = new TokenMap(firstTokenMap);
+      const tokenMap = new TokenMap();
+      tokenMap.updateConfigByJson(firstTokenMap);
       expect(tokenMap.getAllNativeTokens('ergo')).toEqual([
         firstTokenMap[0]['ergo'],
         firstTokenMap[1]['ergo'],
@@ -238,7 +248,8 @@ describe('TokenMap', () => {
      * - should return the token set
      */
     it('should return token set successfully', function () {
-      const tokenMap = new TokenMap(firstTokenMap);
+      const tokenMap = new TokenMap();
+      tokenMap.updateConfigByJson(firstTokenMap);
       const result = tokenMap.getTokenSet('this is a simple ip');
       expect(result).toEqual(firstTokenMap[1]);
     });
@@ -253,7 +264,8 @@ describe('TokenMap', () => {
      * - should return undefined
      */
     it('should return undefined when token is not found', function () {
-      const tokenMap = new TokenMap(firstTokenMap);
+      const tokenMap = new TokenMap();
+      tokenMap.updateConfigByJson(firstTokenMap);
       const result = tokenMap.getTokenSet('not.found');
       expect(result).toBeUndefined();
     });
@@ -270,7 +282,8 @@ describe('TokenMap', () => {
      * - should return amount with less digits
      */
     it('should drop decimals successfully', function () {
-      const tokenMap = new TokenMap(multiDecimalTokenMap);
+      const tokenMap = new TokenMap();
+      tokenMap.updateConfigByJson(multiDecimalTokenMap);
       const result = tokenMap.wrapAmount(
         'policyId3.assetName3',
         123456789n,
@@ -290,7 +303,8 @@ describe('TokenMap', () => {
      * - should return amount with less and without rounding
      */
     it('should drop decimals without rounding successfully', function () {
-      const tokenMap = new TokenMap(multiDecimalTokenMap);
+      const tokenMap = new TokenMap();
+      tokenMap.updateConfigByJson(multiDecimalTokenMap);
       const result = tokenMap.wrapAmount(
         'policyId3.assetName3',
         123400000n,
@@ -310,7 +324,8 @@ describe('TokenMap', () => {
      * - should return amount with same digits
      */
     it('should keep amount when it is already with significant decimals', function () {
-      const tokenMap = new TokenMap(multiDecimalTokenMap);
+      const tokenMap = new TokenMap();
+      tokenMap.updateConfigByJson(multiDecimalTokenMap);
       const result = tokenMap.wrapAmount('tokenId', 123456789n, 'ergo');
       expect(result.amount).toEqual(123456789n);
       expect(result.decimals).toEqual(3);
@@ -326,7 +341,8 @@ describe('TokenMap', () => {
      * - should return amount with same digits and 0 decimals
      */
     it('should keep amount when token is not supported', function () {
-      const tokenMap = new TokenMap(multiDecimalTokenMap);
+      const tokenMap = new TokenMap();
+      tokenMap.updateConfigByJson(multiDecimalTokenMap);
       const result = tokenMap.wrapAmount('not.supported', 123456789n, 'ergo');
       expect(result.amount).toEqual(123456789n);
       expect(result.decimals).toEqual(0);
@@ -344,7 +360,8 @@ describe('TokenMap', () => {
      * - should return amount with more digits
      */
     it('should add decimals successfully', function () {
-      const tokenMap = new TokenMap(multiDecimalTokenMap);
+      const tokenMap = new TokenMap();
+      tokenMap.updateConfigByJson(multiDecimalTokenMap);
       const result = tokenMap.unwrapAmount(
         'policyId3.assetName3',
         1234n,
@@ -364,7 +381,8 @@ describe('TokenMap', () => {
      * - should return amount with same digits
      */
     it('should keep amount when it is already with significant decimals', function () {
-      const tokenMap = new TokenMap(multiDecimalTokenMap);
+      const tokenMap = new TokenMap();
+      tokenMap.updateConfigByJson(multiDecimalTokenMap);
       const result = tokenMap.unwrapAmount('tokenId', 123456789n, 'ergo');
       expect(result.amount).toEqual(123456789n);
       expect(result.decimals).toEqual(3);
@@ -380,7 +398,8 @@ describe('TokenMap', () => {
      * - should return amount with same digits and 0 decimals
      */
     it('should keep amount when token is not supported', function () {
-      const tokenMap = new TokenMap(multiDecimalTokenMap);
+      const tokenMap = new TokenMap();
+      tokenMap.updateConfigByJson(multiDecimalTokenMap);
       const result = tokenMap.unwrapAmount('not.supported', 123456789n, 'ergo');
       expect(result.amount).toEqual(123456789n);
       expect(result.decimals).toEqual(0);
@@ -398,7 +417,8 @@ describe('TokenMap', () => {
      * - should return the minimum decimals in the token set
      */
     it('should return significant decimals successfully', function () {
-      const tokenMap = new TokenMap(multiDecimalTokenMap);
+      const tokenMap = new TokenMap();
+      tokenMap.updateConfigByJson(multiDecimalTokenMap);
       const result = tokenMap.getSignificantDecimals('policyId3.assetName3');
       expect(result).toEqual(3);
     });
@@ -413,7 +433,8 @@ describe('TokenMap', () => {
      * - should return undefined
      */
     it('should keep amount when token is not supported', function () {
-      const tokenMap = new TokenMap(multiDecimalTokenMap);
+      const tokenMap = new TokenMap();
+      tokenMap.updateConfigByJson(multiDecimalTokenMap);
       const result = tokenMap.getSignificantDecimals('not.supported');
       expect(result).toBeUndefined();
     });

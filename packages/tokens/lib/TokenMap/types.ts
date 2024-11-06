@@ -19,3 +19,9 @@ export interface RosenAmount {
   amount: bigint;
   decimals: number;
 }
+
+export class CorruptedConfigError extends Error {
+  constructor(boxId: string, msg: string) {
+    super(`CorruptedConfigError: Corrupted config in box [${boxId}]` + msg);
+  }
+}
