@@ -7,6 +7,7 @@ import {
 } from './constants';
 import {
   CorruptedConfigError,
+  ExtractedConfig,
   RosenAmount,
   RosenChainToken,
   RosenTokens,
@@ -31,28 +32,22 @@ export class TokenMap {
 
   /**
    * set tokens config by token map boxes
-   * @param tokens
+   * @param serializedBoxes list of sigma serialized bytes of token map config boxes
    */
   updateConfigByBoxes = (serializedBoxes: string[]) => {
     const tokens: RosenTokens = [];
-    const ergoConfigs: ErgoBox[] = [];
-    const nonErgoConfigs: ErgoBox[] = [];
+    const ergoConfigs: ExtractedConfig[] = [];
+    const nonErgoConfigs: ExtractedConfig[] = [];
 
     serializedBoxes.forEach((serializedBox) => {
       const box = ErgoBox.sigma_parse_bytes(
         Uint8Array.from(Buffer.from(serializedBox, 'hex'))
       );
+      const boxId = box.box_id().to_str();
 
       const chain = Buffer.from(
         box.register_value(4)?.to_byte_array() ?? []
       ).toString();
-
-      if (chain === ERGO_CHAIN) ergoConfigs.push(box);
-      else nonErgoConfigs.push(box);
-    });
-
-    ergoConfigs.forEach((box) => {
-      const boxId = box.box_id().to_str();
       const headers: string[] = (
         box.register_value(5)?.to_coll_coll_byte() ?? []
       ).map((_) => Buffer.from(_).toString());
@@ -76,6 +71,16 @@ export class TokenMap {
           )}]`
         );
 
+      if (chain === ERGO_CHAIN)
+        ergoConfigs.push({ boxId, chain, headers, values });
+      else nonErgoConfigs.push({ boxId, chain, headers, values });
+    });
+
+    ergoConfigs.forEach((config) => {
+      const boxId = config.boxId;
+      const headers: string[] = config.headers;
+      const values: string[][] = config.values;
+
       values.forEach((data) => {
         if (data.length !== headers.length)
           throw new CorruptedConfigError(
@@ -91,40 +96,18 @@ export class TokenMap {
           );
 
         const chainToken: Record<string, any> = {};
-        for (let i = 0; i < headers.length; i++)
+        for (let i = 1; i < headers.length; i++)
           chainToken[headers[i]] = data[i];
         chainToken.decimals = Number(chainToken.decimals);
         tokens.push({ [ERGO_CHAIN]: chainToken as RosenChainToken });
       });
     });
 
-    nonErgoConfigs.forEach((box) => {
-      const boxId = box.box_id().to_str();
-      const chain = Buffer.from(
-        box.register_value(4)?.to_byte_array() ?? []
-      ).toString();
-      const headers: string[] = (
-        box.register_value(5)?.to_coll_coll_byte() ?? []
-      ).map((_) => Buffer.from(_).toString());
-      const values: string[][] = box
-        .register_value(6)
-        ?.to_js()
-        .map((arr: Uint8Array[]) => arr.map((_) => Buffer.from(_).toString()));
-
-      if (!REQUIRED_FIELDS.every((field) => headers.includes(field)))
-        throw new CorruptedConfigError(
-          boxId,
-          `Headers does not contain all required fields: Found [${headers.join(
-            ','
-          )}]`
-        );
-      if (headers[0] !== ERGO_SIDE_TOKEN_ID_KEY)
-        throw new CorruptedConfigError(
-          boxId,
-          `Expected first header to be [${ERGO_SIDE_TOKEN_ID_KEY}] but found [${headers.join(
-            ','
-          )}]`
-        );
+    nonErgoConfigs.forEach((config) => {
+      const boxId = config.boxId;
+      const chain = config.chain;
+      const headers: string[] = config.headers;
+      const values: string[][] = config.values;
 
       values.forEach((data) => {
         if (data.length !== headers.length)
@@ -144,7 +127,7 @@ export class TokenMap {
           );
 
         const chainToken: Record<string, any> = {};
-        for (let i = 0; i < headers.length; i++)
+        for (let i = 1; i < headers.length; i++)
           chainToken[headers[i]] = data[i];
         chainToken.decimals = Number(chainToken.decimals);
 

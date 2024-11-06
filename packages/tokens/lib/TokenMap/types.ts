@@ -20,8 +20,15 @@ export interface RosenAmount {
   decimals: number;
 }
 
+export interface ExtractedConfig {
+  boxId: string;
+  chain: string;
+  headers: string[];
+  values: string[][];
+}
+
 export class CorruptedConfigError extends Error {
   constructor(boxId: string, msg: string) {
-    super(`CorruptedConfigError: Corrupted config in box [${boxId}]` + msg);
+    super(`CorruptedConfigError: Corrupted config in box [${boxId}]: ` + msg);
   }
 }

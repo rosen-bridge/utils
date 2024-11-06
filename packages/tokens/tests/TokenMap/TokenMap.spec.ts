@@ -1,17 +1,244 @@
-import { TokenMap } from '../../lib';
+import { ErgoBox } from 'ergo-lib-wasm-nodejs';
+import { CorruptedConfigError, TokenMap } from '../../lib';
 import {
+  configBoxes,
+  duplicateTokenConfigBox,
   firstToken,
   firstTokenMap,
+  inconsistentDataCardanoConfigBox,
+  inconsistentDataErgoConfigBox,
+  missingHeaderFieldConfigBox,
   multiDecimalTokenMap,
+  sampleConfigBoxForDuplication,
+  sampleErgoConfigBoxForDuplication,
   secondToken,
-  secondTokenMap,
+  thirdTokenMap,
+  wrongFieldIndexConfigBox,
 } from './TokenMapTestData';
 
 describe('TokenMap', () => {
+  describe('updateConfigByBoxes', () => {
+    /**
+     * @target TokenMap.updateConfigByBoxes should successfully extract config from given boxes
+     * @dependencies
+     * @scenario
+     * - mock config boxes
+     * - run test
+     * - check returned value
+     * @expected
+     * - it should return expected config
+     */
+    it('should successfully extract config from given boxes', () => {
+      const tokenMap = new TokenMap();
+      const serializedBoxes = Object.values(configBoxes).map((boxJson) =>
+        Buffer.from(
+          ErgoBox.from_json(boxJson).sigma_serialize_bytes()
+        ).toString('hex')
+      );
+
+      tokenMap.updateConfigByBoxes(serializedBoxes);
+      const res = tokenMap.getConfig();
+      expect(res).toEqual(thirdTokenMap);
+    });
+
+    /**
+     * @target TokenMap.updateConfigByBoxes should throw CorruptedConfigError
+     * when one of the required fields is missing in the headers
+     * @dependencies
+     * @scenario
+     * - mock config boxes
+     * - run test & check thrown exception
+     * @expected
+     * - CorruptedConfigError should be thrown
+     */
+    it('should throw CorruptedConfigError when one of the required fields is missing in the headers', () => {
+      const tokenMap = new TokenMap();
+      const serializedBox = Buffer.from(
+        ErgoBox.from_json(missingHeaderFieldConfigBox).sigma_serialize_bytes()
+      ).toString('hex');
+
+      expect(() => {
+        tokenMap.updateConfigByBoxes([serializedBox]);
+      }).toThrow(CorruptedConfigError);
+    });
+
+    /**
+     * @target TokenMap.updateConfigByBoxes should throw CorruptedConfigError
+     * when `ergoSideTokenId` is in wrong index in the headers
+     * @dependencies
+     * @scenario
+     * - mock config boxes
+     * - run test & check thrown exception
+     * @expected
+     * - CorruptedConfigError should be thrown
+     */
+    it('should throw CorruptedConfigError when `ergoSideTokenId` is in wrong index in the headers', () => {
+      const tokenMap = new TokenMap();
+      const serializedBox = Buffer.from(
+        ErgoBox.from_json(wrongFieldIndexConfigBox).sigma_serialize_bytes()
+      ).toString('hex');
+
+      expect(() => {
+        tokenMap.updateConfigByBoxes([serializedBox]);
+      }).toThrow(CorruptedConfigError);
+    });
+
+    /**
+     * @target TokenMap.updateConfigByBoxes should throw CorruptedConfigError
+     * when headers and data length are inconsistent in Ergo config
+     * @dependencies
+     * @scenario
+     * - mock config boxes
+     * - run test & check thrown exception
+     * @expected
+     * - CorruptedConfigError should be thrown
+     */
+    it('should throw CorruptedConfigError when headers and data length are inconsistent in Ergo config', () => {
+      const tokenMap = new TokenMap();
+      const serializedBox = Buffer.from(
+        ErgoBox.from_json(inconsistentDataErgoConfigBox).sigma_serialize_bytes()
+      ).toString('hex');
+
+      expect(() => {
+        tokenMap.updateConfigByBoxes([serializedBox]);
+      }).toThrow(CorruptedConfigError);
+    });
+
+    /**
+     * @target TokenMap.updateConfigByBoxes should throw CorruptedConfigError
+     * when duplicate ergo token is found in multiple boxes
+     * @dependencies
+     * @scenario
+     * - mock config boxes
+     * - run test & check thrown exception
+     * @expected
+     * - CorruptedConfigError should be thrown
+     */
+    it('should throw CorruptedConfigError when duplicate ergo token is found in multiple boxes', () => {
+      const tokenMap = new TokenMap();
+      const serializedBoxes = [
+        sampleErgoConfigBoxForDuplication,
+        configBoxes.ergo0,
+      ].map((boxJson) =>
+        Buffer.from(
+          ErgoBox.from_json(boxJson).sigma_serialize_bytes()
+        ).toString('hex')
+      );
+
+      expect(() => {
+        tokenMap.updateConfigByBoxes(serializedBoxes);
+      }).toThrow(CorruptedConfigError);
+    });
+
+    /**
+     * @target TokenMap.updateConfigByBoxes should throw CorruptedConfigError
+     * when duplicate ergo token is found in single box
+     * @dependencies
+     * @scenario
+     * - mock config boxes
+     * - run test & check thrown exception
+     * @expected
+     * - CorruptedConfigError should be thrown
+     */
+    it('should throw CorruptedConfigError when duplicate ergo token is found in single box', () => {
+      const tokenMap = new TokenMap();
+      const serializedBoxes = [duplicateTokenConfigBox].map((boxJson) =>
+        Buffer.from(
+          ErgoBox.from_json(boxJson).sigma_serialize_bytes()
+        ).toString('hex')
+      );
+
+      expect(() => {
+        tokenMap.updateConfigByBoxes(serializedBoxes);
+      }).toThrow(CorruptedConfigError);
+    });
+
+    /**
+     * @target TokenMap.updateConfigByBoxes should throw CorruptedConfigError
+     * when headers and data length are inconsistent in non-Ergo config
+     * @dependencies
+     * @scenario
+     * - mock config boxes
+     * - run test & check thrown exception
+     * @expected
+     * - CorruptedConfigError should be thrown
+     */
+    it('should throw CorruptedConfigError when headers and data length are inconsistent in non-Ergo config', () => {
+      const tokenMap = new TokenMap();
+      const serializedBoxes = [
+        inconsistentDataCardanoConfigBox,
+        configBoxes.ergo0,
+      ].map((boxJson) =>
+        Buffer.from(
+          ErgoBox.from_json(boxJson).sigma_serialize_bytes()
+        ).toString('hex')
+      );
+
+      expect(() => {
+        tokenMap.updateConfigByBoxes(serializedBoxes);
+      }).toThrow(CorruptedConfigError);
+    });
+
+    /**
+     * @target TokenMap.updateConfigByBoxes should throw CorruptedConfigError
+     * when ergo side token is not found
+     * @dependencies
+     * @scenario
+     * - mock config boxes
+     * - run test & check thrown exception
+     * @expected
+     * - CorruptedConfigError should be thrown
+     */
+    it('should throw CorruptedConfigError when ergo side token is not found', () => {
+      const tokenMap = new TokenMap();
+      const serializedBoxes = [
+        configBoxes.ergo0,
+        configBoxes.cardano,
+        configBoxes.bitcoin,
+      ].map((boxJson) =>
+        Buffer.from(
+          ErgoBox.from_json(boxJson).sigma_serialize_bytes()
+        ).toString('hex')
+      );
+
+      expect(() => {
+        tokenMap.updateConfigByBoxes(serializedBoxes);
+      }).toThrow(CorruptedConfigError);
+    });
+
+    /**
+     * @target TokenMap.updateConfigByBoxes should throw CorruptedConfigError
+     * when duplicate token for single ergo token is found
+     * @dependencies
+     * @scenario
+     * - mock config boxes
+     * - run test & check thrown exception
+     * @expected
+     * - CorruptedConfigError should be thrown
+     */
+    it('should throw CorruptedConfigError when duplicate token for single ergo token is found', () => {
+      const tokenMap = new TokenMap();
+      const serializedBoxes = [
+        configBoxes.ergo0,
+        configBoxes.cardano,
+        sampleConfigBoxForDuplication,
+        configBoxes.bitcoin,
+      ].map((boxJson) =>
+        Buffer.from(
+          ErgoBox.from_json(boxJson).sigma_serialize_bytes()
+        ).toString('hex')
+      );
+
+      expect(() => {
+        tokenMap.updateConfigByBoxes(serializedBoxes);
+      }).toThrow(CorruptedConfigError);
+    });
+  });
+
   describe('search', () => {
     /**
      * @target TokenMap.search should return asset with condition on the policyId and assetName
-     * @dependenciesw
+     * @dependencies
      * - RosenToken json
      * @scenario
      * - call search with specific policyId and assetName
