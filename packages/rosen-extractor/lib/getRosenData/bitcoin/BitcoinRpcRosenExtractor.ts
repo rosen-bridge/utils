@@ -6,7 +6,7 @@ import {
   BitcoinRpcTxOutput,
   OpReturnData,
 } from './types';
-import { RosenTokens } from '@rosen-bridge/tokens';
+import { TokenMap } from '@rosen-bridge/tokens';
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import { address } from 'bitcoinjs-lib';
 import { parseRosenData } from './utils';
@@ -15,11 +15,7 @@ export class BitcoinRpcRosenExtractor extends AbstractRosenDataExtractor<Bitcoin
   readonly chain = BITCOIN_CHAIN;
   protected lockScriptPubKey: string;
 
-  constructor(
-    lockAddress: string,
-    tokens: RosenTokens,
-    logger?: AbstractLogger
-  ) {
+  constructor(lockAddress: string, tokens: TokenMap, logger?: AbstractLogger) {
     super(lockAddress, tokens, logger);
     this.lockScriptPubKey = address.toOutputScript(lockAddress).toString('hex');
   }

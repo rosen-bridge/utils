@@ -2,7 +2,7 @@ import { RosenData, TokenTransformation } from '../abstract/types';
 import AbstractRosenDataExtractor from '../abstract/AbstractRosenDataExtractor';
 import { ERGO_CHAIN, ERGO_NATIVE_TOKEN } from '../const';
 import { NodeOutputBox, NodeTransaction } from './types';
-import { RosenTokens } from '@rosen-bridge/tokens';
+import { TokenMap } from '@rosen-bridge/tokens';
 import { Address, Constant } from 'ergo-lib-wasm-nodejs';
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import JsonBigInt from '@rosen-bridge/json-bigint';
@@ -11,11 +11,7 @@ export class ErgoNodeRosenExtractor extends AbstractRosenDataExtractor<NodeTrans
   readonly chain = ERGO_CHAIN;
   lockErgoTree: string;
 
-  constructor(
-    lockAddress: string,
-    tokens: RosenTokens,
-    logger?: AbstractLogger
-  ) {
+  constructor(lockAddress: string, tokens: TokenMap, logger?: AbstractLogger) {
     super(lockAddress, tokens, logger);
     this.lockErgoTree = Address.from_base58(lockAddress)
       .to_ergo_tree()
