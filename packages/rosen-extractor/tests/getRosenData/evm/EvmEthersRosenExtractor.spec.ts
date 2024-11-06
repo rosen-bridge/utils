@@ -2,14 +2,17 @@ import { EvmEthersRosenExtractor } from '../../../lib';
 import * as testData from './testData';
 import TestUtils from '../TestUtils';
 import { JsonRpcProvider, TransactionResponse } from 'ethers';
+import { TokenMap } from '@rosen-bridge/tokens';
 
 describe('EvmEthersRosenExtractor', () => {
   describe('get', () => {
     const chainName = 'ethereum';
     const nativeToken = 'eth';
+    const tokenMap = new TokenMap();
+    tokenMap.updateConfigByJson(TestUtils.tokens);
     const extractor = new EvmEthersRosenExtractor(
       testData.lockAddress,
-      TestUtils.tokens,
+      tokenMap,
       chainName,
       nativeToken
     );

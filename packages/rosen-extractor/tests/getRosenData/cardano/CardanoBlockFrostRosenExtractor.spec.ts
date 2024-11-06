@@ -2,8 +2,12 @@ import { CardanoBlockFrostRosenExtractor } from '../../../lib';
 import * as testData from './BlockFrostTestData';
 import TestUtils from '../TestUtils';
 import { ERGO_CHAIN } from '../../../lib/getRosenData/const';
+import { TokenMap } from '@rosen-bridge/tokens';
 
 describe('BlockFrostRosenExtractor', () => {
+  const tokenMap = new TokenMap();
+  tokenMap.updateConfigByJson(TestUtils.tokens);
+
   describe('get', () => {
     /**
      * Target: BlockFrostRosenExtractor.get
@@ -23,7 +27,7 @@ describe('BlockFrostRosenExtractor', () => {
       // run test
       const extractor = new CardanoBlockFrostRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(validTokenLockTx);
 
@@ -49,7 +53,7 @@ describe('BlockFrostRosenExtractor', () => {
       // run test
       const extractor = new CardanoBlockFrostRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(validAdaLockTx);
 
@@ -75,7 +79,7 @@ describe('BlockFrostRosenExtractor', () => {
       // run test
       const extractor = new CardanoBlockFrostRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(noLock);
 
@@ -107,7 +111,7 @@ describe('BlockFrostRosenExtractor', () => {
         // run test
         const extractor = new CardanoBlockFrostRosenExtractor(
           testData.lockAddress,
-          TestUtils.tokens
+          tokenMap
         );
         const result = extractor.get(invalidTx);
 
@@ -134,7 +138,7 @@ describe('BlockFrostRosenExtractor', () => {
       // run test
       const extractor = new CardanoBlockFrostRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(noMetadata);
 
@@ -161,7 +165,7 @@ describe('BlockFrostRosenExtractor', () => {
       // run test
       const extractor = new CardanoBlockFrostRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(noZeroKeyMetadata);
 
@@ -187,7 +191,7 @@ describe('BlockFrostRosenExtractor', () => {
       // run test
       const extractor = new CardanoBlockFrostRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(stringMetadata);
 
@@ -217,7 +221,7 @@ describe('BlockFrostRosenExtractor', () => {
       // run test
       const extractor = new CardanoBlockFrostRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.getAssetTransformation(tokenLockedUtxo, toChain);
 
@@ -245,7 +249,7 @@ describe('BlockFrostRosenExtractor', () => {
       // run test
       const extractor = new CardanoBlockFrostRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.getAssetTransformation(adaLockedUtxo, toChain);
 
@@ -273,7 +277,7 @@ describe('BlockFrostRosenExtractor', () => {
       // run test
       const extractor = new CardanoBlockFrostRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.getAssetTransformation(adaLockedUtxo, toChain);
 
@@ -299,9 +303,11 @@ describe('BlockFrostRosenExtractor', () => {
       const adaLockedUtxo = testData.blockFrostUtxos.adaLocked;
 
       // run test
+      const tokenMap = new TokenMap();
+      tokenMap.updateConfigByJson(TestUtils.noNativeTokens);
       const extractor = new CardanoBlockFrostRosenExtractor(
         testData.lockAddress,
-        TestUtils.noNativeTokens
+        tokenMap
       );
       const result = extractor.getAssetTransformation(adaLockedUtxo, toChain);
 
@@ -327,7 +333,7 @@ describe('BlockFrostRosenExtractor', () => {
       // run test
       const extractor = new CardanoBlockFrostRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.getAssetTransformation(
         adaLockedUtxo,

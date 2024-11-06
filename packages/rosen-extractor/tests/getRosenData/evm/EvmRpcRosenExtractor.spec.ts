@@ -2,14 +2,17 @@ import { EvmRpcRosenExtractor } from '../../../lib';
 import * as testData from './testData';
 import TestUtils from '../TestUtils';
 import { Transaction, Signature, TransactionLike } from 'ethers';
+import { TokenMap } from '@rosen-bridge/tokens';
 
 describe('EvmRpcRosenExtractor', () => {
   describe('get', () => {
     const chainName = 'ethereum';
     const nativeToken = 'eth';
+    const tokenMap = new TokenMap();
+    tokenMap.updateConfigByJson(TestUtils.tokens);
     const extractor = new EvmRpcRosenExtractor(
       testData.lockAddress,
-      TestUtils.tokens,
+      tokenMap,
       chainName,
       nativeToken
     );
@@ -147,7 +150,7 @@ describe('EvmRpcRosenExtractor', () => {
     it("should return undefined when native token is not in the source chain's token map", () => {
       const invalidExtractor = new EvmRpcRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens,
+        tokenMap,
         chainName,
         'NA'
       );

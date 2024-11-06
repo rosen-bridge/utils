@@ -3,8 +3,12 @@ import * as testData from './rpcTestData';
 import TestUtils from '../TestUtils';
 import { ERGO_CHAIN, CARDANO_CHAIN } from '../../../lib/getRosenData/const';
 import { BitcoinRpcTransaction } from '../../../lib/getRosenData/bitcoin/types';
+import { TokenMap } from '@rosen-bridge/tokens';
 
 describe('BitcoinRpcRosenExtractor', () => {
+  const tokenMap = new TokenMap();
+  tokenMap.updateConfigByJson(TestUtils.tokens);
+
   describe('get', () => {
     /**
      * @target `BitcoinRpcRosenExtractor.get` should extract rosenData from
@@ -22,7 +26,7 @@ describe('BitcoinRpcRosenExtractor', () => {
 
       const extractor = new BitcoinRpcRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(validLockTx as BitcoinRpcTransaction);
 
@@ -45,7 +49,7 @@ describe('BitcoinRpcRosenExtractor', () => {
 
       const extractor = new BitcoinRpcRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(invalidTx as BitcoinRpcTransaction);
 
@@ -68,7 +72,7 @@ describe('BitcoinRpcRosenExtractor', () => {
 
       const extractor = new BitcoinRpcRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(invalidTx as BitcoinRpcTransaction);
 
@@ -91,7 +95,7 @@ describe('BitcoinRpcRosenExtractor', () => {
 
       const extractor = new BitcoinRpcRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(invalidTx as BitcoinRpcTransaction);
 
@@ -114,7 +118,7 @@ describe('BitcoinRpcRosenExtractor', () => {
 
       const extractor = new BitcoinRpcRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(invalidTx as BitcoinRpcTransaction);
 
@@ -136,9 +140,11 @@ describe('BitcoinRpcRosenExtractor', () => {
     it('should return undefined when token transformation is not possible', () => {
       const invalidTx = testData.txs.lockTx;
 
+      const tokenMap = new TokenMap();
+      tokenMap.updateConfigByJson(TestUtils.noNativeTokens);
       const extractor = new BitcoinRpcRosenExtractor(
         testData.lockAddress,
-        TestUtils.noNativeTokens
+        tokenMap
       );
       const result = extractor.get(invalidTx as BitcoinRpcTransaction);
 
@@ -163,7 +169,7 @@ describe('BitcoinRpcRosenExtractor', () => {
 
       const extractor = new BitcoinRpcRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.getAssetTransformation(lockUtxo, ERGO_CHAIN);
 
@@ -186,7 +192,7 @@ describe('BitcoinRpcRosenExtractor', () => {
 
       const extractor = new BitcoinRpcRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.getAssetTransformation(lockUtxo, CARDANO_CHAIN);
 

@@ -4,8 +4,12 @@ import TestUtils from '../TestUtils';
 import { Transaction } from '@cardano-ogmios/schema';
 import { ERGO_CHAIN } from '../../../lib/getRosenData/const';
 import JsonBigInt from '@rosen-bridge/json-bigint';
+import { TokenMap } from '@rosen-bridge/tokens';
 
 describe('OgmiosRosenExtractor', () => {
+  const tokenMap = new TokenMap();
+  tokenMap.updateConfigByJson(TestUtils.tokens);
+
   describe('get', () => {
     /**
      * Target: OgmiosRosenExtractor.get
@@ -26,7 +30,7 @@ describe('OgmiosRosenExtractor', () => {
       // run test
       const extractor = new CardanoOgmiosRosenExtractor(
         CardanoTestData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(validTokenLockTx);
 
@@ -55,7 +59,7 @@ describe('OgmiosRosenExtractor', () => {
       // run test
       const extractor = new CardanoOgmiosRosenExtractor(
         CardanoTestData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(validAdaLockTx);
 
@@ -84,7 +88,7 @@ describe('OgmiosRosenExtractor', () => {
       // run test
       const extractor = new CardanoOgmiosRosenExtractor(
         CardanoTestData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(noLock);
 
@@ -118,7 +122,7 @@ describe('OgmiosRosenExtractor', () => {
         // run test
         const extractor = new CardanoOgmiosRosenExtractor(
           CardanoTestData.lockAddress,
-          TestUtils.tokens
+          tokenMap
         );
         const result = extractor.get(invalidTx as unknown as Transaction);
 
@@ -146,7 +150,7 @@ describe('OgmiosRosenExtractor', () => {
       // run test
       const extractor = new CardanoOgmiosRosenExtractor(
         CardanoTestData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(noLock);
 
@@ -173,7 +177,7 @@ describe('OgmiosRosenExtractor', () => {
       // run test
       const extractor = new CardanoOgmiosRosenExtractor(
         CardanoTestData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(noLock);
 
@@ -200,7 +204,7 @@ describe('OgmiosRosenExtractor', () => {
       // run test
       const extractor = new CardanoOgmiosRosenExtractor(
         CardanoTestData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(noLock);
 
@@ -227,7 +231,7 @@ describe('OgmiosRosenExtractor', () => {
       // run test
       const extractor = new CardanoOgmiosRosenExtractor(
         CardanoTestData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(noLock);
 
@@ -254,7 +258,7 @@ describe('OgmiosRosenExtractor', () => {
       // run test
       const extractor = new CardanoOgmiosRosenExtractor(
         CardanoTestData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(noLock);
 
@@ -284,7 +288,7 @@ describe('OgmiosRosenExtractor', () => {
       // run test
       const extractor = new CardanoOgmiosRosenExtractor(
         CardanoTestData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.getAssetTransformation(tokenLockedUtxo, toChain);
 
@@ -312,7 +316,7 @@ describe('OgmiosRosenExtractor', () => {
       // run test
       const extractor = new CardanoOgmiosRosenExtractor(
         CardanoTestData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.getAssetTransformation(adaLockedUtxo, toChain);
 
@@ -340,7 +344,7 @@ describe('OgmiosRosenExtractor', () => {
       // run test
       const extractor = new CardanoOgmiosRosenExtractor(
         CardanoTestData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.getAssetTransformation(adaLockedUtxo, toChain);
 
@@ -368,7 +372,7 @@ describe('OgmiosRosenExtractor', () => {
       // run test
       const extractor = new CardanoOgmiosRosenExtractor(
         CardanoTestData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.getAssetTransformation(adaLockedUtxo, toChain);
 
@@ -394,9 +398,11 @@ describe('OgmiosRosenExtractor', () => {
       const adaLockedUtxo = CardanoTestData.ogmiosTxOuts.adaLocked;
 
       // run test
+      const tokenMap = new TokenMap();
+      tokenMap.updateConfigByJson(TestUtils.noNativeTokens);
       const extractor = new CardanoOgmiosRosenExtractor(
         CardanoTestData.lockAddress,
-        TestUtils.noNativeTokens
+        tokenMap
       );
       const result = extractor.getAssetTransformation(adaLockedUtxo, toChain);
 
@@ -422,7 +428,7 @@ describe('OgmiosRosenExtractor', () => {
       // run test
       const extractor = new CardanoOgmiosRosenExtractor(
         CardanoTestData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.getAssetTransformation(
         adaLockedUtxo,

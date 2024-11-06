@@ -1,8 +1,11 @@
 import { ErgoRosenExtractor } from '../../../lib';
 import ErgoTestData from './ErgoTestData';
 import TestUtils from '../TestUtils';
+import { TokenMap } from '@rosen-bridge/tokens';
 
 describe('ErgoRosenExtractor', () => {
+  const tokenMap = new TokenMap();
+  tokenMap.updateConfigByJson(TestUtils.tokens);
   const lockAddress =
     'nB3L2PD3LG4ydEj62n9aymRyPCEbkBdzaubgvCWDH2oxHxFBfAUy9GhWDvteDbbUh5qhXxnW8R46qmEiZfkej8gt4kZYvbeobZJADMrWXwFJTsZ17euEcoAp3KDk31Q26okFpgK9SKdi4';
   describe('get', () => {
@@ -23,7 +26,7 @@ describe('ErgoRosenExtractor', () => {
       const validLockTx = ErgoTestData.ergoSerializedTxs.lockTx;
 
       // run test
-      const extractor = new ErgoRosenExtractor(lockAddress, TestUtils.tokens);
+      const extractor = new ErgoRosenExtractor(lockAddress, tokenMap);
       const result = extractor.get(validLockTx);
 
       // check return value
@@ -47,7 +50,7 @@ describe('ErgoRosenExtractor', () => {
       const noLock = ErgoTestData.ergoSerializedTxs.normalTx;
 
       // run test
-      const extractor = new ErgoRosenExtractor(lockAddress, TestUtils.tokens);
+      const extractor = new ErgoRosenExtractor(lockAddress, tokenMap);
       const result = extractor.get(noLock);
 
       // check return value
@@ -71,7 +74,7 @@ describe('ErgoRosenExtractor', () => {
       const invalidBytes = ErgoTestData.ergoSerializedTxs.invalid;
 
       // run test
-      const extractor = new ErgoRosenExtractor(lockAddress, TestUtils.tokens);
+      const extractor = new ErgoRosenExtractor(lockAddress, tokenMap);
       const result = extractor.get(invalidBytes);
 
       // check return value

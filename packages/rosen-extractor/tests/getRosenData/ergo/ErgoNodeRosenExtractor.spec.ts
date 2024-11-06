@@ -3,8 +3,12 @@ import ErgoTestData from './ErgoTestData';
 import TestUtils from '../TestUtils';
 import { NodeTransaction } from '../../../lib/getRosenData/ergo/types';
 import { CARDANO_CHAIN } from '../../../lib/getRosenData/const';
+import { TokenMap } from '@rosen-bridge/tokens';
 
 describe('ErgoNodeRosenExtractor', () => {
+  const tokenMap = new TokenMap();
+  tokenMap.updateConfigByJson(TestUtils.tokens);
+
   describe('get', () => {
     /**
      * Target: ErgoErgoNodeRosenExtractor.get
@@ -24,7 +28,7 @@ describe('ErgoNodeRosenExtractor', () => {
       // run test
       const extractor = new ErgoNodeRosenExtractor(
         ErgoTestData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(
         validTokenLockTx as unknown as NodeTransaction
@@ -52,7 +56,7 @@ describe('ErgoNodeRosenExtractor', () => {
       // run test
       const extractor = new ErgoNodeRosenExtractor(
         ErgoTestData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(
         validErgLockTx as unknown as NodeTransaction
@@ -80,7 +84,7 @@ describe('ErgoNodeRosenExtractor', () => {
       // run test
       const extractor = new ErgoNodeRosenExtractor(
         ErgoTestData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(noLock as unknown as NodeTransaction);
 
@@ -106,7 +110,7 @@ describe('ErgoNodeRosenExtractor', () => {
       // run test
       const extractor = new ErgoNodeRosenExtractor(
         ErgoTestData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(fewerValues as unknown as NodeTransaction);
 
@@ -132,7 +136,7 @@ describe('ErgoNodeRosenExtractor', () => {
       // run test
       const extractor = new ErgoNodeRosenExtractor(
         ErgoTestData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(noRegister as unknown as NodeTransaction);
 
@@ -162,7 +166,7 @@ describe('ErgoNodeRosenExtractor', () => {
       // run test
       const extractor = new ErgoNodeRosenExtractor(
         ErgoTestData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.getAssetTransformation(tokenLockedBox, toChain);
 
@@ -190,7 +194,7 @@ describe('ErgoNodeRosenExtractor', () => {
       // run test
       const extractor = new ErgoNodeRosenExtractor(
         ErgoTestData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.getAssetTransformation(ergLockedBox, toChain);
 
@@ -218,7 +222,7 @@ describe('ErgoNodeRosenExtractor', () => {
       // run test
       const extractor = new ErgoNodeRosenExtractor(
         ErgoTestData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.getAssetTransformation(ergLockedBox, toChain);
 
@@ -246,7 +250,7 @@ describe('ErgoNodeRosenExtractor', () => {
       // run test
       const extractor = new ErgoNodeRosenExtractor(
         ErgoTestData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.getAssetTransformation(ergLockedBox, toChain);
 
@@ -272,9 +276,11 @@ describe('ErgoNodeRosenExtractor', () => {
       const ergLockedBox = ErgoTestData.nodeBoxes.ergLocked;
 
       // run test
+      const tokenMap = new TokenMap();
+      tokenMap.updateConfigByJson(TestUtils.noNativeTokens);
       const extractor = new ErgoNodeRosenExtractor(
         ErgoTestData.lockAddress,
-        TestUtils.noNativeTokens
+        tokenMap
       );
       const result = extractor.getAssetTransformation(ergLockedBox, toChain);
 
@@ -300,7 +306,7 @@ describe('ErgoNodeRosenExtractor', () => {
       // run test
       const extractor = new ErgoNodeRosenExtractor(
         ErgoTestData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.getAssetTransformation(
         ergLockedBox,

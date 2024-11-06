@@ -3,8 +3,12 @@ import * as testData from './testData';
 import TestUtils from '../TestUtils';
 import { ERGO_CHAIN, CARDANO_CHAIN } from '../../../lib/getRosenData/const';
 import JsonBigInt from '@rosen-bridge/json-bigint';
+import { TokenMap } from '@rosen-bridge/tokens';
 
 describe('BitcoinRosenExtractor', () => {
+  const tokenMap = new TokenMap();
+  tokenMap.updateConfigByJson(TestUtils.tokens);
+
   describe('get', () => {
     /**
      * @target `BitcoinRosenExtractor.get` should extract rosenData from
@@ -22,7 +26,7 @@ describe('BitcoinRosenExtractor', () => {
 
       const extractor = new BitcoinRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(validLockTx);
 
@@ -45,7 +49,7 @@ describe('BitcoinRosenExtractor', () => {
 
       const extractor = new BitcoinRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(invalidTx);
 
@@ -68,7 +72,7 @@ describe('BitcoinRosenExtractor', () => {
 
       const extractor = new BitcoinRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(invalidTx);
 
@@ -91,7 +95,7 @@ describe('BitcoinRosenExtractor', () => {
 
       const extractor = new BitcoinRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(invalidTx);
 
@@ -114,7 +118,7 @@ describe('BitcoinRosenExtractor', () => {
 
       const extractor = new BitcoinRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(invalidTx);
 
@@ -136,9 +140,11 @@ describe('BitcoinRosenExtractor', () => {
     it('should return undefined when token transformation is not possible', () => {
       const invalidTx = JsonBigInt.stringify(testData.txs.lockTx);
 
+      const tokenMap = new TokenMap();
+      tokenMap.updateConfigByJson(TestUtils.noNativeTokens);
       const extractor = new BitcoinRosenExtractor(
         testData.lockAddress,
-        TestUtils.noNativeTokens
+        tokenMap
       );
       const result = extractor.get(invalidTx);
 
@@ -163,7 +169,7 @@ describe('BitcoinRosenExtractor', () => {
 
       const extractor = new BitcoinRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.getAssetTransformation(lockUtxo, ERGO_CHAIN);
 
@@ -186,7 +192,7 @@ describe('BitcoinRosenExtractor', () => {
 
       const extractor = new BitcoinRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.getAssetTransformation(lockUtxo, CARDANO_CHAIN);
 
