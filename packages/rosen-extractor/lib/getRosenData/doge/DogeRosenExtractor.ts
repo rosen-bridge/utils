@@ -4,7 +4,6 @@ import { DOGE_CHAIN, DOGE_NATIVE_TOKEN } from '../const';
 import { DogeTx, DogeTxOutput, OpReturnData } from './types';
 import { RosenTokens } from '@rosen-bridge/tokens';
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
-import { address } from 'bitcoinjs-lib';
 import { parseRosenData, addressToOutputScript } from './utils';
 import JsonBigInt from '@rosen-bridge/json-bigint';
 

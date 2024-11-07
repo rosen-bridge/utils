@@ -3,7 +3,6 @@ import { SUPPORTED_CHAINS } from '../const';
 import { OpReturnData } from './types';
 import { address, networks } from 'bitcoinjs-lib';
 
-// Add the Dogecoin network parameters
 const dogecoinNetwork = {
   messagePrefix: '\x19Dogecoin Signed Message:\n',
   bech32: 'dc',
