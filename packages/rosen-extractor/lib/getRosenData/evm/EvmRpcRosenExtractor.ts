@@ -63,7 +63,7 @@ export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<Transaction
         tokenAddress = this.nativeToken;
         amount = transaction.value.toString();
         const tokens = this.tokens.search(this.chain, {
-          [this.tokens.getIdKey(this.chain)]: this.nativeToken,
+          tokenId: this.nativeToken,
         });
         if (tokens.length == 1) {
           sourceTokenId = this.nativeToken;
@@ -96,7 +96,7 @@ export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<Transaction
         rosenDataRaw = callData.substring(72 + 64);
         tokenAddress = transaction.to.toLowerCase();
         const tokens = this.tokens.search(this.chain, {
-          [this.tokens.getIdKey(this.chain)]: tokenAddress,
+          tokenId: tokenAddress,
         });
         if (tokens.length != 1) {
           this.logger.debug(

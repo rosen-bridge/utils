@@ -93,7 +93,7 @@ export class ErgoNodeRosenExtractor extends AbstractRosenDataExtractor<NodeTrans
     if (box.assets && box.assets.length > 0) {
       for (const lockedToken of box.assets) {
         const token = this.tokens.search(ERGO_CHAIN, {
-          [this.tokens.getIdKey(ERGO_CHAIN)]: lockedToken.tokenId,
+          tokenId: lockedToken.tokenId,
         });
         if (token.length > 0 && Object.hasOwn(token[0], toChain)) {
           return {
@@ -107,7 +107,7 @@ export class ErgoNodeRosenExtractor extends AbstractRosenDataExtractor<NodeTrans
 
     // try to build transformation using locked Erg
     const erg = this.tokens.search(ERGO_CHAIN, {
-      [this.tokens.getIdKey(ERGO_CHAIN)]: ERGO_NATIVE_TOKEN,
+      tokenId: ERGO_NATIVE_TOKEN,
     });
     if (erg.length > 0 && Object.hasOwn(erg[0], toChain)) {
       return {

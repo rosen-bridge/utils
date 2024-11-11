@@ -119,7 +119,7 @@ export class BitcoinRosenExtractor extends AbstractRosenDataExtractor<string> {
   ): TokenTransformation | undefined => {
     // try to build transformation using locked BTC
     const wrappedBtc = this.tokens.search(BITCOIN_CHAIN, {
-      [this.tokens.getIdKey(BITCOIN_CHAIN)]: BITCOIN_NATIVE_TOKEN,
+      tokenId: BITCOIN_NATIVE_TOKEN,
     });
     if (wrappedBtc.length > 0 && Object.hasOwn(wrappedBtc[0], toChain)) {
       const satoshiAmount = box.value;

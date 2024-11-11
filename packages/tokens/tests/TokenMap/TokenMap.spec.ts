@@ -314,23 +314,6 @@ describe('TokenMap', () => {
     });
   });
 
-  describe('getIdKey', () => {
-    /**
-     * @target TokenMap.getID should return `tokenId` for ergo chain
-     * @dependencies
-     * - RosenToken json
-     * @scenario
-     * - call getIdKey for ergo chain
-     * @expected
-     * - must return 'tokenId'
-     */
-    it('should return `tokenId`for ergo chain', function () {
-      const tokenMap = new TokenMap();
-      tokenMap.updateConfigByJson(firstTokenMap);
-      expect(tokenMap.getIdKey('ergo')).toEqual('tokenId');
-    });
-  });
-
   describe('getTokens', () => {
     /**
      * @target TokenMap.getTokens should return one ergo token from ergo to binance

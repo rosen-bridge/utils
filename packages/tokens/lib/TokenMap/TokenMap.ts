@@ -220,14 +220,6 @@ export class TokenMap {
   };
 
   /**
-   * returns ID key for specific chain.
-   * @param chain: one of supported tokens
-   */
-  getIdKey = (chain: string): string => {
-    return 'tokenId';
-  };
-
-  /**
    * returns tokenId in specific chain with respect to idKeys in the tokensConfig
    * @param token
    *  example: {
