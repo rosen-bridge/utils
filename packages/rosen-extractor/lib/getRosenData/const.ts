@@ -3,7 +3,7 @@ export const ERGO_NATIVE_TOKEN = 'erg';
 export const BITCOIN_NATIVE_TOKEN = 'btc';
 export const BITCOIN_CHAIN = 'bitcoin';
 export const ETHEREUM_CHAIN = 'ethereum';
-export const ETHEREUM_NATIVE_TOKEN = 'eth';
+export const BINANCE_CHAIN = 'ethereum';
 export const CARDANO_CHAIN = 'cardano';
 export const ERGO_CHAIN = 'ergo';
 export const SUPPORTED_CHAINS = [
@@ -11,4 +11,5 @@ export const SUPPORTED_CHAINS = [
   CARDANO_CHAIN,
   BITCOIN_CHAIN,
   ETHEREUM_CHAIN,
+  BINANCE_CHAIN,
 ];
