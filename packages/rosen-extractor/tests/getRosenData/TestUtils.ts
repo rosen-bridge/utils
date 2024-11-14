@@ -1,7 +1,4 @@
-import {
-  ETHEREUM_CHAIN,
-  ETHEREUM_NATIVE_TOKEN,
-} from './../../lib/getRosenData/const';
+import { ETHEREUM_CHAIN } from './../../lib/getRosenData/const';
 import { RosenTokens } from '@rosen-bridge/tokens';
 import {
   BITCOIN_CHAIN,
@@ -132,7 +129,7 @@ export default class TestUtils {
       },
       {
         [ETHEREUM_CHAIN]: {
-          tokenId: ETHEREUM_NATIVE_TOKEN,
+          tokenId: 'eth',
           name: 'ETH',
           decimals: 18,
           metaData: {
