@@ -1,5 +1,11 @@
 # @rosen-bridge/rosen-extractor
 
+## 6.3.0
+
+### Minor Changes
+
+- Add Binance chain
+
 ## 6.2.2
 
 ### Patch Changes
