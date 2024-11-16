@@ -1,5 +1,11 @@
 # @rosen-bridge/winston-logger
 
+## 1.0.2
+
+### Patch Changes
+
+- Fix build process
+
 ## 1.0.1
 
 ### Patch Changes
