@@ -1,4 +1,5 @@
 import { ErgoBox } from 'ergo-lib-wasm-nodejs';
+import { Semaphore } from 'await-semaphore';
 import {
   ERGO_CHAIN,
   ERGO_SIDE_TOKEN_ID_KEY,
@@ -18,9 +19,11 @@ import {
  */
 export class TokenMap {
   protected tokensConfig: RosenTokens;
+  protected updateSemaphore: Semaphore;
 
   constructor() {
     this.tokensConfig = [];
+    this.updateSemaphore = new Semaphore(1);
   }
 
   /**
@@ -34,7 +37,7 @@ export class TokenMap {
    * set tokens config by token map boxes
    * @param serializedBoxes list of sigma serialized bytes of token map config boxes
    */
-  updateConfigByBoxes = (serializedBoxes: string[]) => {
+  updateConfigByBoxes = async (serializedBoxes: string[]) => {
     const tokens: RosenTokens = [];
     const ergoConfigs: ExtractedConfig[] = [];
     const nonErgoConfigs: ExtractedConfig[] = [];
@@ -140,15 +143,18 @@ export class TokenMap {
       });
     });
 
-    this.tokensConfig = tokens;
+    await this.updateConfigByJson(tokens);
   };
 
   /**
    * set tokens config by json
    * @param tokens
    */
-  updateConfigByJson = (tokens: RosenTokens) => {
-    this.tokensConfig = tokens;
+  updateConfigByJson = async (tokens: RosenTokens) => {
+    await this.updateSemaphore.acquire().then(async (release) => {
+      this.tokensConfig = tokens;
+      release();
+    });
   };
 
   /**
