@@ -6,7 +6,10 @@ import { TokenMap } from '@rosen-bridge/tokens';
 
 describe('GraphQLRosenExtractor', () => {
   const tokenMap = new TokenMap();
-  tokenMap.updateConfigByJson(TestUtils.tokens);
+
+  beforeAll(async () => {
+    await tokenMap.updateConfigByJson(TestUtils.tokens);
+  });
 
   describe('get', () => {
     /**
@@ -298,13 +301,13 @@ describe('GraphQLRosenExtractor', () => {
      * Expected:
      *  function returns undefined
      */
-    it('should return undefined when no asset locked and ADA is not supported', () => {
+    it('should return undefined when no asset locked and ADA is not supported', async () => {
       // generate a UTXO with invalid asset transformation
       const adaLockedUtxo = testData.graphQLUtxos.adaLocked;
 
       // run test
       const tokenMap = new TokenMap();
-      tokenMap.updateConfigByJson(TestUtils.noNativeTokens);
+      await tokenMap.updateConfigByJson(TestUtils.noNativeTokens);
       const extractor = new CardanoGraphQLRosenExtractor(
         testData.lockAddress,
         tokenMap

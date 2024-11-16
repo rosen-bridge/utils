@@ -28,7 +28,7 @@ describe('TokenMap', () => {
      * @expected
      * - it should return expected config
      */
-    it('should successfully extract config from given boxes', () => {
+    it('should successfully extract config from given boxes', async () => {
       const tokenMap = new TokenMap();
       const serializedBoxes = Object.values(configBoxes).map((boxJson) =>
         Buffer.from(
@@ -36,7 +36,7 @@ describe('TokenMap', () => {
         ).toString('hex')
       );
 
-      tokenMap.updateConfigByBoxes(serializedBoxes);
+      await tokenMap.updateConfigByBoxes(serializedBoxes);
       const res = tokenMap.getConfig();
       expect(res).toEqual(thirdTokenMap);
     });
@@ -51,15 +51,15 @@ describe('TokenMap', () => {
      * @expected
      * - CorruptedConfigError should be thrown
      */
-    it('should throw CorruptedConfigError when one of the required fields is missing in the headers', () => {
+    it('should throw CorruptedConfigError when one of the required fields is missing in the headers', async () => {
       const tokenMap = new TokenMap();
       const serializedBox = Buffer.from(
         ErgoBox.from_json(missingHeaderFieldConfigBox).sigma_serialize_bytes()
       ).toString('hex');
 
-      expect(() => {
-        tokenMap.updateConfigByBoxes([serializedBox]);
-      }).toThrow(CorruptedConfigError);
+      await expect(async () => {
+        await tokenMap.updateConfigByBoxes([serializedBox]);
+      }).rejects.toThrow(CorruptedConfigError);
     });
 
     /**
@@ -72,15 +72,15 @@ describe('TokenMap', () => {
      * @expected
      * - CorruptedConfigError should be thrown
      */
-    it('should throw CorruptedConfigError when `ergoSideTokenId` is in wrong index in the headers', () => {
+    it('should throw CorruptedConfigError when `ergoSideTokenId` is in wrong index in the headers', async () => {
       const tokenMap = new TokenMap();
       const serializedBox = Buffer.from(
         ErgoBox.from_json(wrongFieldIndexConfigBox).sigma_serialize_bytes()
       ).toString('hex');
 
-      expect(() => {
-        tokenMap.updateConfigByBoxes([serializedBox]);
-      }).toThrow(CorruptedConfigError);
+      await expect(async () => {
+        await tokenMap.updateConfigByBoxes([serializedBox]);
+      }).rejects.toThrow(CorruptedConfigError);
     });
 
     /**
@@ -93,15 +93,15 @@ describe('TokenMap', () => {
      * @expected
      * - CorruptedConfigError should be thrown
      */
-    it('should throw CorruptedConfigError when headers and data length are inconsistent in Ergo config', () => {
+    it('should throw CorruptedConfigError when headers and data length are inconsistent in Ergo config', async () => {
       const tokenMap = new TokenMap();
       const serializedBox = Buffer.from(
         ErgoBox.from_json(inconsistentDataErgoConfigBox).sigma_serialize_bytes()
       ).toString('hex');
 
-      expect(() => {
-        tokenMap.updateConfigByBoxes([serializedBox]);
-      }).toThrow(CorruptedConfigError);
+      await expect(async () => {
+        await tokenMap.updateConfigByBoxes([serializedBox]);
+      }).rejects.toThrow(CorruptedConfigError);
     });
 
     /**
@@ -114,7 +114,7 @@ describe('TokenMap', () => {
      * @expected
      * - CorruptedConfigError should be thrown
      */
-    it('should throw CorruptedConfigError when duplicate ergo token is found in multiple boxes', () => {
+    it('should throw CorruptedConfigError when duplicate ergo token is found in multiple boxes', async () => {
       const tokenMap = new TokenMap();
       const serializedBoxes = [
         sampleErgoConfigBoxForDuplication,
@@ -125,9 +125,9 @@ describe('TokenMap', () => {
         ).toString('hex')
       );
 
-      expect(() => {
-        tokenMap.updateConfigByBoxes(serializedBoxes);
-      }).toThrow(CorruptedConfigError);
+      await expect(async () => {
+        await tokenMap.updateConfigByBoxes(serializedBoxes);
+      }).rejects.toThrow(CorruptedConfigError);
     });
 
     /**
@@ -140,7 +140,7 @@ describe('TokenMap', () => {
      * @expected
      * - CorruptedConfigError should be thrown
      */
-    it('should throw CorruptedConfigError when duplicate ergo token is found in single box', () => {
+    it('should throw CorruptedConfigError when duplicate ergo token is found in single box', async () => {
       const tokenMap = new TokenMap();
       const serializedBoxes = [duplicateTokenConfigBox].map((boxJson) =>
         Buffer.from(
@@ -148,9 +148,9 @@ describe('TokenMap', () => {
         ).toString('hex')
       );
 
-      expect(() => {
-        tokenMap.updateConfigByBoxes(serializedBoxes);
-      }).toThrow(CorruptedConfigError);
+      await expect(async () => {
+        await tokenMap.updateConfigByBoxes(serializedBoxes);
+      }).rejects.toThrow(CorruptedConfigError);
     });
 
     /**
@@ -163,7 +163,7 @@ describe('TokenMap', () => {
      * @expected
      * - CorruptedConfigError should be thrown
      */
-    it('should throw CorruptedConfigError when headers and data length are inconsistent in non-Ergo config', () => {
+    it('should throw CorruptedConfigError when headers and data length are inconsistent in non-Ergo config', async () => {
       const tokenMap = new TokenMap();
       const serializedBoxes = [
         inconsistentDataCardanoConfigBox,
@@ -174,9 +174,9 @@ describe('TokenMap', () => {
         ).toString('hex')
       );
 
-      expect(() => {
-        tokenMap.updateConfigByBoxes(serializedBoxes);
-      }).toThrow(CorruptedConfigError);
+      await expect(async () => {
+        await tokenMap.updateConfigByBoxes(serializedBoxes);
+      }).rejects.toThrow(CorruptedConfigError);
     });
 
     /**
@@ -189,7 +189,7 @@ describe('TokenMap', () => {
      * @expected
      * - CorruptedConfigError should be thrown
      */
-    it('should throw CorruptedConfigError when ergo side token is not found', () => {
+    it('should throw CorruptedConfigError when ergo side token is not found', async () => {
       const tokenMap = new TokenMap();
       const serializedBoxes = [
         configBoxes.ergo0,
@@ -201,9 +201,9 @@ describe('TokenMap', () => {
         ).toString('hex')
       );
 
-      expect(() => {
-        tokenMap.updateConfigByBoxes(serializedBoxes);
-      }).toThrow(CorruptedConfigError);
+      await expect(async () => {
+        await tokenMap.updateConfigByBoxes(serializedBoxes);
+      }).rejects.toThrow(CorruptedConfigError);
     });
 
     /**
@@ -216,7 +216,7 @@ describe('TokenMap', () => {
      * @expected
      * - CorruptedConfigError should be thrown
      */
-    it('should throw CorruptedConfigError when duplicate token for single ergo token is found', () => {
+    it('should throw CorruptedConfigError when duplicate token for single ergo token is found', async () => {
       const tokenMap = new TokenMap();
       const serializedBoxes = [
         configBoxes.ergo0,
@@ -229,9 +229,9 @@ describe('TokenMap', () => {
         ).toString('hex')
       );
 
-      expect(() => {
-        tokenMap.updateConfigByBoxes(serializedBoxes);
-      }).toThrow(CorruptedConfigError);
+      await expect(async () => {
+        await tokenMap.updateConfigByBoxes(serializedBoxes);
+      }).rejects.toThrow(CorruptedConfigError);
     });
   });
 
@@ -246,9 +246,9 @@ describe('TokenMap', () => {
      * - must return one token
      * - returned token must equal to specified token
      */
-    it('should return asset with condition on the policyId and assetName', () => {
+    it('should return asset with condition on the policyId and assetName', async () => {
       const tokenMap = new TokenMap();
-      tokenMap.updateConfigByJson(firstTokenMap);
+      await tokenMap.updateConfigByJson(firstTokenMap);
       const res = tokenMap.search('cardano', {
         policyId: 'policyId2',
         assetName: 'assetName2',
@@ -267,9 +267,9 @@ describe('TokenMap', () => {
      * - must return one token
      * - returned token must equal to specified token
      */
-    it('should return asset with specific ergo tokenId', () => {
+    it('should return asset with specific ergo tokenId', async () => {
       const tokenMap = new TokenMap();
-      tokenMap.updateConfigByJson(firstTokenMap);
+      await tokenMap.updateConfigByJson(firstTokenMap);
       const res = tokenMap.search('ergo', {
         tokenId: 'tokenId',
       });
@@ -286,9 +286,9 @@ describe('TokenMap', () => {
      * @expected
      * - must return empty list
      */
-    it('should return empty array in case of wrong chain', () => {
+    it('should return empty array in case of wrong chain', async () => {
       const tokenMap = new TokenMap();
-      tokenMap.updateConfigByJson(firstTokenMap);
+      await tokenMap.updateConfigByJson(firstTokenMap);
       const res = tokenMap.search('bitcoin', {
         tokenId: 'tokenId',
       });
@@ -306,9 +306,9 @@ describe('TokenMap', () => {
      * @expected
      * - return tokenId for ergoChain in specified token
      */
-    it('should return ergo tokenId of tha passed token', () => {
+    it('should return ergo tokenId of tha passed token', async () => {
       const tokenMap = new TokenMap();
-      tokenMap.updateConfigByJson(firstTokenMap);
+      await tokenMap.updateConfigByJson(firstTokenMap);
       const res = tokenMap.getID(firstToken, 'ergo');
       expect(res).toEqual(firstToken.ergo.tokenId);
     });
@@ -324,9 +324,9 @@ describe('TokenMap', () => {
      * @expected
      * - must return one token with specified data
      */
-    it('should return one ergo token from ergo to binance', () => {
+    it('should return one ergo token from ergo to binance', async () => {
       const tokenMap = new TokenMap();
-      tokenMap.updateConfigByJson(firstTokenMap);
+      await tokenMap.updateConfigByJson(firstTokenMap);
       const res = tokenMap.getTokens('ergo', 'binance');
       expect(res).toEqual([firstTokenMap[1].ergo]);
     });
@@ -340,9 +340,9 @@ describe('TokenMap', () => {
      * @expected
      * - must return empty list
      */
-    it('should return empty list when transfer token between chains not feasible', () => {
+    it('should return empty list when transfer token between chains not feasible', async () => {
       const tokenMap = new TokenMap();
-      tokenMap.updateConfigByJson(firstTokenMap);
+      await tokenMap.updateConfigByJson(firstTokenMap);
       const res = tokenMap.getTokens('cardano', 'binance');
       expect(res.length).toEqual(0);
     });
@@ -357,9 +357,9 @@ describe('TokenMap', () => {
      * @expected
      * - should return list of three supported network ['binance', 'cardano', 'ergo']
      */
-    it('should return all supported chains', () => {
+    it('should return all supported chains', async () => {
       const tokenMap = new TokenMap();
-      tokenMap.updateConfigByJson(firstTokenMap);
+      await tokenMap.updateConfigByJson(firstTokenMap);
       expect(tokenMap.getAllChains().sort()).toEqual([
         'binance',
         'cardano',
@@ -368,9 +368,9 @@ describe('TokenMap', () => {
     });
   });
 
-  describe('getSupportedChains', () => {
+  describe('getSupportedChains', async () => {
     const tokenMap: TokenMap = new TokenMap();
-    tokenMap.updateConfigByJson(firstTokenMap);
+    await tokenMap.updateConfigByJson(firstTokenMap);
 
     /**
      * @target TokenMap.getSupportedChains should not return source chain
@@ -421,9 +421,9 @@ describe('TokenMap', () => {
      * @expected
      * - should return one token of cardano
      */
-    it('should return all cardano native tokens', () => {
+    it('should return all cardano native tokens', async () => {
       const tokenMap = new TokenMap();
-      tokenMap.updateConfigByJson(firstTokenMap);
+      await tokenMap.updateConfigByJson(firstTokenMap);
       expect(tokenMap.getAllNativeTokens('cardano')).toEqual([
         firstTokenMap[2]['cardano'],
       ]);
@@ -437,9 +437,9 @@ describe('TokenMap', () => {
      * @expected
      * - should return two token of ergo
      */
-    it('should return all ergo native tokens', () => {
+    it('should return all ergo native tokens', async () => {
       const tokenMap = new TokenMap();
-      tokenMap.updateConfigByJson(firstTokenMap);
+      await tokenMap.updateConfigByJson(firstTokenMap);
       expect(tokenMap.getAllNativeTokens('ergo')).toEqual([
         firstTokenMap[0]['ergo'],
         firstTokenMap[1]['ergo'],
@@ -457,9 +457,9 @@ describe('TokenMap', () => {
      * @expected
      * - should return the token set
      */
-    it('should return token set successfully', function () {
+    it('should return token set successfully', async function () {
       const tokenMap = new TokenMap();
-      tokenMap.updateConfigByJson(firstTokenMap);
+      await tokenMap.updateConfigByJson(firstTokenMap);
       const result = tokenMap.getTokenSet('this is a simple ip');
       expect(result).toEqual(firstTokenMap[1]);
     });
@@ -473,9 +473,9 @@ describe('TokenMap', () => {
      * @expected
      * - should return undefined
      */
-    it('should return undefined when token is not found', function () {
+    it('should return undefined when token is not found', async function () {
       const tokenMap = new TokenMap();
-      tokenMap.updateConfigByJson(firstTokenMap);
+      await tokenMap.updateConfigByJson(firstTokenMap);
       const result = tokenMap.getTokenSet('not.found');
       expect(result).toBeUndefined();
     });
@@ -491,9 +491,9 @@ describe('TokenMap', () => {
      * @expected
      * - should return amount with less digits
      */
-    it('should drop decimals successfully', function () {
+    it('should drop decimals successfully', async function () {
       const tokenMap = new TokenMap();
-      tokenMap.updateConfigByJson(multiDecimalTokenMap);
+      await tokenMap.updateConfigByJson(multiDecimalTokenMap);
       const result = tokenMap.wrapAmount(
         'policyId3.assetName3',
         123456789n,
@@ -512,9 +512,9 @@ describe('TokenMap', () => {
      * @expected
      * - should return amount with less and without rounding
      */
-    it('should drop decimals without rounding successfully', function () {
+    it('should drop decimals without rounding successfully', async function () {
       const tokenMap = new TokenMap();
-      tokenMap.updateConfigByJson(multiDecimalTokenMap);
+      await tokenMap.updateConfigByJson(multiDecimalTokenMap);
       const result = tokenMap.wrapAmount(
         'policyId3.assetName3',
         123400000n,
@@ -533,9 +533,9 @@ describe('TokenMap', () => {
      * @expected
      * - should return amount with same digits
      */
-    it('should keep amount when it is already with significant decimals', function () {
+    it('should keep amount when it is already with significant decimals', async function () {
       const tokenMap = new TokenMap();
-      tokenMap.updateConfigByJson(multiDecimalTokenMap);
+      await tokenMap.updateConfigByJson(multiDecimalTokenMap);
       const result = tokenMap.wrapAmount('tokenId', 123456789n, 'ergo');
       expect(result.amount).toEqual(123456789n);
       expect(result.decimals).toEqual(3);
@@ -550,9 +550,9 @@ describe('TokenMap', () => {
      * @expected
      * - should return amount with same digits and 0 decimals
      */
-    it('should keep amount when token is not supported', function () {
+    it('should keep amount when token is not supported', async function () {
       const tokenMap = new TokenMap();
-      tokenMap.updateConfigByJson(multiDecimalTokenMap);
+      await tokenMap.updateConfigByJson(multiDecimalTokenMap);
       const result = tokenMap.wrapAmount('not.supported', 123456789n, 'ergo');
       expect(result.amount).toEqual(123456789n);
       expect(result.decimals).toEqual(0);
@@ -569,9 +569,9 @@ describe('TokenMap', () => {
      * @expected
      * - should return amount with more digits
      */
-    it('should add decimals successfully', function () {
+    it('should add decimals successfully', async function () {
       const tokenMap = new TokenMap();
-      tokenMap.updateConfigByJson(multiDecimalTokenMap);
+      await tokenMap.updateConfigByJson(multiDecimalTokenMap);
       const result = tokenMap.unwrapAmount(
         'policyId3.assetName3',
         1234n,
@@ -590,9 +590,9 @@ describe('TokenMap', () => {
      * @expected
      * - should return amount with same digits
      */
-    it('should keep amount when it is already with significant decimals', function () {
+    it('should keep amount when it is already with significant decimals', async function () {
       const tokenMap = new TokenMap();
-      tokenMap.updateConfigByJson(multiDecimalTokenMap);
+      await tokenMap.updateConfigByJson(multiDecimalTokenMap);
       const result = tokenMap.unwrapAmount('tokenId', 123456789n, 'ergo');
       expect(result.amount).toEqual(123456789n);
       expect(result.decimals).toEqual(3);
@@ -607,9 +607,9 @@ describe('TokenMap', () => {
      * @expected
      * - should return amount with same digits and 0 decimals
      */
-    it('should keep amount when token is not supported', function () {
+    it('should keep amount when token is not supported', async function () {
       const tokenMap = new TokenMap();
-      tokenMap.updateConfigByJson(multiDecimalTokenMap);
+      await tokenMap.updateConfigByJson(multiDecimalTokenMap);
       const result = tokenMap.unwrapAmount('not.supported', 123456789n, 'ergo');
       expect(result.amount).toEqual(123456789n);
       expect(result.decimals).toEqual(0);
@@ -626,9 +626,9 @@ describe('TokenMap', () => {
      * @expected
      * - should return the minimum decimals in the token set
      */
-    it('should return significant decimals successfully', function () {
+    it('should return significant decimals successfully', async function () {
       const tokenMap = new TokenMap();
-      tokenMap.updateConfigByJson(multiDecimalTokenMap);
+      await tokenMap.updateConfigByJson(multiDecimalTokenMap);
       const result = tokenMap.getSignificantDecimals('policyId3.assetName3');
       expect(result).toEqual(3);
     });
@@ -642,9 +642,9 @@ describe('TokenMap', () => {
      * @expected
      * - should return undefined
      */
-    it('should keep amount when token is not supported', function () {
+    it('should keep amount when token is not supported', async function () {
       const tokenMap = new TokenMap();
-      tokenMap.updateConfigByJson(multiDecimalTokenMap);
+      await tokenMap.updateConfigByJson(multiDecimalTokenMap);
       const result = tokenMap.getSignificantDecimals('not.supported');
       expect(result).toBeUndefined();
     });

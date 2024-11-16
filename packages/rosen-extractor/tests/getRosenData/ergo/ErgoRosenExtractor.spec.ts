@@ -5,9 +5,13 @@ import { TokenMap } from '@rosen-bridge/tokens';
 
 describe('ErgoRosenExtractor', () => {
   const tokenMap = new TokenMap();
-  tokenMap.updateConfigByJson(TestUtils.tokens);
   const lockAddress =
     'nB3L2PD3LG4ydEj62n9aymRyPCEbkBdzaubgvCWDH2oxHxFBfAUy9GhWDvteDbbUh5qhXxnW8R46qmEiZfkej8gt4kZYvbeobZJADMrWXwFJTsZ17euEcoAp3KDk31Q26okFpgK9SKdi4';
+
+  beforeAll(async () => {
+    await tokenMap.updateConfigByJson(TestUtils.tokens);
+  });
+
   describe('get', () => {
     /**
      * Target: ErgoRosenExtractor.get should extract rosenData from locking tx

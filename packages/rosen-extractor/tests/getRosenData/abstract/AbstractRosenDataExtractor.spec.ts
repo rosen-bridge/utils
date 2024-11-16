@@ -12,7 +12,10 @@ jest.mock('@rosen-bridge/address-codec', () => {
 
 describe('AbstractRosenDataExtractor', () => {
   const tokenMap = new TokenMap();
-  tokenMap.updateConfigByJson(TestUtils.multiDecimals);
+
+  beforeAll(async () => {
+    await tokenMap.updateConfigByJson(TestUtils.multiDecimals);
+  });
 
   describe('get', () => {
     /**

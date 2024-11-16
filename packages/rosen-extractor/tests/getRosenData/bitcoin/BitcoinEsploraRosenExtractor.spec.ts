@@ -7,7 +7,10 @@ import { TokenMap } from '@rosen-bridge/tokens';
 
 describe('BitcoinEsploraRosenExtractor', () => {
   const tokenMap = new TokenMap();
-  tokenMap.updateConfigByJson(TestUtils.tokens);
+
+  beforeAll(async () => {
+    await tokenMap.updateConfigByJson(TestUtils.tokens);
+  });
 
   describe('get', () => {
     /**
@@ -137,11 +140,11 @@ describe('BitcoinEsploraRosenExtractor', () => {
      * @expected
      * - it should return undefined
      */
-    it('should return undefined when token transformation is not possible', () => {
+    it('should return undefined when token transformation is not possible', async () => {
       const invalidTx = testData.txs.lockTx;
 
       const tokenMap = new TokenMap();
-      tokenMap.updateConfigByJson(TestUtils.noNativeTokens);
+      await tokenMap.updateConfigByJson(TestUtils.noNativeTokens);
       const extractor = new BitcoinEsploraRosenExtractor(
         testData.lockAddress,
         tokenMap

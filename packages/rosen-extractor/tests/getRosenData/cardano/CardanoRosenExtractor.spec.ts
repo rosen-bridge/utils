@@ -7,7 +7,10 @@ import { TokenMap } from '@rosen-bridge/tokens';
 
 describe('CardanoRosenExtractor', () => {
   const tokenMap = new TokenMap();
-  tokenMap.updateConfigByJson(TestUtils.tokens);
+
+  beforeAll(async () => {
+    await tokenMap.updateConfigByJson(TestUtils.tokens);
+  });
 
   describe('get', () => {
     /**
@@ -353,13 +356,13 @@ describe('CardanoRosenExtractor', () => {
      * @expected
      * - extractor should return undefined
      */
-    it('should return undefined when no asset locked and ADA is not supported', () => {
+    it('should return undefined when no asset locked and ADA is not supported', async () => {
       // mock a UTXO with valid ADA transformation
       const tokenLockedUtxo = CardanoTestData.rosenUTXOs.wrongTokenLocked;
 
       // run the test
       const tokenMap = new TokenMap();
-      tokenMap.updateConfigByJson(TestUtils.noNativeTokens);
+      await tokenMap.updateConfigByJson(TestUtils.noNativeTokens);
       const extractor = new CardanoRosenExtractor(
         CardanoTestData.lockAddress,
         tokenMap

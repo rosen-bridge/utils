@@ -9,13 +9,16 @@ describe('EvmRosenExtractor', () => {
     const chainName = 'ethereum';
     const nativeToken = 'eth';
     const tokenMap = new TokenMap();
-    tokenMap.updateConfigByJson(TestUtils.tokens);
     const extractor = new EvmRosenExtractor(
       testData.lockAddress,
       tokenMap,
       chainName,
       nativeToken
     );
+
+    beforeAll(async () => {
+      await tokenMap.updateConfigByJson(TestUtils.tokens);
+    });
 
     /**
      * @target `EvmRosenExtractor.get` should extract rosenData from

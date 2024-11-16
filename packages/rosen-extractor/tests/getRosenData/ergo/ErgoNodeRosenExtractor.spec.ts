@@ -7,7 +7,10 @@ import { TokenMap } from '@rosen-bridge/tokens';
 
 describe('ErgoNodeRosenExtractor', () => {
   const tokenMap = new TokenMap();
-  tokenMap.updateConfigByJson(TestUtils.tokens);
+
+  beforeAll(async () => {
+    await tokenMap.updateConfigByJson(TestUtils.tokens);
+  });
 
   describe('get', () => {
     /**
@@ -271,13 +274,13 @@ describe('ErgoNodeRosenExtractor', () => {
      * Expected:
      *  function returns undefined
      */
-    it('should return undefined when no asset locked and Erg is not supported', () => {
+    it('should return undefined when no asset locked and Erg is not supported', async () => {
       // generate a box with invalid asset transformation
       const ergLockedBox = ErgoTestData.nodeBoxes.ergLocked;
 
       // run test
       const tokenMap = new TokenMap();
-      tokenMap.updateConfigByJson(TestUtils.noNativeTokens);
+      await tokenMap.updateConfigByJson(TestUtils.noNativeTokens);
       const extractor = new ErgoNodeRosenExtractor(
         ErgoTestData.lockAddress,
         tokenMap
