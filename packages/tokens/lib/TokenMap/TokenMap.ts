@@ -30,7 +30,7 @@ export class TokenMap {
    * returns tokens config
    */
   getConfig = () => {
-    return this.tokensConfig;
+    return structuredClone(this.tokensConfig);
   };
 
   /**
@@ -53,11 +53,13 @@ export class TokenMap {
       ).toString();
       const headers: string[] = (
         box.register_value(5)?.to_coll_coll_byte() ?? []
-      ).map((_) => Buffer.from(_).toString());
+      ).map((header) => Buffer.from(header).toString());
       const values: string[][] = box
         .register_value(6)
         ?.to_js()
-        .map((arr: Uint8Array[]) => arr.map((_) => Buffer.from(_).toString()));
+        .map((arr: Uint8Array[]) =>
+          arr.map((value) => Buffer.from(value).toString())
+        );
 
       if (!REQUIRED_FIELDS.every((field) => headers.includes(field)))
         throw new CorruptedConfigError(
@@ -74,15 +76,18 @@ export class TokenMap {
           )}]`
         );
 
-      if (chain === ERGO_CHAIN)
-        ergoConfigs.push({ boxId, chain, headers, values });
-      else nonErgoConfigs.push({ boxId, chain, headers, values });
+      (chain === ERGO_CHAIN ? ergoConfigs : nonErgoConfigs).push({
+        boxId,
+        chain,
+        headers,
+        values,
+      });
     });
 
     ergoConfigs.forEach((config) => {
       const boxId = config.boxId;
-      const headers: string[] = config.headers;
-      const values: string[][] = config.values;
+      const headers = config.headers;
+      const values = config.values;
 
       values.forEach((data) => {
         if (data.length !== headers.length)
@@ -109,8 +114,8 @@ export class TokenMap {
     nonErgoConfigs.forEach((config) => {
       const boxId = config.boxId;
       const chain = config.chain;
-      const headers: string[] = config.headers;
-      const values: string[][] = config.values;
+      const headers = config.headers;
+      const values = config.values;
 
       values.forEach((data) => {
         if (data.length !== headers.length)
