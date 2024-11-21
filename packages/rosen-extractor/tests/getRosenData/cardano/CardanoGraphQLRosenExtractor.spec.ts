@@ -2,8 +2,15 @@ import { CardanoGraphQLRosenExtractor } from '../../../lib';
 import * as testData from './GraphQLTestData';
 import TestUtils from '../TestUtils';
 import { ERGO_CHAIN } from '../../../lib/getRosenData/const';
+import { TokenMap } from '@rosen-bridge/tokens';
 
 describe('GraphQLRosenExtractor', () => {
+  const tokenMap = new TokenMap();
+
+  beforeAll(async () => {
+    await tokenMap.updateConfigByJson(TestUtils.tokens);
+  });
+
   describe('get', () => {
     /**
      * Target: GraphQLRosenExtractor.get
@@ -23,7 +30,7 @@ describe('GraphQLRosenExtractor', () => {
       // run test
       const extractor = new CardanoGraphQLRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(validTokenLockTx);
 
@@ -49,7 +56,7 @@ describe('GraphQLRosenExtractor', () => {
       // run test
       const extractor = new CardanoGraphQLRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(validAdaLockTx);
 
@@ -75,7 +82,7 @@ describe('GraphQLRosenExtractor', () => {
       // run test
       const extractor = new CardanoGraphQLRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(noLock);
 
@@ -108,7 +115,7 @@ describe('GraphQLRosenExtractor', () => {
         // run test
         const extractor = new CardanoGraphQLRosenExtractor(
           testData.lockAddress,
-          TestUtils.tokens
+          tokenMap
         );
         const result = extractor.get(invalidTx);
 
@@ -135,7 +142,7 @@ describe('GraphQLRosenExtractor', () => {
       // run test
       const extractor = new CardanoGraphQLRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(noMetadata);
 
@@ -161,7 +168,7 @@ describe('GraphQLRosenExtractor', () => {
       // run test
       const extractor = new CardanoGraphQLRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(noZeroKeyMetadata);
 
@@ -187,7 +194,7 @@ describe('GraphQLRosenExtractor', () => {
       // run test
       const extractor = new CardanoGraphQLRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(stringMetadata);
 
@@ -217,7 +224,7 @@ describe('GraphQLRosenExtractor', () => {
       // run test
       const extractor = new CardanoGraphQLRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.getAssetTransformation(tokenLockedUtxo, toChain);
 
@@ -245,7 +252,7 @@ describe('GraphQLRosenExtractor', () => {
       // run test
       const extractor = new CardanoGraphQLRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.getAssetTransformation(adaLockedUtxo, toChain);
 
@@ -273,7 +280,7 @@ describe('GraphQLRosenExtractor', () => {
       // run test
       const extractor = new CardanoGraphQLRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.getAssetTransformation(adaLockedUtxo, toChain);
 
@@ -294,14 +301,16 @@ describe('GraphQLRosenExtractor', () => {
      * Expected:
      *  function returns undefined
      */
-    it('should return undefined when no asset locked and ADA is not supported', () => {
+    it('should return undefined when no asset locked and ADA is not supported', async () => {
       // generate a UTXO with invalid asset transformation
       const adaLockedUtxo = testData.graphQLUtxos.adaLocked;
 
       // run test
+      const tokenMap = new TokenMap();
+      await tokenMap.updateConfigByJson(TestUtils.noNativeTokens);
       const extractor = new CardanoGraphQLRosenExtractor(
         testData.lockAddress,
-        TestUtils.noNativeTokens
+        tokenMap
       );
       const result = extractor.getAssetTransformation(adaLockedUtxo, toChain);
 
@@ -327,7 +336,7 @@ describe('GraphQLRosenExtractor', () => {
       // run test
       const extractor = new CardanoGraphQLRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.getAssetTransformation(
         adaLockedUtxo,

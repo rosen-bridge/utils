@@ -1,20 +1,166 @@
-import { NATIVE_RESIDENCY } from './constants';
-import { RosenAmount, RosenChainToken, RosenTokens } from './types';
+import { ErgoBox } from 'ergo-lib-wasm-nodejs';
+import { Semaphore } from 'await-semaphore';
+import {
+  ERGO_CHAIN,
+  ERGO_SIDE_TOKEN_ID_KEY,
+  NATIVE_RESIDENCY,
+  REQUIRED_FIELDS,
+} from './constants';
+import {
+  CorruptedConfigError,
+  ExtractedConfig,
+  RosenAmount,
+  RosenChainToken,
+  RosenTokens,
+} from './types';
 
 /**
  * TokenMap class searches for different assets properties in different chains
  */
 export class TokenMap {
-  private tokensConfig: RosenTokens;
+  protected tokensConfig: RosenTokens;
+  protected updateSemaphore: Semaphore;
+
+  constructor() {
+    this.tokensConfig = [];
+    this.updateSemaphore = new Semaphore(1);
+  }
 
   /**
-   * it takes input tokens list json and the default value is used for
-   *  production
-   * @param tokens tokens list as json
+   * returns tokens config
    */
-  constructor(tokens: RosenTokens) {
-    this.tokensConfig = tokens;
-  }
+  getConfig = () => {
+    return structuredClone(this.tokensConfig);
+  };
+
+  /**
+   * set tokens config by token map boxes
+   * @param serializedBoxes list of sigma serialized bytes of token map config boxes
+   */
+  updateConfigByBoxes = async (serializedBoxes: string[]) => {
+    const tokens: RosenTokens = [];
+    const ergoConfigs: ExtractedConfig[] = [];
+    const nonErgoConfigs: ExtractedConfig[] = [];
+
+    serializedBoxes.forEach((serializedBox) => {
+      const box = ErgoBox.sigma_parse_bytes(
+        Uint8Array.from(Buffer.from(serializedBox, 'hex'))
+      );
+      const boxId = box.box_id().to_str();
+
+      const chain = Buffer.from(
+        box.register_value(4)?.to_byte_array() ?? []
+      ).toString();
+      const headers: string[] = (
+        box.register_value(5)?.to_coll_coll_byte() ?? []
+      ).map((header) => Buffer.from(header).toString());
+      const values: string[][] = box
+        .register_value(6)
+        ?.to_js()
+        .map((arr: Uint8Array[]) =>
+          arr.map((value) => Buffer.from(value).toString())
+        );
+
+      if (!REQUIRED_FIELDS.every((field) => headers.includes(field)))
+        throw new CorruptedConfigError(
+          boxId,
+          `Headers does not contain all required fields. Found [${headers.join(
+            ','
+          )}]`
+        );
+      if (headers[0] !== ERGO_SIDE_TOKEN_ID_KEY)
+        throw new CorruptedConfigError(
+          boxId,
+          `Expected first header to be [${ERGO_SIDE_TOKEN_ID_KEY}] but found [${headers.join(
+            ','
+          )}]`
+        );
+
+      (chain === ERGO_CHAIN ? ergoConfigs : nonErgoConfigs).push({
+        boxId,
+        chain,
+        headers,
+        values,
+      });
+    });
+
+    ergoConfigs.forEach((config) => {
+      const boxId = config.boxId;
+      const headers = config.headers;
+      const values = config.values;
+
+      values.forEach((data) => {
+        if (data.length !== headers.length)
+          throw new CorruptedConfigError(
+            boxId,
+            `Mismatch between headers and data at [${values.indexOf(
+              data
+            )}]: Expected length [${headers.length}] found [${data.length}]`
+          );
+        if (tokens.find((token) => token.ergo.tokenId === data[0]))
+          throw new CorruptedConfigError(
+            boxId,
+            `Duplicate ergo token [${data[0]}] is found`
+          );
+
+        const chainToken: Record<string, any> = {};
+        for (let i = 1; i < headers.length; i++)
+          chainToken[headers[i]] = data[i];
+        chainToken.decimals = Number(chainToken.decimals);
+        tokens.push({ [ERGO_CHAIN]: chainToken as RosenChainToken });
+      });
+    });
+
+    nonErgoConfigs.forEach((config) => {
+      const boxId = config.boxId;
+      const chain = config.chain;
+      const headers = config.headers;
+      const values = config.values;
+
+      values.forEach((data) => {
+        if (data.length !== headers.length)
+          throw new CorruptedConfigError(
+            boxId,
+            `Mismatch between headers and data at [${values.indexOf(
+              data
+            )}]: Expected length [${headers.length}] found [${data.length}]`
+          );
+        const index = tokens.findIndex(
+          (token) => token.ergo.tokenId === data[0]
+        );
+        if (index === -1)
+          throw new CorruptedConfigError(
+            boxId,
+            `Ergo token [${data[0]}] is not found`
+          );
+
+        const chainToken: Record<string, any> = {};
+        for (let i = 1; i < headers.length; i++)
+          chainToken[headers[i]] = data[i];
+        chainToken.decimals = Number(chainToken.decimals);
+
+        if (Object.hasOwn(tokens[index], chain))
+          throw new CorruptedConfigError(
+            boxId,
+            `Duplicate token for ergo token [${data[0]}] on chain [${chain}] is found: Have [${tokens[index][chain].tokenId}] found [${chainToken.tokenId}]`
+          );
+        tokens[index][chain] = chainToken as RosenChainToken;
+      });
+    });
+
+    await this.updateConfigByJson(tokens);
+  };
+
+  /**
+   * set tokens config by json
+   * @param tokens
+   */
+  updateConfigByJson = async (tokens: RosenTokens) => {
+    await this.updateSemaphore.acquire().then(async (release) => {
+      this.tokensConfig = tokens;
+      release();
+    });
+  };
 
   /**
    * Get a list of tokens that can be transferred between specific chains
@@ -22,7 +168,7 @@ export class TokenMap {
    * @param toChain
    */
   getTokens = (fromChain: string, toChain: string): Array<RosenChainToken> => {
-    return this.tokensConfig.tokens
+    return this.tokensConfig
       .filter(
         (item) => Object.hasOwn(item, fromChain) && Object.hasOwn(item, toChain)
       )
@@ -33,7 +179,7 @@ export class TokenMap {
    * get a list of all supported network names
    */
   getAllChains = (): Array<string> => {
-    return this.tokensConfig.tokens
+    return this.tokensConfig
       .map((item) => Object.keys(item))
       .reduce(
         (allUniqChains, tokenChains) => [
@@ -48,7 +194,7 @@ export class TokenMap {
    * @param sourceChain
    */
   getSupportedChains = (sourceChain: string): Array<string> => {
-    return this.tokensConfig.tokens
+    return this.tokensConfig
       .filter((token) => Object.hasOwn(token, sourceChain))
       .map((token) => Object.keys(token))
       .reduce(
@@ -66,7 +212,7 @@ export class TokenMap {
    *  example: {tokenId:"tokenId"}
    */
   search = (chain: string, condition: { [key: string]: string }) => {
-    return this.tokensConfig.tokens.filter((token) => {
+    return this.tokensConfig.filter((token) => {
       if (Object.hasOwnProperty.call(token, chain)) {
         const resToken = token[chain];
         for (const [key, val] of Object.entries(condition)) {
@@ -82,17 +228,6 @@ export class TokenMap {
         return false;
       }
     });
-  };
-
-  /**
-   * returns ID key for specific chain.
-   * @param chain: one of supported tokens
-   */
-  getIdKey = (chain: string): string => {
-    if (Object.hasOwnProperty.call(this.tokensConfig.idKeys, chain)) {
-      return this.tokensConfig.idKeys[chain];
-    }
-    throw Error(`chain ${chain} not supported in current config`);
   };
 
   /**
@@ -116,14 +251,7 @@ export class TokenMap {
     token: { [key: string]: RosenChainToken },
     chain: string
   ): string => {
-    if (Object.hasOwnProperty.call(this.tokensConfig.idKeys, chain)) {
-      const idKey = this.tokensConfig.idKeys[chain];
-      return token[chain][idKey] as string;
-    } else {
-      throw new Error(
-        `idKey of the ${chain} chain is missed in the config file`
-      );
-    }
+    return token[chain].tokenId;
   };
 
   /**
@@ -131,11 +259,11 @@ export class TokenMap {
    * @param chain: one of supported chains
    */
   getAllNativeTokens = (chain: string): RosenChainToken[] => {
-    return this.tokensConfig.tokens
+    return this.tokensConfig
       .filter(
         (token) =>
           Object.hasOwn(token, chain) &&
-          token[chain].metaData.residency == NATIVE_RESIDENCY
+          token[chain].residency == NATIVE_RESIDENCY
       )
       .map((token) => token[chain]);
   };
@@ -147,10 +275,10 @@ export class TokenMap {
   getTokenSet = (
     tokenId: string
   ): Record<string, RosenChainToken> | undefined => {
-    const result = this.tokensConfig.tokens.filter(
+    const result = this.tokensConfig.filter(
       (tokenSet) =>
         Object.keys(tokenSet).filter(
-          (chain) => tokenSet[chain][this.getIdKey(chain)] === tokenId
+          (chain) => tokenSet[chain].tokenId === tokenId
         ).length
     );
     if (result.length === 0) return undefined;

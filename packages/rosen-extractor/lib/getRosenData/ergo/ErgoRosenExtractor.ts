@@ -1,7 +1,7 @@
 import { RosenData } from '../abstract/types';
 import AbstractRosenDataExtractor from '../abstract/AbstractRosenDataExtractor';
 import { NodeTransaction } from './types';
-import { RosenTokens } from '@rosen-bridge/tokens';
+import { TokenMap } from '@rosen-bridge/tokens';
 import { Transaction } from 'ergo-lib-wasm-nodejs';
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import { ErgoNodeRosenExtractor } from './ErgoNodeRosenExtractor';
@@ -12,11 +12,7 @@ export class ErgoRosenExtractor extends AbstractRosenDataExtractor<string> {
   readonly chain = ERGO_CHAIN;
   private nodeExtractor: ErgoNodeRosenExtractor;
 
-  constructor(
-    lockAddress: string,
-    tokens: RosenTokens,
-    logger?: AbstractLogger
-  ) {
+  constructor(lockAddress: string, tokens: TokenMap, logger?: AbstractLogger) {
     super(lockAddress, tokens, logger);
     this.nodeExtractor = new ErgoNodeRosenExtractor(
       lockAddress,

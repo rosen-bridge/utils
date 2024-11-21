@@ -2,7 +2,7 @@ import { RosenData, TokenTransformation } from '../abstract/types';
 import AbstractRosenDataExtractor from '../abstract/AbstractRosenDataExtractor';
 import { ERGO_CHAIN, ERGO_NATIVE_TOKEN } from '../const';
 import { NodeOutputBox, NodeTransaction } from './types';
-import { RosenTokens } from '@rosen-bridge/tokens';
+import { TokenMap } from '@rosen-bridge/tokens';
 import { Address, Constant } from 'ergo-lib-wasm-nodejs';
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import JsonBigInt from '@rosen-bridge/json-bigint';
@@ -11,11 +11,7 @@ export class ErgoNodeRosenExtractor extends AbstractRosenDataExtractor<NodeTrans
   readonly chain = ERGO_CHAIN;
   lockErgoTree: string;
 
-  constructor(
-    lockAddress: string,
-    tokens: RosenTokens,
-    logger?: AbstractLogger
-  ) {
+  constructor(lockAddress: string, tokens: TokenMap, logger?: AbstractLogger) {
     super(lockAddress, tokens, logger);
     this.lockErgoTree = Address.from_base58(lockAddress)
       .to_ergo_tree()
@@ -97,7 +93,7 @@ export class ErgoNodeRosenExtractor extends AbstractRosenDataExtractor<NodeTrans
     if (box.assets && box.assets.length > 0) {
       for (const lockedToken of box.assets) {
         const token = this.tokens.search(ERGO_CHAIN, {
-          [this.tokens.getIdKey(ERGO_CHAIN)]: lockedToken.tokenId,
+          tokenId: lockedToken.tokenId,
         });
         if (token.length > 0 && Object.hasOwn(token[0], toChain)) {
           return {
@@ -111,7 +107,7 @@ export class ErgoNodeRosenExtractor extends AbstractRosenDataExtractor<NodeTrans
 
     // try to build transformation using locked Erg
     const erg = this.tokens.search(ERGO_CHAIN, {
-      [this.tokens.getIdKey(ERGO_CHAIN)]: ERGO_NATIVE_TOKEN,
+      tokenId: ERGO_NATIVE_TOKEN,
     });
     if (erg.length > 0 && Object.hasOwn(erg[0], toChain)) {
       return {

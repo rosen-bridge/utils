@@ -2,7 +2,7 @@ import { RosenData, TokenTransformation } from '../abstract/types';
 import AbstractRosenDataExtractor from '../abstract/AbstractRosenDataExtractor';
 import { BITCOIN_CHAIN, BITCOIN_NATIVE_TOKEN } from '../const';
 import { BitcoinTx, BitcoinTxOutput, OpReturnData } from './types';
-import { RosenTokens } from '@rosen-bridge/tokens';
+import { TokenMap } from '@rosen-bridge/tokens';
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import { address } from 'bitcoinjs-lib';
 import { parseRosenData } from './utils';
@@ -12,11 +12,7 @@ export class BitcoinRosenExtractor extends AbstractRosenDataExtractor<string> {
   readonly chain = BITCOIN_CHAIN;
   protected lockScriptPubKey: string;
 
-  constructor(
-    lockAddress: string,
-    tokens: RosenTokens,
-    logger?: AbstractLogger
-  ) {
+  constructor(lockAddress: string, tokens: TokenMap, logger?: AbstractLogger) {
     super(lockAddress, tokens, logger);
     this.lockScriptPubKey = address.toOutputScript(lockAddress).toString('hex');
   }
@@ -123,7 +119,7 @@ export class BitcoinRosenExtractor extends AbstractRosenDataExtractor<string> {
   ): TokenTransformation | undefined => {
     // try to build transformation using locked BTC
     const wrappedBtc = this.tokens.search(BITCOIN_CHAIN, {
-      [this.tokens.getIdKey(BITCOIN_CHAIN)]: BITCOIN_NATIVE_TOKEN,
+      tokenId: BITCOIN_NATIVE_TOKEN,
     });
     if (wrappedBtc.length > 0 && Object.hasOwn(wrappedBtc[0], toChain)) {
       const satoshiAmount = box.value;

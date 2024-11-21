@@ -89,7 +89,7 @@ export class CardanoRosenExtractor extends AbstractRosenDataExtractor<string> {
 
     // try to build transformation using locked ADA
     const lovelace = this.tokens.search(CARDANO_CHAIN, {
-      [this.tokens.getIdKey(CARDANO_CHAIN)]: CARDANO_NATIVE_TOKEN,
+      tokenId: CARDANO_NATIVE_TOKEN,
     });
     if (lovelace.length > 0 && Object.hasOwn(lovelace[0], toChain)) {
       return {
