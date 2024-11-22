@@ -2,7 +2,7 @@ import { RosenData, TokenTransformation } from '../abstract/types';
 import AbstractRosenDataExtractor from '../abstract/AbstractRosenDataExtractor';
 import { DOGE_CHAIN, DOGE_NATIVE_TOKEN } from '../const';
 import { DogeTx, DogeTxOutput, OpReturnData } from './types';
-import { RosenTokens } from '@rosen-bridge/tokens';
+import { TokenMap } from '@rosen-bridge/tokens';
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import { parseRosenData, addressToOutputScript } from './utils';
 import JsonBigInt from '@rosen-bridge/json-bigint';
@@ -11,11 +11,7 @@ export class DogeRosenExtractor extends AbstractRosenDataExtractor<string> {
   readonly chain = DOGE_CHAIN;
   protected lockScriptPubKey: string;
 
-  constructor(
-    lockAddress: string,
-    tokens: RosenTokens,
-    logger?: AbstractLogger
-  ) {
+  constructor(lockAddress: string, tokens: TokenMap, logger?: AbstractLogger) {
     super(lockAddress, tokens, logger);
     this.lockScriptPubKey = addressToOutputScript(lockAddress);
   }
@@ -122,7 +118,7 @@ export class DogeRosenExtractor extends AbstractRosenDataExtractor<string> {
   ): TokenTransformation | undefined => {
     // try to build transformation using locked DOGE
     const wrappedDoge = this.tokens.search(DOGE_CHAIN, {
-      [this.tokens.getIdKey(DOGE_CHAIN)]: DOGE_NATIVE_TOKEN,
+      tokenId: DOGE_NATIVE_TOKEN,
     });
     if (wrappedDoge.length > 0 && Object.hasOwn(wrappedDoge[0], toChain)) {
       const satoshiAmount = box.value;

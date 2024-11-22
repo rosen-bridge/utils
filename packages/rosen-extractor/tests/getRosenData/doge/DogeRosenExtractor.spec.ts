@@ -3,8 +3,15 @@ import * as testData from './testData';
 import TestUtils from '../TestUtils';
 import { ERGO_CHAIN, CARDANO_CHAIN } from '../../../lib/getRosenData/const';
 import JsonBigInt from '@rosen-bridge/json-bigint';
+import { TokenMap } from '@rosen-bridge/tokens';
 
 describe('DogeRosenExtractor', () => {
+  const tokenMap = new TokenMap();
+
+  beforeAll(async () => {
+    await tokenMap.updateConfigByJson(TestUtils.tokens);
+  });
+
   describe('get', () => {
     /**
      * @target `DogeRosenExtractor.get` should extract rosenData from
@@ -20,10 +27,7 @@ describe('DogeRosenExtractor', () => {
     it('should extract rosenData from DOGE locking tx successfully', () => {
       const validLockTx = JsonBigInt.stringify(testData.txs.lockTx);
 
-      const extractor = new DogeRosenExtractor(
-        testData.lockAddress,
-        TestUtils.tokens
-      );
+      const extractor = new DogeRosenExtractor(testData.lockAddress, tokenMap);
       const result = extractor.get(validLockTx);
 
       expect(result).toStrictEqual(testData.rosenData);
@@ -43,10 +47,7 @@ describe('DogeRosenExtractor', () => {
     it('should return undefined when there is only one output', () => {
       const invalidTx = JsonBigInt.stringify(testData.txs.lessBoxes);
 
-      const extractor = new DogeRosenExtractor(
-        testData.lockAddress,
-        TestUtils.tokens
-      );
+      const extractor = new DogeRosenExtractor(testData.lockAddress, tokenMap);
       const result = extractor.get(invalidTx);
 
       expect(result).toBeUndefined();
@@ -66,10 +67,7 @@ describe('DogeRosenExtractor', () => {
     it('should return undefined when first output is not OP_RETURN', () => {
       const invalidTx = JsonBigInt.stringify(testData.txs.noOpReturn);
 
-      const extractor = new DogeRosenExtractor(
-        testData.lockAddress,
-        TestUtils.tokens
-      );
+      const extractor = new DogeRosenExtractor(testData.lockAddress, tokenMap);
       const result = extractor.get(invalidTx);
 
       expect(result).toBeUndefined();
@@ -89,10 +87,7 @@ describe('DogeRosenExtractor', () => {
     it('should return undefined when second output is not to lock address', () => {
       const invalidTx = JsonBigInt.stringify(testData.txs.noLock);
 
-      const extractor = new DogeRosenExtractor(
-        testData.lockAddress,
-        TestUtils.tokens
-      );
+      const extractor = new DogeRosenExtractor(testData.lockAddress, tokenMap);
       const result = extractor.get(invalidTx);
 
       expect(result).toBeUndefined();
@@ -112,10 +107,7 @@ describe('DogeRosenExtractor', () => {
     it('should return undefined when no data is extracted from OP_RETURN box', () => {
       const invalidTx = JsonBigInt.stringify(testData.txs.invalidData);
 
-      const extractor = new DogeRosenExtractor(
-        testData.lockAddress,
-        TestUtils.tokens
-      );
+      const extractor = new DogeRosenExtractor(testData.lockAddress, tokenMap);
       const result = extractor.get(invalidTx);
 
       expect(result).toBeUndefined();
@@ -133,12 +125,14 @@ describe('DogeRosenExtractor', () => {
      * @expected
      * - it should return undefined
      */
-    it('should return undefined when token transformation is not possible', () => {
+    it('should return undefined when token transformation is not possible', async () => {
       const invalidTx = JsonBigInt.stringify(testData.txs.lockTx);
 
+      const noNativeTokenMap = new TokenMap();
+      await noNativeTokenMap.updateConfigByJson(TestUtils.noNativeTokens);
       const extractor = new DogeRosenExtractor(
         testData.lockAddress,
-        TestUtils.noNativeTokens
+        noNativeTokenMap
       );
       const result = extractor.get(invalidTx);
 
@@ -161,10 +155,7 @@ describe('DogeRosenExtractor', () => {
     it('should return transformation successfully when DOGE is supported on target chain', () => {
       const lockUtxo = testData.lockUtxo;
 
-      const extractor = new DogeRosenExtractor(
-        testData.lockAddress,
-        TestUtils.tokens
-      );
+      const extractor = new DogeRosenExtractor(testData.lockAddress, tokenMap);
       const result = extractor.getAssetTransformation(lockUtxo, ERGO_CHAIN);
 
       expect(result).toStrictEqual(testData.dogeTransformation);
@@ -184,10 +175,7 @@ describe('DogeRosenExtractor', () => {
     it('should return undefined when DOGE is NOT supported on target chain', () => {
       const lockUtxo = testData.lockUtxo;
 
-      const extractor = new DogeRosenExtractor(
-        testData.lockAddress,
-        TestUtils.tokens
-      );
+      const extractor = new DogeRosenExtractor(testData.lockAddress, tokenMap);
       const result = extractor.getAssetTransformation(lockUtxo, CARDANO_CHAIN);
 
       expect(result).toBeUndefined();

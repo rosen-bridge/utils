@@ -119,6 +119,23 @@ export default class TestUtils {
         residency: 'wrapped',
       },
     },
+    {
+      [DOGE_CHAIN]: {
+        tokenId: DOGE_NATIVE_TOKEN,
+        name: DOGE_NATIVE_TOKEN,
+        decimals: 8,
+        type: 'tokenType',
+        residency: 'tokenResidency',
+      },
+      [ERGO_CHAIN]: {
+        tokenId:
+          'dcbda15f1361f5eeba416dd63e059fce34f0c57499e9afe733ea0fd59cf63f48',
+        name: 'rsDOGE',
+        decimals: 8,
+        type: 'EIP-004',
+        residency: 'wrapped',
+      },
+    },
   ];
 
   static noNativeTokens: RosenTokens = [

@@ -3,7 +3,15 @@ import TestUtils from '../TestUtils';
 import { ERGO_CHAIN, CARDANO_CHAIN } from '../../../lib/getRosenData/const';
 import { DogeEsploraTransaction } from '../../../lib/getRosenData/doge/types';
 import { DogeEsploraRosenExtractor } from '../../../lib';
+import { TokenMap } from '@rosen-bridge/tokens';
+
 describe('DogeEsploraRosenExtractor', () => {
+  const tokenMap = new TokenMap();
+
+  beforeAll(async () => {
+    await tokenMap.updateConfigByJson(TestUtils.tokens);
+  });
+
   describe('get', () => {
     /**
      * @target `DogeEsploraRosenExtractor.get` should extract rosenData from
@@ -21,7 +29,7 @@ describe('DogeEsploraRosenExtractor', () => {
 
       const extractor = new DogeEsploraRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(validLockTx as DogeEsploraTransaction);
 
@@ -44,7 +52,7 @@ describe('DogeEsploraRosenExtractor', () => {
 
       const extractor = new DogeEsploraRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(invalidTx as DogeEsploraTransaction);
 
@@ -67,7 +75,7 @@ describe('DogeEsploraRosenExtractor', () => {
 
       const extractor = new DogeEsploraRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(invalidTx as DogeEsploraTransaction);
 
@@ -90,7 +98,7 @@ describe('DogeEsploraRosenExtractor', () => {
 
       const extractor = new DogeEsploraRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(invalidTx as DogeEsploraTransaction);
 
@@ -113,7 +121,7 @@ describe('DogeEsploraRosenExtractor', () => {
 
       const extractor = new DogeEsploraRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(invalidTx as DogeEsploraTransaction);
 
@@ -132,12 +140,14 @@ describe('DogeEsploraRosenExtractor', () => {
      * @expected
      * - it should return undefined
      */
-    it('should return undefined when token transformation is not possible', () => {
+    it('should return undefined when token transformation is not possible', async () => {
       const invalidTx = testData.txs.lockTx;
 
+      const noNativeTokenMap = new TokenMap();
+      await noNativeTokenMap.updateConfigByJson(TestUtils.noNativeTokens);
       const extractor = new DogeEsploraRosenExtractor(
         testData.lockAddress,
-        TestUtils.noNativeTokens
+        noNativeTokenMap
       );
       const result = extractor.get(invalidTx as DogeEsploraTransaction);
 
@@ -162,7 +172,7 @@ describe('DogeEsploraRosenExtractor', () => {
 
       const extractor = new DogeEsploraRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.getAssetTransformation(lockUtxo, ERGO_CHAIN);
 
@@ -185,7 +195,7 @@ describe('DogeEsploraRosenExtractor', () => {
 
       const extractor = new DogeEsploraRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.getAssetTransformation(lockUtxo, CARDANO_CHAIN);
 
