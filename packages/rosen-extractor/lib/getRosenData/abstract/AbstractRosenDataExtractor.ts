@@ -1,4 +1,4 @@
-import { RosenTokens, TokenMap } from '@rosen-bridge/tokens';
+import { TokenMap } from '@rosen-bridge/tokens';
 import { RosenData } from './types';
 import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
 import { validateAddress } from '@rosen-bridge/address-codec';
@@ -9,13 +9,9 @@ export default abstract class AbstractRosenDataExtractor<TransactionType> {
   protected readonly tokens: TokenMap;
   protected readonly lockAddress: string;
 
-  constructor(
-    lockAddress: string,
-    tokens: RosenTokens,
-    logger?: AbstractLogger
-  ) {
+  constructor(lockAddress: string, tokens: TokenMap, logger?: AbstractLogger) {
     this.lockAddress = lockAddress;
-    this.tokens = new TokenMap(tokens);
+    this.tokens = tokens;
     this.logger = logger ? logger : new DummyLogger();
   }
 

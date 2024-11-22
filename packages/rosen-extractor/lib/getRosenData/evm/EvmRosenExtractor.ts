@@ -1,7 +1,7 @@
 import { RosenData } from '../abstract/types';
 import AbstractRosenDataExtractor from '../abstract/AbstractRosenDataExtractor';
 import { Transaction } from 'ethers';
-import { RosenTokens } from '@rosen-bridge/tokens';
+import { TokenMap } from '@rosen-bridge/tokens';
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import { EvmRpcRosenExtractor } from './EvmRpcRosenExtractor';
 
@@ -11,7 +11,7 @@ export class EvmRosenExtractor extends AbstractRosenDataExtractor<string> {
 
   constructor(
     lockAddress: string,
-    tokens: RosenTokens,
+    tokens: TokenMap,
     chain: string,
     nativeToken: string,
     logger?: AbstractLogger

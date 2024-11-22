@@ -1,6 +1,7 @@
 import TestUtils from '../TestUtils';
 import * as addressCodec from '@rosen-bridge/address-codec';
 import { TestRosenDataExtractor } from './TestRosenDataExtractor';
+import { TokenMap } from '@rosen-bridge/tokens';
 
 jest.mock('@rosen-bridge/address-codec', () => {
   return {
@@ -10,6 +11,12 @@ jest.mock('@rosen-bridge/address-codec', () => {
 });
 
 describe('AbstractRosenDataExtractor', () => {
+  const tokenMap = new TokenMap();
+
+  beforeAll(async () => {
+    await tokenMap.updateConfigByJson(TestUtils.multiDecimals);
+  });
+
   describe('get', () => {
     /**
      * @target `AbstractRosenDataExtractor.get` should wrap amount successfully
@@ -21,7 +28,7 @@ describe('AbstractRosenDataExtractor', () => {
      * - amount should have less digits
      */
     it('should wrap amount successfully', () => {
-      const extractor = new TestRosenDataExtractor('', TestUtils.multiDecimals);
+      const extractor = new TestRosenDataExtractor('', tokenMap);
       const result = extractor.get('');
 
       expect(result?.amount).toEqual('124');
@@ -42,7 +49,7 @@ describe('AbstractRosenDataExtractor', () => {
     jest.spyOn(addressCodec, 'validateAddress').mockImplementation(() => {
       throw addressCodec.UnsupportedAddressError;
     });
-    const extractor = new TestRosenDataExtractor('', TestUtils.multiDecimals);
+    const extractor = new TestRosenDataExtractor('', tokenMap);
     const result = extractor.get('');
 
     expect(result).toBeUndefined();

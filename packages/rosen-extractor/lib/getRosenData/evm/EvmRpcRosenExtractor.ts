@@ -1,7 +1,7 @@
 import { RosenData } from '../abstract/types';
 import AbstractRosenDataExtractor from '../abstract/AbstractRosenDataExtractor';
 import { Transaction } from 'ethers';
-import { RosenTokens, RosenChainToken } from '@rosen-bridge/tokens';
+import { TokenMap, RosenChainToken } from '@rosen-bridge/tokens';
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import { parseRosenData } from './utils';
 
@@ -11,7 +11,7 @@ export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<Transaction
 
   constructor(
     lockAddress: string,
-    tokens: RosenTokens,
+    tokens: TokenMap,
     chain: string,
     nativeToken: string,
     logger?: AbstractLogger
@@ -63,7 +63,7 @@ export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<Transaction
         tokenAddress = this.nativeToken;
         amount = transaction.value.toString();
         const tokens = this.tokens.search(this.chain, {
-          [this.tokens.getIdKey(this.chain)]: this.nativeToken,
+          tokenId: this.nativeToken,
         });
         if (tokens.length == 1) {
           sourceTokenId = this.nativeToken;
@@ -96,7 +96,7 @@ export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<Transaction
         rosenDataRaw = callData.substring(72 + 64);
         tokenAddress = transaction.to.toLowerCase();
         const tokens = this.tokens.search(this.chain, {
-          [this.tokens.getIdKey(this.chain)]: tokenAddress,
+          tokenId: tokenAddress,
         });
         if (tokens.length != 1) {
           this.logger.debug(
