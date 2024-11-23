@@ -119,11 +119,12 @@ export class BitcoinRpcRosenExtractor extends AbstractRosenDataExtractor<Bitcoin
       tokenId: BITCOIN_NATIVE_TOKEN,
     });
     if (wrappedBtc.length > 0 && Object.hasOwn(wrappedBtc[0], toChain)) {
-      const satoshiAmount = Math.floor(box.value * 100_000_000);
+      const parts = box.value.toString().split('.');
+      const part1 = ((parts[1] ?? '') + '0'.repeat(8)).substring(0, 8);
       return {
         from: BITCOIN_NATIVE_TOKEN,
         to: this.tokens.getID(wrappedBtc[0], toChain),
-        amount: satoshiAmount.toString(),
+        amount: (parts[0] === '0' ? '' : parts[0]) + part1,
       };
     } else {
       return undefined;

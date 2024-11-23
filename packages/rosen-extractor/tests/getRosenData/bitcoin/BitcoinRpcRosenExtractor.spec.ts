@@ -180,6 +180,29 @@ describe('BitcoinRpcRosenExtractor', () => {
     });
 
     /**
+     * @target `BitcoinRpcRosenExtractor.getAssetTransformation` should return transformation
+     * successfully when BTC is supported on target chain
+     * @dependencies
+     * @scenario
+     * - mock utxo
+     * - run test
+     * - check returned value
+     * @expected
+     * - it should return expected asset transformation
+     */
+    it('should return transformation successfully when BTC is supported on target chain', () => {
+      const lockUtxo = testData.weirdValueUtxo;
+
+      const extractor = new BitcoinRpcRosenExtractor(
+        testData.lockAddress,
+        tokenMap
+      );
+      const result = extractor.getAssetTransformation(lockUtxo, ERGO_CHAIN);
+
+      expect(result).toStrictEqual(testData.expectedTransformation);
+    });
+
+    /**
      * @target `BitcoinRpcRosenExtractor.getAssetTransformation` should return undefined
      * when BTC is NOT supported on target chain
      * @dependencies
