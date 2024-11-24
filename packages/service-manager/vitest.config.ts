@@ -8,6 +8,10 @@ export default defineConfig({
       reporter: ['cobertura', 'text', 'text-summary'],
     },
     passWithNoTests: true,
-    threads: false,
+    poolOptions: {
+      threads: {
+        singleThread: true,
+      },
+    },
   },
 });
