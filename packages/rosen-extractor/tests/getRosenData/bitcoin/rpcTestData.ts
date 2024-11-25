@@ -187,3 +187,18 @@ export const btcTransformation = {
   to: 'dcbda15f1361f5eeba416dd63e059fce34f0c57499e9afe733ea0fd59cf63f48',
   amount: '3000000000',
 };
+export const weirdValueUtxo = {
+  value: 0.29954,
+  n: 1,
+  scriptPubKey: {
+    asm: '0 90e17f3b1763f70ac2de508981b91c43b3f4c243',
+    hex: '001490e17f3b1763f70ac2de508981b91c43b3f4c243',
+    address: 'bc1qjrsh7wchv0ms4sk72zycrwgugwelfsjrqyvd8t',
+    type: 'witness_v0_keyhash',
+  },
+};
+export const expectedTransformation = {
+  from: 'btc',
+  to: 'dcbda15f1361f5eeba416dd63e059fce34f0c57499e9afe733ea0fd59cf63f48',
+  amount: '29954000',
+};
