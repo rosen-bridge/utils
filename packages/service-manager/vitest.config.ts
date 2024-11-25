@@ -5,13 +5,13 @@ export default defineConfig({
     globals: true,
     coverage: {
       all: true,
-      reporter: ['cobertura', 'text', 'text-summary'],
+      reporter: ['cobertura', 'lcov', 'text', 'text-summary'],
       provider: 'istanbul',
+      include: ['src'],
     },
-    passWithNoTests: true,
     poolOptions: {
-      threads: {
-        singleThread: true,
+      forks: {
+        singleFork: true,
       },
     },
   },
