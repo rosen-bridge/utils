@@ -1,5 +1,21 @@
 # @rosen-bridge/rosen-extractor
 
+## 7.0.0
+
+### Major Changes
+
+- constructor get `TokenMap` instead of `RosenTokens`
+
+### Minor Changes
+
+- Add rosen extractor for the dogecoin blockchain
+
+### Patch Changes
+
+- Updated dependencies
+- Updated dependencies
+  - @rosen-bridge/tokens@2.0.0
+
 ## 6.3.0
 
 ### Minor Changes
