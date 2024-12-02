@@ -4,7 +4,7 @@
 
 ### Major Changes
 
-- constructor get `TokenMap` instead of `RosenTokens`
+- Constructor get `TokenMap` instead of `RosenTokens`
 
 ### Minor Changes
 
@@ -12,7 +12,6 @@
 
 ### Patch Changes
 
-- Updated dependencies
 - Updated dependencies
   - @rosen-bridge/tokens@2.0.0
 
