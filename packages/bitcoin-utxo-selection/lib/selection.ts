@@ -27,8 +27,8 @@ export const getUtxoInfo = (utxo: BitcoinUtxo): BoxInfo => {
  * @param utxoWeights amount of weights that will be added to tx weights by selecting the utxo
  * @param estimatedTxWeight estimate of tx weight without considering input boxes
  * @param feeRatio network feeRatio in sat/vB unit
- * @param discountFactor discount factor for tx weight (4 by default for bitcoin, set to 1 for dogecoin)
  * @param logger
+ * @param discountFactor discount factor for tx weight (4 by default for bitcoin)
  * @returns an object containing the selected boxes with a boolean showing if requirements covered or not
  */
 export const selectBitcoinUtxos = async (
@@ -42,8 +42,8 @@ export const selectBitcoinUtxos = async (
   utxoWeights: number,
   estimatedTxWeight: number,
   feeRatio: number,
-  discountFactor = 4,
-  logger: AbstractLogger = new DummyLogger()
+  logger: AbstractLogger = new DummyLogger(),
+  discountFactor = 4
 ): Promise<CoveringBoxes<BitcoinUtxo>> => {
   let uncoveredNativeToken =
     requiredSatoshi +
