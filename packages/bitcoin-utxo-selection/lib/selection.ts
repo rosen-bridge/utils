@@ -28,7 +28,7 @@ export const getUtxoInfo = (utxo: BitcoinUtxo): BoxInfo => {
  * @param estimatedTxWeight estimate of tx weight without considering input boxes
  * @param feeRatio network feeRatio in sat/vB unit
  * @param logger
- * @param discountFactor discount factor for tx weight (4 by default for bitcoin, set to 1 for dogecoin)
+ * @param discountFactor discount factor for tx weight (4 by default for bitcoin)
  * @returns an object containing the selected boxes with a boolean showing if requirements covered or not
  */
 export const selectBitcoinUtxos = async (
