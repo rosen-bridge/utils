@@ -28,6 +28,7 @@ export const getUtxoInfo = (utxo: BitcoinUtxo): BoxInfo => {
  * @param estimatedTxWeight estimate of tx weight without considering input boxes
  * @param feeRatio network feeRatio in sat/vB unit
  * @param logger
+ * @param discountFactor discount factor for tx weight (4 by default for bitcoin)
  * @returns an object containing the selected boxes with a boolean showing if requirements covered or not
  */
 export const selectBitcoinUtxos = async (
@@ -41,10 +42,12 @@ export const selectBitcoinUtxos = async (
   utxoWeights: number,
   estimatedTxWeight: number,
   feeRatio: number,
-  logger: AbstractLogger = new DummyLogger()
+  logger: AbstractLogger = new DummyLogger(),
+  discountFactor = 4
 ): Promise<CoveringBoxes<BitcoinUtxo>> => {
   let uncoveredNativeToken =
-    requiredSatoshi + BigInt(Math.ceil((estimatedTxWeight / 4) * feeRatio));
+    requiredSatoshi +
+    BigInt(Math.ceil((estimatedTxWeight / discountFactor) * feeRatio));
   const selectedUtxos: Array<string> = [];
 
   const result: Array<BitcoinUtxo> = [];
@@ -96,7 +99,9 @@ export const selectBitcoinUtxos = async (
     // check and add if box assets are useful to requirements
     result.push(trackedBox!);
     selectedUtxos.push(boxInfo.id);
-    uncoveredNativeToken += BigInt(Math.ceil((utxoWeights / 4) * feeRatio));
+    uncoveredNativeToken += BigInt(
+      Math.ceil((utxoWeights / discountFactor) * feeRatio)
+    );
     uncoveredNativeToken -=
       uncoveredNativeToken >= boxInfo.assets.nativeToken
         ? boxInfo.assets.nativeToken
