@@ -1,11 +1,5 @@
 # @rosen-bridge/rosen-extractor
 
-## 7.0.1
-
-### Patch Changes
-
-- Fix floating error in BitcoinRpcRosenExtractor
-
 ## 7.0.0
 
 ### Major Changes
@@ -18,6 +12,7 @@
 
 ### Patch Changes
 
+- Fix floating error in BitcoinRpcRosenExtractor
 - Updated dependencies
   - @rosen-bridge/tokens@2.0.0
 
