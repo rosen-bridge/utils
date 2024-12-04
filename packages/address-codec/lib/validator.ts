@@ -1,4 +1,5 @@
 import {
+  BINANCE_CHAIN,
   BITCOIN_CHAIN,
   CARDANO_CHAIN,
   ERGO_CHAIN,
@@ -28,6 +29,7 @@ export const validateAddress = (chain: string, address: string): boolean => {
       if (address.slice(0, 4) != 'bc1q')
         throw new UnsupportedAddressError(chain, address);
       return true;
+    case BINANCE_CHAIN:
     case ETHEREUM_CHAIN:
       if (address.toLowerCase() != address || !ethereumLib.isAddress(address))
         throw new UnsupportedAddressError(chain, address);
