@@ -1,5 +1,11 @@
 # @rosen-bridge/address-codec
 
+## 0.4.0
+
+### Minor Changes
+
+- Add Binance
+
 ## 0.3.0
 
 ### Minor Changes
@@ -10,10 +16,10 @@
 
 ### Patch Changes
 
-- reduce ergo wasm version due to nextjs bug
+- Reduce ergo wasm version due to nextjs bug
 
 ## 0.2.0
 
 ### Minor Changes
 
-- support for Ethereum's address encoding and decoding were added.
+- Support for Ethereum's address encoding and decoding were added.

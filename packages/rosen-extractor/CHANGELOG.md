@@ -1,5 +1,13 @@
 # @rosen-bridge/rosen-extractor
 
+## 6.3.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @rosen-bridge/tokens@1.2.2
+  - @rosen-bridge/address-codec@0.4.0
+
 ## 6.3.0
 
 ### Minor Changes
