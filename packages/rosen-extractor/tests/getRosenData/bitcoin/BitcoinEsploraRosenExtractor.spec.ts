@@ -3,8 +3,15 @@ import * as testData from './esploraTestData';
 import TestUtils from '../TestUtils';
 import { ERGO_CHAIN, CARDANO_CHAIN } from '../../../lib/getRosenData/const';
 import { BitcoinEsploraTransaction } from '../../../lib/getRosenData/bitcoin/types';
+import { TokenMap } from '@rosen-bridge/tokens';
 
 describe('BitcoinEsploraRosenExtractor', () => {
+  const tokenMap = new TokenMap();
+
+  beforeAll(async () => {
+    await tokenMap.updateConfigByJson(TestUtils.tokens);
+  });
+
   describe('get', () => {
     /**
      * @target `BitcoinEsploraRosenExtractor.get` should extract rosenData from
@@ -22,7 +29,7 @@ describe('BitcoinEsploraRosenExtractor', () => {
 
       const extractor = new BitcoinEsploraRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(validLockTx as BitcoinEsploraTransaction);
 
@@ -45,7 +52,7 @@ describe('BitcoinEsploraRosenExtractor', () => {
 
       const extractor = new BitcoinEsploraRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(invalidTx as BitcoinEsploraTransaction);
 
@@ -68,7 +75,7 @@ describe('BitcoinEsploraRosenExtractor', () => {
 
       const extractor = new BitcoinEsploraRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(invalidTx as BitcoinEsploraTransaction);
 
@@ -91,7 +98,7 @@ describe('BitcoinEsploraRosenExtractor', () => {
 
       const extractor = new BitcoinEsploraRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(invalidTx as BitcoinEsploraTransaction);
 
@@ -114,7 +121,7 @@ describe('BitcoinEsploraRosenExtractor', () => {
 
       const extractor = new BitcoinEsploraRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(invalidTx as BitcoinEsploraTransaction);
 
@@ -133,12 +140,14 @@ describe('BitcoinEsploraRosenExtractor', () => {
      * @expected
      * - it should return undefined
      */
-    it('should return undefined when token transformation is not possible', () => {
+    it('should return undefined when token transformation is not possible', async () => {
       const invalidTx = testData.txs.lockTx;
 
+      const tokenMap = new TokenMap();
+      await tokenMap.updateConfigByJson(TestUtils.noNativeTokens);
       const extractor = new BitcoinEsploraRosenExtractor(
         testData.lockAddress,
-        TestUtils.noNativeTokens
+        tokenMap
       );
       const result = extractor.get(invalidTx as BitcoinEsploraTransaction);
 
@@ -163,7 +172,7 @@ describe('BitcoinEsploraRosenExtractor', () => {
 
       const extractor = new BitcoinEsploraRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.getAssetTransformation(lockUtxo, ERGO_CHAIN);
 
@@ -186,7 +195,7 @@ describe('BitcoinEsploraRosenExtractor', () => {
 
       const extractor = new BitcoinEsploraRosenExtractor(
         testData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.getAssetTransformation(lockUtxo, CARDANO_CHAIN);
 

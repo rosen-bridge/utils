@@ -1,5 +1,11 @@
 # @rosen-bridge/bitcoin-utxo-selection
 
+## 0.3.0
+
+### Minor Changes
+
+- General utxo selection to support different discount factors
+
 ## 0.2.2
 
 ### Patch Changes

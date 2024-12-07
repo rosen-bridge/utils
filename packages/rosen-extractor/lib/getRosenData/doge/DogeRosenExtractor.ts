@@ -1,35 +1,37 @@
 import { RosenData, TokenTransformation } from '../abstract/types';
 import AbstractRosenDataExtractor from '../abstract/AbstractRosenDataExtractor';
-import { BITCOIN_CHAIN, BITCOIN_NATIVE_TOKEN } from '../const';
-import {
-  BitcoinRpcTransaction,
-  BitcoinRpcTxOutput,
-  OpReturnData,
-} from './types';
+import { DOGE_CHAIN, DOGE_NATIVE_TOKEN } from '../const';
+import { DogeTx, DogeTxOutput, OpReturnData } from './types';
 import { TokenMap } from '@rosen-bridge/tokens';
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
-import { address } from 'bitcoinjs-lib';
-import { parseRosenData } from './utils';
+import { parseRosenData, addressToOutputScript } from './utils';
+import JsonBigInt from '@rosen-bridge/json-bigint';
 
-export class BitcoinRpcRosenExtractor extends AbstractRosenDataExtractor<BitcoinRpcTransaction> {
-  readonly chain = BITCOIN_CHAIN;
+export class DogeRosenExtractor extends AbstractRosenDataExtractor<string> {
+  readonly chain = DOGE_CHAIN;
   protected lockScriptPubKey: string;
 
   constructor(lockAddress: string, tokens: TokenMap, logger?: AbstractLogger) {
     super(lockAddress, tokens, logger);
-    this.lockScriptPubKey = address.toOutputScript(lockAddress).toString('hex');
+    this.lockScriptPubKey = addressToOutputScript(lockAddress);
   }
 
   /**
-   * extracts RosenData from given lock transaction in Rpc format
-   * @param transaction the lock transaction in Rpc format
+   * extracts RosenData from given lock transaction in DogeTx format
+   * @param serializedTransaction stringified transaction in DogeTx format
    */
-  extractRawData = (
-    transaction: BitcoinRpcTransaction
-  ): RosenData | undefined => {
-    const baseError = `No rosen data found for tx [${transaction.txid}]`;
+  extractRawData = (serializedTransaction: string): RosenData | undefined => {
+    let transaction: DogeTx;
     try {
-      const outputs = transaction.vout;
+      transaction = JsonBigInt.parse(serializedTransaction);
+    } catch (e) {
+      throw new Error(
+        `Failed to parse transaction json to DogeTx format while extracting rosen data: ${e}`
+      );
+    }
+    const baseError = `No rosen data found for tx [${transaction.id}]`;
+    try {
+      const outputs = transaction.outputs;
       if (outputs.length < 2) {
         this.logger.debug(baseError + `: Insufficient number of boxes`);
         return undefined;
@@ -42,15 +44,15 @@ export class BitcoinRpcRosenExtractor extends AbstractRosenDataExtractor<Bitcoin
       let opReturnData: OpReturnData | undefined;
       for (let i = 0; i < outputs.length; i++) {
         const output = outputs[i];
-        if (output.scriptPubKey.hex.slice(0, 2) !== '6a') continue; // not an OP_RETURN utxo
+        if (output.scriptPubKey.slice(0, 2) !== '6a') continue; // not an OP_RETURN utxo
 
         try {
-          opReturnData = parseRosenData(output.scriptPubKey.hex);
+          opReturnData = parseRosenData(output.scriptPubKey);
           validData = true;
           break;
         } catch (e) {
           this.logger.debug(
-            `Failed to extract data from OP_RETURN box [${transaction.txid}.${i}]: ${e}`
+            `Failed to extract data from OP_RETURN box [${transaction.id}.${i}]: ${e}`
           );
         }
       }
@@ -65,7 +67,7 @@ export class BitcoinRpcRosenExtractor extends AbstractRosenDataExtractor<Bitcoin
       let assetTransformation: TokenTransformation | undefined;
       for (let i = 0; i < outputs.length; i++) {
         const output = outputs[i];
-        if (output.scriptPubKey.hex !== this.lockScriptPubKey) continue; // utxo address is not lock address
+        if (output.scriptPubKey !== this.lockScriptPubKey) continue; // utxo address is not lock address
         assetTransformation = this.getAssetTransformation(
           output,
           opReturnData.toChain
@@ -82,7 +84,7 @@ export class BitcoinRpcRosenExtractor extends AbstractRosenDataExtractor<Bitcoin
         return undefined;
       }
 
-      const fromAddress = `box:${transaction.vin[0].txid}.${transaction.vin[0].vout}`;
+      const fromAddress = `box:${transaction.inputs[0].txId}.${transaction.inputs[0].index}`;
       return {
         toChain: opReturnData.toChain,
         toAddress: opReturnData.toAddress,
@@ -92,11 +94,11 @@ export class BitcoinRpcRosenExtractor extends AbstractRosenDataExtractor<Bitcoin
         sourceChainTokenId: assetTransformation.from,
         amount: assetTransformation.amount,
         targetChainTokenId: assetTransformation.to,
-        sourceTxId: transaction.txid,
+        sourceTxId: transaction.id,
       };
     } catch (e) {
       this.logger.debug(
-        `An error occurred while getting Bitcoin rosen data from Rpc: ${e}`
+        `An error occurred while getting Doge rosen data: ${e}`
       );
       if (e instanceof Error && e.stack) {
         this.logger.debug(e.stack);
@@ -111,20 +113,19 @@ export class BitcoinRpcRosenExtractor extends AbstractRosenDataExtractor<Bitcoin
    * @param toChain event target chain
    */
   getAssetTransformation = (
-    box: BitcoinRpcTxOutput,
+    box: DogeTxOutput,
     toChain: string
   ): TokenTransformation | undefined => {
-    // try to build transformation using locked BTC
-    const wrappedBtc = this.tokens.search(BITCOIN_CHAIN, {
-      tokenId: BITCOIN_NATIVE_TOKEN,
+    // try to build transformation using locked DOGE
+    const wrappedDoge = this.tokens.search(DOGE_CHAIN, {
+      tokenId: DOGE_NATIVE_TOKEN,
     });
-    if (wrappedBtc.length > 0 && Object.hasOwn(wrappedBtc[0], toChain)) {
-      const parts = box.value.toString().split('.');
-      const part1 = ((parts[1] ?? '') + '0'.repeat(8)).substring(0, 8);
+    if (wrappedDoge.length > 0 && Object.hasOwn(wrappedDoge[0], toChain)) {
+      const satoshiAmount = box.value;
       return {
-        from: BITCOIN_NATIVE_TOKEN,
-        to: this.tokens.getID(wrappedBtc[0], toChain),
-        amount: (parts[0] === '0' ? '' : parts[0]) + part1,
+        from: DOGE_NATIVE_TOKEN,
+        to: this.tokens.getID(wrappedDoge[0], toChain),
+        amount: satoshiAmount.toString(),
       };
     } else {
       return undefined;
