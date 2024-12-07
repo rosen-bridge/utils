@@ -1,4 +1,5 @@
 import {
+  BINANCE_CHAIN,
   BITCOIN_CHAIN,
   CARDANO_CHAIN,
   ERGO_CHAIN,
@@ -33,6 +34,7 @@ export const encodeAddress = (chain: string, address: string): string => {
         bitcoinLib.address.toOutputScript(address)
       ).toString('hex');
       break;
+    case BINANCE_CHAIN:
     case ETHEREUM_CHAIN:
       if (address.length != 42 || address.substring(0, 2) != '0x') {
         throw new UnsupportedAddressError(chain, address);
