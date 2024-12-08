@@ -7,6 +7,7 @@ import {
 import {
   BITCOIN_CHAIN,
   CARDANO_CHAIN,
+  DOGE_CHAIN,
   ERGO_CHAIN,
   ETHEREUM_CHAIN,
 } from '../lib/const';
@@ -109,5 +110,19 @@ describe('encodeAddress', () => {
     expect(() => {
       encodeAddress('unsupported-chain', 'address');
     }).toThrow(UnsupportedChainError);
+  });
+
+  /**
+   * @target `encodeAddress` should encode Doge address successfully
+   * @dependencies
+   * @scenario
+   * - run test
+   * - check returned value
+   * @expected
+   * - it should be output script of given address in hex
+   */
+  it('should encode Doge address successfully', () => {
+    const res = encodeAddress(DOGE_CHAIN, testData.dogeAddress);
+    expect(res).toEqual(testData.encodedDogeAddress);
   });
 });

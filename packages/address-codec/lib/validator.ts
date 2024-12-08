@@ -37,7 +37,11 @@ export const validateAddress = (chain: string, address: string): boolean => {
         throw new UnsupportedAddressError(chain, address);
       return true;
     case DOGE_CHAIN:
-      bitcoinLib.address.toOutputScript(address, DOGE_NETWORK);
+      try {
+        bitcoinLib.address.toOutputScript(address, DOGE_NETWORK);
+      } catch (e) {
+        throw new UnsupportedAddressError(chain, address);
+      }
       return true;
     default:
       throw new UnsupportedChainError(chain);
