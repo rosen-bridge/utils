@@ -2,6 +2,8 @@ import {
   BINANCE_CHAIN,
   BITCOIN_CHAIN,
   CARDANO_CHAIN,
+  DOGE_CHAIN,
+  DOGE_NETWORK,
   ERGO_CHAIN,
   ETHEREUM_CHAIN,
 } from './const';
@@ -33,6 +35,9 @@ export const validateAddress = (chain: string, address: string): boolean => {
     case ETHEREUM_CHAIN:
       if (address.toLowerCase() != address || !ethereumLib.isAddress(address))
         throw new UnsupportedAddressError(chain, address);
+      return true;
+    case DOGE_CHAIN:
+      bitcoinLib.address.toOutputScript(address, DOGE_NETWORK);
       return true;
     default:
       throw new UnsupportedChainError(chain);
