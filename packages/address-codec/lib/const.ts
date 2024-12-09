@@ -8,7 +8,7 @@ export const DOGE_CHAIN = 'doge';
 export const DOGE_NETWORK = {
   // Doge network parameters
   messagePrefix: '\x19Dogecoin Signed Message:\n',
-  bech32: 'doge',
+  bech32: 'dc',
   bip32: {
     public: 0x02facafd,
     private: 0x02fac398,
