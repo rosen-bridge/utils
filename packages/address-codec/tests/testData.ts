@@ -34,3 +34,8 @@ export const invalidEthereumAddressLength =
 export const invalidEthereumIcapAddress = 'XE65GB6LDNXYOFTX0NSV3FUWKOWIXAMJK36';
 export const invalidEthereumChecksumAddress =
   '0x4838B106FCe9647Bdf1E7877BF73cE8B0BAD5f97';
+
+export const dogeAddress = 'A69cznKpaYVWjzU3sNFZnGhbpSmUVFzvHB';
+export const invalidDogeAddress = 'bc1qkgp89fjerymm5ltg0hygnumr0m2qa7n22gyw6h';
+export const encodedDogeAddress =
+  'a914966ba9f4755996c3d51025d53044b415121bc10287';

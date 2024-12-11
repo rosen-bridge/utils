@@ -7,6 +7,7 @@ import {
 import {
   BITCOIN_CHAIN,
   CARDANO_CHAIN,
+  DOGE_CHAIN,
   ERGO_CHAIN,
   ETHEREUM_CHAIN,
 } from '../lib/const';
@@ -174,5 +175,32 @@ describe('validateAddress', () => {
     expect(() => {
       validateAddress('unsupported-chain', '0011223344');
     }).toThrow(UnsupportedChainError);
+  });
+
+  /**
+   * @target `validateAddress` should validate Doge address successfully
+   * @dependencies
+   * @scenario
+   * - run test
+   * @expected
+   * - to validate correct Doge address
+   */
+  it('should validate Doge address successfully', () => {
+    const res = validateAddress(DOGE_CHAIN, testData.dogeAddress);
+    expect(res).toEqual(true);
+  });
+
+  /**
+   * @target `validateAddress` should throw error for wrong Doge address
+   * @dependencies
+   * @scenario
+   * - run test
+   * @expected
+   * - to throw error for wrong Doge address
+   */
+  it('should throw error for wrong Doge address', () => {
+    expect(() => {
+      validateAddress(DOGE_CHAIN, testData.invalidDogeAddress);
+    }).toThrow(UnsupportedAddressError);
   });
 });

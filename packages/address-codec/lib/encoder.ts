@@ -2,6 +2,8 @@ import {
   BINANCE_CHAIN,
   BITCOIN_CHAIN,
   CARDANO_CHAIN,
+  DOGE_CHAIN,
+  DOGE_NETWORK,
   ERGO_CHAIN,
   ETHEREUM_CHAIN,
 } from './const';
@@ -40,6 +42,11 @@ export const encodeAddress = (chain: string, address: string): string => {
         throw new UnsupportedAddressError(chain, address);
       }
       encoded = address.substring(2);
+      break;
+    case DOGE_CHAIN:
+      encoded = bitcoinLib.address
+        .toOutputScript(address, DOGE_NETWORK)
+        .toString('hex');
       break;
     default:
       throw new UnsupportedChainError(chain);
