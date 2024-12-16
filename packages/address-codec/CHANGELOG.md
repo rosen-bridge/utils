@@ -1,5 +1,11 @@
 # @rosen-bridge/address-codec
 
+## 0.5.0
+
+### Minor Changes
+
+- Add doge address-codec
+
 ## 0.4.0
 
 ### Minor Changes
