@@ -18,7 +18,7 @@
   },
   "license": "GPL-3.0",
   "devDependencies": {
-    "@types/node": "^18.0.0",
+    "@types/node": "^20.11.0",
     "@typescript-eslint/eslint-plugin": "^5.30.7",
     "@typescript-eslint/parser": "^5.26.0",
     "eslint": "^8.16.0",
@@ -38,6 +38,7 @@
     "blakejs": "^1.2.1",
     "chalk": "^5.2.0",
     "ora": "^6.3.0",
-    "yargs": "^17.7.2"
+    "yargs": "^17.7.2",
+    "tsx": "^4.19.2"
   }
 }
