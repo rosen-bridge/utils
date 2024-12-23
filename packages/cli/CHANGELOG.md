@@ -1,5 +1,11 @@
 # @rosen-bridge/cli
 
+## 1.0.0
+
+### Major Changes
+
+- Migrate from node 18.17 to 20.11
+
 ## 0.7.0
 
 ### Minor Changes
