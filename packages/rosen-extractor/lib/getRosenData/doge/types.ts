@@ -62,3 +62,36 @@ export interface DogeTx {
   inputs: DogeTxInput[];
   outputs: DogeTxOutput[];
 }
+
+export interface DogeRpcTxInput {
+  txid: string;
+  vout: number;
+  scriptSig: {
+    asm: string;
+    hex: string;
+  };
+  sequence: number;
+}
+
+export interface DogeRpcTxOutput {
+  value: number;
+  n: number;
+  scriptPubKey: {
+    asm: string;
+    hex: string;
+    type: string;
+    address?: string;
+  };
+}
+
+export interface DogeRpcTransaction {
+  txid: string;
+  hash: string;
+  version: number;
+  size: number;
+  vsize: number;
+  weight: number;
+  locktime: number;
+  vin: Array<DogeRpcTxInput>;
+  vout: Array<DogeRpcTxOutput>;
+}

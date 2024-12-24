@@ -15,3 +15,4 @@ export { ErgoNodeRosenExtractor } from './getRosenData/ergo/ErgoNodeRosenExtract
 export { RosenData } from './getRosenData/abstract/types';
 export { DogeEsploraRosenExtractor } from './getRosenData/doge/DogeEsploraRosenExtractor';
 export { DogeRosenExtractor } from './getRosenData/doge/DogeRosenExtractor';
+export { DogeRpcRosenExtractor } from './getRosenData/doge/DogeRpcRosenExtractor';
