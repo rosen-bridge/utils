@@ -103,7 +103,7 @@ describe('KoiosRosenExtractor', () => {
         const invalidTx = JSON.parse(
           JSON.stringify(
             CardanoTestData.koiosTransactions.validTokenLock
-          ).replace(key, key + 'Fake')
+          ).replaceAll(key, key + 'Fake')
         );
 
         // run test

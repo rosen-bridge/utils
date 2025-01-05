@@ -1,35 +1,37 @@
 import { components } from '@blockfrost/openapi';
+import { TransactionJSON } from '@emurgo/cardano-serialization-lib-nodejs';
 
-interface PaymentAddr {
-  bech32: string;
-  cred: string;
-}
-
-interface Asset {
-  policy_id: string;
-  asset_name: string;
-  quantity: string;
-}
-
-interface Utxo {
-  payment_addr: PaymentAddr;
-  stake_addr?: string | null;
-  tx_hash: string;
-  tx_index: number;
-  value: string;
-  asset_list: Array<Asset>;
-}
-
-interface Metadata {
-  [key: string]: Record<string, unknown>;
-}
-
-interface KoiosTransaction {
+interface KoiosCborTx {
   tx_hash: string;
   block_hash: string;
-  inputs: Array<Utxo>;
-  outputs: Array<Utxo>;
-  metadata?: Metadata;
+  block_height: number;
+  epoch_no: number;
+  absolute_slot: number;
+  tx_timestamp: number;
+  cbor: string;
+}
+
+type KoiosTransaction = KoiosCborTx & TransactionJSON;
+
+export type Metadatum = Int | CString | Bytes | List | Map;
+export interface Int {
+  int: bigint;
+}
+export interface CString {
+  string: string;
+}
+export interface Bytes {
+  bytes: string;
+}
+export interface List {
+  list: Metadatum[];
+}
+export interface Map {
+  map: MetadatumMap[];
+}
+export interface MetadatumMap {
+  k: Metadatum;
+  v: Metadatum;
 }
 
 interface CardanoRosenData {
@@ -143,11 +145,9 @@ type GraphQLTransaction = NonNullable<
 type GraphQLTxOutput = NonNullable<GraphQLTransaction['outputs'][0]>;
 
 export {
-  Utxo,
   KoiosTransaction,
   CardanoRosenData,
   CardanoMetadataRosenData,
-  Metadata,
   MetadataObject,
   JsonObject,
   ListObject,
