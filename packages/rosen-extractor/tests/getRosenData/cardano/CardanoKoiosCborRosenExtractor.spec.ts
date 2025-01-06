@@ -1,12 +1,12 @@
-import { CardanoKoiosRosenExtractor } from '../../../lib';
+import { CardanoKoiosCborRosenExtractor } from '../../../lib';
 import CardanoTestData from './CardanoTestData';
 import TestUtils from '../TestUtils';
 import { ERGO_CHAIN } from '../../../lib/getRosenData/const';
 
-describe('KoiosRosenExtractor', () => {
+describe('KoiosCborRosenExtractor', () => {
   describe('get', () => {
     /**
-     * Target: KoiosRosenExtractor.get
+     * Target: KoiosCborRosenExtractor.get
      * Dependencies:
      *  -
      * Scenario:
@@ -18,10 +18,11 @@ describe('KoiosRosenExtractor', () => {
      */
     it('should extract rosenData from token locking tx successfully', () => {
       // generate a transaction with valid rosen data (locking token)
-      const validTokenLockTx = CardanoTestData.koiosTransactions.validTokenLock;
+      const validTokenLockTx =
+        CardanoTestData.koiosCborTransactions.validTokenLock;
 
       // run test
-      const extractor = new CardanoKoiosRosenExtractor(
+      const extractor = new CardanoKoiosCborRosenExtractor(
         CardanoTestData.lockAddress,
         TestUtils.tokens
       );
@@ -34,7 +35,7 @@ describe('KoiosRosenExtractor', () => {
     });
 
     /**
-     * Target: KoiosRosenExtractor.get
+     * Target: KoiosCborRosenExtractor.get
      * Dependencies:
      *  -
      * Scenario:
@@ -46,10 +47,10 @@ describe('KoiosRosenExtractor', () => {
      */
     it('should extract rosenData from ADA locking tx successfully', () => {
       // generate a transaction with valid rosen data (locking ADA)
-      const validAdaLockTx = CardanoTestData.koiosTransactions.validAdaLock;
+      const validAdaLockTx = CardanoTestData.koiosCborTransactions.validAdaLock;
 
       // run test
-      const extractor = new CardanoKoiosRosenExtractor(
+      const extractor = new CardanoKoiosCborRosenExtractor(
         CardanoTestData.lockAddress,
         TestUtils.tokens
       );
@@ -60,7 +61,7 @@ describe('KoiosRosenExtractor', () => {
     });
 
     /**
-     * Target: KoiosRosenExtractor.get
+     * Target: KoiosCborRosenExtractor.get
      * Dependencies:
      *  -
      * Scenario:
@@ -72,10 +73,10 @@ describe('KoiosRosenExtractor', () => {
      */
     it('should return undefined when tx locks nothing', () => {
       // generate a transaction with no lock box
-      const noLock = CardanoTestData.koiosTransactions.noLock;
+      const noLock = CardanoTestData.koiosCborTransactions.noLock;
 
       // run test
-      const extractor = new CardanoKoiosRosenExtractor(
+      const extractor = new CardanoKoiosCborRosenExtractor(
         CardanoTestData.lockAddress,
         TestUtils.tokens
       );
@@ -86,7 +87,7 @@ describe('KoiosRosenExtractor', () => {
     });
 
     /**
-     * Target: KoiosRosenExtractor.get
+     * Target: KoiosCborRosenExtractor.get
      * Dependencies:
      *  -
      * Scenario:
@@ -102,12 +103,12 @@ describe('KoiosRosenExtractor', () => {
         // generate a transaction with invalid rosen data (missing a key)
         const invalidTx = JSON.parse(
           JSON.stringify(
-            CardanoTestData.koiosTransactions.validTokenLock
-          ).replace(key, key + 'Fake')
+            CardanoTestData.koiosCborTransactions.validTokenLock
+          ).replaceAll(key, key + 'Fake')
         );
 
         // run test
-        const extractor = new CardanoKoiosRosenExtractor(
+        const extractor = new CardanoKoiosCborRosenExtractor(
           CardanoTestData.lockAddress,
           TestUtils.tokens
         );
@@ -119,7 +120,7 @@ describe('KoiosRosenExtractor', () => {
     );
 
     /**
-     * Target: KoiosRosenExtractor.get
+     * Target: KoiosCborRosenExtractor.get
      * Dependencies:
      *  -
      * Scenario:
@@ -131,10 +132,10 @@ describe('KoiosRosenExtractor', () => {
      */
     it('should return undefined when tx does NOT contain metadata', () => {
       // generate a transaction with no rosen data
-      const noMetadata = CardanoTestData.koiosTransactions.noMetadata;
+      const noMetadata = CardanoTestData.koiosCborTransactions.noMetadata;
 
       // run test
-      const extractor = new CardanoKoiosRosenExtractor(
+      const extractor = new CardanoKoiosCborRosenExtractor(
         CardanoTestData.lockAddress,
         TestUtils.tokens
       );
@@ -145,7 +146,7 @@ describe('KoiosRosenExtractor', () => {
     });
 
     /**
-     * Target: KoiosRosenExtractor.get
+     * Target: KoiosCborRosenExtractor.get
      * Dependencies:
      *  -
      * Scenario:
@@ -158,10 +159,10 @@ describe('KoiosRosenExtractor', () => {
     it("should return undefined when metadata does NOT contain '0' key", () => {
       // generate a transaction with invalid rosen data (no '0' key in metadata)
       const noZeroKeyMetadata =
-        CardanoTestData.koiosTransactions.noZeroKeyMetadata;
+        CardanoTestData.koiosCborTransactions.noZeroKeyMetadata;
 
       // run test
-      const extractor = new CardanoKoiosRosenExtractor(
+      const extractor = new CardanoKoiosCborRosenExtractor(
         CardanoTestData.lockAddress,
         TestUtils.tokens
       );
@@ -176,7 +177,7 @@ describe('KoiosRosenExtractor', () => {
     const toChain = ERGO_CHAIN;
 
     /**
-     * Target: KoiosRosenExtractor.getAssetTransformation
+     * Target: KoiosCborRosenExtractor.getAssetTransformation
      * Dependencies:
      *  -
      * Scenario:
@@ -191,7 +192,7 @@ describe('KoiosRosenExtractor', () => {
       const tokenLockedUtxo = CardanoTestData.koiosUtxos.tokenLocked;
 
       // run test
-      const extractor = new CardanoKoiosRosenExtractor(
+      const extractor = new CardanoKoiosCborRosenExtractor(
         CardanoTestData.lockAddress,
         TestUtils.tokens
       );
@@ -204,7 +205,7 @@ describe('KoiosRosenExtractor', () => {
     });
 
     /**
-     * Target: KoiosRosenExtractor.getAssetTransformation
+     * Target: KoiosCborRosenExtractor.getAssetTransformation
      * Dependencies:
      *  -
      * Scenario:
@@ -219,7 +220,7 @@ describe('KoiosRosenExtractor', () => {
       const adaLockedUtxo = CardanoTestData.koiosUtxos.adaLocked;
 
       // run test
-      const extractor = new CardanoKoiosRosenExtractor(
+      const extractor = new CardanoKoiosCborRosenExtractor(
         CardanoTestData.lockAddress,
         TestUtils.tokens
       );
@@ -232,7 +233,7 @@ describe('KoiosRosenExtractor', () => {
     });
 
     /**
-     * Target: KoiosRosenExtractor.getAssetTransformation
+     * Target: KoiosCborRosenExtractor.getAssetTransformation
      * Dependencies:
      *  -
      * Scenario:
@@ -247,7 +248,7 @@ describe('KoiosRosenExtractor', () => {
       const adaLockedUtxo = CardanoTestData.koiosUtxos.secondAssetLocked;
 
       // run test
-      const extractor = new CardanoKoiosRosenExtractor(
+      const extractor = new CardanoKoiosCborRosenExtractor(
         CardanoTestData.lockAddress,
         TestUtils.tokens
       );
@@ -260,7 +261,7 @@ describe('KoiosRosenExtractor', () => {
     });
 
     /**
-     * Target: KoiosRosenExtractor.getAssetTransformation
+     * Target: KoiosCborRosenExtractor.getAssetTransformation
      * Dependencies:
      *  -
      * Scenario:
@@ -275,7 +276,7 @@ describe('KoiosRosenExtractor', () => {
       const adaLockedUtxo = CardanoTestData.koiosUtxos.wrongAssetLocked;
 
       // run test
-      const extractor = new CardanoKoiosRosenExtractor(
+      const extractor = new CardanoKoiosCborRosenExtractor(
         CardanoTestData.lockAddress,
         TestUtils.tokens
       );
@@ -288,7 +289,7 @@ describe('KoiosRosenExtractor', () => {
     });
 
     /**
-     * Target: KoiosRosenExtractor.getAssetTransformation
+     * Target: KoiosCborRosenExtractor.getAssetTransformation
      * Dependencies:
      *  -
      * Scenario:
@@ -303,7 +304,7 @@ describe('KoiosRosenExtractor', () => {
       const adaLockedUtxo = CardanoTestData.koiosUtxos.adaLocked;
 
       // run test
-      const extractor = new CardanoKoiosRosenExtractor(
+      const extractor = new CardanoKoiosCborRosenExtractor(
         CardanoTestData.lockAddress,
         TestUtils.noNativeTokens
       );
@@ -314,7 +315,7 @@ describe('KoiosRosenExtractor', () => {
     });
 
     /**
-     * Target: KoiosRosenExtractor.getAssetTransformation
+     * Target: KoiosCborRosenExtractor.getAssetTransformation
      * Dependencies:
      *  -
      * Scenario:
@@ -329,7 +330,7 @@ describe('KoiosRosenExtractor', () => {
       const adaLockedUtxo = CardanoTestData.koiosUtxos.adaLocked;
 
       // run test
-      const extractor = new CardanoKoiosRosenExtractor(
+      const extractor = new CardanoKoiosCborRosenExtractor(
         CardanoTestData.lockAddress,
         TestUtils.tokens
       );

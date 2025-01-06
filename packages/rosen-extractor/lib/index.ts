@@ -5,6 +5,7 @@ export { BitcoinRpcRosenExtractor } from './getRosenData/bitcoin/BitcoinRpcRosen
 export { EvmEthersRosenExtractor } from './getRosenData/evm/EvmEthersRosenExtractor';
 export { EvmRpcRosenExtractor } from './getRosenData/evm/EvmRpcRosenExtractor';
 export { EvmRosenExtractor } from './getRosenData/evm/EvmRosenExtractor';
+export { CardanoKoiosCborRosenExtractor } from './getRosenData/cardano/CardanoKoiosCborRosenExtractor';
 export { CardanoKoiosRosenExtractor } from './getRosenData/cardano/CardanoKoiosRosenExtractor';
 export { CardanoOgmiosRosenExtractor } from './getRosenData/cardano/CardanoOgmiosRosenExtractor';
 export { CardanoRosenExtractor } from './getRosenData/cardano/CardanoRosenExtractor';

@@ -6,6 +6,38 @@ import { components } from '@blockfrost/openapi';
  */
 import { TransactionJSON } from './cardanoSerializationTypes';
 
+interface PaymentAddr {
+  bech32: string;
+  cred: string;
+}
+
+interface Asset {
+  policy_id: string;
+  asset_name: string;
+  quantity: string;
+}
+
+interface Utxo {
+  payment_addr: PaymentAddr;
+  stake_addr?: string | null;
+  tx_hash: string;
+  tx_index: number;
+  value: string;
+  asset_list: Array<Asset>;
+}
+
+interface Metadata {
+  [key: string]: Record<string, unknown>;
+}
+
+interface KoiosTransaction {
+  tx_hash: string;
+  block_hash: string;
+  inputs: Array<Utxo>;
+  outputs: Array<Utxo>;
+  metadata?: Metadata;
+}
+
 interface KoiosCborTx {
   tx_hash: string;
   block_hash: string;
@@ -16,7 +48,7 @@ interface KoiosCborTx {
   cbor: string;
 }
 
-type KoiosTransaction = KoiosCborTx & TransactionJSON;
+type KoiosCborTransaction = KoiosCborTx & TransactionJSON;
 
 export type Metadatum = Int | CString | Bytes | List | Map;
 export interface Int {
@@ -150,6 +182,7 @@ type GraphQLTransaction = NonNullable<
 type GraphQLTxOutput = NonNullable<GraphQLTransaction['outputs'][0]>;
 
 export {
+  KoiosCborTransaction,
   KoiosTransaction,
   CardanoRosenData,
   CardanoMetadataRosenData,
@@ -164,4 +197,5 @@ export {
   BlockFrostOutputBox,
   GraphQLTransaction,
   GraphQLTxOutput,
+  Utxo,
 };
