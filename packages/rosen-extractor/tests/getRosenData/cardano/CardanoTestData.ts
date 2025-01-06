@@ -12,11 +12,11 @@ export default class CardanoTestData {
         '0': JSON.parse(
           '{' +
             '"to": "ergo",' +
-            '"bridgeFee": "10000",' +
-            '"networkFee": "10000",' +
+            '"bridgeFee": "10376749",' +
+            '"networkFee": "3829872",' +
             '"toAddress": "9hZxV3YNSfbCqS6GEses7DhAVSatvaoNtdsiNvkimPGG2c8fzkG",' +
             ' "fromAddress": ["' +
-            'addr_test1vzg07d2qp3xje0w77f982zkhqey50gjxrsdqh89yx8r7nasu97hr0' +
+            'addr1qytsk73jatycajqksafza5z90cw3zj2exhtdqx226r2l6dphvyt647kn7zl3svpnzjmuty2sfsr28cmf3aaa263hazqqxwdedk' +
             '"] }'
         ),
       },
@@ -67,7 +67,7 @@ export default class CardanoTestData {
               policy_id:
                 'ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2',
               asset_name: '7369676d61',
-              quantity: '10',
+              quantity: '1635516886333',
             },
           ],
         },
@@ -912,6 +912,84 @@ export default class CardanoTestData {
   };
 
   static koiosUtxos = {
+    tokenLocked: {
+      payment_addr: {
+        bech32:
+          'addr_test1vze7yqqlg8cjlyhz7jzvsg0f3fhxpuu6m3llxrajfzqecggw704re',
+        cred: 'b3e2001f41f12f92e2f484c821e98a6e60f39adc7ff30fb248819c21',
+      },
+      tx_hash:
+        '9f00d372e930d685c3b410a10f2bd035cd9a927c4fd8ef8e419c79b210af7ba6',
+      stake_addr: null,
+      tx_index: 0,
+      value: '10000000',
+      asset_list: [
+        {
+          policy_id: 'ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2',
+          asset_name: '7369676d61',
+          quantity: '10',
+        },
+      ],
+    },
+    adaLocked: {
+      payment_addr: {
+        bech32:
+          'addr_test1vze7yqqlg8cjlyhz7jzvsg0f3fhxpuu6m3llxrajfzqecggw704re',
+        cred: 'b3e2001f41f12f92e2f484c821e98a6e60f39adc7ff30fb248819c21',
+      },
+      tx_hash:
+        '9f00d372e930d685c3b410a10f2bd035cd9a927c4fd8ef8e419c79b210af7ba7',
+      stake_addr: null,
+      tx_index: 0,
+      value: '1000000000',
+      asset_list: [],
+    },
+    secondAssetLocked: {
+      payment_addr: {
+        bech32:
+          'addr_test1vze7yqqlg8cjlyhz7jzvsg0f3fhxpuu6m3llxrajfzqecggw704re',
+        cred: 'b3e2001f41f12f92e2f484c821e98a6e60f39adc7ff30fb248819c21',
+      },
+      tx_hash:
+        '9f00d372e930d685c3b410a10f2bd035cd9a927c4fd8ef8e419c79b210af7ba6',
+      stake_addr: null,
+      tx_index: 0,
+      value: '10000000',
+      asset_list: [
+        {
+          policy_id: 'ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2',
+          asset_name: '646f6765',
+          quantity: '10',
+        },
+        {
+          policy_id: 'ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2',
+          asset_name: '7369676d61',
+          quantity: '10',
+        },
+      ],
+    },
+    wrongAssetLocked: {
+      payment_addr: {
+        bech32:
+          'addr_test1vze7yqqlg8cjlyhz7jzvsg0f3fhxpuu6m3llxrajfzqecggw704re',
+        cred: 'b3e2001f41f12f92e2f484c821e98a6e60f39adc7ff30fb248819c21',
+      },
+      tx_hash:
+        '9f00d372e930d685c3b410a10f2bd035cd9a927c4fd8ef8e419c79b210af7ba6',
+      stake_addr: null,
+      tx_index: 0,
+      value: '10000000',
+      asset_list: [
+        {
+          policy_id: 'ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2',
+          asset_name: '646f6765',
+          quantity: '10',
+        },
+      ],
+    },
+  };
+
+  static koiosCborUtxos = {
     tokenLocked: {
       address:
         'addr_test1vze7yqqlg8cjlyhz7jzvsg0f3fhxpuu6m3llxrajfzqecggw704re',

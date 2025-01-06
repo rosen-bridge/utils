@@ -189,7 +189,7 @@ describe('KoiosCborRosenExtractor', () => {
      */
     it('should extract asset transformation from token locked UTXO successfully', () => {
       // generate a UTXO with valid asset transformation
-      const tokenLockedUtxo = CardanoTestData.koiosUtxos.tokenLocked;
+      const tokenLockedUtxo = CardanoTestData.koiosCborUtxos.tokenLocked;
 
       // run test
       const extractor = new CardanoKoiosCborRosenExtractor(
@@ -217,7 +217,7 @@ describe('KoiosCborRosenExtractor', () => {
      */
     it('should extract asset transformation from ADA locked UTXO successfully', () => {
       // generate a UTXO with valid native token transformation
-      const adaLockedUtxo = CardanoTestData.koiosUtxos.adaLocked;
+      const adaLockedUtxo = CardanoTestData.koiosCborUtxos.adaLocked;
 
       // run test
       const extractor = new CardanoKoiosCborRosenExtractor(
@@ -245,7 +245,7 @@ describe('KoiosCborRosenExtractor', () => {
      */
     it('should be able to extract asset transformation regardless of asset position', () => {
       // generate a UTXO with valid asset transformation in index 1
-      const adaLockedUtxo = CardanoTestData.koiosUtxos.secondAssetLocked;
+      const adaLockedUtxo = CardanoTestData.koiosCborUtxos.secondAssetLocked;
 
       // run test
       const extractor = new CardanoKoiosCborRosenExtractor(
@@ -273,7 +273,7 @@ describe('KoiosCborRosenExtractor', () => {
      */
     it('should return ADA transformation when no locked asset is not supported', () => {
       // generate a UTXO with invalid asset transformation
-      const adaLockedUtxo = CardanoTestData.koiosUtxos.wrongAssetLocked;
+      const adaLockedUtxo = CardanoTestData.koiosCborUtxos.wrongAssetLocked;
 
       // run test
       const extractor = new CardanoKoiosCborRosenExtractor(
@@ -301,7 +301,7 @@ describe('KoiosCborRosenExtractor', () => {
      */
     it('should return undefined when no asset locked and ADA is not supported', () => {
       // generate a UTXO with invalid asset transformation
-      const adaLockedUtxo = CardanoTestData.koiosUtxos.adaLocked;
+      const adaLockedUtxo = CardanoTestData.koiosCborUtxos.adaLocked;
 
       // run test
       const extractor = new CardanoKoiosCborRosenExtractor(
@@ -327,7 +327,7 @@ describe('KoiosCborRosenExtractor', () => {
      */
     it('should return undefined when ADA is not supported on target chain', () => {
       // generate a UTXO with invalid asset transformation
-      const adaLockedUtxo = CardanoTestData.koiosUtxos.adaLocked;
+      const adaLockedUtxo = CardanoTestData.koiosCborUtxos.adaLocked;
 
       // run test
       const extractor = new CardanoKoiosCborRosenExtractor(
