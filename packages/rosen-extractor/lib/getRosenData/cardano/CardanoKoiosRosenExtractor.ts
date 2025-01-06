@@ -5,7 +5,7 @@ import { CARDANO_CHAIN, CARDANO_NATIVE_TOKEN } from '../const';
 import { KoiosTransaction } from './types';
 import JsonBigInt from '@rosen-bridge/json-bigint';
 import { getDictValue, parseRosenData } from './utils';
-import { TransactionOutputJSON } from '@emurgo/cardano-serialization-lib-nodejs';
+import { TransactionOutputJSON } from './cardanoSerializationTypes';
 
 export class CardanoKoiosRosenExtractor extends AbstractRosenDataExtractor<KoiosTransaction> {
   readonly chain = CARDANO_CHAIN;

@@ -1,5 +1,10 @@
 import { components } from '@blockfrost/openapi';
-import { TransactionJSON } from '@emurgo/cardano-serialization-lib-nodejs';
+/**
+ * TODO: @local/ergo/rosen-bridge/utils/-/issues/227
+ * Update this import after updating guard-service to use latest version of
+ * `@emurgo/cardano-serialization-lib-nodejs`
+ */
+import { TransactionJSON } from './cardanoSerializationTypes';
 
 interface KoiosCborTx {
   tx_hash: string;
