@@ -22,6 +22,12 @@ export class CardanoKoiosCborRosenExtractor extends AbstractRosenDataExtractor<K
     const metadata = transaction.auxiliary_data.metadata;
     try {
       if (metadata && Object.prototype.hasOwnProperty.call(metadata, '0')) {
+        /**
+         * TODO: local/ergo/rosen-bridge/utils/-/issues/228
+         * Use `decode_metadatum_to_json_str` provided by cardano serialization
+         * lib after updating guard-service to use latest version of
+         * `@emurgo/cardano-serialization-lib-nodejs`
+         */
         const data = getDictValue(JsonBigInt.parse(metadata[0]));
         const rosenData = parseRosenData(data);
         if (rosenData) {
