@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/rosen-extractor",
-  "version": "6.3.1",
+  "version": "6.4.0",
   "description": "this project contains methods to get rosen data from blockchain",
   "main": "dist/lib/index.js",
   "types": "dist/lib/index.d.ts",

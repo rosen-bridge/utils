@@ -1,5 +1,11 @@
 # @rosen-bridge/rosen-extractor
 
+## 6.4.0
+
+### Minor Changes
+
+- Update koios rosen extractor to use the new interfaces from cardano serialization lib
+
 ## 6.3.1
 
 ### Patch Changes
