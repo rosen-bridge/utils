@@ -2,8 +2,15 @@ import { CardanoKoiosCborRosenExtractor } from '../../../lib';
 import CardanoTestData from './CardanoTestData';
 import TestUtils from '../TestUtils';
 import { ERGO_CHAIN } from '../../../lib/getRosenData/const';
+import { TokenMap } from '@rosen-bridge/tokens';
 
 describe('KoiosCborRosenExtractor', () => {
+  const tokenMap = new TokenMap();
+
+  beforeAll(async () => {
+    await tokenMap.updateConfigByJson(TestUtils.tokens);
+  });
+
   describe('get', () => {
     /**
      * Target: KoiosCborRosenExtractor.get
@@ -24,7 +31,7 @@ describe('KoiosCborRosenExtractor', () => {
       // run test
       const extractor = new CardanoKoiosCborRosenExtractor(
         CardanoTestData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(validTokenLockTx);
 
@@ -52,7 +59,7 @@ describe('KoiosCborRosenExtractor', () => {
       // run test
       const extractor = new CardanoKoiosCborRosenExtractor(
         CardanoTestData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(validAdaLockTx);
 
@@ -78,7 +85,7 @@ describe('KoiosCborRosenExtractor', () => {
       // run test
       const extractor = new CardanoKoiosCborRosenExtractor(
         CardanoTestData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(noLock);
 
@@ -110,7 +117,7 @@ describe('KoiosCborRosenExtractor', () => {
         // run test
         const extractor = new CardanoKoiosCborRosenExtractor(
           CardanoTestData.lockAddress,
-          TestUtils.tokens
+          tokenMap
         );
         const result = extractor.get(invalidTx);
 
@@ -137,7 +144,7 @@ describe('KoiosCborRosenExtractor', () => {
       // run test
       const extractor = new CardanoKoiosCborRosenExtractor(
         CardanoTestData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(noMetadata);
 
@@ -164,7 +171,7 @@ describe('KoiosCborRosenExtractor', () => {
       // run test
       const extractor = new CardanoKoiosCborRosenExtractor(
         CardanoTestData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.get(noZeroKeyMetadata);
 
@@ -194,7 +201,7 @@ describe('KoiosCborRosenExtractor', () => {
       // run test
       const extractor = new CardanoKoiosCborRosenExtractor(
         CardanoTestData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.getAssetTransformation(tokenLockedUtxo, toChain);
 
@@ -222,7 +229,7 @@ describe('KoiosCborRosenExtractor', () => {
       // run test
       const extractor = new CardanoKoiosCborRosenExtractor(
         CardanoTestData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.getAssetTransformation(adaLockedUtxo, toChain);
 
@@ -250,7 +257,7 @@ describe('KoiosCborRosenExtractor', () => {
       // run test
       const extractor = new CardanoKoiosCborRosenExtractor(
         CardanoTestData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.getAssetTransformation(adaLockedUtxo, toChain);
 
@@ -278,7 +285,7 @@ describe('KoiosCborRosenExtractor', () => {
       // run test
       const extractor = new CardanoKoiosCborRosenExtractor(
         CardanoTestData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.getAssetTransformation(adaLockedUtxo, toChain);
 
@@ -299,14 +306,15 @@ describe('KoiosCborRosenExtractor', () => {
      * Expected:
      *  function returns undefined
      */
-    it('should return undefined when no asset locked and ADA is not supported', () => {
+    it('should return undefined when no asset locked and ADA is not supported', async () => {
       // generate a UTXO with invalid asset transformation
       const adaLockedUtxo = CardanoTestData.koiosCborUtxos.adaLocked;
 
       // run test
+      await tokenMap.updateConfigByJson(TestUtils.noNativeTokens);
       const extractor = new CardanoKoiosCborRosenExtractor(
         CardanoTestData.lockAddress,
-        TestUtils.noNativeTokens
+        tokenMap
       );
       const result = extractor.getAssetTransformation(adaLockedUtxo, toChain);
 
@@ -332,7 +340,7 @@ describe('KoiosCborRosenExtractor', () => {
       // run test
       const extractor = new CardanoKoiosCborRosenExtractor(
         CardanoTestData.lockAddress,
-        TestUtils.tokens
+        tokenMap
       );
       const result = extractor.getAssetTransformation(
         adaLockedUtxo,
