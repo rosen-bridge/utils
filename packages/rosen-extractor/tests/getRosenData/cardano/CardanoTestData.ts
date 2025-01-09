@@ -1,16 +1,10 @@
-import { KoiosCborTransaction } from '../../../lib/getRosenData/cardano/types';
+import { KoiosTransaction } from '../../../lib/getRosenData/cardano/types';
 
 export default class CardanoTestData {
   static lockAddress =
     'addr_test1vze7yqqlg8cjlyhz7jzvsg0f3fhxpuu6m3llxrajfzqecggw704re';
 
-  static koiosTransactions: {
-    validTokenLock: KoiosCborTransaction;
-    validAdaLock: KoiosCborTransaction;
-    noLock: KoiosCborTransaction;
-    noMetadata: any;
-    noZeroKeyMetadata: any;
-  } = {
+  static koiosTransactions = {
     validTokenLock: {
       block_hash:
         '2e930d689e38e9ecd3e000c432dcb2521aff4b5c00cabd6422fd738058e419c7',

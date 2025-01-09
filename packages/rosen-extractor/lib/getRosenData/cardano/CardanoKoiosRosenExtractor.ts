@@ -31,9 +31,11 @@ export class CardanoKoiosRosenExtractor extends AbstractRosenDataExtractor<Koios
         const metadataObject = GeneralTransactionMetadata.from_json(
           JsonBigInt.stringify(metadata)
         );
-        const data = decode_metadatum_to_json_str(
-          metadataObject.get(BigNum.from_str('0'))!,
-          MetadataJsonSchema.NoConversions
+        const data = JsonBigInt.parse(
+          decode_metadatum_to_json_str(
+            metadataObject.get(BigNum.from_str('0'))!,
+            MetadataJsonSchema.NoConversions
+          )
         );
         const rosenData = parseRosenData(data);
         if (rosenData) {
