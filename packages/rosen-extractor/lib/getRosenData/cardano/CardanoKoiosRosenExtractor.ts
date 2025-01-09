@@ -2,26 +2,43 @@ import { isPlainObject } from 'lodash-es';
 import { RosenData, TokenTransformation } from '../abstract/types';
 import AbstractRosenDataExtractor from '../abstract/AbstractRosenDataExtractor';
 import { CARDANO_CHAIN, CARDANO_NATIVE_TOKEN } from '../const';
-import { KoiosTransaction, Utxo } from './types';
+import { KoiosCborTransaction } from './types';
 import JsonBigInt from '@rosen-bridge/json-bigint';
 import { parseRosenData } from './utils';
+import {
+  TransactionOutputJSON,
+  decode_metadatum_to_json_str,
+  BigNum,
+  GeneralTransactionMetadata,
+  MetadataJsonSchema,
+} from '@emurgo/cardano-serialization-lib-nodejs';
 
-export class CardanoKoiosRosenExtractor extends AbstractRosenDataExtractor<KoiosTransaction> {
+export class CardanoKoiosRosenExtractor extends AbstractRosenDataExtractor<KoiosCborTransaction> {
   readonly chain = CARDANO_CHAIN;
+
   /**
    * extracts RosenData from given lock transaction in Koios format
    * @param transaction the lock transaction in Koios format
    */
-  extractRawData = (transaction: KoiosTransaction): RosenData | undefined => {
+  extractRawData = (
+    transaction: KoiosCborTransaction
+  ): RosenData | undefined => {
     const baseError = `No rosen data found for tx [${transaction.tx_hash}]`;
-    const metadata = transaction.metadata;
+    if (!transaction.auxiliary_data) return undefined;
+    const metadata = transaction.auxiliary_data.metadata;
     try {
       if (metadata && Object.prototype.hasOwnProperty.call(metadata, '0')) {
-        const data = metadata['0'];
+        const metadataObject = GeneralTransactionMetadata.from_json(
+          JsonBigInt.stringify(metadata)
+        );
+        const data = decode_metadatum_to_json_str(
+          metadataObject.get(BigNum.from_str('0'))!,
+          MetadataJsonSchema.NoConversions
+        );
         const rosenData = parseRosenData(data);
         if (rosenData) {
-          const lockOutputs = transaction.outputs.filter(
-            (output) => output.payment_addr.bech32 === this.lockAddress
+          const lockOutputs = transaction.body.outputs.filter(
+            (output) => output.address === this.lockAddress
           );
           for (const output of lockOutputs) {
             const assetTransformation = this.getAssetTransformation(
@@ -69,22 +86,26 @@ export class CardanoKoiosRosenExtractor extends AbstractRosenDataExtractor<Koios
    * @param toChain event target chain
    */
   getAssetTransformation = (
-    box: Utxo,
+    box: TransactionOutputJSON,
     toChain: string
   ): TokenTransformation | undefined => {
     // try to build transformation using locked assets
-    if (box.asset_list.length > 0) {
-      for (const asset of box.asset_list) {
-        const token = this.tokens.search(CARDANO_CHAIN, {
-          assetName: asset.asset_name,
-          policyId: asset.policy_id,
-        });
-        if (token.length > 0 && Object.hasOwn(token[0], toChain))
-          return {
-            from: this.tokens.getID(token[0], CARDANO_CHAIN),
-            to: this.tokens.getID(token[0], toChain),
-            amount: asset.quantity,
-          };
+    if (box.amount.multiasset) {
+      const assets = box.amount.multiasset;
+      for (const policyId of Object.keys(assets)) {
+        for (const assetName of Object.keys(assets[policyId])) {
+          const token = this.tokens.search(CARDANO_CHAIN, {
+            policyId: policyId,
+            assetName: assetName,
+          });
+          if (token.length > 0 && Object.hasOwn(token[0], toChain)) {
+            return {
+              from: this.tokens.getID(token[0], CARDANO_CHAIN),
+              to: this.tokens.getID(token[0], toChain),
+              amount: assets[policyId][assetName].toString(),
+            };
+          }
+        }
       }
     }
 
@@ -96,13 +117,13 @@ export class CardanoKoiosRosenExtractor extends AbstractRosenDataExtractor<Koios
       return {
         from: CARDANO_NATIVE_TOKEN,
         to: this.tokens.getID(lovelace[0], toChain),
-        amount: box.value,
+        amount: box.amount.coin,
       };
     } else {
       this.logger.debug(
-        `No rosen asset transformation found for box [${box.tx_hash}.${
-          box.tx_index
-        }]: box assets: ${JsonBigInt.stringify(box.asset_list)}`
+        `No rosen asset transformation found for box with assets: ${JsonBigInt.stringify(
+          box.amount
+        )}`
       );
       return undefined;
     }

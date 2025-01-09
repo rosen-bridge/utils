@@ -110,7 +110,7 @@ describe('KoiosRosenExtractor', () => {
         const invalidTx = JSON.parse(
           JSON.stringify(
             CardanoTestData.koiosTransactions.validTokenLock
-          ).replace(key, key + 'Fake')
+          ).replaceAll(key, key + 'Fake')
         );
 
         // run test
@@ -310,7 +310,6 @@ describe('KoiosRosenExtractor', () => {
       const adaLockedUtxo = CardanoTestData.koiosUtxos.adaLocked;
 
       // run test
-      const tokenMap = new TokenMap();
       await tokenMap.updateConfigByJson(TestUtils.noNativeTokens);
       const extractor = new CardanoKoiosRosenExtractor(
         CardanoTestData.lockAddress,

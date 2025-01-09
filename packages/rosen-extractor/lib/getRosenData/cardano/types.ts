@@ -1,42 +1,5 @@
 import { components } from '@blockfrost/openapi';
-/**
- * TODO: @local/ergo/rosen-bridge/utils/-/issues/227
- * Update this import after updating guard-service to use latest version of
- * `@emurgo/cardano-serialization-lib-nodejs`
- */
-import { TransactionJSON } from './cardanoSerializationTypes';
-
-interface PaymentAddr {
-  bech32: string;
-  cred: string;
-}
-
-interface Asset {
-  policy_id: string;
-  asset_name: string;
-  quantity: string;
-}
-
-interface Utxo {
-  payment_addr: PaymentAddr;
-  stake_addr?: string | null;
-  tx_hash: string;
-  tx_index: number;
-  value: string;
-  asset_list: Array<Asset>;
-}
-
-interface Metadata {
-  [key: string]: Record<string, unknown>;
-}
-
-interface KoiosTransaction {
-  tx_hash: string;
-  block_hash: string;
-  inputs: Array<Utxo>;
-  outputs: Array<Utxo>;
-  metadata?: Metadata;
-}
+import { TransactionJSON } from '@emurgo/cardano-serialization-lib-nodejs';
 
 interface KoiosCborTx {
   tx_hash: string;
@@ -48,28 +11,7 @@ interface KoiosCborTx {
   cbor: string;
 }
 
-type KoiosCborTransaction = KoiosCborTx & TransactionJSON;
-
-export type Metadatum = Int | CString | Bytes | List | Map;
-export interface Int {
-  int: bigint;
-}
-export interface CString {
-  string: string;
-}
-export interface Bytes {
-  bytes: string;
-}
-export interface List {
-  list: Metadatum[];
-}
-export interface Map {
-  map: MetadatumMap[];
-}
-export interface MetadatumMap {
-  k: Metadatum;
-  v: Metadatum;
-}
+type KoiosTransaction = KoiosCborTx & TransactionJSON;
 
 interface CardanoRosenData {
   toChain: string;
@@ -86,13 +28,6 @@ interface CardanoMetadataRosenData {
   toAddress: string;
   fromAddress: string[];
 }
-
-type ListObject = Array<MetadataObject>;
-type NativeValue = string | undefined;
-interface JsonObject {
-  [key: string]: MetadataObject;
-}
-type MetadataObject = JsonObject | ListObject | NativeValue;
 
 interface CardanoAsset {
   policy_id: string;
@@ -182,14 +117,10 @@ type GraphQLTransaction = NonNullable<
 type GraphQLTxOutput = NonNullable<GraphQLTransaction['outputs'][0]>;
 
 export {
-  KoiosCborTransaction,
+  KoiosTransaction as KoiosCborTransaction,
   KoiosTransaction,
   CardanoRosenData,
   CardanoMetadataRosenData,
-  MetadataObject,
-  JsonObject,
-  ListObject,
-  NativeValue,
   CardanoMetadata,
   CardanoTx,
   CardanoBoxCandidate,
@@ -197,5 +128,4 @@ export {
   BlockFrostOutputBox,
   GraphQLTransaction,
   GraphQLTxOutput,
-  Utxo,
 };
