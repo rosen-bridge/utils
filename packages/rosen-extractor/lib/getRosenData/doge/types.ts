@@ -80,7 +80,6 @@ export interface DogeRpcTxOutput {
     asm: string;
     hex: string;
     type: string;
-    address?: string;
   };
 }
 
@@ -90,7 +89,6 @@ export interface DogeRpcTransaction {
   version: number;
   size: number;
   vsize: number;
-  weight: number;
   locktime: number;
   vin: Array<DogeRpcTxInput>;
   vout: Array<DogeRpcTxOutput>;
