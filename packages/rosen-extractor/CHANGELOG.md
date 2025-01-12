@@ -1,5 +1,11 @@
 # @rosen-bridge/rosen-extractor
 
+## 7.1.0
+
+### Minor Changes
+
+- Add RPC to for Doge
+
 ## 7.0.1
 
 ### Patch Changes

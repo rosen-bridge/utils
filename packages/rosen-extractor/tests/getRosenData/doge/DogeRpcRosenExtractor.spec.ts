@@ -61,7 +61,7 @@ describe('DogeRpcRosenExtractor', () => {
 
     /**
      * @target `DogeRpcRosenExtractor.get` should return undefined when
-     * first output is not OP_RETURN
+     * no valid OP_RETURN output is found
      * @dependencies
      * @scenario
      * - mock tx without OP_RETURN utxo
@@ -70,7 +70,7 @@ describe('DogeRpcRosenExtractor', () => {
      * @expected
      * - it should return undefined
      */
-    it('should return undefined when first output is not OP_RETURN', () => {
+    it('should return undefined when no valid OP_RETURN output is found', () => {
       const invalidTx = testData.txs.noOpReturn;
 
       const extractor = new DogeRpcRosenExtractor(
@@ -84,7 +84,7 @@ describe('DogeRpcRosenExtractor', () => {
 
     /**
      * @target `DogeRpcRosenExtractor.get` should return undefined when
-     * second output is not to lock address
+     * no output with the lock address is found
      * @dependencies
      * @scenario
      * - mock tx with no output box to lock address
@@ -93,7 +93,7 @@ describe('DogeRpcRosenExtractor', () => {
      * @expected
      * - it should return undefined
      */
-    it('should return undefined when second output is not to lock address', () => {
+    it('should return undefined when no output with the lock address is found', () => {
       const invalidTx = testData.txs.noLock;
 
       const extractor = new DogeRpcRosenExtractor(
