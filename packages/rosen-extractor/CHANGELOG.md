@@ -1,5 +1,12 @@
 # @rosen-bridge/rosen-extractor
 
+## 7.2.0
+
+### Minor Changes
+
+- Fix doge RPC types
+- Fix RPC types of doge
+
 ## 7.1.0
 
 ### Minor Changes
