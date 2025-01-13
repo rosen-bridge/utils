@@ -1,10 +1,5 @@
 import { components } from '@blockfrost/openapi';
-/**
- * TODO: @local/ergo/rosen-bridge/utils/-/issues/227
- * Update this import after updating guard-service to use latest version of
- * `@emurgo/cardano-serialization-lib-nodejs`
- */
-import { TransactionJSON } from './cardanoSerializationTypes';
+import { TransactionJSON } from '@emurgo/cardano-serialization-lib-nodejs';
 
 interface PaymentAddr {
   bech32: string;
@@ -50,27 +45,6 @@ interface KoiosCborTx {
 
 type KoiosCborTransaction = KoiosCborTx & TransactionJSON;
 
-export type Metadatum = Int | CString | Bytes | List | Map;
-export interface Int {
-  int: bigint;
-}
-export interface CString {
-  string: string;
-}
-export interface Bytes {
-  bytes: string;
-}
-export interface List {
-  list: Metadatum[];
-}
-export interface Map {
-  map: MetadatumMap[];
-}
-export interface MetadatumMap {
-  k: Metadatum;
-  v: Metadatum;
-}
-
 interface CardanoRosenData {
   toChain: string;
   toAddress: string;
@@ -86,13 +60,6 @@ interface CardanoMetadataRosenData {
   toAddress: string;
   fromAddress: string[];
 }
-
-type ListObject = Array<MetadataObject>;
-type NativeValue = string | undefined;
-interface JsonObject {
-  [key: string]: MetadataObject;
-}
-type MetadataObject = JsonObject | ListObject | NativeValue;
 
 interface CardanoAsset {
   policy_id: string;
@@ -186,10 +153,6 @@ export {
   KoiosTransaction,
   CardanoRosenData,
   CardanoMetadataRosenData,
-  MetadataObject,
-  JsonObject,
-  ListObject,
-  NativeValue,
   CardanoMetadata,
   CardanoTx,
   CardanoBoxCandidate,

@@ -4,8 +4,14 @@ import AbstractRosenDataExtractor from '../abstract/AbstractRosenDataExtractor';
 import { CARDANO_CHAIN, CARDANO_NATIVE_TOKEN } from '../const';
 import { KoiosCborTransaction } from './types';
 import JsonBigInt from '@rosen-bridge/json-bigint';
-import { getDictValue, parseRosenData } from './utils';
-import { TransactionOutputJSON } from './cardanoSerializationTypes';
+import { parseRosenData } from './utils';
+import {
+  BigNum,
+  decode_metadatum_to_json_str,
+  GeneralTransactionMetadata,
+  MetadataJsonSchema,
+  TransactionOutputJSON,
+} from '@emurgo/cardano-serialization-lib-nodejs';
 
 export class CardanoKoiosCborRosenExtractor extends AbstractRosenDataExtractor<KoiosCborTransaction> {
   readonly chain = CARDANO_CHAIN;
@@ -19,16 +25,19 @@ export class CardanoKoiosCborRosenExtractor extends AbstractRosenDataExtractor<K
   ): RosenData | undefined => {
     const baseError = `No rosen data found for tx [${transaction.tx_hash}]`;
     if (!transaction.auxiliary_data) return undefined;
+    if (!transaction.auxiliary_data) return undefined;
     const metadata = transaction.auxiliary_data.metadata;
     try {
       if (metadata && Object.prototype.hasOwnProperty.call(metadata, '0')) {
-        /**
-         * TODO: local/ergo/rosen-bridge/utils/-/issues/228
-         * Use `decode_metadatum_to_json_str` provided by cardano serialization
-         * lib after updating guard-service to use latest version of
-         * `@emurgo/cardano-serialization-lib-nodejs`
-         */
-        const data = getDictValue(JsonBigInt.parse(metadata[0]));
+        const metadataObject = GeneralTransactionMetadata.from_json(
+          JsonBigInt.stringify(metadata)
+        );
+        const data = JsonBigInt.parse(
+          decode_metadatum_to_json_str(
+            metadataObject.get(BigNum.from_str('0'))!,
+            MetadataJsonSchema.NoConversions
+          )
+        );
         const rosenData = parseRosenData(data);
         if (rosenData) {
           const lockOutputs = transaction.body.outputs.filter(
