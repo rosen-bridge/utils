@@ -1,5 +1,13 @@
 # @rosen-bridge/rosen-extractor
 
+## 6.4.1
+
+### Patch Changes
+
+- Update cardano serialization lib to latest version
+- Updated dependencies
+  - @rosen-bridge/address-codec@0.4.1
+
 ## 6.4.0
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 # @rosen-bridge/address-codec
 
+## 0.4.1
+
+### Patch Changes
+
+- Update cardano serialization lib to latest version
+
 ## 0.4.0
 
 ### Minor Changes
