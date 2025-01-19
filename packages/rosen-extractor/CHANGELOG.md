@@ -4,7 +4,6 @@
 
 ### Patch Changes
 
-- Fix doge RPC types
 - Fix RPC types of doge
 
 ## 7.1.0
