@@ -2,7 +2,7 @@
 
 ## 7.2.0
 
-### Minor Changes
+### Patch Changes
 
 - Fix doge RPC types
 - Fix RPC types of doge
