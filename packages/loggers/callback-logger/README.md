@@ -1,4 +1,4 @@
-# logger-with-callback
+# callback-logger
 
 ## Table of contents
 
@@ -14,11 +14,11 @@ A new logger with callback method on each levels
 npm:
 
 ```sh
-npm i @rosen-bridge/logger-with-callback
+npm i @rosen-bridge/callback-logger
 ```
 
 yarn:
 
 ```sh
-yarn add @rosen-bridge/logger-with-callback
+yarn add @rosen-bridge/callback-logger
 ```
