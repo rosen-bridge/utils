@@ -1,6 +1,6 @@
 {
-  "name": "@rosen-bridge/logger-with-callback",
-  "version": "0.1.1",
+  "name": "@rosen-bridge/callback-logger",
+  "version": "0.1.0",
   "description": "A new logger with callback method on each levels",
   "license": "GPL-3.0",
   "author": "Rosen Team",
