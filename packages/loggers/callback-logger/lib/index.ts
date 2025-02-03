@@ -1,1 +1,1 @@
-export { CallbackLoggerFactory as LoggerWithCallbackFactory } from './CallbackLoggerFactory';
+export { CallbackLoggerFactory } from './CallbackLoggerFactory';
