@@ -1,5 +1,17 @@
 # @rosen-bridge/rosen-extractor
 
+## 7.2.0
+
+### Minor Changes
+
+- Update koios rosen extractor to use the new interfaces from cardano serialization lib
+
+### Patch Changes
+
+- Use cardano serialization lib v13
+- Updated dependencies
+  - @rosen-bridge/address-codec@0.5.1
+
 ## 7.1.1
 
 ### Patch Changes
