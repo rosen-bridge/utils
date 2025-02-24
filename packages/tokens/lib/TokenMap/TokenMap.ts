@@ -103,9 +103,12 @@ export class TokenMap {
             `Duplicate ergo token [${data[0]}] is found`
           );
 
-        const chainToken: Record<string, any> = {};
-        for (let i = 1; i < headers.length; i++)
-          chainToken[headers[i]] = data[i];
+        const chainToken: Record<string, any> = { extra: {} };
+        for (let i = 1; i < headers.length; i++) {
+          if (REQUIRED_FIELDS.includes(headers[i]))
+            chainToken[headers[i]] = data[i];
+          else chainToken.extra[headers[i]] = data[i];
+        }
         chainToken.decimals = Number(chainToken.decimals);
         tokens.push({ [ERGO_CHAIN]: chainToken as RosenChainToken });
       });
@@ -134,9 +137,12 @@ export class TokenMap {
             `Ergo token [${data[0]}] is not found`
           );
 
-        const chainToken: Record<string, any> = {};
-        for (let i = 1; i < headers.length; i++)
-          chainToken[headers[i]] = data[i];
+        const chainToken: Record<string, any> = { extra: {} };
+        for (let i = 1; i < headers.length; i++) {
+          if (REQUIRED_FIELDS.includes(headers[i]))
+            chainToken[headers[i]] = data[i];
+          else chainToken.extra[headers[i]] = data[i];
+        }
         chainToken.decimals = Number(chainToken.decimals);
 
         if (Object.hasOwn(tokens[index], chain))
@@ -211,19 +217,16 @@ export class TokenMap {
    * @param condition
    *  example: {tokenId:"tokenId"}
    */
-  search = (chain: string, condition: { [key: string]: string }) => {
+  search = (chain: string, condition: Partial<RosenChainToken>) => {
     return this.tokensConfig.filter((token) => {
-      if (Object.hasOwnProperty.call(token, chain)) {
+      if (Object.hasOwn(token, chain)) {
         const resToken = token[chain];
-        for (const [key, val] of Object.entries(condition)) {
-          if (
-            !Object.hasOwnProperty.call(resToken, key) ||
-            resToken[key] !== val
-          ) {
-            return false;
-          }
-        }
-        return true;
+        return Object.entries(condition).every(([key, val]) => {
+          const typedKey = key as keyof RosenChainToken;
+          if (typedKey === 'extra' && typeof val === 'object')
+            return JSON.stringify(resToken.extra) === JSON.stringify(val);
+          else return resToken[typedKey] === val;
+        });
       } else {
         return false;
       }

@@ -1,6 +1,4 @@
-export type RosenTokens = Array<
-  Record<string, RosenChainToken & Record<string, any>>
->;
+export type RosenTokens = Array<Record<string, RosenChainToken>>;
 
 export interface RosenChainToken {
   tokenId: string;
@@ -8,13 +6,8 @@ export interface RosenChainToken {
   decimals: number;
   type: string;
   residency: string;
+  extra: Record<string, string | number | boolean>;
 }
-
-export interface CardanoChainToken extends RosenChainToken {
-  policyId: string;
-  assetName: string;
-}
-
 export interface RosenAmount {
   amount: bigint;
   decimals: number;

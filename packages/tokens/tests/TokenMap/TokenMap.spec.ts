@@ -250,8 +250,10 @@ describe('TokenMap', () => {
       const tokenMap = new TokenMap();
       await tokenMap.updateConfigByJson(firstTokenMap);
       const res = tokenMap.search('cardano', {
-        policyId: 'policyId2',
-        assetName: 'assetName2',
+        extra: {
+          policyId: 'policyId2',
+          assetName: 'assetName2',
+        },
       });
       expect(res.length).toEqual(1);
       expect(res[0]).toEqual(firstToken);
