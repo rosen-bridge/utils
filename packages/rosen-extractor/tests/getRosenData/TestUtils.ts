@@ -20,12 +20,15 @@ export default class TestUtils {
         decimals: 9,
         type: 'tokenType',
         residency: 'tokenResidency',
+        extra: {},
       },
       [CARDANO_CHAIN]: {
         tokenId:
           'ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2.7369676d61',
-        policyId: 'ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2',
-        assetName: '7369676d61',
+        extra: {
+          policyId: 'ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2',
+          assetName: '7369676d61',
+        },
         name: 'Wrapped Erg',
         decimals: 9,
         type: 'tokenType',
@@ -40,11 +43,14 @@ export default class TestUtils {
         decimals: 6,
         type: 'tokenType',
         residency: 'tokenResidency',
+        extra: {},
       },
       [CARDANO_CHAIN]: {
         tokenId: CARDANO_NATIVE_TOKEN,
-        policyId: '',
-        assetName: '414441',
+        extra: {
+          policyId: '',
+          assetName: '414441',
+        },
         name: 'ada',
         decimals: 6,
         type: 'tokenType',
@@ -56,6 +62,7 @@ export default class TestUtils {
         decimals: 6,
         type: 'ERC-20',
         residency: 'wrapped',
+        extra: {},
       },
     },
     {
@@ -66,12 +73,15 @@ export default class TestUtils {
         decimals: 0,
         type: 'EIP-004',
         residency: 'wrapped',
+        extra: {},
       },
       [CARDANO_CHAIN]: {
         tokenId:
           'a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235.484f534b59',
-        policyId: 'a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235',
-        assetName: '484f534b59',
+        extra: {
+          policyId: 'a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235',
+          assetName: '484f534b59',
+        },
         name: 'WrappedHosky',
         decimals: 0,
         type: 'CIP26',
@@ -85,6 +95,7 @@ export default class TestUtils {
         decimals: 8,
         type: 'ERC-20',
         residency: 'wrapped',
+        extra: {},
       },
       [BITCOIN_CHAIN]: {
         tokenId: BITCOIN_NATIVE_TOKEN,
@@ -92,6 +103,7 @@ export default class TestUtils {
         decimals: 8,
         type: 'native',
         residency: 'native',
+        extra: {},
       },
       [ERGO_CHAIN]: {
         tokenId:
@@ -100,6 +112,7 @@ export default class TestUtils {
         decimals: 8,
         type: 'EIP-004',
         residency: 'wrapped',
+        extra: {},
       },
     },
     {
@@ -109,6 +122,7 @@ export default class TestUtils {
         decimals: 18,
         type: 'native',
         residency: 'native',
+        extra: {},
       },
       [ERGO_CHAIN]: {
         tokenId:
@@ -117,6 +131,7 @@ export default class TestUtils {
         decimals: 18,
         type: 'EIP-004',
         residency: 'wrapped',
+        extra: {},
       },
     },
     {
@@ -126,6 +141,7 @@ export default class TestUtils {
         decimals: 8,
         type: 'tokenType',
         residency: 'tokenResidency',
+        extra: {},
       },
       [ERGO_CHAIN]: {
         tokenId:
@@ -134,6 +150,7 @@ export default class TestUtils {
         decimals: 8,
         type: 'EIP-004',
         residency: 'wrapped',
+        extra: {},
       },
     },
   ];
@@ -147,12 +164,15 @@ export default class TestUtils {
         decimals: 0,
         type: 'tokenType',
         residency: 'tokenResidency',
+        extra: {},
       },
       [CARDANO_CHAIN]: {
         tokenId:
           'ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2.7369676d61',
-        policyId: 'ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2',
-        assetName: '7369676d61',
+        extra: {
+          policyId: 'ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2',
+          assetName: '7369676d61',
+        },
         name: 'Cardano token',
         decimals: 0,
         type: 'tokenType',
@@ -169,12 +189,15 @@ export default class TestUtils {
         decimals: 9,
         type: 'tokenType',
         residency: 'tokenResidency',
+        extra: {},
       },
       [CARDANO_CHAIN]: {
         tokenId:
           'ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2.7369676d61',
-        policyId: 'ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2',
-        assetName: '7369676d61',
+        extra: {
+          policyId: 'ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2',
+          assetName: '7369676d61',
+        },
         name: 'Wrapped Erg',
         decimals: 3,
         type: 'tokenType',

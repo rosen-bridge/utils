@@ -26,3 +26,11 @@ export const parseRosenData = (data: any) => {
   }
   return undefined;
 };
+
+/**
+ * @param policyId
+ * @param assetName
+ * @returns the concatenation of policyId and assetName by '.' which represents the token Id in Rosen packages and services
+ */
+export const getCardanoTokenId = (policyId: string, assetName: string) =>
+  `${policyId}.${assetName}`;

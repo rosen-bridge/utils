@@ -4,7 +4,7 @@ import AbstractRosenDataExtractor from '../abstract/AbstractRosenDataExtractor';
 import { CARDANO_CHAIN, CARDANO_NATIVE_TOKEN } from '../const';
 import { GraphQLTransaction, GraphQLTxOutput } from './types';
 import JsonBigInt from '@rosen-bridge/json-bigint';
-import { parseRosenData } from './utils';
+import { getCardanoTokenId, parseRosenData } from './utils';
 
 export class CardanoGraphQLRosenExtractor extends AbstractRosenDataExtractor<GraphQLTransaction> {
   readonly chain = CARDANO_CHAIN;
@@ -86,8 +86,10 @@ export class CardanoGraphQLRosenExtractor extends AbstractRosenDataExtractor<Gra
     // try to build transformation using locked assets
     for (const boxToken of box.tokens) {
       const token = this.tokens.search(CARDANO_CHAIN, {
-        assetName: boxToken.asset.assetName,
-        policyId: boxToken.asset.policyId,
+        tokenId: getCardanoTokenId(
+          boxToken.asset.policyId,
+          boxToken.asset.assetName
+        ),
       });
       if (token.length > 0 && Object.hasOwn(token[0], toChain))
         return {

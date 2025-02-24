@@ -7,7 +7,7 @@ import {
   TransactionOutput,
 } from '@cardano-ogmios/schema';
 import JsonBigInt from '@rosen-bridge/json-bigint';
-import { parseRosenData } from './utils';
+import { getCardanoTokenId, parseRosenData } from './utils';
 
 export class CardanoOgmiosRosenExtractor extends AbstractRosenDataExtractor<Transaction> {
   readonly chain = CARDANO_CHAIN;
@@ -87,8 +87,7 @@ export class CardanoOgmiosRosenExtractor extends AbstractRosenDataExtractor<Tran
       //      [policyId]: {[assetName]: amount}
       for (const assetName of Object.keys(assets[policyId])) {
         const token = this.tokens.search(CARDANO_CHAIN, {
-          policyId: policyId,
-          assetName: assetName,
+          tokenId: getCardanoTokenId(policyId, assetName),
         });
         if (token.length > 0 && Object.hasOwn(token[0], toChain)) {
           return {

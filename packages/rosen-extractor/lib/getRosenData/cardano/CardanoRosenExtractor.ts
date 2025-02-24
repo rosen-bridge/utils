@@ -3,7 +3,7 @@ import { RosenData, TokenTransformation } from '../abstract/types';
 import { CardanoBoxCandidate, CardanoTx } from './types';
 import { CARDANO_CHAIN, CARDANO_NATIVE_TOKEN } from '../const';
 import JsonBigInt from '@rosen-bridge/json-bigint';
-import { parseRosenData } from './utils';
+import { getCardanoTokenId, parseRosenData } from './utils';
 
 export class CardanoRosenExtractor extends AbstractRosenDataExtractor<string> {
   readonly chain = CARDANO_CHAIN;
@@ -75,8 +75,7 @@ export class CardanoRosenExtractor extends AbstractRosenDataExtractor<string> {
     if (box.assets.length > 0) {
       for (const asset of box.assets) {
         const token = this.tokens.search(CARDANO_CHAIN, {
-          assetName: asset.asset_name,
-          policyId: asset.policy_id,
+          tokenId: getCardanoTokenId(asset.policy_id, asset.asset_name),
         });
         if (token.length > 0 && Object.hasOwn(token[0], toChain))
           return {
