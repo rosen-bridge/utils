@@ -37,6 +37,10 @@ export class TokenMap {
    * @param serializedBoxes list of sigma serialized bytes of token map config boxes
    */
   updateConfigByBoxes = async (serializedBoxes: string[]) => {
+    if (typeof window !== 'undefined')
+      throw Error(
+        'The `updateConfigByBoxes` function cannot be used on browser (and similar platform where `window` variable is injected) due to usage of the `ergo-lib-wasm-nodejs` package'
+      );
     const wasm = await import('ergo-lib-wasm-nodejs');
     const tokens: RosenTokens = [];
     const ergoConfigs: ExtractedConfig[] = [];
