@@ -223,9 +223,11 @@ export class TokenMap {
         const resToken = token[chain];
         return Object.entries(condition).every(([key, val]) => {
           const typedKey = key as keyof RosenChainToken;
-          if (typedKey === 'extra' && typeof val === 'object')
-            return JSON.stringify(resToken.extra) === JSON.stringify(val);
-          else return resToken[typedKey] === val;
+          if (typedKey === 'extra' && typeof val === 'object') {
+            return Object.entries(condition.extra!).every(
+              ([key, val]) => resToken.extra[key] === val
+            );
+          } else return resToken[typedKey] === val;
         });
       } else {
         return false;
