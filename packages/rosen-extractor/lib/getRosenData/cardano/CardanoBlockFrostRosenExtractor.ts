@@ -4,7 +4,7 @@ import AbstractRosenDataExtractor from '../abstract/AbstractRosenDataExtractor';
 import { CARDANO_CHAIN, CARDANO_NATIVE_TOKEN } from '../const';
 import { BlockFrostOutputBox, BlockFrostTransaction } from './types';
 import JsonBigInt from '@rosen-bridge/json-bigint';
-import { parseRosenData } from './utils';
+import { getCardanoTokenId, parseRosenData } from './utils';
 
 export class CardanoBlockFrostRosenExtractor extends AbstractRosenDataExtractor<BlockFrostTransaction> {
   readonly chain = CARDANO_CHAIN;
@@ -85,8 +85,7 @@ export class CardanoBlockFrostRosenExtractor extends AbstractRosenDataExtractor<
       const policyId = asset.unit.slice(0, 56);
       const assetName = asset.unit.slice(56);
       const token = this.tokens.search(CARDANO_CHAIN, {
-        assetName: assetName,
-        policyId: policyId,
+        tokenId: getCardanoTokenId(policyId, assetName),
       });
       if (token.length > 0 && Object.hasOwn(token[0], toChain))
         return {

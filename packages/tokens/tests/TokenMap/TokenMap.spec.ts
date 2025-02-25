@@ -250,8 +250,32 @@ describe('TokenMap', () => {
       const tokenMap = new TokenMap();
       await tokenMap.updateConfigByJson(firstTokenMap);
       const res = tokenMap.search('cardano', {
-        policyId: 'policyId2',
-        assetName: 'assetName2',
+        extra: {
+          policyId: 'policyId2',
+          assetName: 'assetName2',
+        },
+      });
+      expect(res.length).toEqual(1);
+      expect(res[0]).toEqual(firstToken);
+    });
+
+    /**
+     * @target TokenMap.search should return asset with condition on single extra field
+     * @dependencies
+     * - RosenToken json
+     * @scenario
+     * - call search with specific policyId
+     * @expected
+     * - must return one token
+     * - returned token must equal to specified token
+     */
+    it('should return asset with condition on single extra field', async () => {
+      const tokenMap = new TokenMap();
+      await tokenMap.updateConfigByJson(firstTokenMap);
+      const res = tokenMap.search('cardano', {
+        extra: {
+          policyId: 'policyId2',
+        },
       });
       expect(res.length).toEqual(1);
       expect(res[0]).toEqual(firstToken);

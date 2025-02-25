@@ -1,4 +1,4 @@
-import { RosenTokens } from '../../lib';
+import { RosenChainToken, RosenTokens } from '../../lib';
 
 export const firstTokenMap: RosenTokens = [
   {
@@ -9,11 +9,14 @@ export const firstTokenMap: RosenTokens = [
       decimals: 0,
       type: 'tokenType',
       residency: 'native',
+      extra: {},
     },
     cardano: {
       tokenId: 'policyId2.assetName2',
-      policyId: 'policyId2',
-      assetName: 'assetName2',
+      extra: {
+        policyId: 'policyId2',
+        assetName: 'assetName2',
+      },
       name: 'asset1',
       decimals: 0,
       type: 'tokenType',
@@ -28,6 +31,7 @@ export const firstTokenMap: RosenTokens = [
       decimals: 0,
       type: 'tokenType',
       residency: 'native',
+      extra: {},
     },
     binance: {
       tokenId: 'this is a simple ip',
@@ -35,6 +39,7 @@ export const firstTokenMap: RosenTokens = [
       decimals: 0,
       type: 'BNBToken',
       residency: 'wrapped',
+      extra: {},
     },
   },
   {
@@ -44,11 +49,14 @@ export const firstTokenMap: RosenTokens = [
       decimals: 0,
       type: 'tokenType',
       residency: 'wrapped',
+      extra: {},
     },
     cardano: {
       tokenId: 'policyId3.assetName3',
-      policyId: 'policyId3',
-      assetName: 'assetName3',
+      extra: {
+        policyId: 'policyId3',
+        assetName: 'assetName3',
+      },
       name: 'asset3',
       decimals: 0,
       type: 'tokenType',
@@ -65,11 +73,14 @@ export const secondTokenMap: RosenTokens = [
       decimals: 0,
       type: 'tokenType',
       residency: 'native',
+      extra: {},
     },
     cardano: {
       tokenId: 'policyId3.assetName3',
-      policyId: 'policyId3',
-      assetName: 'assetName3',
+      extra: {
+        policyId: 'policyId3',
+        assetName: 'assetName3',
+      },
       name: 'asset3',
       decimals: 0,
       type: 'tokenType',
@@ -86,11 +97,14 @@ export const multiDecimalTokenMap: RosenTokens = [
       decimals: 3,
       type: 'tokenType',
       residency: 'native',
+      extra: {},
     },
     cardano: {
       tokenId: 'policyId3.assetName3',
-      policyId: 'policyId3',
-      assetName: 'assetName3',
+      extra: {
+        policyId: 'policyId3',
+        assetName: 'assetName3',
+      },
       name: 'asset3',
       decimals: 8,
       type: 'tokenType',
@@ -99,18 +113,21 @@ export const multiDecimalTokenMap: RosenTokens = [
   },
 ];
 
-export const firstToken = {
+export const firstToken: Record<string, RosenChainToken> = {
   ergo: {
     tokenId: '1111111111111111111111111111111111111111111111111111111111111111',
     name: 'test token1',
     decimals: 0,
     type: 'tokenType',
     residency: 'native',
+    extra: {},
   },
   cardano: {
     tokenId: 'policyId2.assetName2',
-    policyId: 'policyId2',
-    assetName: 'assetName2',
+    extra: {
+      policyId: 'policyId2',
+      assetName: 'assetName2',
+    },
     name: 'asset1',
     decimals: 0,
     type: 'tokenType',
@@ -118,18 +135,21 @@ export const firstToken = {
   },
 };
 
-export const secondToken = {
+export const secondToken: Record<string, RosenChainToken> = {
   ergo: {
     tokenId: 'tokenId',
     name: 'test token3',
     decimals: 0,
     type: 'tokenType',
     residency: 'wrapped',
+    extra: {},
   },
   cardano: {
     tokenId: 'policyId3.assetName3',
-    policyId: 'policyId3',
-    assetName: 'assetName3',
+    extra: {
+      policyId: 'policyId3',
+      assetName: 'assetName3',
+    },
     name: 'asset3',
     decimals: 0,
     type: 'tokenType',
@@ -215,7 +235,7 @@ export const configBoxes = {
     "index": 0
   }`,
 };
-export const thirdTokenMap = [
+export const thirdTokenMap: RosenTokens = [
   {
     ergo: {
       tokenId: 'erg',
@@ -223,12 +243,15 @@ export const thirdTokenMap = [
       decimals: 9,
       type: 'native',
       residency: 'native',
+      extra: {},
     },
     cardano: {
       tokenId:
         'c115cbba4189daaa0e1caf3c03f7d06f227e0ae0972f4c73c218fc31.7273455247',
-      policyId: 'c115cbba4189daaa0e1caf3c03f7d06f227e0ae0972f4c73c218fc31',
-      assetName: '7273455247',
+      extra: {
+        policyId: 'c115cbba4189daaa0e1caf3c03f7d06f227e0ae0972f4c73c218fc31',
+        assetName: '7273455247',
+      },
       name: 'rsERG',
       decimals: 9,
       type: 'CIP-26',
@@ -243,12 +266,15 @@ export const thirdTokenMap = [
       decimals: 3,
       type: 'EIP-004',
       residency: 'native',
+      extra: {},
     },
     cardano: {
       tokenId:
         'c115cbba4189daaa0e1caf3c03f7d06f227e0ae0972f4c73c218fc31.727352534e',
-      policyId: 'c115cbba4189daaa0e1caf3c03f7d06f227e0ae0972f4c73c218fc31',
-      assetName: '727352534e',
+      extra: {
+        policyId: 'c115cbba4189daaa0e1caf3c03f7d06f227e0ae0972f4c73c218fc31',
+        assetName: '727352534e',
+      },
       name: 'rsRSN',
       decimals: 3,
       type: 'CIP-26',
@@ -263,11 +289,14 @@ export const thirdTokenMap = [
       decimals: 6,
       type: 'EIP-004',
       residency: 'wrapped',
+      extra: {},
     },
     cardano: {
       tokenId: 'ada',
-      policyId: '',
-      assetName: '414441',
+      extra: {
+        policyId: '',
+        assetName: '414441',
+      },
       name: 'ADA',
       decimals: 6,
       type: 'native',
@@ -282,12 +311,15 @@ export const thirdTokenMap = [
       decimals: 8,
       type: 'EIP-004',
       residency: 'wrapped',
+      extra: {},
     },
     cardano: {
       tokenId:
         'cf0d56406d893926253f029d636572abfca5deae2c45161cededad9e.7273425443',
-      policyId: 'cf0d56406d893926253f029d636572abfca5deae2c45161cededad9e',
-      assetName: '7273425443',
+      extra: {
+        policyId: 'cf0d56406d893926253f029d636572abfca5deae2c45161cededad9e',
+        assetName: '7273425443',
+      },
       name: 'rsBTC',
       decimals: 8,
       type: 'CIP-26',
@@ -299,6 +331,7 @@ export const thirdTokenMap = [
       decimals: 8,
       type: 'native',
       residency: 'native',
+      extra: {},
     },
   },
   {
@@ -309,12 +342,15 @@ export const thirdTokenMap = [
       decimals: 3,
       type: 'EIP-004',
       residency: 'wrapped',
+      extra: {},
     },
     cardano: {
       tokenId:
         'f8957abe4f4d9f3b65ae8f1cf1b0bc5898c0d90c5bda5b3e640fe1b2.416f53',
-      policyId: 'f8957abe4f4d9f3b65ae8f1cf1b0bc5898c0d90c5bda5b3e640fe1b2',
-      assetName: '416f53',
+      extra: {
+        policyId: 'f8957abe4f4d9f3b65ae8f1cf1b0bc5898c0d90c5bda5b3e640fe1b2',
+        assetName: '416f53',
+      },
       name: 'AoS',
       decimals: 6,
       type: 'CIP-26',

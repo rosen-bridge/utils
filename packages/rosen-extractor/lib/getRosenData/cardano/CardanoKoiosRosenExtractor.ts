@@ -4,7 +4,7 @@ import AbstractRosenDataExtractor from '../abstract/AbstractRosenDataExtractor';
 import { CARDANO_CHAIN, CARDANO_NATIVE_TOKEN } from '../const';
 import { KoiosCborTransaction } from './types';
 import JsonBigInt from '@rosen-bridge/json-bigint';
-import { parseRosenData } from './utils';
+import { getCardanoTokenId, parseRosenData } from './utils';
 import {
   TransactionOutputJSON,
   decode_metadatum_to_json_str,
@@ -97,8 +97,7 @@ export class CardanoKoiosRosenExtractor extends AbstractRosenDataExtractor<Koios
       for (const policyId of Object.keys(assets)) {
         for (const assetName of Object.keys(assets[policyId])) {
           const token = this.tokens.search(CARDANO_CHAIN, {
-            policyId: policyId,
-            assetName: assetName,
+            tokenId: getCardanoTokenId(policyId, assetName),
           });
           if (token.length > 0 && Object.hasOwn(token[0], toChain)) {
             return {
