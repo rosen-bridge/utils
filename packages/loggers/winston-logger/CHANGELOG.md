@@ -1,5 +1,11 @@
 # @rosen-bridge/winston-logger
 
+## 1.0.3
+
+### Patch Changes
+
+- Update winston package version
+
 ## 1.0.2
 
 ### Patch Changes
