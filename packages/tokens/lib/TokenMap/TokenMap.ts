@@ -1,4 +1,3 @@
-import { ErgoBox } from 'ergo-lib-wasm-nodejs';
 import { Semaphore } from 'await-semaphore';
 import {
   ERGO_CHAIN,
@@ -38,12 +37,17 @@ export class TokenMap {
    * @param serializedBoxes list of sigma serialized bytes of token map config boxes
    */
   updateConfigByBoxes = async (serializedBoxes: string[]) => {
+    if (typeof window !== 'undefined')
+      throw Error(
+        'The `updateConfigByBoxes` function cannot be used on browser (and similar platform where `window` variable is injected) due to usage of the `ergo-lib-wasm-nodejs` package'
+      );
+    const wasm = await import('ergo-lib-wasm-nodejs');
     const tokens: RosenTokens = [];
     const ergoConfigs: ExtractedConfig[] = [];
     const nonErgoConfigs: ExtractedConfig[] = [];
 
     serializedBoxes.forEach((serializedBox) => {
-      const box = ErgoBox.sigma_parse_bytes(
+      const box = wasm.ErgoBox.sigma_parse_bytes(
         Uint8Array.from(Buffer.from(serializedBox, 'hex'))
       );
       const boxId = box.box_id().to_str();
