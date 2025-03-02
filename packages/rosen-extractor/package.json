@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/rosen-extractor",
-  "version": "7.2.0",
+  "version": "7.2.1",
   "description": "this project contains methods to get rosen data from blockchain",
   "main": "dist/lib/index.js",
   "types": "dist/lib/index.d.ts",
@@ -29,7 +29,7 @@
     "@rosen-bridge/abstract-logger": "^2.0.1",
     "@rosen-bridge/address-codec": "^0.5.1",
     "@rosen-bridge/json-bigint": "^0.1.0",
-    "@rosen-bridge/tokens": "^2.0.0",
+    "@rosen-bridge/tokens": "^3.0.0",
     "bitcoinjs-lib": "^6.1.5",
     "ergo-lib-wasm-nodejs": "^0.24.1",
     "ethers": "^6.11.1",

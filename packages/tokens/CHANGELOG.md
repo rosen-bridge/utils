@@ -1,5 +1,19 @@
 # @rosen-bridge/tokens
 
+## 3.0.0
+
+### Major Changes
+
+- Revamp TokenMap structure
+
+  - The extra fields per chain are now under `extra` field and only value of 'string', 'number' or 'boolean' is supported
+  - The `search` function is improved and only accepts a partial object of `RosenChainToken` instead of any object
+
+### Patch Changes
+
+- Fix dependency type of the `await-semaphore` package (it is now strict instead of dev dependency)
+- Change the `ergo-lib-wasm-nodejs` from static to dynamic import
+
 ## 2.0.0
 
 ### Major Changes
