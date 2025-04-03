@@ -93,3 +93,44 @@ export interface DogeRpcTransaction {
   vin: Array<DogeRpcTxInput>;
   vout: Array<DogeRpcTxOutput>;
 }
+
+export interface DogeBlockcypherTxInput {
+  prev_hash: string;
+  output_index: number;
+  script: string;
+  output_value: number;
+  sequence: number;
+  addresses: string[];
+  script_type: string;
+}
+
+export interface DogeBlockcypherTxOutput {
+  value: number;
+  script: string;
+  addresses: string[];
+  script_type: string;
+  spent_by?: string;
+}
+
+export interface DogeBlockcypherTransaction {
+  hash: string;
+  ver: number;
+  vin_sz: number;
+  vout_sz: number;
+  size: number;
+  weight: number;
+  fee: number;
+  relayed_by: string;
+  lock_time: number;
+  txid: string;
+  confidence: number;
+  confirmed: string;
+  received: string;
+  double_spend: boolean;
+  inputs: DogeBlockcypherTxInput[];
+  outputs: DogeBlockcypherTxOutput[];
+  block_height?: number;
+  block_hash?: string;
+  confirmations: number;
+  hex?: string;
+}
