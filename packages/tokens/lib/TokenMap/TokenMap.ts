@@ -62,22 +62,6 @@ export class TokenMap {
   };
 
   /**
-   * triggers all registered callbacks
-   */
-  protected triggerCallbacks = (): void => {
-    for (const [callbackId, callback] of this.callbacks) {
-      try {
-        callback();
-      } catch (e) {
-        this.logger.error(
-          `An error occurred while handling callback [${callbackId}]: ${e}`
-        );
-        if (e instanceof Error && e.stack) this.logger.error(e.stack);
-      }
-    }
-  };
-
-  /**
    * returns tokens config
    */
   getConfig = () => {
@@ -220,7 +204,7 @@ export class TokenMap {
   updateConfigByJson = async (tokens: RosenTokens) => {
     await this.updateSemaphore.acquire().then(async (release) => {
       this.tokensConfig = tokens;
-      this.triggerCallbacks();
+      for (const callback of this.callbacks.values()) callback();
       release();
     });
   };
