@@ -1,4 +1,5 @@
 import { Semaphore } from 'await-semaphore';
+import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
 import {
   ERGO_CHAIN,
   ERGO_SIDE_TOKEN_ID_KEY,
@@ -6,6 +7,7 @@ import {
   REQUIRED_FIELDS,
 } from './constants';
 import {
+  CallbackFunction,
   CorruptedConfigError,
   ExtractedConfig,
   RosenAmount,
@@ -19,11 +21,60 @@ import {
 export class TokenMap {
   protected tokensConfig: RosenTokens;
   protected updateSemaphore: Semaphore;
+  protected callbacks: Map<string, CallbackFunction>;
+  protected logger: AbstractLogger;
 
-  constructor() {
+  constructor(logger?: AbstractLogger) {
     this.tokensConfig = [];
     this.updateSemaphore = new Semaphore(1);
+    this.callbacks = new Map<string, CallbackFunction>();
+    this.logger = logger ?? new DummyLogger();
   }
+
+  /**
+   * registers a callback function
+   * @param id unique identifier for the callback
+   * @param callback function to be called
+   */
+  registerCallback = (id: string, callback: CallbackFunction): void => {
+    const currentCallback = this.callbacks.get(id);
+    this.callbacks.set(id, callback);
+    if (currentCallback) {
+      this.logger.debug(`The callback function with id [${id}] is replaced`);
+    } else {
+      this.logger.info(`New callback function is registered with id [${id}]`);
+    }
+  };
+
+  /**
+   * removes a callback function
+   * @param id unique identifier for the callback
+   */
+  unregisterCallback = (id: string): void => {
+    if (!this.callbacks.has(id)) {
+      this.logger.debug(`No callback function is set with id [${id}]`);
+      return;
+    }
+
+    this.callbacks.delete(id);
+    this.logger.info(`Removed callback function with id [${id}]`);
+  };
+
+  /**
+   * triggers all registered callbacks
+   */
+  protected triggerCallbacks = (): void => {
+    for (const [callbackId, callback] of this.callbacks) {
+      try {
+        callback();
+      } catch (e) {
+        this.logger.error(
+          `An error occurred while handling callback [${callbackId}]: ${e}`
+        );
+        if (e instanceof Error && e.stack) this.logger.error(e.stack);
+      }
+    }
+  };
 
   /**
    * returns tokens config
@@ -168,6 +219,7 @@ export class TokenMap {
   updateConfigByJson = async (tokens: RosenTokens) => {
     await this.updateSemaphore.acquire().then(async (release) => {
       this.tokensConfig = tokens;
+      this.triggerCallbacks();
       release();
     });
   };

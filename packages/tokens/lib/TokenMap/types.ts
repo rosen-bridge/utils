@@ -8,6 +8,7 @@ export interface RosenChainToken {
   residency: string;
   extra: Record<string, string | number | boolean>;
 }
+
 export interface RosenAmount {
   amount: bigint;
   decimals: number;
@@ -19,6 +20,8 @@ export interface ExtractedConfig {
   headers: string[];
   values: string[][];
 }
+
+export type CallbackFunction = () => void;
 
 export class CorruptedConfigError extends Error {
   constructor(boxId: string, msg: string) {
