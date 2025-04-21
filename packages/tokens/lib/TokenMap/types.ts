@@ -21,7 +21,7 @@ export interface ExtractedConfig {
   values: string[][];
 }
 
-export type CallbackFunction = () => void;
+export type CallbackFunction = () => unknown;
 
 export class CorruptedConfigError extends Error {
   constructor(boxId: string, msg: string) {
