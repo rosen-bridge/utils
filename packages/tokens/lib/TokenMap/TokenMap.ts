@@ -37,13 +37,11 @@ export class TokenMap {
    * @param callback function to be called
    */
   registerCallback = (id: string, callback: CallbackFunction): void => {
-    const currentCallback = this.callbacks.get(id);
-    this.callbacks.set(id, callback);
-    if (currentCallback) {
-      this.logger.debug(`The callback function with id [${id}] is replaced`);
-    } else {
-      this.logger.info(`New callback function is registered with id [${id}]`);
+    if (this.callbacks.has(id)) {
+      throw new Error(`Callback with id [${id}] already exists`);
     }
+    this.callbacks.set(id, callback);
+    this.logger.info(`New callback function is registered with id [${id}]`);
   };
 
   /**

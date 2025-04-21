@@ -759,17 +759,16 @@ describe('TokenMap', () => {
     });
 
     /**
-     * @target TokenMap.registerCallback should replace existing callback
+     * @target TokenMap.registerCallback should throw error when callback with same id exists
      * @dependencies
      * @scenario
      * - create a TokenMap instance
      * - register a callback
-     * - register another callback with same id
-     * - verify only second callback is called
+     * - try to register another callback with same id
      * @expected
-     * - second callback should be called, first one should not
+     * - should throw error
      */
-    it('should replace existing callback', async () => {
+    it('should throw error when callback with same id exists', () => {
       const tokenMap = new TokenMap();
       const firstMockedCallback = vi.fn();
       firstMockedCallback.mockResolvedValue(undefined);
@@ -777,12 +776,9 @@ describe('TokenMap', () => {
       secondMockedCallback.mockResolvedValue(undefined);
 
       tokenMap.registerCallback('test-id', firstMockedCallback);
-      tokenMap.registerCallback('test-id', secondMockedCallback);
-
-      await tokenMap.updateConfigByJson(firstTokenMap);
-
-      expect(firstMockedCallback).not.toHaveBeenCalled();
-      expect(secondMockedCallback).toHaveBeenCalled();
+      expect(() =>
+        tokenMap.registerCallback('test-id', secondMockedCallback)
+      ).toThrow('Callback with id [test-id] already exists');
     });
   });
 
