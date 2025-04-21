@@ -32,9 +32,7 @@ export const encodeAddress = (chain: string, address: string): string => {
       ).toString('hex');
       break;
     case BITCOIN_CHAIN:
-      encoded = Buffer.from(
-        bitcoinLib.address.toOutputScript(address)
-      ).toString('hex');
+      encoded = bitcoinLib.address.toOutputScript(address).toString('hex');
       break;
     case BINANCE_CHAIN:
     case ETHEREUM_CHAIN:

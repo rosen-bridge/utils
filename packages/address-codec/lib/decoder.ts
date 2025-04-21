@@ -27,11 +27,11 @@ export const decodeAddress = (
   switch (chain) {
     case ERGO_CHAIN:
       return ergoLib.Address.from_public_key(
-        Buffer.from(encodedAddress, 'hex')
+        Uint8Array.from(Buffer.from(encodedAddress, 'hex'))
       ).to_base58(ergoLib.NetworkPrefix.Mainnet);
     case CARDANO_CHAIN:
       return cardanoLib.Address.from_bytes(
-        Buffer.from(encodedAddress, 'hex')
+        Uint8Array.from(Buffer.from(encodedAddress, 'hex'))
       ).to_bech32();
     case BITCOIN_CHAIN:
       return bitcoinLib.address.fromOutputScript(

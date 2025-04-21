@@ -23,13 +23,19 @@ describe('TokenMap', () => {
      * @dependencies
      * @scenario
      * - mock config boxes
+     * - register a callback
      * - run test
-     * - check returned value
+     * - check returned value and callback
      * @expected
      * - it should return expected config
+     * - mocked callback should got called
      */
     it('should successfully extract config from given boxes', async () => {
       const tokenMap = new TokenMap();
+      const mockedCallback = vi.fn();
+      mockedCallback.mockResolvedValue(undefined);
+      tokenMap.registerCallback(mockedCallback);
+
       const serializedBoxes = Object.values(configBoxes).map((boxJson) =>
         Buffer.from(
           ErgoBox.from_json(boxJson).sigma_serialize_bytes()
@@ -39,6 +45,7 @@ describe('TokenMap', () => {
       await tokenMap.updateConfigByBoxes(serializedBoxes);
       const res = tokenMap.getConfig();
       expect(res).toEqual(thirdTokenMap);
+      expect(mockedCallback).toHaveBeenCalled();
     });
 
     /**
@@ -47,12 +54,18 @@ describe('TokenMap', () => {
      * @dependencies
      * @scenario
      * - mock config boxes
+     * - register a callback
      * - run test & check thrown exception
      * @expected
      * - CorruptedConfigError should be thrown
+     * - mocked callback should not got called
      */
     it('should throw CorruptedConfigError when one of the required fields is missing in the headers', async () => {
       const tokenMap = new TokenMap();
+      const mockedCallback = vi.fn();
+      mockedCallback.mockResolvedValue(undefined);
+      tokenMap.registerCallback(mockedCallback);
+
       const serializedBox = Buffer.from(
         ErgoBox.from_json(missingHeaderFieldConfigBox).sigma_serialize_bytes()
       ).toString('hex');
@@ -60,6 +73,7 @@ describe('TokenMap', () => {
       await expect(async () => {
         await tokenMap.updateConfigByBoxes([serializedBox]);
       }).rejects.toThrow(CorruptedConfigError);
+      expect(mockedCallback).not.toHaveBeenCalled();
     });
 
     /**
@@ -68,12 +82,18 @@ describe('TokenMap', () => {
      * @dependencies
      * @scenario
      * - mock config boxes
+     * - register a callback
      * - run test & check thrown exception
      * @expected
      * - CorruptedConfigError should be thrown
+     * - mocked callback should not got called
      */
     it('should throw CorruptedConfigError when `ergoSideTokenId` is in wrong index in the headers', async () => {
       const tokenMap = new TokenMap();
+      const mockedCallback = vi.fn();
+      mockedCallback.mockResolvedValue(undefined);
+      tokenMap.registerCallback(mockedCallback);
+
       const serializedBox = Buffer.from(
         ErgoBox.from_json(wrongFieldIndexConfigBox).sigma_serialize_bytes()
       ).toString('hex');
@@ -81,6 +101,7 @@ describe('TokenMap', () => {
       await expect(async () => {
         await tokenMap.updateConfigByBoxes([serializedBox]);
       }).rejects.toThrow(CorruptedConfigError);
+      expect(mockedCallback).not.toHaveBeenCalled();
     });
 
     /**
@@ -89,12 +110,18 @@ describe('TokenMap', () => {
      * @dependencies
      * @scenario
      * - mock config boxes
+     * - register a callback
      * - run test & check thrown exception
      * @expected
      * - CorruptedConfigError should be thrown
+     * - mocked callback should not got called
      */
     it('should throw CorruptedConfigError when headers and data length are inconsistent in Ergo config', async () => {
       const tokenMap = new TokenMap();
+      const mockedCallback = vi.fn();
+      mockedCallback.mockResolvedValue(undefined);
+      tokenMap.registerCallback(mockedCallback);
+
       const serializedBox = Buffer.from(
         ErgoBox.from_json(inconsistentDataErgoConfigBox).sigma_serialize_bytes()
       ).toString('hex');
@@ -102,6 +129,7 @@ describe('TokenMap', () => {
       await expect(async () => {
         await tokenMap.updateConfigByBoxes([serializedBox]);
       }).rejects.toThrow(CorruptedConfigError);
+      expect(mockedCallback).not.toHaveBeenCalled();
     });
 
     /**
@@ -110,12 +138,18 @@ describe('TokenMap', () => {
      * @dependencies
      * @scenario
      * - mock config boxes
+     * - register a callback
      * - run test & check thrown exception
      * @expected
      * - CorruptedConfigError should be thrown
+     * - mocked callback should not got called
      */
     it('should throw CorruptedConfigError when duplicate ergo token is found in multiple boxes', async () => {
       const tokenMap = new TokenMap();
+      const mockedCallback = vi.fn();
+      mockedCallback.mockResolvedValue(undefined);
+      tokenMap.registerCallback(mockedCallback);
+
       const serializedBoxes = [
         sampleErgoConfigBoxForDuplication,
         configBoxes.ergo0,
@@ -128,6 +162,7 @@ describe('TokenMap', () => {
       await expect(async () => {
         await tokenMap.updateConfigByBoxes(serializedBoxes);
       }).rejects.toThrow(CorruptedConfigError);
+      expect(mockedCallback).not.toHaveBeenCalled();
     });
 
     /**
@@ -136,12 +171,18 @@ describe('TokenMap', () => {
      * @dependencies
      * @scenario
      * - mock config boxes
+     * - register a callback
      * - run test & check thrown exception
      * @expected
      * - CorruptedConfigError should be thrown
+     * - mocked callback should not got called
      */
     it('should throw CorruptedConfigError when duplicate ergo token is found in single box', async () => {
       const tokenMap = new TokenMap();
+      const mockedCallback = vi.fn();
+      mockedCallback.mockResolvedValue(undefined);
+      tokenMap.registerCallback(mockedCallback);
+
       const serializedBoxes = [duplicateTokenConfigBox].map((boxJson) =>
         Buffer.from(
           ErgoBox.from_json(boxJson).sigma_serialize_bytes()
@@ -151,6 +192,7 @@ describe('TokenMap', () => {
       await expect(async () => {
         await tokenMap.updateConfigByBoxes(serializedBoxes);
       }).rejects.toThrow(CorruptedConfigError);
+      expect(mockedCallback).not.toHaveBeenCalled();
     });
 
     /**
@@ -159,12 +201,18 @@ describe('TokenMap', () => {
      * @dependencies
      * @scenario
      * - mock config boxes
+     * - register a callback
      * - run test & check thrown exception
      * @expected
      * - CorruptedConfigError should be thrown
+     * - mocked callback should not got called
      */
     it('should throw CorruptedConfigError when headers and data length are inconsistent in non-Ergo config', async () => {
       const tokenMap = new TokenMap();
+      const mockedCallback = vi.fn();
+      mockedCallback.mockResolvedValue(undefined);
+      tokenMap.registerCallback(mockedCallback);
+
       const serializedBoxes = [
         inconsistentDataCardanoConfigBox,
         configBoxes.ergo0,
@@ -177,6 +225,7 @@ describe('TokenMap', () => {
       await expect(async () => {
         await tokenMap.updateConfigByBoxes(serializedBoxes);
       }).rejects.toThrow(CorruptedConfigError);
+      expect(mockedCallback).not.toHaveBeenCalled();
     });
 
     /**
@@ -185,12 +234,18 @@ describe('TokenMap', () => {
      * @dependencies
      * @scenario
      * - mock config boxes
+     * - register a callback
      * - run test & check thrown exception
      * @expected
      * - CorruptedConfigError should be thrown
+     * - mocked callback should not got called
      */
     it('should throw CorruptedConfigError when ergo side token is not found', async () => {
       const tokenMap = new TokenMap();
+      const mockedCallback = vi.fn();
+      mockedCallback.mockResolvedValue(undefined);
+      tokenMap.registerCallback(mockedCallback);
+
       const serializedBoxes = [
         configBoxes.ergo0,
         configBoxes.cardano,
@@ -204,6 +259,7 @@ describe('TokenMap', () => {
       await expect(async () => {
         await tokenMap.updateConfigByBoxes(serializedBoxes);
       }).rejects.toThrow(CorruptedConfigError);
+      expect(mockedCallback).not.toHaveBeenCalled();
     });
 
     /**
@@ -212,12 +268,18 @@ describe('TokenMap', () => {
      * @dependencies
      * @scenario
      * - mock config boxes
+     * - register a callback
      * - run test & check thrown exception
      * @expected
      * - CorruptedConfigError should be thrown
+     * - mocked callback should not got called
      */
     it('should throw CorruptedConfigError when duplicate token for single ergo token is found', async () => {
       const tokenMap = new TokenMap();
+      const mockedCallback = vi.fn();
+      mockedCallback.mockResolvedValue(undefined);
+      tokenMap.registerCallback(mockedCallback);
+
       const serializedBoxes = [
         configBoxes.ergo0,
         configBoxes.cardano,
@@ -232,6 +294,7 @@ describe('TokenMap', () => {
       await expect(async () => {
         await tokenMap.updateConfigByBoxes(serializedBoxes);
       }).rejects.toThrow(CorruptedConfigError);
+      expect(mockedCallback).not.toHaveBeenCalled();
     });
   });
 
@@ -671,6 +734,117 @@ describe('TokenMap', () => {
       await tokenMap.updateConfigByJson(multiDecimalTokenMap);
       const result = tokenMap.getSignificantDecimals('not.supported');
       expect(result).toBeUndefined();
+    });
+  });
+
+  describe('registerCallback', () => {
+    /**
+     * @target TokenMap.registerCallback should register a new callback successfully
+     * @dependencies
+     * @scenario
+     * - create a TokenMap instance
+     * - register a callback
+     * - verify callback is called on config update
+     * @expected
+     * - callback should be called when config is updated
+     */
+    it('should register a new callback successfully', async () => {
+      const tokenMap = new TokenMap();
+      const mockedCallback = vi.fn();
+      mockedCallback.mockResolvedValue(undefined);
+      const callbackId = tokenMap.registerCallback(mockedCallback);
+      await tokenMap.updateConfigByJson(firstTokenMap);
+
+      expect(mockedCallback).toHaveBeenCalled();
+    });
+
+    /**
+     * @target TokenMap.registerCallback should return incremental IDs
+     * @dependencies
+     * @scenario
+     * - create a TokenMap instance
+     * - register multiple callbacks
+     * - check callback ids
+     * @expected
+     * - each callback should get a unique incremental ID
+     */
+    it('should return incremental IDs', () => {
+      const tokenMap = new TokenMap();
+      const firstCallback = vi.fn();
+      const secondCallback = vi.fn();
+      const thirdCallback = vi.fn();
+
+      const firstId = tokenMap.registerCallback(firstCallback);
+      const secondId = tokenMap.registerCallback(secondCallback);
+      const thirdId = tokenMap.registerCallback(thirdCallback);
+
+      expect(firstId).toBe(0);
+      expect(secondId).toBe(1);
+      expect(thirdId).toBe(2);
+    });
+  });
+
+  describe('unregisterCallback', () => {
+    /**
+     * @target TokenMap.unregisterCallback should remove callback successfully
+     * @dependencies
+     * @scenario
+     * - create a TokenMap instance
+     * - register a callback
+     * - unregister the callback
+     * - verify callback is not called
+     * @expected
+     * - callback should not be called after unregistering
+     */
+    it('should remove callback successfully', async () => {
+      const tokenMap = new TokenMap();
+      const mockedCallback = vi.fn();
+      mockedCallback.mockResolvedValue(undefined);
+
+      const callbackId = tokenMap.registerCallback(mockedCallback);
+      tokenMap.unregisterCallback(callbackId);
+      await tokenMap.updateConfigByJson(firstTokenMap);
+
+      expect(mockedCallback).not.toHaveBeenCalled();
+    });
+
+    /**
+     * @target TokenMap.unregisterCallback should handle non-existent callback
+     * @dependencies
+     * @scenario
+     * - create a TokenMap instance
+     * - try to unregister non-existent callback
+     * @expected
+     * - should not throw error
+     */
+    it('should handle non-existent callback', () => {
+      const tokenMap = new TokenMap();
+      expect(() => tokenMap.unregisterCallback(999)).not.toThrow();
+    });
+  });
+
+  describe('updateConfigByJson', () => {
+    /**
+     * @target TokenMap.updateConfigByJson should update config and trigger callbacks
+     * @dependencies
+     * @scenario
+     * - create a TokenMap instance
+     * - register a callback
+     * - update config
+     * @expected
+     * - config should be updated
+     * - callback should be triggered
+     */
+    it('should update config and trigger callbacks', async () => {
+      const tokenMap = new TokenMap();
+      const mockedCallback = vi.fn();
+      mockedCallback.mockResolvedValue(undefined);
+      tokenMap.registerCallback(mockedCallback);
+
+      await tokenMap.updateConfigByJson(firstTokenMap);
+
+      expect(tokenMap.getConfig()).toEqual(firstTokenMap);
+      expect(mockedCallback).toHaveBeenCalled();
     });
   });
 });

@@ -1,4 +1,5 @@
 import { Semaphore } from 'await-semaphore';
+import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
 import {
   ERGO_CHAIN,
   ERGO_SIDE_TOKEN_ID_KEY,
@@ -6,6 +7,7 @@ import {
   REQUIRED_FIELDS,
 } from './constants';
 import {
+  CallbackFunction,
   CorruptedConfigError,
   ExtractedConfig,
   RosenAmount,
@@ -19,11 +21,45 @@ import {
 export class TokenMap {
   protected tokensConfig: RosenTokens;
   protected updateSemaphore: Semaphore;
+  protected callbacks: Map<number, CallbackFunction>;
+  protected logger: AbstractLogger;
+  protected nextCallbackId: number;
 
-  constructor() {
+  constructor(logger?: AbstractLogger) {
     this.tokensConfig = [];
     this.updateSemaphore = new Semaphore(1);
+    this.callbacks = new Map<number, CallbackFunction>();
+    this.logger = logger ?? new DummyLogger();
+    this.nextCallbackId = 0;
   }
+
+  /**
+   * registers a callback function
+   * @param callback function to be called
+   * @returns the ID of the registered callback
+   */
+  registerCallback = (callback: CallbackFunction): number => {
+    const callbackId = this.nextCallbackId++;
+    this.callbacks.set(callbackId, callback);
+    this.logger.info(
+      `New callback function is registered with id [${callbackId}]`
+    );
+    return callbackId;
+  };
+
+  /**
+   * removes a callback function
+   * @param id unique identifier for the callback
+   */
+  unregisterCallback = (id: number): void => {
+    if (!this.callbacks.has(id)) {
+      this.logger.debug(`No callback function is set with id [${id}]`);
+      return;
+    }
+
+    this.callbacks.delete(id);
+    this.logger.info(`Removed callback function with id [${id}]`);
+  };
 
   /**
    * returns tokens config
@@ -168,6 +204,7 @@ export class TokenMap {
   updateConfigByJson = async (tokens: RosenTokens) => {
     await this.updateSemaphore.acquire().then(async (release) => {
       this.tokensConfig = tokens;
+      for (const callback of this.callbacks.values()) callback();
       release();
     });
   };

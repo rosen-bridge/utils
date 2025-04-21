@@ -5,5 +5,6 @@
     "rootDir": "./"
   },
   "exclude": ["lib/**/*.spec.ts", "lib/**/*.test.ts", "lib/**/*.mock.ts"],
-  "include": ["lib/**/*", "vitest.config.ts"]
+  "include": ["lib/**/*", "vitest.config.ts"],
+  "references": [{ "path": "../loggers/abstract-logger" }]
 }
