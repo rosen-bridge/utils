@@ -21,34 +21,37 @@ import {
 export class TokenMap {
   protected tokensConfig: RosenTokens;
   protected updateSemaphore: Semaphore;
-  protected callbacks: Map<string, CallbackFunction>;
+  protected callbacks: Map<number, CallbackFunction>;
   protected logger: AbstractLogger;
+  protected nextCallbackId: number;
 
   constructor(logger?: AbstractLogger) {
     this.tokensConfig = [];
     this.updateSemaphore = new Semaphore(1);
-    this.callbacks = new Map<string, CallbackFunction>();
+    this.callbacks = new Map<number, CallbackFunction>();
     this.logger = logger ?? new DummyLogger();
+    this.nextCallbackId = 0;
   }
 
   /**
    * registers a callback function
-   * @param id unique identifier for the callback
    * @param callback function to be called
+   * @returns the ID of the registered callback
    */
-  registerCallback = (id: string, callback: CallbackFunction): void => {
-    if (this.callbacks.has(id)) {
-      throw new Error(`Callback with id [${id}] already exists`);
-    }
-    this.callbacks.set(id, callback);
-    this.logger.info(`New callback function is registered with id [${id}]`);
+  registerCallback = (callback: CallbackFunction): number => {
+    const callbackId = this.nextCallbackId++;
+    this.callbacks.set(callbackId, callback);
+    this.logger.info(
+      `New callback function is registered with id [${callbackId}]`
+    );
+    return callbackId;
   };
 
   /**
    * removes a callback function
    * @param id unique identifier for the callback
    */
-  unregisterCallback = (id: string): void => {
+  unregisterCallback = (id: number): void => {
     if (!this.callbacks.has(id)) {
       this.logger.debug(`No callback function is set with id [${id}]`);
       return;

@@ -34,7 +34,7 @@ describe('TokenMap', () => {
       const tokenMap = new TokenMap();
       const mockedCallback = vi.fn();
       mockedCallback.mockResolvedValue(undefined);
-      tokenMap.registerCallback('test-id', mockedCallback);
+      tokenMap.registerCallback(mockedCallback);
 
       const serializedBoxes = Object.values(configBoxes).map((boxJson) =>
         Buffer.from(
@@ -64,7 +64,7 @@ describe('TokenMap', () => {
       const tokenMap = new TokenMap();
       const mockedCallback = vi.fn();
       mockedCallback.mockResolvedValue(undefined);
-      tokenMap.registerCallback('test-id', mockedCallback);
+      tokenMap.registerCallback(mockedCallback);
 
       const serializedBox = Buffer.from(
         ErgoBox.from_json(missingHeaderFieldConfigBox).sigma_serialize_bytes()
@@ -92,7 +92,7 @@ describe('TokenMap', () => {
       const tokenMap = new TokenMap();
       const mockedCallback = vi.fn();
       mockedCallback.mockResolvedValue(undefined);
-      tokenMap.registerCallback('test-id', mockedCallback);
+      tokenMap.registerCallback(mockedCallback);
 
       const serializedBox = Buffer.from(
         ErgoBox.from_json(wrongFieldIndexConfigBox).sigma_serialize_bytes()
@@ -120,7 +120,7 @@ describe('TokenMap', () => {
       const tokenMap = new TokenMap();
       const mockedCallback = vi.fn();
       mockedCallback.mockResolvedValue(undefined);
-      tokenMap.registerCallback('test-id', mockedCallback);
+      tokenMap.registerCallback(mockedCallback);
 
       const serializedBox = Buffer.from(
         ErgoBox.from_json(inconsistentDataErgoConfigBox).sigma_serialize_bytes()
@@ -148,7 +148,7 @@ describe('TokenMap', () => {
       const tokenMap = new TokenMap();
       const mockedCallback = vi.fn();
       mockedCallback.mockResolvedValue(undefined);
-      tokenMap.registerCallback('test-id', mockedCallback);
+      tokenMap.registerCallback(mockedCallback);
 
       const serializedBoxes = [
         sampleErgoConfigBoxForDuplication,
@@ -181,7 +181,7 @@ describe('TokenMap', () => {
       const tokenMap = new TokenMap();
       const mockedCallback = vi.fn();
       mockedCallback.mockResolvedValue(undefined);
-      tokenMap.registerCallback('test-id', mockedCallback);
+      tokenMap.registerCallback(mockedCallback);
 
       const serializedBoxes = [duplicateTokenConfigBox].map((boxJson) =>
         Buffer.from(
@@ -211,7 +211,7 @@ describe('TokenMap', () => {
       const tokenMap = new TokenMap();
       const mockedCallback = vi.fn();
       mockedCallback.mockResolvedValue(undefined);
-      tokenMap.registerCallback('test-id', mockedCallback);
+      tokenMap.registerCallback(mockedCallback);
 
       const serializedBoxes = [
         inconsistentDataCardanoConfigBox,
@@ -244,7 +244,7 @@ describe('TokenMap', () => {
       const tokenMap = new TokenMap();
       const mockedCallback = vi.fn();
       mockedCallback.mockResolvedValue(undefined);
-      tokenMap.registerCallback('test-id', mockedCallback);
+      tokenMap.registerCallback(mockedCallback);
 
       const serializedBoxes = [
         configBoxes.ergo0,
@@ -278,7 +278,7 @@ describe('TokenMap', () => {
       const tokenMap = new TokenMap();
       const mockedCallback = vi.fn();
       mockedCallback.mockResolvedValue(undefined);
-      tokenMap.registerCallback('test-id', mockedCallback);
+      tokenMap.registerCallback(mockedCallback);
 
       const serializedBoxes = [
         configBoxes.ergo0,
@@ -752,33 +752,35 @@ describe('TokenMap', () => {
       const tokenMap = new TokenMap();
       const mockedCallback = vi.fn();
       mockedCallback.mockResolvedValue(undefined);
-      tokenMap.registerCallback('test-id', mockedCallback);
+      const callbackId = tokenMap.registerCallback(mockedCallback);
       await tokenMap.updateConfigByJson(firstTokenMap);
 
       expect(mockedCallback).toHaveBeenCalled();
     });
 
     /**
-     * @target TokenMap.registerCallback should throw error when callback with same id exists
+     * @target TokenMap.registerCallback should return incremental IDs
      * @dependencies
      * @scenario
      * - create a TokenMap instance
-     * - register a callback
-     * - try to register another callback with same id
+     * - register multiple callbacks
+     * - check callback ids
      * @expected
-     * - should throw error
+     * - each callback should get a unique incremental ID
      */
-    it('should throw error when callback with same id exists', () => {
+    it('should return incremental IDs', () => {
       const tokenMap = new TokenMap();
-      const firstMockedCallback = vi.fn();
-      firstMockedCallback.mockResolvedValue(undefined);
-      const secondMockedCallback = vi.fn();
-      secondMockedCallback.mockResolvedValue(undefined);
+      const firstCallback = vi.fn();
+      const secondCallback = vi.fn();
+      const thirdCallback = vi.fn();
 
-      tokenMap.registerCallback('test-id', firstMockedCallback);
-      expect(() =>
-        tokenMap.registerCallback('test-id', secondMockedCallback)
-      ).toThrow('Callback with id [test-id] already exists');
+      const firstId = tokenMap.registerCallback(firstCallback);
+      const secondId = tokenMap.registerCallback(secondCallback);
+      const thirdId = tokenMap.registerCallback(thirdCallback);
+
+      expect(firstId).toBe(0);
+      expect(secondId).toBe(1);
+      expect(thirdId).toBe(2);
     });
   });
 
@@ -799,8 +801,8 @@ describe('TokenMap', () => {
       const mockedCallback = vi.fn();
       mockedCallback.mockResolvedValue(undefined);
 
-      tokenMap.registerCallback('test-id', mockedCallback);
-      tokenMap.unregisterCallback('test-id');
+      const callbackId = tokenMap.registerCallback(mockedCallback);
+      tokenMap.unregisterCallback(callbackId);
       await tokenMap.updateConfigByJson(firstTokenMap);
 
       expect(mockedCallback).not.toHaveBeenCalled();
@@ -817,7 +819,7 @@ describe('TokenMap', () => {
      */
     it('should handle non-existent callback', () => {
       const tokenMap = new TokenMap();
-      expect(() => tokenMap.unregisterCallback('non-existent')).not.toThrow();
+      expect(() => tokenMap.unregisterCallback(999)).not.toThrow();
     });
   });
 
@@ -837,7 +839,7 @@ describe('TokenMap', () => {
       const tokenMap = new TokenMap();
       const mockedCallback = vi.fn();
       mockedCallback.mockResolvedValue(undefined);
-      tokenMap.registerCallback('test-id', mockedCallback);
+      tokenMap.registerCallback(mockedCallback);
 
       await tokenMap.updateConfigByJson(firstTokenMap);
 
