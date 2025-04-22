@@ -163,6 +163,25 @@ export const invalidTxTargetNoToken: TransactionLike = {
   },
 };
 
+export const invalidLockTxUnsupportedToken: TransactionLike = {
+  type: 2,
+  to: '0x1234567890123456789012345678901234567890',
+  data: '0xa9059cbb000000000000000000000000edee4752e5a2f595151c94762fb38e573035778500000000000000000000000000000000000000000000000000000000c502fc7000000000007554fc820000000000962f582103f999da8e6e42660e4464d17d29e63bc006734a6710a24eb489b466323d3a9339',
+  nonce: 10,
+  gasLimit: '21000',
+  gasPrice: null,
+  maxPriorityFeePerGas: '500000000',
+  maxFeePerGas: '48978500000',
+  value: '92850988521632054',
+  chainId: '1',
+  accessList: [],
+  signature: {
+    r: '0x587b09c516f10fde1085784264de5cb01efcebdc99b502c923ead1b92c79dde4',
+    s: '0x1f58c1fce9a0bbc97a000b806268a3987eed9dfdc0217e1ec3fece02fa07a3b5',
+    yParity: 0,
+  },
+};
+
 export const invalidTxJson = `{
   blockNumber: 19195927,
   blockHash:

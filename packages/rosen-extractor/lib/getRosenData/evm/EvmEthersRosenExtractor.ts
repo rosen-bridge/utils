@@ -8,6 +8,7 @@ import { EvmRpcRosenExtractor } from './EvmRpcRosenExtractor';
 export class EvmEthersRosenExtractor extends AbstractRosenDataExtractor<TransactionResponse> {
   readonly chain: string;
   protected rpcExtractor: EvmRpcRosenExtractor;
+  protected supportedTokens: string[];
 
   constructor(
     lockAddress: string,
@@ -25,6 +26,8 @@ export class EvmEthersRosenExtractor extends AbstractRosenDataExtractor<Transact
       nativeToken,
       logger
     );
+    this.updateSupportedTokens();
+    this.tokens.registerCallback(this.updateSupportedTokens);
   }
 
   /**
@@ -34,7 +37,16 @@ export class EvmEthersRosenExtractor extends AbstractRosenDataExtractor<Transact
   extractRawData = (txRes: TransactionResponse): RosenData | undefined => {
     let transaction: Transaction;
     try {
-      transaction = Transaction.from(txRes);
+      const toAddress = txRes.to?.toLowerCase();
+      if (
+        toAddress &&
+        (toAddress === this.lockAddress ||
+          this.supportedTokens.includes(toAddress))
+      ) {
+        transaction = Transaction.from(txRes);
+      } else {
+        return undefined;
+      }
     } catch (e) {
       this.logger.debug(
         `An error occurred while deserializing ${this.chain} tx to extract rosen data: ${e}`
@@ -45,5 +57,18 @@ export class EvmEthersRosenExtractor extends AbstractRosenDataExtractor<Transact
       return undefined;
     }
     return this.rpcExtractor.extractRawData(transaction);
+  };
+
+  /**
+   * update supported tokens
+   * @param tokens
+   */
+  updateSupportedTokens = () => {
+    const newSupportedTokens: string[] = [];
+    this.tokens.getConfig().forEach((tokenSet) => {
+      if (Object.hasOwn(tokenSet, this.chain))
+        newSupportedTokens.push(tokenSet[this.chain].tokenId);
+    });
+    this.supportedTokens = newSupportedTokens;
   };
 }
