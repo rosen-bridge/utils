@@ -1,5 +1,14 @@
 # @rosen-bridge/rosen-extractor
 
+## 7.2.2
+
+### Patch Changes
+
+- Improve EvmEthersRosenExtractor performance by checking address before type conversion and full validation
+- Updated dependencies
+  - @rosen-bridge/address-codec@0.5.2
+  - @rosen-bridge/tokens@3.1.0
+
 ## 7.2.1
 
 ### Patch Changes

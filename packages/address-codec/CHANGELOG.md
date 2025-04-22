@@ -1,5 +1,11 @@
 # @rosen-bridge/address-codec
 
+## 0.5.2
+
+### Patch Changes
+
+- Fix type-check error related to Buffer and UInt8Array
+
 ## 0.5.1
 
 ### Patch Changes

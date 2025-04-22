@@ -1,5 +1,12 @@
 # @rosen-bridge/tokens
 
+## 3.1.0
+
+### Minor Changes
+
+- Add callback support to `TokenMap` class
+- Add logger to `TokenMap` class
+
 ## 3.0.0
 
 ### Major Changes
