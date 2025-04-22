@@ -9,7 +9,7 @@ describe('EvmEthersRosenExtractor', () => {
     const tokenMap = new TokenMap();
 
     /**
-     * @target `EvmEthersRosenExtractor.updateSupportedTokens` should update supported tokens list on TokenMap update successfully
+     * @target `EvmEthersRosenExtractor.constructor` should register a callback on TokenMap that updates supported tokens list whenever TokenMap is updated
      * @dependencies
      * @scenario
      * - initialize extractor
@@ -18,7 +18,7 @@ describe('EvmEthersRosenExtractor', () => {
      * @expected
      * - supported tokens list should be updated with new tokens
      */
-    it('should update supported tokens list on TokenMap update successfully', async () => {
+    it('should register a callback on TokenMap that updates supported tokens list whenever TokenMap is updated', async () => {
       const chainName = 'ethereum';
       const nativeToken = 'eth';
       const extractor = new EvmEthersRosenExtractor(
