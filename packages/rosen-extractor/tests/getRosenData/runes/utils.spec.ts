@@ -1,0 +1,39 @@
+import { parseRosenData } from "../../../lib/getRosenData/runes/utils";
+import * as testData from "./testData";
+
+describe("parseRosenData", () => {
+  /**
+   * @target `parseRosenData` should extract rosen data successfully
+   * @dependencies
+   * @scenario
+   * - mock utxo with scriptPubKey that contains valid rosen data
+   * - run test
+   * - check returned value
+   * @expected
+   * - it should return expected asset transformation
+   */
+  it("should extract rosen data successfully", () => {
+    const script = testData.opReturnScripts.valid;
+    const result = parseRosenData(script);
+
+    expect(result).toStrictEqual(testData.opReturnData);
+  });
+
+  /**
+   * @target `parseRosenData` should throw error
+   * when toChain is invalid
+   * @dependencies
+   * @scenario
+   * - mock utxo with scriptPubKey that contain rosen data with invalid toChain
+   * - run test & check thrown exception
+   * @expected
+   * - it should throw error
+   */
+  it("should throw error when toChain is invalid", () => {
+    const script = testData.opReturnScripts.invalidToChain;
+
+    expect(() => {
+      parseRosenData(script);
+    }).toThrow(Error);
+  });
+});
