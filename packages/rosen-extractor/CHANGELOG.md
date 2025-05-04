@@ -1,6 +1,6 @@
 # @rosen-bridge/rosen-extractor
 
-## 7.2.3
+## 7.2.2-f4cdb6ba
 
 ### Minor Changes
 
