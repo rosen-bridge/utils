@@ -6,6 +6,7 @@ import {
   DOGE_NETWORK,
   ERGO_CHAIN,
   ETHEREUM_CHAIN,
+  RUNES_CHAIN,
 } from './const';
 import { UnsupportedAddressError, UnsupportedChainError } from './types';
 import * as ergoLib from 'ergo-lib-wasm-nodejs';
@@ -48,6 +49,10 @@ export const decodeAddress = (
       return bitcoinLib.address.fromOutputScript(
         Buffer.from(encodedAddress, 'hex'),
         DOGE_NETWORK
+      );
+    case RUNES_CHAIN:
+      return bitcoinLib.address.fromOutputScript(
+        Buffer.from(encodedAddress, 'hex')
       );
     default:
       throw new UnsupportedChainError(chain);

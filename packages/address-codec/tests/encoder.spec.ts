@@ -10,6 +10,7 @@ import {
   DOGE_CHAIN,
   ERGO_CHAIN,
   ETHEREUM_CHAIN,
+  RUNES_CHAIN,
 } from '../lib/const';
 
 describe('encodeAddress', () => {
@@ -124,5 +125,19 @@ describe('encodeAddress', () => {
   it('should encode Doge address successfully', () => {
     const res = encodeAddress(DOGE_CHAIN, testData.dogeAddress);
     expect(res).toEqual(testData.encodedDogeAddress);
+  });
+
+  /**
+   * @target `encodeAddress` should encode Runes address successfully
+   * @dependencies
+   * @scenario
+   * - run test
+   * - check returned value
+   * @expected
+   * - it should be output script of given address in hex
+   */
+  it('should encode Runes address successfully', () => {
+    const res = encodeAddress(RUNES_CHAIN, testData.runesAddress);
+    expect(res).toEqual(testData.encodedRunesAddress);
   });
 });

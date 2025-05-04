@@ -39,3 +39,9 @@ export const dogeAddress = 'A69cznKpaYVWjzU3sNFZnGhbpSmUVFzvHB';
 export const invalidDogeAddress = 'bc1qkgp89fjerymm5ltg0hygnumr0m2qa7n22gyw6h';
 export const encodedDogeAddress =
   'a914966ba9f4755996c3d51025d53044b415121bc10287';
+
+export const runesAddress =
+  'bc1px0ad45qrfwc20yfd9wljeytrvfa6tmrcxv6pgxze2svvx00tp7mstj5rpk';
+export const invalidRunesAddress = 'A69cznKpaYVWjzU3sNFZnGhbpSmUVFzvHB';
+export const encodedRunesAddress =
+  '512033fadad0034bb0a7912d2bbf2c9163627ba5ec7833341418595418c33deb0fb7';
