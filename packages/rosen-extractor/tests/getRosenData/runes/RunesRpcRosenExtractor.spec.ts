@@ -1,17 +1,17 @@
-import { RunesRpcRosenExtractor } from "../../../lib";
-import * as testData from "./rpcTestData";
-import TestUtils from "../TestUtils";
-import { BitcoinRpcTransaction } from "../../../lib/getRosenData/bitcoin/types";
-import { TokenMap } from "@rosen-bridge/tokens";
+import { RunesRpcRosenExtractor } from '../../../lib';
+import * as testData from './rpcTestData';
+import TestUtils from '../TestUtils';
+import { BitcoinRpcTransaction } from '../../../lib/getRosenData/bitcoin/types';
+import { TokenMap } from '@rosen-bridge/tokens';
 
-describe("RunesRpcRosenExtractor", () => {
+describe('RunesRpcRosenExtractor', () => {
   const tokenMap = new TokenMap();
 
   beforeAll(async () => {
     await tokenMap.updateConfigByJson(TestUtils.tokens);
   });
 
-  describe("get", () => {
+  describe('get', () => {
     /**
      * @target `RunesRpcRosenExtractor.get` should extract rosenData from
      * BTC locking tx successfully
@@ -23,7 +23,7 @@ describe("RunesRpcRosenExtractor", () => {
      * @expected
      * - it should return expected rosenData object
      */
-    it("should extract rosenData from BTC locking tx successfully", () => {
+    it('should extract rosenData from BTC locking tx successfully', () => {
       const validLockTx = testData.txs.lockTx;
 
       const extractor = new RunesRpcRosenExtractor(
@@ -46,7 +46,7 @@ describe("RunesRpcRosenExtractor", () => {
      * @expected
      * - it should return undefined
      */
-    it("should return undefined when there are not enough utxos", () => {
+    it('should return undefined when there are not enough utxos', () => {
       const invalidTx = testData.txs.lessBoxes;
 
       const extractor = new RunesRpcRosenExtractor(
@@ -69,7 +69,7 @@ describe("RunesRpcRosenExtractor", () => {
      * @expected
      * - it should return undefined
      */
-    it("should return undefined when outputs contain no lock address utxo", () => {
+    it('should return undefined when outputs contain no lock address utxo', () => {
       const invalidTx = testData.txs.noLock;
 
       const extractor = new RunesRpcRosenExtractor(

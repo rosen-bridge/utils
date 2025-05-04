@@ -1,6 +1,6 @@
-import { decodeAddress } from "@rosen-bridge/address-codec";
-import { OpReturnData } from "../bitcoin/types";
-import { SUPPORTED_CHAINS } from "../const";
+import { decodeAddress } from '@rosen-bridge/address-codec';
+import { OpReturnData } from '../bitcoin/types';
+import { SUPPORTED_CHAINS } from '../const';
 
 /**
  * extracts rosen data from raw hex data
@@ -18,11 +18,11 @@ export const parseRosenData = (scriptPubKeyHex: string): OpReturnData => {
 
   // parse bridgeFee
   const bridgeFeeHex = scriptPubKeyHex.slice(2, 18);
-  const bridgeFee = BigInt("0x" + bridgeFeeHex).toString();
+  const bridgeFee = BigInt('0x' + bridgeFeeHex).toString();
 
   // parse networkFee
   const networkFeeHex = scriptPubKeyHex.slice(18, 34);
-  const networkFee = BigInt("0x" + networkFeeHex).toString();
+  const networkFee = BigInt('0x' + networkFeeHex).toString();
 
   // parse toAddress
   const addressLengthCode = scriptPubKeyHex.slice(34, 36);

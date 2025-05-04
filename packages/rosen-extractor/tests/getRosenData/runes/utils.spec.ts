@@ -1,7 +1,7 @@
-import { parseRosenData } from "../../../lib/getRosenData/runes/utils";
-import * as testData from "./testData";
+import { parseRosenData } from '../../../lib/getRosenData/runes/utils';
+import * as testData from './testData';
 
-describe("parseRosenData", () => {
+describe('parseRosenData', () => {
   /**
    * @target `parseRosenData` should extract rosen data successfully
    * @dependencies
@@ -12,7 +12,7 @@ describe("parseRosenData", () => {
    * @expected
    * - it should return expected asset transformation
    */
-  it("should extract rosen data successfully", () => {
+  it('should extract rosen data successfully', () => {
     const script = testData.opReturnScripts.valid;
     const result = parseRosenData(script);
 
@@ -29,7 +29,7 @@ describe("parseRosenData", () => {
    * @expected
    * - it should throw error
    */
-  it("should throw error when toChain is invalid", () => {
+  it('should throw error when toChain is invalid', () => {
     const script = testData.opReturnScripts.invalidToChain;
 
     expect(() => {

@@ -1,17 +1,17 @@
-import { RunesEsploraRosenExtractor } from "../../../lib";
-import * as testData from "./esploraTestData";
-import TestUtils from "../TestUtils";
-import { BitcoinEsploraTransaction } from "../../../lib/getRosenData/bitcoin/types";
-import { TokenMap } from "@rosen-bridge/tokens";
+import { RunesEsploraRosenExtractor } from '../../../lib';
+import * as testData from './esploraTestData';
+import TestUtils from '../TestUtils';
+import { BitcoinEsploraTransaction } from '../../../lib/getRosenData/bitcoin/types';
+import { TokenMap } from '@rosen-bridge/tokens';
 
-describe("RunesEsploraRosenExtractor", () => {
+describe('RunesEsploraRosenExtractor', () => {
   const tokenMap = new TokenMap();
 
   beforeAll(async () => {
     await tokenMap.updateConfigByJson(TestUtils.tokens);
   });
 
-  describe("get", () => {
+  describe('get', () => {
     /**
      * @target `RunesEsploraRosenExtractor.get` should extract rosenData from
      * BTC locking tx successfully
@@ -23,7 +23,7 @@ describe("RunesEsploraRosenExtractor", () => {
      * @expected
      * - it should return expected rosenData object
      */
-    it("should extract rosenData from BTC locking tx successfully", () => {
+    it('should extract rosenData from BTC locking tx successfully', () => {
       const validLockTx = testData.txs.lockTx;
 
       const extractor = new RunesEsploraRosenExtractor(
@@ -46,7 +46,7 @@ describe("RunesEsploraRosenExtractor", () => {
      * @expected
      * - it should return undefined
      */
-    it("should return undefined  when there are not enough utxos", () => {
+    it('should return undefined  when there are not enough utxos', () => {
       const invalidTx = testData.txs.lessBoxes;
 
       const extractor = new RunesEsploraRosenExtractor(
@@ -69,7 +69,7 @@ describe("RunesEsploraRosenExtractor", () => {
      * @expected
      * - it should return undefined
      */
-    it("should return undefined when outputs contain no lock address utxo", () => {
+    it('should return undefined when outputs contain no lock address utxo', () => {
       const invalidTx = testData.txs.noLock;
 
       const extractor = new RunesEsploraRosenExtractor(
