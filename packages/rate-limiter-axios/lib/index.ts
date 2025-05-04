@@ -10,15 +10,13 @@ class RateLimiterAxios extends originalAxios.Axios {
   protected static semaphorePatternList: {[key: string]: Semaphore} = {};
   protected static refreshPeriodInterval: number;
   protected static rules: Rule[] = [];
-  protected logger: AbstractLogger;
 
-  constructor(config?: AxiosRequestConfig, logger: AbstractLogger = new DummyLogger()) {
+  constructor(config?: AxiosRequestConfig) {
     if (!RateLimiterAxios.refreshPeriodInterval || !RateLimiterAxios.rules) {
       throw new Error('Rate limit configs not initialized');
     }
     super(config);
     this.interceptors.request.use(RateLimiterAxios.axiosInterceptor);
-    this.logger = logger;
   }
 
   /**
@@ -57,7 +55,6 @@ class RateLimiterAxios extends originalAxios.Axios {
     try {
       const consumeData = await limiter.consume(pattern.toString());
       if (consumeData.remainingPoints === 0) {
-        this.logger.info(`Rate limit exceeded for "${pattern}" url pattern, waiting for ${consumeData.msBeforeNext}ms`);
         await new Promise(f => setTimeout(f, consumeData.msBeforeNext));
       }
     } finally {
