@@ -1,5 +1,11 @@
 # @rosen-bridge/rosen-extractor
 
+## 7.2.3
+
+### Minor Changes
+
+- Implement rosen extractor for Runes
+
 ## 7.2.2
 
 ### Patch Changes
