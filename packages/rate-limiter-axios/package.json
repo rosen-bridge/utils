@@ -1,8 +1,7 @@
 {
   "name": "@rosen-bridge/rate-limiter-axios",
   "version": "0.1.0",
-  "description": "A lightweight rate-limiting interceptor for Axios that helps control the number of HTTP requests and prevent API throttling.",
-  "repository": "",
+  "description": "A lightweight rate-limiting wrapped Axios that helps control the number of HTTP requests and prevent API throttling.",
   "license": "GPL-3.0",
   "author": "Rosen Team",
   "type": "module",
