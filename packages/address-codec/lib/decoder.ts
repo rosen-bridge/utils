@@ -6,6 +6,7 @@ import {
   DOGE_NETWORK,
   ERGO_CHAIN,
   ETHEREUM_CHAIN,
+  RUNES_CHAIN,
 } from './const';
 import { UnsupportedAddressError, UnsupportedChainError } from './types';
 import * as ergoLib from 'ergo-lib-wasm-nodejs';
@@ -33,6 +34,7 @@ export const decodeAddress = (
       return cardanoLib.Address.from_bytes(
         Uint8Array.from(Buffer.from(encodedAddress, 'hex'))
       ).to_bech32();
+    case RUNES_CHAIN:
     case BITCOIN_CHAIN:
       return bitcoinLib.address.fromOutputScript(
         Buffer.from(encodedAddress, 'hex')
