@@ -34,6 +34,7 @@ export const decodeAddress = (
       return cardanoLib.Address.from_bytes(
         Uint8Array.from(Buffer.from(encodedAddress, 'hex'))
       ).to_bech32();
+    case RUNES_CHAIN:
     case BITCOIN_CHAIN:
       return bitcoinLib.address.fromOutputScript(
         Buffer.from(encodedAddress, 'hex')
@@ -49,10 +50,6 @@ export const decodeAddress = (
       return bitcoinLib.address.fromOutputScript(
         Buffer.from(encodedAddress, 'hex'),
         DOGE_NETWORK
-      );
-    case RUNES_CHAIN:
-      return bitcoinLib.address.fromOutputScript(
-        Buffer.from(encodedAddress, 'hex')
       );
     default:
       throw new UnsupportedChainError(chain);

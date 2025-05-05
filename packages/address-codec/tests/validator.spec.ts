@@ -91,7 +91,7 @@ describe('validateAddress', () => {
    */
   it('should throw error for Bitcoin taproot address', () => {
     expect(() => {
-      validateAddress(BITCOIN_CHAIN, testData.tapRootBitcoinAddress);
+      validateAddress(BITCOIN_CHAIN, testData.taprootBitcoinAddress);
     }).toThrow(UnsupportedAddressError);
   });
 
@@ -214,7 +214,7 @@ describe('validateAddress', () => {
    * - to validate correct Runes address
    */
   it('should validate Runes address successfully', () => {
-    const res = validateAddress(RUNES_CHAIN, testData.runesAddress);
+    const res = validateAddress(RUNES_CHAIN, testData.taprootBitcoinAddress);
     expect(res).toEqual(true);
   });
 
@@ -228,7 +228,7 @@ describe('validateAddress', () => {
    */
   it('should throw error for wrong Runes address', () => {
     expect(() => {
-      validateAddress(RUNES_CHAIN, testData.invalidRunesAddress);
+      validateAddress(RUNES_CHAIN, testData.bitcoinAddress);
     }).toThrow(UnsupportedAddressError);
   });
 });

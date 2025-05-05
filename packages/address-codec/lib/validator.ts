@@ -47,6 +47,8 @@ export const validateAddress = (chain: string, address: string): boolean => {
     case RUNES_CHAIN:
       try {
         bitcoinLib.address.toOutputScript(address);
+        if (address.slice(0, 4) != 'bc1p')
+          throw new UnsupportedAddressError(chain, address);
       } catch (e) {
         throw new UnsupportedAddressError(chain, address);
       }

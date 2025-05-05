@@ -32,6 +32,7 @@ export const encodeAddress = (chain: string, address: string): string => {
         cardanoLib.Address.from_bech32(address).to_bytes()
       ).toString('hex');
       break;
+    case RUNES_CHAIN:
     case BITCOIN_CHAIN:
       encoded = bitcoinLib.address.toOutputScript(address).toString('hex');
       break;
@@ -46,9 +47,6 @@ export const encodeAddress = (chain: string, address: string): string => {
       encoded = bitcoinLib.address
         .toOutputScript(address, DOGE_NETWORK)
         .toString('hex');
-      break;
-    case RUNES_CHAIN:
-      encoded = bitcoinLib.address.toOutputScript(address).toString('hex');
       break;
     default:
       throw new UnsupportedChainError(chain);

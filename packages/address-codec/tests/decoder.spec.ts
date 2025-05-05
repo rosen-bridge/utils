@@ -122,7 +122,10 @@ describe('decodeAddress', () => {
    * - it should be address in hex format
    */
   it('should decode Runes address successfully', () => {
-    const res = decodeAddress(RUNES_CHAIN, testData.encodedRunesAddress);
-    expect(res).toEqual(testData.runesAddress);
+    const res = decodeAddress(
+      RUNES_CHAIN,
+      testData.encodedTaprootBitcoinAddress
+    );
+    expect(res).toEqual(testData.taprootBitcoinAddress);
   });
 });

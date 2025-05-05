@@ -137,7 +137,7 @@ describe('encodeAddress', () => {
    * - it should be output script of given address in hex
    */
   it('should encode Runes address successfully', () => {
-    const res = encodeAddress(RUNES_CHAIN, testData.runesAddress);
-    expect(res).toEqual(testData.encodedRunesAddress);
+    const res = encodeAddress(RUNES_CHAIN, testData.taprootBitcoinAddress);
+    expect(res).toEqual(testData.encodedTaprootBitcoinAddress);
   });
 });
