@@ -11,6 +11,6 @@ export type PatternRate = {
 };
 
 export type RateLimitConfig = {
-  apiLimitRateRangeAsMilliseconds: number;
+  apiLimitRateRangeAsSeconds: number;
   apiLimitRules: PatternRate[];
 };

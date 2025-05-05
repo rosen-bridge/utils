@@ -40,7 +40,7 @@ class RateLimitedAxios extends originalAxios.Axios {
       return;
     }
     RateLimitedAxios.refreshPeriodInterval =
-      rateLimitConfig.apiLimitRateRangeAsMilliseconds;
+      rateLimitConfig.apiLimitRateRangeAsSeconds;
     RateLimitedAxios.rules = rateLimitConfig.apiLimitRules.map(
       (rule: { pattern: string; rateLimit: number }) => ({
         pattern: new RegExp(rule.pattern),
