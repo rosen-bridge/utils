@@ -1,6 +1,5 @@
 import originalAxios, {
   AxiosRequestConfig,
-  AxiosInstance,
   InternalAxiosRequestConfig,
   CreateAxiosDefaults,
 } from 'axios';
@@ -21,7 +20,7 @@ class RateLimiterAxios extends originalAxios.Axios {
       throw new Error('Rate limit configs not initialized');
     }
     super(config);
-    this.interceptors.request.use(RateLimiterAxios.axiosInterceptor);
+    this.interceptors.request.use(RateLimiterAxios.interceptor);
   }
 
   /**
@@ -55,9 +54,7 @@ class RateLimiterAxios extends originalAxios.Axios {
    * @param config
    * @returns
    */
-  protected static axiosInterceptor = async (
-    config: InternalAxiosRequestConfig
-  ) => {
+  protected static interceptor = async (config: InternalAxiosRequestConfig) => {
     const url = config.url ?? '';
     const [limiter, pattern] = RateLimiterAxios.getLimiterAndPatternForUrl(url);
 
@@ -105,8 +102,8 @@ class RateLimiterAxios extends originalAxios.Axios {
    * @param config
    * @returns
    */
-  static create = (config: CreateAxiosDefaults = {}) => {
-    const axiosInstance = new RateLimiterAxios(config as AxiosRequestConfig);
+  static create = (config: AxiosRequestConfig = {}) => {
+    const axiosInstance = new RateLimiterAxios(config);
     return axiosInstance;
   };
 }
