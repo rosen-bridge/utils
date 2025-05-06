@@ -34,7 +34,9 @@ import { getConfig } from './config';
 
 RateLimiterAxios.initConfigs({
   apiLimitRateRangeAsMilliseconds: 10,
-  apiLimitRules: [{ pattern: '^.*$', rateLimit: 50 }],
+  apiLimitRules: [
+    { pattern: '^.*$', rateLimit: 50, maxWaitingTimeAsSeconds: 30 },
+  ],
 });
 ```
 
