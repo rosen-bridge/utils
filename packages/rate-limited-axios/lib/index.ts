@@ -6,7 +6,7 @@ import { Semaphore } from 'await-semaphore';
 import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
 import { RateLimiterMemory } from 'rate-limiter-flexible';
 
-import { RateLimitConfig, Rule } from './types';
+import { PatternRate, RateLimitConfig, Rule } from './types';
 
 class RateLimitedAxios extends originalAxios.Axios {
   protected static semaphorePatternList: { [key: string]: Semaphore } = {};
@@ -17,7 +17,9 @@ class RateLimitedAxios extends originalAxios.Axios {
 
   constructor(config?: AxiosRequestConfig) {
     if (!RateLimitedAxios.refreshPeriodInterval || !RateLimitedAxios.rules) {
-      throw new Error('Rate limit configs not initialized');
+      throw new Error(
+        'Instantiation of this class is not allowed until the initConfigs method has been successfully invoked.'
+      );
     }
     super(config);
     this.interceptors.request.use(RateLimitedAxios.interceptor);
@@ -35,14 +37,14 @@ class RateLimitedAxios extends originalAxios.Axios {
   ) => {
     if (RateLimitedAxios.refreshPeriodInterval && RateLimitedAxios.rules) {
       logger.debug(
-        `Instantiation of this class is not allowed until the initConfigs method has been successfully invoked.`
+        `Configuration has already been completed and cannot be performed again.`
       );
       return;
     }
     RateLimitedAxios.refreshPeriodInterval =
       rateLimitConfig.apiLimitRateRangeAsSeconds;
     RateLimitedAxios.rules = rateLimitConfig.apiLimitRules.map(
-      (rule: { pattern: string; rateLimit: number }) => ({
+      (rule: PatternRate) => ({
         pattern: new RegExp(rule.pattern),
         limiter: new RateLimiterMemory({
           points: rule.rateLimit,
