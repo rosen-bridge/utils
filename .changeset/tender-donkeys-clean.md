@@ -1,5 +1,5 @@
 ---
-"@rosen-bridge/rosen-extractor": minor
+'@rosen-bridge/rosen-extractor': minor
 ---
 
-Implement rosen extractor for Runes
+Implement rosen extractor for Bitcoin Runes

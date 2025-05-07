@@ -1,18 +1,14 @@
 import { RosenData } from '../abstract/types';
 import AbstractRosenDataExtractor from '../abstract/AbstractRosenDataExtractor';
 import { RUNES_CHAIN } from '../const';
-import {
-  BitcoinEsploraTransaction,
-  EsploraTxOutput,
-  OpReturnData,
-} from '../bitcoin/types';
+import { BitcoinEsploraTransaction, EsploraTxOutput } from '../bitcoin/types';
 import { TokenMap } from '@rosen-bridge/tokens';
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
-import { address, initEccLib } from 'bitcoinjs-lib';
-import { parseRosenData } from './utils';
+import { address } from 'bitcoinjs-lib';
+import { parseAggregatedData } from './utils';
 import JsonBigInt from '@rosen-bridge/json-bigint';
-import * as tinySecp from 'tiny-secp256k1';
 import { LockDataChunk } from './types';
+import { MinimalOnChainRosenData } from '../../utils';
 
 export class RunesEsploraRosenExtractor extends AbstractRosenDataExtractor<BitcoinEsploraTransaction> {
   readonly chain = RUNES_CHAIN;
@@ -20,7 +16,6 @@ export class RunesEsploraRosenExtractor extends AbstractRosenDataExtractor<Bitco
 
   constructor(lockAddress: string, tokens: TokenMap, logger?: AbstractLogger) {
     super(lockAddress, tokens, logger);
-    initEccLib(tinySecp);
     this.lockScriptPubKey = address.toOutputScript(lockAddress).toString('hex');
   }
 
@@ -64,9 +59,9 @@ export class RunesEsploraRosenExtractor extends AbstractRosenDataExtractor<Bitco
         bridgeFee: lockData.bridgeFee,
         networkFee: lockData.networkFee,
         fromAddress: fromAddress,
-        sourceChainTokenId: 'undefined',
-        amount: '0',
-        targetChainTokenId: 'undefined',
+        sourceChainTokenId: '',
+        amount: '',
+        targetChainTokenId: '',
         sourceTxId: transaction.txid,
       };
     } catch (e) {
@@ -85,7 +80,9 @@ export class RunesEsploraRosenExtractor extends AbstractRosenDataExtractor<Bitco
    * @param outputs
    * @return array of LockDataChunk
    */
-  getLockDataChunks = (outputs: EsploraTxOutput[]): LockDataChunk[] => {
+  protected getLockDataChunks = (
+    outputs: EsploraTxOutput[]
+  ): LockDataChunk[] => {
     const minUtxoValue = 294;
     const lockDataChunks: LockDataChunk[] = [];
 
@@ -100,6 +97,7 @@ export class RunesEsploraRosenExtractor extends AbstractRosenDataExtractor<Bitco
           index: i,
           data: output.scriptpubkey.slice(4),
         });
+        break;
       }
     }
 
@@ -111,13 +109,13 @@ export class RunesEsploraRosenExtractor extends AbstractRosenDataExtractor<Bitco
    * @param lockDataChunks
    * @return lock data object or undefined
    */
-  lockDataFromChunks = (
+  protected lockDataFromChunks = (
     lockDataChunks: LockDataChunk[]
-  ): OpReturnData | undefined => {
-    let lockData: OpReturnData | undefined;
+  ): MinimalOnChainRosenData | undefined => {
+    let lockData: MinimalOnChainRosenData | undefined;
 
     try {
-      lockData = parseRosenData(
+      lockData = parseAggregatedData(
         lockDataChunks.map((chunk) => chunk.data).join('')
       );
     } catch (e) {
@@ -136,15 +134,12 @@ export class RunesEsploraRosenExtractor extends AbstractRosenDataExtractor<Bitco
    * @param outputs
    * @return boolean
    */
-  validateLock = (outputs: EsploraTxOutput[]): boolean => {
-    let validLock = false;
+  protected validateLock = (outputs: EsploraTxOutput[]): boolean => {
     for (let i = 0; i < outputs.length; i++) {
-      const output = outputs[i];
-      if (output.scriptpubkey === this.lockScriptPubKey) {
-        validLock = true;
-        break;
+      if (outputs[i].scriptpubkey === this.lockScriptPubKey) {
+        return true;
       }
     }
-    return validLock;
+    return false;
   };
 }

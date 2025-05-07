@@ -19,3 +19,8 @@ export { DogeRpcRosenExtractor } from './getRosenData/doge/DogeRpcRosenExtractor
 export { RunesEsploraRosenExtractor } from './getRosenData/runes/RunesEsploraRosenExtractor';
 export { RunesRosenExtractor } from './getRosenData/runes/RunesRosenExtractor';
 export { RunesRpcRosenExtractor } from './getRosenData/runes/RunesRpcRosenExtractor';
+export { parseRosenData } from './utils';
+import { initEccLib } from 'bitcoinjs-lib';
+import * as tinySecp from 'tiny-secp256k1';
+
+initEccLib(tinySecp);

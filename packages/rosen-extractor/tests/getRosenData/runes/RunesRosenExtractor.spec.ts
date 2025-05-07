@@ -14,7 +14,7 @@ describe('RunesRosenExtractor', () => {
   describe('get', () => {
     /**
      * @target `RunesRosenExtractor.get` should extract rosenData from
-     * BTC locking tx successfully
+     * Runes lock tx successfully
      * @dependencies
      * @scenario
      * - mock valid rosen data tx
@@ -23,11 +23,60 @@ describe('RunesRosenExtractor', () => {
      * @expected
      * - it should return expected rosenData object
      */
-    it('should extract rosenData from BTC locking tx successfully', () => {
+    it('should extract rosenData from Runes lock tx successfully', () => {
       const validLockTx = JsonBigInt.stringify(testData.txs.lockTx);
 
-      const extractor = new RunesRosenExtractor(testData.lockAddress, tokenMap);
+      const extractor = new RunesRosenExtractor(
+        testData.mockLockAddress,
+        tokenMap
+      );
       const result = extractor.get(validLockTx);
+
+      expect(result).toStrictEqual(testData.rosenData);
+    });
+
+    /**
+     * @target `RunesRosenExtractor.get` should return undefined when
+     * there is a corrupt scriptpubkey
+     * @dependencies
+     * @scenario
+     * - mock a tx with a corrupt scriptpubkey
+     * - run test
+     * - check returned value
+     * @expected
+     * - it should return undefined
+     */
+    it('should return undefined when there is a corrupt scriptpubkey', () => {
+      const invalidTx = JsonBigInt.stringify(testData.txs.corruptData);
+
+      const extractor = new RunesRosenExtractor(
+        testData.mockLockAddress,
+        tokenMap
+      );
+      const result = extractor.get(invalidTx);
+
+      expect(result).toBeUndefined();
+    });
+
+    /**
+     * @target `RunesRosenExtractor.get` should extract rosenData from Runes lock tx successfully when
+     * the utxos are in an incorrect order
+     * @dependencies
+     * @scenario
+     * - mock a tx with incorrectly ordered utxos
+     * - run test
+     * - check returned value
+     * @expected
+     * - it should return expected rosenData object
+     */
+    it('should extract rosenData from Runes lock tx successfully when the utxos are in an incorrect order', () => {
+      const invalidTx = JsonBigInt.stringify(testData.txs.unorderedTx);
+
+      const extractor = new RunesRosenExtractor(
+        testData.mockLockAddress,
+        tokenMap
+      );
+      const result = extractor.get(invalidTx);
 
       expect(result).toStrictEqual(testData.rosenData);
     });
@@ -46,7 +95,10 @@ describe('RunesRosenExtractor', () => {
     it('should return undefined when there are not enough utxos', () => {
       const invalidTx = JsonBigInt.stringify(testData.txs.lessBoxes);
 
-      const extractor = new RunesRosenExtractor(testData.lockAddress, tokenMap);
+      const extractor = new RunesRosenExtractor(
+        testData.mockLockAddress,
+        tokenMap
+      );
       const result = extractor.get(invalidTx);
 
       expect(result).toBeUndefined();
@@ -66,7 +118,10 @@ describe('RunesRosenExtractor', () => {
     it('should return undefined when outputs contain no lock address utxo', () => {
       const invalidTx = JsonBigInt.stringify(testData.txs.noLock);
 
-      const extractor = new RunesRosenExtractor(testData.lockAddress, tokenMap);
+      const extractor = new RunesRosenExtractor(
+        testData.mockLockAddress,
+        tokenMap
+      );
       const result = extractor.get(invalidTx);
 
       expect(result).toBeUndefined();

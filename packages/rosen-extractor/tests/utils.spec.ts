@@ -1,9 +1,9 @@
-import { parseAggregatedData } from '../../../lib/getRosenData/runes/utils';
+import { parseRosenData } from '../lib/utils';
 import * as testData from './testData';
 
-describe('parseAggregatedData', () => {
+describe('parseRosenData', () => {
   /**
-   * @target `parseAggregatedData` should extract rosen data successfully
+   * @target `parseRosenData` should extract rosen data successfully
    * @dependencies
    * @scenario
    * - mock utxo with scriptPubKey that contains valid rosen data
@@ -14,13 +14,13 @@ describe('parseAggregatedData', () => {
    */
   it('should extract rosen data successfully', () => {
     const script = testData.opReturnScripts.valid;
-    const result = parseAggregatedData(script);
+    const result = parseRosenData(script);
 
     expect(result).toStrictEqual(testData.opReturnData);
   });
 
   /**
-   * @target `parseAggregatedData` should throw error
+   * @target `parseRosenData` should throw error
    * when toChain is invalid
    * @dependencies
    * @scenario
@@ -33,7 +33,7 @@ describe('parseAggregatedData', () => {
     const script = testData.opReturnScripts.invalidToChain;
 
     expect(() => {
-      parseAggregatedData(script);
+      parseRosenData(script);
     }).toThrow(Error);
   });
 });
