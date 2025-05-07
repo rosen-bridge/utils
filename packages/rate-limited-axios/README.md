@@ -33,7 +33,7 @@ import RateLimiterAxios from '@rosen-bridge/rate-limited-axios';
 import { getConfig } from './config';
 
 RateLimiterAxios.initConfigs({
-  apiLimitRateRangeAsMilliseconds: 10,
+  apiLimitRateRangeAsSeconds: 10,
   apiLimitRules: [
     { pattern: '^.*$', rateLimit: 50, maxWaitingTimeAsSeconds: 30 },
   ],
