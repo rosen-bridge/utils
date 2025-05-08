@@ -10,6 +10,7 @@ import {
   DOGE_CHAIN,
   ERGO_CHAIN,
   ETHEREUM_CHAIN,
+  RUNES_CHAIN,
 } from '../lib/const';
 
 describe('validateAddress', () => {
@@ -90,7 +91,7 @@ describe('validateAddress', () => {
    */
   it('should throw error for Bitcoin taproot address', () => {
     expect(() => {
-      validateAddress(BITCOIN_CHAIN, testData.tapRootBitcoinAddress);
+      validateAddress(BITCOIN_CHAIN, testData.taprootBitcoinAddress);
     }).toThrow(UnsupportedAddressError);
   });
 
@@ -201,6 +202,33 @@ describe('validateAddress', () => {
   it('should throw error for wrong Doge address', () => {
     expect(() => {
       validateAddress(DOGE_CHAIN, testData.invalidDogeAddress);
+    }).toThrow(UnsupportedAddressError);
+  });
+
+  /**
+   * @target `validateAddress` should validate Runes address successfully
+   * @dependencies
+   * @scenario
+   * - run test
+   * @expected
+   * - to validate correct Runes address
+   */
+  it('should validate Runes address successfully', () => {
+    const res = validateAddress(RUNES_CHAIN, testData.taprootBitcoinAddress);
+    expect(res).toEqual(true);
+  });
+
+  /**
+   * @target `validateAddress` should throw error for wrong Runes address
+   * @dependencies
+   * @scenario
+   * - run test
+   * @expected
+   * - to throw error for wrong Runes address
+   */
+  it('should throw error for wrong Runes address', () => {
+    expect(() => {
+      validateAddress(RUNES_CHAIN, testData.bitcoinAddress);
     }).toThrow(UnsupportedAddressError);
   });
 });
