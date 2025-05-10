@@ -1,12 +1,6 @@
 import { decodeAddress } from '@rosen-bridge/address-codec';
 import { SUPPORTED_CHAINS } from './getRosenData/const';
-
-export interface MinimalOnChainRosenData {
-  toChain: string;
-  toAddress: string;
-  bridgeFee: string;
-  networkFee: string;
-}
+import { MinimalOnChainRosenData } from './types';
 
 /**
  * extracts rosen data from raw hex data

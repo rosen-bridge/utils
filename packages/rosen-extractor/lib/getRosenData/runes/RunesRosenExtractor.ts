@@ -8,7 +8,7 @@ import { address } from 'bitcoinjs-lib';
 import { parseAggregatedData } from './utils';
 import JsonBigInt from '@rosen-bridge/json-bigint';
 import { LockDataChunk } from './types';
-import { MinimalOnChainRosenData } from '../../utils';
+import { MinimalOnChainRosenData } from '../../types';
 
 export class RunesRosenExtractor extends AbstractRosenDataExtractor<string> {
   readonly chain = RUNES_CHAIN;

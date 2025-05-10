@@ -127,7 +127,7 @@ export const txUtxos = {
         value: 0.00000294,
         n: 3,
         scriptPubKey: {
-          // corrupt
+          // corrupted bridgeFeeHex
           asm: 'OP_0 01000000000000138v000000000000089839011b',
           hex: '001401000000000000138v000000000000089839011b',
           type: 'V0_P2WPKH',

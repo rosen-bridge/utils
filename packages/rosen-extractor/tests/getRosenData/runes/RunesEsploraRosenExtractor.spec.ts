@@ -37,7 +37,7 @@ describe('RunesEsploraRosenExtractor', () => {
 
     /**
      * @target `RunesEsploraRosenExtractor.get` should return undefined when
-     * there is a corrupt scriptpubkey
+     * aggregated data is corrupted
      * @dependencies
      * @scenario
      * - mock a tx with a corrupt scriptpubkey
@@ -46,7 +46,7 @@ describe('RunesEsploraRosenExtractor', () => {
      * @expected
      * - it should return undefined
      */
-    it('should return undefined when there is a corrupt scriptpubkey', () => {
+    it('should return undefined when aggregated data is corrupted', () => {
       const invalidTx = testData.txs.corruptData;
 
       const extractor = new RunesEsploraRosenExtractor(
@@ -60,7 +60,7 @@ describe('RunesEsploraRosenExtractor', () => {
 
     /**
      * @target `RunesEsploraRosenExtractor.get` should extract rosenData from Runes lock tx successfully when
-     * the utxos are in an incorrect order
+     * the utxos are unorganized
      * @dependencies
      * @scenario
      * - mock a tx with incorrectly ordered utxos
@@ -69,7 +69,7 @@ describe('RunesEsploraRosenExtractor', () => {
      * @expected
      * - it should return expected rosenData object
      */
-    it('should extract rosenData from Runes lock tx successfully when the utxos are in an incorrect order', () => {
+    it('should extract rosenData from Runes lock tx successfully when the utxos are unorganized', () => {
       const invalidTx = testData.txs.unorderedTx;
 
       const extractor = new RunesEsploraRosenExtractor(

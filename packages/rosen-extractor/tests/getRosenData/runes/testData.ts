@@ -65,7 +65,7 @@ export const txUtxos = {
         value: 0n,
       },
       {
-        // corrupt
+        // corrupted bridgeFeeHex
         scriptPubKey: '0014010000n00000001388000000000000089839011b',
         value: 294n,
       },

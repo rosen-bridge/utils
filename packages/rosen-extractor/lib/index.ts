@@ -1,3 +1,8 @@
+import { initEccLib } from 'bitcoinjs-lib';
+import * as tinySecp from 'tiny-secp256k1';
+
+initEccLib(tinySecp);
+
 export { default as AbstractRosenDataExtractor } from './getRosenData/abstract/AbstractRosenDataExtractor';
 export { BitcoinEsploraRosenExtractor } from './getRosenData/bitcoin/BitcoinEsploraRosenExtractor';
 export { BitcoinRosenExtractor } from './getRosenData/bitcoin/BitcoinRosenExtractor';
@@ -20,7 +25,3 @@ export { RunesEsploraRosenExtractor } from './getRosenData/runes/RunesEsploraRos
 export { RunesRosenExtractor } from './getRosenData/runes/RunesRosenExtractor';
 export { RunesRpcRosenExtractor } from './getRosenData/runes/RunesRpcRosenExtractor';
 export { parseRosenData } from './utils';
-import { initEccLib } from 'bitcoinjs-lib';
-import * as tinySecp from 'tiny-secp256k1';
-
-initEccLib(tinySecp);
