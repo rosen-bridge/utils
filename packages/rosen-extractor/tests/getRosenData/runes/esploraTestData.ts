@@ -130,11 +130,11 @@ export const txUtxos = {
         value: 0,
       },
       {
-        // corrupted bridgeFeeHex
-        scriptpubkey: '0014010000000000001008cdw000000000089839011b',
-        scriptpubkey_asm: 'OP_0 010000000000001008000000000000089839011b',
+        // corrupted toChain
+        scriptpubkey: '0014500000000000001388000000000000089839011b',
+        scriptpubkey_asm: 'OP_0 500000000000001388000000000000089839011b',
         scriptpubkey_type: 'V0_P2WPKH',
-        scriptpubkey_address: 'bc1qqyqqqqqqqqqpqzqqqqqqqqqqpzvrjqgm4dvj3m',
+        scriptpubkey_address: 'bc1q2qqqqqqqqqqp8zqqqqqqqqqqpzvrjqgmvd57m6',
         value: 294,
       },
       {
