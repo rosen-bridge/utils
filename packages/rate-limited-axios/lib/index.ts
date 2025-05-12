@@ -6,17 +6,16 @@ import originalAxios, {
 } from 'axios';
 import { Semaphore } from 'await-semaphore';
 import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
-import { RateLimiterMemory } from 'rate-limiter-flexible';
 
-import { PatternRate, RateLimitConfig, Rule } from './types';
+import { PatternRate, RateLimitConfig } from './types';
 
 class RateLimitedAxios extends originalAxios.Axios {
   protected static semaphorePatternList: { [key: string]: Semaphore } = {};
   protected static refreshPeriodInterval: number;
-  protected static rules: Rule[] = [];
-  protected static queueReleaser: { [key: string]: () => void } = {};
+  protected static rules: PatternRate[] = [];
+  protected static queueReleaser: { [key: string]: (() => void)[] } = {};
   protected static maxWaitingReleaserKeys: {
-    [key: string]: ReturnType<typeof setTimeout>;
+    [key: string]: ReturnType<typeof setTimeout>[];
   } = {};
   protected static consumedData: { [key: string]: number } = {};
   protected static logger: AbstractLogger;
@@ -53,16 +52,7 @@ class RateLimitedAxios extends originalAxios.Axios {
     }
     RateLimitedAxios.refreshPeriodInterval =
       rateLimitConfig.apiLimitRateRangeAsSeconds;
-    RateLimitedAxios.rules = rateLimitConfig.apiLimitRules.map(
-      (rule: PatternRate) => ({
-        pattern: new RegExp(rule.pattern),
-        limiter: new RateLimiterMemory({
-          points: rule.rateLimit,
-          duration: RateLimitedAxios.refreshPeriodInterval,
-        }),
-        maxWaitingTimeAsSeconds: rule.maxWaitingTimeAsSeconds,
-      })
-    );
+    RateLimitedAxios.rules = rateLimitConfig.apiLimitRules;
     RateLimitedAxios.logger = logger;
   };
 
@@ -75,37 +65,32 @@ class RateLimitedAxios extends originalAxios.Axios {
     config: InternalAxiosRequestConfig
   ) => {
     const url = config.url ?? '';
-    const [limiter, pattern, maxWaitingTimeAsSeconds] =
+    const [rateLimit, pattern, maxWaitingTimeAsSeconds] =
       RateLimitedAxios.getLimitData(url);
 
-    if (!limiter) return config;
+    if (!rateLimit) return config;
 
     const key = pattern.toString();
     RateLimitedAxios.semaphorePatternList[key] =
-      RateLimitedAxios.semaphorePatternList[key] ?? new Semaphore(1);
+      RateLimitedAxios.semaphorePatternList[key] ?? new Semaphore(rateLimit);
 
     const release = await RateLimitedAxios.semaphorePatternList[key].acquire();
 
     try {
-      const consumeData = await limiter.get(key);
-      if (consumeData?.remainingPoints === 0) {
-        RateLimitedAxios.logger.info(
-          `Rate limit exceeded for "${pattern}" url pattern, waiting for ${
-            consumeData!.msBeforeNext
-          }ms`
-        );
-        await new Promise((f) => setTimeout(f, consumeData!.msBeforeNext));
-      }
-      await limiter.consume(key);
-
       // It will be released after receiving the relevant response
-      RateLimitedAxios.queueReleaser[key] = release;
-      RateLimitedAxios.maxWaitingReleaserKeys[key] = setTimeout(() => {
-        RateLimitedAxios.logger.debug(
-          `The response time has exceeded the defined limit for the ${key} URL pattern`
-        );
-        RateLimitedAxios.releaseQueue(config);
-      }, maxWaitingTimeAsSeconds * 1000);
+      RateLimitedAxios.queueReleaser[key] = (
+        RateLimitedAxios.queueReleaser[key] || []
+      ).concat([release]);
+      RateLimitedAxios.maxWaitingReleaserKeys[key] = (
+        RateLimitedAxios.maxWaitingReleaserKeys[key] ?? []
+      ).concat(
+        setTimeout(() => {
+          RateLimitedAxios.logger.debug(
+            `The response time has exceeded the defined limit for the ${key} URL pattern`
+          );
+          RateLimitedAxios.releaseQueue(config, release);
+        }, maxWaitingTimeAsSeconds * 1000)
+      );
     } catch (err) {
       RateLimitedAxios.logger.error(
         `Error on the RateLimitedAxios.interceptorForRequest occurred: ${err}`
@@ -122,17 +107,30 @@ class RateLimitedAxios extends originalAxios.Axios {
    * @param config
    * @returns
    */
-  protected static releaseQueue = (config: InternalAxiosRequestConfig) => {
+  protected static releaseQueue = (
+    config: InternalAxiosRequestConfig,
+    release: (() => void) | undefined = undefined
+  ) => {
     const url = config.url ?? '';
-    const [limiter, pattern] = RateLimitedAxios.getLimitData(url);
+    const [rateLimit, pattern] = RateLimitedAxios.getLimitData(url);
 
-    if (limiter) {
+    if (rateLimit) {
       const key = pattern.toString();
-      if (Object.hasOwn(RateLimitedAxios.queueReleaser, key)) {
-        clearTimeout(RateLimitedAxios.maxWaitingReleaserKeys[key]);
-        // release the locked queue
-        RateLimitedAxios.queueReleaser[key]();
-        delete RateLimitedAxios.queueReleaser[key];
+      if (
+        Object.hasOwn(RateLimitedAxios.queueReleaser, key) &&
+        RateLimitedAxios.queueReleaser[key].length > 0
+      ) {
+        release = release ?? RateLimitedAxios.queueReleaser[key][0];
+        setTimeout(() => {
+          clearTimeout(RateLimitedAxios.maxWaitingReleaserKeys[key].at(0));
+          RateLimitedAxios.maxWaitingReleaserKeys[key] =
+            RateLimitedAxios.maxWaitingReleaserKeys[key].slice(1);
+          // release the locked queue
+          release!();
+          RateLimitedAxios.queueReleaser[key] = RateLimitedAxios.queueReleaser[
+            key
+          ].filter((r) => r != release);
+        }, RateLimitedAxios.refreshPeriodInterval * 1000);
       }
     }
   };
@@ -158,19 +156,20 @@ class RateLimitedAxios extends originalAxios.Axios {
   };
 
   /**
-   * return rate limiter, pattern and maxWaitingTimeAsSeconds of received url
+   * return rate-limit, pattern and maxWaitingTimeAsSeconds of received url
    * @param url
-   * @returns [limiter, pattern, maxWaitingTimeAsSeconds]
+   * @returns [rateLimit, pattern, maxWaitingTimeAsSeconds]
    */
   protected static getLimitData = (
     url: string
-  ): [RateLimiterMemory, RegExp, number] | [null, null, null] => {
+  ): [number, RegExp, number] | [null, null, null] => {
     for (const {
+      rateLimit,
       pattern,
-      limiter,
       maxWaitingTimeAsSeconds,
     } of RateLimitedAxios.rules) {
-      if (pattern.test(url)) return [limiter, pattern, maxWaitingTimeAsSeconds];
+      if (new RegExp(pattern).test(url))
+        return [rateLimit, new RegExp(pattern), maxWaitingTimeAsSeconds];
     }
     return [null, null, null];
   };
