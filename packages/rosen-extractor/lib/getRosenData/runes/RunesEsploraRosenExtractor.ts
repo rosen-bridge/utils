@@ -9,6 +9,7 @@ import { parseAggregatedData } from './utils';
 import JsonBigInt from '@rosen-bridge/json-bigint';
 import { LockDataChunk } from './types';
 import { MinimalOnChainRosenData } from '../../types';
+import { minUtxoValue } from './constants';
 
 export class RunesEsploraRosenExtractor extends AbstractRosenDataExtractor<BitcoinEsploraTransaction> {
   readonly chain = RUNES_CHAIN;
@@ -83,7 +84,6 @@ export class RunesEsploraRosenExtractor extends AbstractRosenDataExtractor<Bitco
   protected getLockDataChunks = (
     outputs: EsploraTxOutput[]
   ): LockDataChunk[] => {
-    const minUtxoValue = 294;
     const lockDataChunks: LockDataChunk[] = [];
 
     for (let i = 0; i < 4; i++) {
