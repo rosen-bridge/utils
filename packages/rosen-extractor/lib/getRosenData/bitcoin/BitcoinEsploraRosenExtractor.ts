@@ -9,7 +9,7 @@ import {
 import { TokenMap } from '@rosen-bridge/tokens';
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import { address } from 'bitcoinjs-lib';
-import { parseRosenData } from './utils';
+import { parseOpReturn } from './utils';
 
 export class BitcoinEsploraRosenExtractor extends AbstractRosenDataExtractor<BitcoinEsploraTransaction> {
   readonly chain = BITCOIN_CHAIN;
@@ -45,7 +45,7 @@ export class BitcoinEsploraRosenExtractor extends AbstractRosenDataExtractor<Bit
         if (output.scriptpubkey.slice(0, 2) !== '6a') continue; // not an OP_RETURN utxo
 
         try {
-          opReturnData = parseRosenData(output.scriptpubkey);
+          opReturnData = parseOpReturn(output.scriptpubkey);
           validData = true;
           break;
         } catch (e) {

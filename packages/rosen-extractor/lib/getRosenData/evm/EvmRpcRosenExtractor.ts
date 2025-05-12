@@ -3,7 +3,7 @@ import AbstractRosenDataExtractor from '../abstract/AbstractRosenDataExtractor';
 import { Transaction } from 'ethers';
 import { TokenMap, RosenChainToken } from '@rosen-bridge/tokens';
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
-import { parseRosenData } from './utils';
+import { parseCallData } from './utils';
 
 export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<Transaction> {
   readonly chain: string;
@@ -109,7 +109,7 @@ export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<Transaction
         sourceTokenId = tokenAddress.toLowerCase();
       }
       try {
-        rosenData = parseRosenData(rosenDataRaw);
+        rosenData = parseCallData(rosenDataRaw);
       } catch (e) {
         this.logger.debug(
           baseError + `: Failed to extract data from call data: ${e}`
