@@ -14,9 +14,6 @@ class RateLimitedAxios extends originalAxios.Axios {
   protected static refreshPeriodInterval: number;
   protected static rules: PatternRate[] = [];
   protected static queueReleaser: { [key: string]: (() => void)[] } = {};
-  protected static maxWaitingReleaserKeys: {
-    [key: string]: ReturnType<typeof setTimeout>[];
-  } = {};
   protected static consumedData: { [key: string]: number } = {};
   protected static logger: AbstractLogger;
 
@@ -27,7 +24,12 @@ class RateLimitedAxios extends originalAxios.Axios {
       );
     }
     super(config);
-    this.interceptors.request.use(RateLimitedAxios.interceptorForRequest);
+    this.interceptors.request.use(
+      RateLimitedAxios.interceptorForRequest,
+      async (error) => {
+        return Promise.reject(error);
+      }
+    );
     this.interceptors.response.use(
       RateLimitedAxios.interceptorForResponse,
       RateLimitedAxios.interceptorForResponseError
@@ -74,30 +76,28 @@ class RateLimitedAxios extends originalAxios.Axios {
     RateLimitedAxios.semaphorePatternList[key] =
       RateLimitedAxios.semaphorePatternList[key] ?? new Semaphore(rateLimit);
 
-    const release = await RateLimitedAxios.semaphorePatternList[key].acquire();
-
-    try {
-      // It will be released after receiving the relevant response
-      RateLimitedAxios.queueReleaser[key] = (
-        RateLimitedAxios.queueReleaser[key] || []
-      ).concat([release]);
-      RateLimitedAxios.maxWaitingReleaserKeys[key] = (
-        RateLimitedAxios.maxWaitingReleaserKeys[key] ?? []
-      ).concat(
+    let release;
+    (await Promise.race([
+      new Promise((resolve) => {
+        RateLimitedAxios.semaphorePatternList[key].acquire().then((result) => {
+          release = result;
+          return resolve(config);
+        });
+      }),
+      new Promise((resolve, reject) =>
         setTimeout(() => {
-          RateLimitedAxios.logger.debug(
-            `The response time has exceeded the defined limit for the ${key} URL pattern`
+          return reject(
+            new Error(
+              `The response time has exceeded the defined limit for the ${key} URL pattern`
+            )
           );
-          RateLimitedAxios.releaseQueue(config, release);
         }, maxWaitingTimeAsSeconds * 1000)
-      );
-    } catch (err) {
-      RateLimitedAxios.logger.error(
-        `Error on the RateLimitedAxios.interceptorForRequest occurred: ${err}`
-      );
-      release();
-      throw err;
-    }
+      ),
+    ])) as InternalAxiosRequestConfig;
+
+    RateLimitedAxios.queueReleaser[key] = (
+      RateLimitedAxios.queueReleaser[key] || []
+    ).concat(release ? [release] : []);
 
     return config;
   };
@@ -122,9 +122,6 @@ class RateLimitedAxios extends originalAxios.Axios {
       ) {
         release = release ?? RateLimitedAxios.queueReleaser[key][0];
         setTimeout(() => {
-          clearTimeout(RateLimitedAxios.maxWaitingReleaserKeys[key].at(0));
-          RateLimitedAxios.maxWaitingReleaserKeys[key] =
-            RateLimitedAxios.maxWaitingReleaserKeys[key].slice(1);
           // release the locked queue
           release!();
           RateLimitedAxios.queueReleaser[key] = RateLimitedAxios.queueReleaser[
