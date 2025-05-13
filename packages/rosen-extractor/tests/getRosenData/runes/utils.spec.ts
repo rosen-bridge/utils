@@ -1,9 +1,9 @@
-import { parseOpReturn } from '../../../lib/getRosenData/bitcoin/utils';
+import { parseAggregatedData } from '../../../lib/getRosenData/runes/utils';
 import * as testData from './testData';
 
-describe('parseOpReturn', () => {
+describe('parseAggregatedData', () => {
   /**
-   * @target `parseOpReturn` should extract rosen data successfully
+   * @target `parseAggregatedData` should extract rosen data successfully
    * @dependencies
    * @scenario
    * - mock utxo with scriptPubKey that contains valid rosen data
@@ -14,31 +14,13 @@ describe('parseOpReturn', () => {
    */
   it('should extract rosen data successfully', () => {
     const script = testData.opReturnScripts.valid;
-    const result = parseOpReturn(script);
+    const result = parseAggregatedData(script);
 
     expect(result).toStrictEqual(testData.opReturnData);
   });
 
   /**
-   * @target `parseOpReturn` should throw error
-   * when script does not start with OP_RETURN opcode
-   * @dependencies
-   * @scenario
-   * - mock utxo with scriptPubKey that does not contain OP_RETURN opcode
-   * - run test & check thrown exception
-   * @expected
-   * - it should throw error
-   */
-  it('should throw error when script does not start with OP_RETURN opcode', () => {
-    const script = testData.opReturnScripts.noOpReturn;
-
-    expect(() => {
-      parseOpReturn(script);
-    }).toThrow(Error);
-  });
-
-  /**
-   * @target `parseOpReturn` should throw error
+   * @target `parseAggregatedData` should throw error
    * when toChain is invalid
    * @dependencies
    * @scenario
@@ -51,7 +33,7 @@ describe('parseOpReturn', () => {
     const script = testData.opReturnScripts.invalidToChain;
 
     expect(() => {
-      parseOpReturn(script);
+      parseAggregatedData(script);
     }).toThrow(Error);
   });
 });
