@@ -96,7 +96,7 @@ class RateLimitedAxios extends originalAxios.Axios {
         `Error on the RateLimitedAxios.interceptorForRequest occurred: ${err}`
       );
       release();
-      return config;
+      throw err;
     }
 
     return config;
