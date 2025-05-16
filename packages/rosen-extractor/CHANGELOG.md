@@ -1,5 +1,16 @@
 # @rosen-bridge/rosen-extractor
 
+## 7.3.0
+
+### Minor Changes
+
+- Implement rosen extractor for Bitcoin Runes
+
+### Patch Changes
+
+- Updated dependencies
+  - @rosen-bridge/address-codec@0.6.0
+
 ## 7.2.2
 
 ### Patch Changes
