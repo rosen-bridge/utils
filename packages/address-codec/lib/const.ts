@@ -1,5 +1,5 @@
 export const BITCOIN_CHAIN = 'bitcoin';
-export const RUNES_CHAIN = 'runes';
+export const RUNES_CHAIN = 'bitcoin-runes';
 export const CARDANO_CHAIN = 'cardano';
 export const ERGO_CHAIN = 'ergo';
 export const ETHEREUM_CHAIN = 'ethereum';
