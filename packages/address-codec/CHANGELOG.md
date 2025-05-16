@@ -1,5 +1,11 @@
 # @rosen-bridge/address-codec
 
+## 0.6.0
+
+### Minor Changes
+
+- Add support for Runes chain
+
 ## 0.5.2
 
 ### Patch Changes
