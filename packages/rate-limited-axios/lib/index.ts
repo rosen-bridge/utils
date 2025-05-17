@@ -9,13 +9,19 @@ import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
 
 import { PatternRate, RateLimitConfig } from './types';
 
+declare module 'axios' {
+  export interface InternalAxiosRequestConfig {
+    meta: any;
+  }
+}
+
 class RateLimitedAxios extends originalAxios.Axios {
   protected static semaphorePatternList: { [key: string]: Semaphore } = {};
   protected static refreshPeriodInterval: number;
   protected static rules: PatternRate[] = [];
   protected static queueReleaser: { [key: string]: (() => void)[] } = {};
   protected static maxWaitingReleaserKeys: {
-    [key: string]: ReturnType<typeof setTimeout>[];
+    [key: string]: Map<() => void, ReturnType<typeof setTimeout>>;
   } = {};
   protected static consumedData: { [key: string]: number } = {};
   protected static logger: AbstractLogger;
@@ -75,20 +81,24 @@ class RateLimitedAxios extends originalAxios.Axios {
       RateLimitedAxios.semaphorePatternList[key] ?? new Semaphore(rateLimit);
 
     const release = await RateLimitedAxios.semaphorePatternList[key].acquire();
+    config.meta = { release: release };
 
     try {
       // It will be released after receiving the relevant response
       RateLimitedAxios.queueReleaser[key] = (
         RateLimitedAxios.queueReleaser[key] || []
       ).concat([release]);
-      RateLimitedAxios.maxWaitingReleaserKeys[key] = (
-        RateLimitedAxios.maxWaitingReleaserKeys[key] ?? []
-      ).concat(
+      RateLimitedAxios.maxWaitingReleaserKeys[key] = new Map<
+        () => void,
+        ReturnType<typeof setTimeout>
+      >();
+      RateLimitedAxios.maxWaitingReleaserKeys[key].set(
+        release,
         setTimeout(() => {
           RateLimitedAxios.logger.debug(
             `The response time has exceeded the defined limit for the ${key} URL pattern`
           );
-          RateLimitedAxios.releaseQueue(config, release);
+          RateLimitedAxios.releaseQueue(config);
         }, maxWaitingTimeAsSeconds * 1000)
       );
     } catch (err) {
@@ -107,10 +117,7 @@ class RateLimitedAxios extends originalAxios.Axios {
    * @param config
    * @returns
    */
-  protected static releaseQueue = (
-    config: InternalAxiosRequestConfig,
-    release: (() => void) | undefined = undefined
-  ) => {
+  protected static releaseQueue = (config: InternalAxiosRequestConfig) => {
     const url = config.url ?? '';
     const [rateLimit, pattern] = RateLimitedAxios.getLimitData(url);
 
@@ -120,11 +127,12 @@ class RateLimitedAxios extends originalAxios.Axios {
         Object.hasOwn(RateLimitedAxios.queueReleaser, key) &&
         RateLimitedAxios.queueReleaser[key].length > 0
       ) {
-        release = release ?? RateLimitedAxios.queueReleaser[key][0];
+        const release = config.meta['release'];
         setTimeout(() => {
-          clearTimeout(RateLimitedAxios.maxWaitingReleaserKeys[key].at(0));
-          RateLimitedAxios.maxWaitingReleaserKeys[key] =
-            RateLimitedAxios.maxWaitingReleaserKeys[key].slice(1);
+          clearTimeout(
+            RateLimitedAxios.maxWaitingReleaserKeys[key].get(release!)
+          );
+          RateLimitedAxios.maxWaitingReleaserKeys[key].delete(release!);
           // release the locked queue
           release!();
           RateLimitedAxios.queueReleaser[key] = RateLimitedAxios.queueReleaser[
