@@ -116,3 +116,4 @@ class RateLimitedAxios extends originalAxios.Axios {
 }
 
 export { RateLimitedAxios as default, RateLimitConfig };
+export * from 'axios';
