@@ -1,5 +1,11 @@
 # @rosen-bridge/rosen-extractor
 
+## 7.3.1
+
+### Patch Changes
+
+- Export TokenTransformation type
+
 ## 7.3.0
 
 ### Minor Changes

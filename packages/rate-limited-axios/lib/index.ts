@@ -32,7 +32,10 @@ class RateLimitedAxios extends originalAxios.Axios {
         'Instantiation of this class is not allowed until the initConfigs method has been successfully invoked.'
       );
     }
-    super(config);
+    super({
+      ...(originalAxios.defaults as AxiosRequestConfig),
+      ...config,
+    });
     this.interceptors.request.use(RateLimitedAxios.interceptorForRequest);
     this.interceptors.response.use(
       RateLimitedAxios.interceptorForResponse,
