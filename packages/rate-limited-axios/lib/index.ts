@@ -64,7 +64,9 @@ class RateLimitedAxios extends originalAxios.Axios {
    * @returns
    */
   protected static interceptor = async (config: InternalAxiosRequestConfig) => {
-    const url = config.url ?? '';
+    const url = config.baseURL
+      ? `${config.baseURL}${config.url}`
+      : config.url ?? '';
     const [limiter, pattern] = RateLimitedAxios.getLimiterAndPatternOfUrl(url);
 
     if (!limiter) return config;
