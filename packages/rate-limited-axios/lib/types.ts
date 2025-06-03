@@ -8,9 +8,5 @@ export type Rule = {
 export type PatternRate = {
   pattern: string;
   rateLimit: number;
-};
-
-export type RateLimitConfig = {
-  apiLimitRateRangeAsSeconds: number;
-  apiLimitRules: PatternRate[];
+  throttleWindow: number;
 };
