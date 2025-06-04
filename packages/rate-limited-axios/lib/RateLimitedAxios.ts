@@ -73,10 +73,7 @@ class RateLimitedAxios extends originalAxios.Axios {
   protected static semaphorePatternList: { [key: string]: Semaphore } = {};
   protected static consumedData: { [key: string]: number } = {};
 
-  constructor(
-    config?: AxiosRequestConfig,
-    protected logger: AbstractLogger = new DummyLogger()
-  ) {
+  constructor(config?: AxiosRequestConfig) {
     super(
       originalAxios.mergeConfig(
         originalAxios.defaults as AxiosRequestConfig,
