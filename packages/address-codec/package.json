@@ -33,10 +33,10 @@
     "node": ">=20.11.0"
   },
   "dependencies": {
+    "@bitcoinerlab/secp256k1": "^1.2.0",
     "@emurgo/cardano-serialization-lib-nodejs": "^13.2.1",
     "bitcoinjs-lib": "^6.1.5",
     "ergo-lib-wasm-nodejs": "^0.24.1",
-    "ethers": "^6.13.2",
-    "tiny-secp256k1": "^2.2.3"
+    "ethers": "^6.13.2"
   }
 }
