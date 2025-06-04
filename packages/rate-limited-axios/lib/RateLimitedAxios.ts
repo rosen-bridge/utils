@@ -77,13 +77,12 @@ class RateLimitedAxios extends originalAxios.Axios {
     config?: AxiosRequestConfig,
     protected logger: AbstractLogger = new DummyLogger()
   ) {
-    let finalConfig = originalAxios.defaults as AxiosRequestConfig;
-    if (config != undefined)
-      finalConfig = originalAxios.mergeConfig(
+    super(
+      originalAxios.mergeConfig(
         originalAxios.defaults as AxiosRequestConfig,
-        config
-      );
-    super(finalConfig);
+        config || {}
+      )
+    );
     this.interceptors.request.use(RateLimitedAxios.interceptor);
   }
 
