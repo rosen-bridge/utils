@@ -1,5 +1,4 @@
-import { PatternRate } from './types';
-import { RateLimitedAxios, RateLimitedAxiosConfig } from './RateLimitedAxios';
-
-export * from 'axios';
-export { RateLimitedAxios as default, RateLimitedAxiosConfig, PatternRate };
+import { RateLimitedAxios } from './RateLimitedAxios';
+export { RateLimitedAxiosConfig } from './config';
+export { PatternRate, Rule } from './types';
+export default RateLimitedAxios;

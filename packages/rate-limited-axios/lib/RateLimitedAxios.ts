@@ -26,7 +26,9 @@ class RateLimitedAxios extends originalAxios.Axios {
    * @returns
    */
   protected static interceptor = async (config: InternalAxiosRequestConfig) => {
-    const url = config.url ?? '';
+    const url = config.baseURL
+      ? `${config.baseURL}${config.url}`
+      : config.url ?? '';
     const [limiter, pattern] = RateLimitedAxios.getLimiterAndPatternOfUrl(url);
 
     if (!limiter) return config;
@@ -38,7 +40,6 @@ class RateLimitedAxios extends originalAxios.Axios {
     const release = await RateLimitedAxios.semaphorePatternList[key].acquire();
 
     try {
-      // const consumeData = await limiter.get(key);
       if ((await limiter.get(key))?.remainingPoints === 0) {
         RateLimitedAxiosConfig.getLogger().info(
           `Rate limit exceeded for "${pattern}" url pattern, waiting for ${
