@@ -1,5 +1,13 @@
 # @rosen-bridge/rosen-extractor
 
+## 7.3.2
+
+### Patch Changes
+
+- Replace tiny-secp256k1 dependency with @bitcoinerlab/secp256k1
+- Updated dependencies
+  - @rosen-bridge/address-codec@0.6.1
+
 ## 7.3.1
 
 ### Patch Changes
