@@ -7,7 +7,7 @@ import { RateLimiterMemory } from 'rate-limiter-flexible';
 import { RateLimitedAxiosConfig } from './config';
 
 class RateLimitedAxios extends originalAxios.Axios {
-  protected static semaphorePatternList: { [key: string]: Semaphore } = {};
+  // protected static semaphorePatternList: { [key: string]: Semaphore } = {};
   protected static consumedData: { [key: string]: number } = {};
 
   constructor(config?: AxiosRequestConfig) {
@@ -27,17 +27,15 @@ class RateLimitedAxios extends originalAxios.Axios {
    */
   protected static interceptor = async (config: InternalAxiosRequestConfig) => {
     const url = config.baseURL
-      ? `${config.baseURL}${config.url}`
+      ? originalAxios.getUri({ baseURL: config.baseURL, url: config.url })
       : config.url ?? '';
-    const [limiter, pattern] = RateLimitedAxios.getLimiterAndPatternOfUrl(url);
+    const [limiter, pattern, semaphore] =
+      RateLimitedAxios.getLimiterAndPatternOfUrl(url);
 
     if (!limiter) return config;
 
     const key = pattern.toString();
-    RateLimitedAxios.semaphorePatternList[key] =
-      RateLimitedAxios.semaphorePatternList[key] ?? new Semaphore(1);
-
-    const release = await RateLimitedAxios.semaphorePatternList[key].acquire();
+    const release = await semaphore.acquire();
 
     try {
       if ((await limiter.get(key))?.remainingPoints === 0) {
@@ -64,11 +62,15 @@ class RateLimitedAxios extends originalAxios.Axios {
    */
   protected static getLimiterAndPatternOfUrl = (
     url: string
-  ): [RateLimiterMemory, RegExp] | [null, null] => {
-    for (const { pattern, limiter } of RateLimitedAxiosConfig.getRules()) {
-      if (pattern.test(url)) return [limiter, pattern];
+  ): [RateLimiterMemory, RegExp, Semaphore] | [null, null, null] => {
+    for (const {
+      pattern,
+      limiter,
+      semaphore,
+    } of RateLimitedAxiosConfig.getRules()) {
+      if (pattern.test(url)) return [limiter, pattern, semaphore];
     }
-    return [null, null];
+    return [null, null, null];
   };
 
   /**

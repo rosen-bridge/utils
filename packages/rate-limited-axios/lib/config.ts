@@ -1,6 +1,7 @@
 import { RateLimiterMemory } from 'rate-limiter-flexible';
 import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
 import { Rule } from './types';
+import { Semaphore } from 'await-semaphore';
 
 export class RateLimitedAxiosConfig {
   protected static limitRules: Rule[] = [];
@@ -24,6 +25,7 @@ export class RateLimitedAxiosConfig {
         points: rateLimit,
         duration: throttleWindow,
       }),
+      semaphore: new Semaphore(rateLimit),
     });
   }
 
