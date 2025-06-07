@@ -1,7 +1,4 @@
-import {
-  CardanoTx,
-  KoiosTransaction,
-} from '../../../lib/getRosenData/cardano/types';
+import { CardanoTx } from '../../../lib/getRosenData/cardano/types';
 
 export default class CardanoTestData {
   static lockAddress =
