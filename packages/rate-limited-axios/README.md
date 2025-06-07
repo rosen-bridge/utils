@@ -29,7 +29,7 @@ yarn add @rosen-bridge/rate-limited-axios
 To enable global rate-limiting across your application, you should initialize the configuration once at the entry point of your project (e.g., index.ts or bootstrap.ts):
 
 ```ts
-import RateLimiterAxios, { RateLimitedAxiosConfig } from '@rosen-bridge/rate-limited-axios';
+import RateLimitedAxios, { RateLimitedAxiosConfig } from '@rosen-bridge/rate-limited-axios';
 
 RateLimiterAxiosConfig.addRule('^http://google.com/.*$', 10, 30);
 RateLimiterAxiosConfig.addRule('^http://yahoo.com/.*$', 10, 30);
