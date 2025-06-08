@@ -1,5 +1,18 @@
 # @rosen-bridge/rosen-extractor
 
+## 8.0.0
+
+### Major Changes
+
+- Unify Cardano interfaces (this change only affects `CardanoTx` interface which is used in `CardanoRosenExtractor.extractRawData`)
+  - Use new `CardanoTxInput` interface for `CardanoTx.inputs` which only has `txId` and `index` fields
+  - Rename `policy_id` to **`policyId`** and `asset_name` to **`assetName`** in `CardanoAsset` interface
+
+### Patch Changes
+
+- Update dependencies
+  - @rosen-bridge/tokens@3.1.1
+
 ## 7.3.3
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @rosen-bridge/tokens
 
+## 3.1.1
+
+### Patch Changes
+
+- Fix potential floating error in `wrapAmount` and `unwrapAmount` functions
+
 ## 3.1.0
 
 ### Minor Changes
