@@ -24,7 +24,7 @@ const getDependencyReleaseLine = async (
 ) => {
   if (dependenciesUpdated.length === 0) return '';
 
-  const changesetLinks = changesets.map(() => '- Updated dependencies');
+  const changesetLinks = changesets.map(() => '- Update dependencies');
 
   const updatedDependenciesList = dependenciesUpdated.map(
     (dependency) => `  - ${dependency.name}@${dependency.newVersion}`

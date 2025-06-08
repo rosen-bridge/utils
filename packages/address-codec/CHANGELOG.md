@@ -1,5 +1,11 @@
 # @rosen-bridge/address-codec
 
+## 0.6.1
+
+### Patch Changes
+
+- Replace tiny-secp256k1 dependency with @bitcoinerlab/secp256k1
+
 ## 0.6.0
 
 ### Minor Changes

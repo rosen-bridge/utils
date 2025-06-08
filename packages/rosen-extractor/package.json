@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/rosen-extractor",
-  "version": "7.3.1",
+  "version": "7.3.2",
   "description": "this project contains methods to get rosen data from blockchain",
   "main": "dist/lib/index.js",
   "types": "dist/lib/index.d.ts",
@@ -23,19 +23,19 @@
   ],
   "license": "GPL-3.0",
   "dependencies": {
+    "@bitcoinerlab/secp256k1": "^1.2.0",
     "@blockfrost/blockfrost-js": "^6.0.0",
     "@cardano-ogmios/schema": "^6.0.3",
     "@emurgo/cardano-serialization-lib-nodejs": "^13.2.1",
     "@rosen-bridge/abstract-logger": "^2.0.1",
-    "@rosen-bridge/address-codec": "^0.6.0",
+    "@rosen-bridge/address-codec": "^0.6.1",
     "@rosen-bridge/json-bigint": "^0.1.0",
     "@rosen-bridge/tokens": "^3.1.0",
     "bitcoinjs-lib": "^6.1.5",
     "ergo-lib-wasm-nodejs": "^0.24.1",
-    "ethers": "^6.11.1",
+    "ethers": "^6.14.3",
     "json-bigint": "^1.0.0",
-    "lodash-es": "^4.17.21",
-    "tiny-secp256k1": "^2.2.3"
+    "lodash-es": "^4.17.21"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.19.0",

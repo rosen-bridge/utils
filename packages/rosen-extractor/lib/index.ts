@@ -1,7 +1,7 @@
 import { initEccLib } from 'bitcoinjs-lib';
-import * as tinySecp from 'tiny-secp256k1';
+import ecc from '@bitcoinerlab/secp256k1';
 
-initEccLib(tinySecp);
+initEccLib(ecc);
 
 export { default as AbstractRosenDataExtractor } from './getRosenData/abstract/AbstractRosenDataExtractor';
 export { BitcoinEsploraRosenExtractor } from './getRosenData/bitcoin/BitcoinEsploraRosenExtractor';
