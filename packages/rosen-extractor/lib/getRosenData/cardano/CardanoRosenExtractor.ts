@@ -75,7 +75,7 @@ export class CardanoRosenExtractor extends AbstractRosenDataExtractor<string> {
     if (box.assets.length > 0) {
       for (const asset of box.assets) {
         const token = this.tokens.search(CARDANO_CHAIN, {
-          tokenId: getCardanoTokenId(asset.policy_id, asset.asset_name),
+          tokenId: getCardanoTokenId(asset.policyId, asset.assetName),
         });
         if (token.length > 0 && Object.hasOwn(token[0], toChain))
           return {
