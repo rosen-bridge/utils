@@ -356,11 +356,10 @@ export class TokenMap {
           (supportedChain) => tokens[supportedChain].decimals
         )
       );
-      const result =
-        amount / BigInt(10 ** (tokens[chain].decimals - significantDecimals)) +
-        (amount % BigInt(10 ** (tokens[chain].decimals - significantDecimals))
-          ? 1n
-          : 0n);
+      const divisor = BigInt(
+        '1' + '0'.repeat(tokens[chain].decimals - significantDecimals)
+      );
+      const result = amount / divisor + (amount % divisor ? 1n : 0n);
       return {
         amount: result,
         decimals: significantDecimals,
@@ -392,7 +391,10 @@ export class TokenMap {
         ...Object.keys(tokens).map((chain) => tokens[chain].decimals)
       );
       const result =
-        amount * BigInt(10 ** (tokens[toChain].decimals - significantDecimals));
+        amount *
+        BigInt(
+          '1' + '0'.repeat(tokens[toChain].decimals - significantDecimals)
+        );
       return {
         amount: result,
         decimals: tokens[toChain].decimals,
