@@ -1,7 +1,8 @@
 ---
-'@rosen-bridge/rosen-extractor': minor
+'@rosen-bridge/rosen-extractor': major
 ---
 
-Remove `value` and `assets` fields from `CardanoUtxo` interface (renamed to `CardanoTxInput`)
+Unify Cardano interfaces (this change only affects `CardanoTx` interface which is used in `CardanoRosenExtractor.extractRawData`)
 
-- The `serializedTransaction` argument in `CardanoRosenExtractor.extractRawData` is stringified string of `CardanoTx` interface which uses this interface for its `inputs` field
+- Use new `CardanoTxInput` interface for `CardanoTx.inputs` which only has `txId` and `index` fields
+- Rename `policy_id` to **`policyId`** and `asset_name` to **`assetName`** in `CardanoAsset` interface
