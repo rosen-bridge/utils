@@ -30,8 +30,8 @@ interface CardanoMetadataRosenData {
 }
 
 interface CardanoAsset {
-  policy_id: string;
-  asset_name: string;
+  policyId: string;
+  assetName: string;
   quantity: string;
 }
 
