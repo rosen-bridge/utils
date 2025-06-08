@@ -7,7 +7,6 @@ import { RateLimiterMemory } from 'rate-limiter-flexible';
 import { RateLimitedAxiosConfig } from './config';
 
 class RateLimitedAxios extends originalAxios.Axios {
-  // protected static semaphorePatternList: { [key: string]: Semaphore } = {};
   protected static consumedData: { [key: string]: number } = {};
 
   constructor(config?: AxiosRequestConfig) {
