@@ -1,5 +1,13 @@
 # @rosen-bridge/rosen-extractor
 
+## 7.3.3
+
+### Patch Changes
+
+- Update ethers version to v6.14.3
+- Updated dependencies
+  - @rosen-bridge/address-codec@0.6.2
+
 ## 7.3.2
 
 ### Patch Changes
