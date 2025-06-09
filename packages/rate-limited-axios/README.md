@@ -29,15 +29,17 @@ yarn add @rosen-bridge/rate-limited-axios
 To enable global rate-limiting across your application, you should initialize the configuration once at the entry point of your project (e.g., index.ts or bootstrap.ts):
 
 ```ts
-import RateLimiterAxios from '@rosen-bridge/rate-limited-axios';
-import { getConfig } from './config';
+import RateLimitedAxios, { RateLimitedAxiosConfig } from '@rosen-bridge/rate-limited-axios';
 
-RateLimiterAxios.initConfigs({
-  apiLimitRateRangeAsSeconds: 10,
-  apiLimitRules: [
-    { pattern: '^.*$', rateLimit: 50, maxWaitingTimeAsSeconds: 30 },
-  ],
-});
+RateLimiterAxiosConfig.addRule('^http://google.com/.*$', 10, 30, 90);
+RateLimiterAxiosConfig.addRule('^http://yahoo.com/.*$', 10, 30, 90);
+RateLimiterAxiosConfig.addRule('^http://bing.com/.*$', 10, 30, 90);
+.
+.
+.
+const axiosClient = new RateLimitedAxios();
+for (let i = 0; i < 10; i++)
+  axiosClient.get(url);
 ```
 
 After this initialization, all packages that import and use @rosen-bridge/rate-limited-axios will respect the configured request limits, ensuring consistent throttling behavior across your entire application.

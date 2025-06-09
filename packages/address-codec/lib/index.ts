@@ -1,7 +1,7 @@
-import * as tinySecp from 'tiny-secp256k1';
-import * as bitcoinLib from 'bitcoinjs-lib';
+import { initEccLib } from 'bitcoinjs-lib';
+import ecc from '@bitcoinerlab/secp256k1';
 
-bitcoinLib.initEccLib(tinySecp);
+initEccLib(ecc);
 
 export * from './encoder';
 export * from './decoder';

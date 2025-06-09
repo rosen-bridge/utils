@@ -1,10 +1,8 @@
-export type PatternRate = {
-  pattern: string;
-  rateLimit: number;
-  maxWaitingTimeAsSeconds: number;
-};
+import { Semaphore } from 'await-semaphore';
 
-export type RateLimitConfig = {
-  apiLimitRateRangeAsSeconds: number;
-  apiLimitRules: PatternRate[];
+export type Rule = {
+  pattern: RegExp;
+  semaphore: Semaphore;
+  throttleWindow: number;
+  timeout: number;
 };
