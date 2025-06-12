@@ -77,10 +77,25 @@ class RateLimitedAxios extends originalAxios.Axios {
    * @param config
    * @returns
    */
-  static create = (config: AxiosRequestConfig = {}) => {
-    const axiosInstance = new RateLimitedAxios(config);
+  public create = (config: AxiosRequestConfig = {}) => {
+    const axiosInstance = new RateLimitedAxios(
+      originalAxios.mergeConfig(
+        this.defaults as AxiosRequestConfig,
+        config || {}
+      )
+    );
     return axiosInstance;
   };
 }
 
-export { RateLimitedAxios, RateLimitedAxiosConfig };
+/**
+ * Create a rate-limited axios instance
+ * @param config
+ * @returns
+ */
+const create = (config: AxiosRequestConfig = {}) => {
+  const axiosInstance = new RateLimitedAxios(config);
+  return axiosInstance;
+};
+
+export { RateLimitedAxios, RateLimitedAxiosConfig, create };
