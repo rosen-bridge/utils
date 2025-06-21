@@ -1,5 +1,11 @@
 # @rosen-bridge/minimum-fee
 
+## 2.2.3
+
+### Patch Changes
+
+- Update ergo node and explorer clients
+
 ## 2.2.2
 
 ### Patch Changes

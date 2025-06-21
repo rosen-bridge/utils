@@ -30,16 +30,14 @@ interface CardanoMetadataRosenData {
 }
 
 interface CardanoAsset {
-  policy_id: string;
-  asset_name: string;
+  policyId: string;
+  assetName: string;
   quantity: string;
 }
 
-interface CardanoUtxo {
+interface CardanoTxInput {
   txId: string;
   index: number;
-  value: bigint;
-  assets: Array<CardanoAsset>;
 }
 
 interface CardanoBoxCandidate {
@@ -52,7 +50,7 @@ type CardanoMetadata = Record<string, string | Record<string, any>>;
 
 interface CardanoTx {
   id: string;
-  inputs: CardanoUtxo[];
+  inputs: CardanoTxInput[];
   outputs: CardanoBoxCandidate[];
   fee: bigint;
   metadata?: CardanoMetadata;
@@ -123,6 +121,7 @@ export {
   CardanoMetadataRosenData,
   CardanoMetadata,
   CardanoTx,
+  CardanoTxInput,
   CardanoBoxCandidate,
   BlockFrostTransaction,
   BlockFrostOutputBox,
