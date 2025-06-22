@@ -2,7 +2,7 @@ import axios, { AxiosRequestConfig } from 'axios';
 import { RateLimitedAxios, RateLimitedAxiosConfig } from './RateLimitedAxios';
 export { Rule } from './types';
 export * from 'axios';
-import pkg from '../package.json' assert { type: 'json' };
+import pkg from '../package.json';
 
 const VERSION = pkg.version;
 
