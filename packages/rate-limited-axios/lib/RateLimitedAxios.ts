@@ -1,3 +1,5 @@
+import fs from 'fs';
+import path from 'path';
 import originalAxios, {
   AxiosError,
   AxiosRequestConfig,
@@ -11,8 +13,16 @@ import originalAxios, {
 } from 'axios';
 import { RateLimitedAxiosConfig } from './config';
 import { Rule } from './types';
-import axios from 'axios';
-import pkg from '../package.json';
+
+let VERSION: string | undefined;
+try {
+  const pkg = JSON.parse(
+    fs.readFileSync(path.resolve(__dirname, '../package.json'), 'utf-8')
+  );
+  VERSION = pkg.version;
+} catch (err) {
+  VERSION = undefined;
+}
 
 declare module 'axios' {
   export interface InternalAxiosRequestConfig {
@@ -21,7 +31,7 @@ declare module 'axios' {
 }
 
 class RateLimitedAxios extends originalAxios.Axios {
-  VERSION = pkg.version;
+  VERSION = VERSION;
   protected static timeoutIndicesPerRelease = new Map<
     () => void,
     ReturnType<typeof setTimeout>
@@ -31,19 +41,19 @@ class RateLimitedAxios extends originalAxios.Axios {
   CanceledError = CanceledError;
   CancelToken = {} as CancelToken;
   isCancel = isCancel;
-  toFormData = axios.toFormData;
-  AxiosError = axios.AxiosError;
+  toFormData = originalAxios.toFormData;
+  AxiosError = originalAxios.AxiosError;
   Cancel = CanceledError;
   all = function all(promises: Promise<any>[]) {
     return Promise.all(promises);
   };
-  spread = axios.spread;
-  isAxiosError = axios.isAxiosError;
-  mergeConfig = axios.mergeConfig;
-  AxiosHeaders = axios.AxiosHeaders;
+  spread = originalAxios.spread;
+  isAxiosError = originalAxios.isAxiosError;
+  mergeConfig = originalAxios.mergeConfig;
+  AxiosHeaders = originalAxios.AxiosHeaders;
   formToJSON = formToJSON;
   getAdapter = getAdapter;
-  HttpStatusCode = axios.HttpStatusCode;
+  HttpStatusCode = originalAxios.HttpStatusCode;
 
   constructor(config?: AxiosRequestConfig) {
     super(
