@@ -12,6 +12,7 @@ import originalAxios, {
 import { RateLimitedAxiosConfig } from './config';
 import { Rule } from './types';
 import axios from 'axios';
+import pkg from '../package.json';
 
 declare module 'axios' {
   export interface InternalAxiosRequestConfig {
@@ -20,6 +21,7 @@ declare module 'axios' {
 }
 
 class RateLimitedAxios extends originalAxios.Axios {
+  VERSION = pkg.version;
   protected static timeoutIndicesPerRelease = new Map<
     () => void,
     ReturnType<typeof setTimeout>

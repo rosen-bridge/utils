@@ -2,9 +2,6 @@ import axios, { AxiosRequestConfig } from 'axios';
 import { RateLimitedAxios, RateLimitedAxiosConfig } from './RateLimitedAxios';
 export { Rule } from './types';
 export * from 'axios';
-import pkg from '../package.json';
-
-const VERSION = pkg.version;
 
 function createInstance(config?: AxiosRequestConfig) {
   const instance = new RateLimitedAxios(config) as RateLimitedAxios & {
@@ -34,6 +31,7 @@ const {
   CanceledError,
   isCancel,
   CancelToken,
+  VERSION,
   all,
   Cancel,
   isAxiosError,
