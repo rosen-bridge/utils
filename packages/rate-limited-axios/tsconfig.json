@@ -1,10 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "./dist",
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "resolveJsonModule": true
+    "outDir": "./dist"
   },
   "include": ["tests", "lib", "vitest.config.ts", "package.json"],
   "references": [{ "path": "../loggers/abstract-logger" }]
