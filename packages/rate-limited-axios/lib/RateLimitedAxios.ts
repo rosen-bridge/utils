@@ -13,16 +13,7 @@ import originalAxios, {
 } from 'axios';
 import { RateLimitedAxiosConfig } from './config';
 import { Rule } from './types';
-
-let VERSION: string | undefined;
-try {
-  const pkg = JSON.parse(
-    fs.readFileSync(path.resolve(__dirname, '../package.json'), 'utf-8')
-  );
-  VERSION = pkg.version;
-} catch (err) {
-  VERSION = undefined;
-}
+import pkg from '../package.json';
 
 declare module 'axios' {
   export interface InternalAxiosRequestConfig {
@@ -31,7 +22,7 @@ declare module 'axios' {
 }
 
 class RateLimitedAxios extends originalAxios.Axios {
-  VERSION = VERSION;
+  VERSION = pkg.version;
   protected static timeoutIndicesPerRelease = new Map<
     () => void,
     ReturnType<typeof setTimeout>
