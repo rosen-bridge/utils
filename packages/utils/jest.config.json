@@ -3,5 +3,6 @@
   "preset": "ts-jest/presets/js-with-babel",
   "setupFiles": ["./tests/setup.ts"],
   "testEnvironment": "node",
-  "verbose": true
+  "verbose": true,
+  "transformIgnorePatterns": ["node_modules/(?!(@rosen-bridge/*)/)"]
 }
