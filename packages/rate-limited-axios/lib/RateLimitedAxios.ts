@@ -1,5 +1,3 @@
-import fs from 'fs';
-import path from 'path';
 import originalAxios, {
   AxiosError,
   AxiosRequestConfig,
@@ -13,7 +11,7 @@ import originalAxios, {
 } from 'axios';
 import { RateLimitedAxiosConfig } from './config';
 import { Rule } from './types';
-import pkg from '../package.json';
+import pkg from '../package.json' assert { type: 'json' };
 
 declare module 'axios' {
   export interface InternalAxiosRequestConfig {
