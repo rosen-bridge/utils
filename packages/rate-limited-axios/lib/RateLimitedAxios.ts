@@ -7,6 +7,7 @@ import originalAxios, {
 import { Semaphore } from 'await-semaphore';
 import { RateLimitedAxiosConfig } from './config';
 import { Rule } from './types';
+import pkg from '../package.json' assert { type: 'json' };
 
 declare module 'axios' {
   export interface InternalAxiosRequestConfig {
@@ -15,6 +16,7 @@ declare module 'axios' {
 }
 
 class RateLimitedAxios extends originalAxios.Axios {
+  VERSION = pkg.version;
   protected static queueReleaser: { [key: string]: (() => void)[] } = {};
   protected static maxWaitingReleaserKeys: {
     [key: string]: Map<() => void, ReturnType<typeof setTimeout>>;
