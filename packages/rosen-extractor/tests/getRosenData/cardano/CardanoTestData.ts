@@ -1,4 +1,4 @@
-import { KoiosTransaction } from '../../../lib/getRosenData/cardano/types';
+import { CardanoTx } from '../../../lib/getRosenData/cardano/types';
 
 export default class CardanoTestData {
   static lockAddress =
@@ -833,22 +833,13 @@ export default class CardanoTestData {
     },
   };
 
-  static rosenTransactions = {
+  static rosenTransactions: Record<string, CardanoTx> = {
     validTokenLock: {
       id: 'c5afb967619ee64e0d724a56d27670fee6fe698df1375692d9868cb9792467c8',
       inputs: [
         {
           txId: 'faf9346ebeaf65c2720464eb9126e43dfd7b40742e337370b67b84ae0f03dc2b',
           index: 0,
-          value: 3000000n,
-          assets: [
-            {
-              policy_id:
-                'a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235',
-              asset_name: '484f534b59',
-              quantity: '184272501',
-            },
-          ],
         },
       ],
       outputs: [
@@ -864,9 +855,9 @@ export default class CardanoTestData {
           value: 1344798n,
           assets: [
             {
-              policy_id:
+              policyId:
                 'a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235',
-              asset_name: '484f534b59',
+              assetName: '484f534b59',
               quantity: '184272501',
             },
           ],
@@ -892,14 +883,10 @@ export default class CardanoTestData {
         {
           txId: '2868e42d3c00095c658b7cfd26ef8f1079617861b8ad68c65b73beabfa4ec83c',
           index: 0,
-          value: 10000000n,
-          assets: [],
         },
         {
           txId: 'fc303c5c986ffa4293cb60449f5496faab012dc37160143d5aefab0690f3af6c',
           index: 0,
-          value: 10000000n,
-          assets: [],
         },
       ],
       outputs: [
@@ -936,14 +923,10 @@ export default class CardanoTestData {
         {
           txId: '83cf93edbc7dae819e36d3bc14868ac1b5f4ceb3faf318dc345dc5ad12d521f1',
           index: 1,
-          value: 119172320n,
-          assets: [],
         },
         {
           txId: '3bed024e5aa81e7d54df868428514103e5ba09ab39f01885cc5b4627a231772a',
           index: 7,
-          value: 20571475n,
-          assets: [],
         },
       ],
       outputs: [
@@ -986,15 +969,6 @@ export default class CardanoTestData {
         {
           txId: 'faf9346ebeaf65c2720464eb9126e43dfd7b40742e337370b67b84ae0f03dc2b',
           index: 0,
-          value: 3000000n,
-          assets: [
-            {
-              policy_id:
-                'a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235',
-              asset_name: '484f534b59',
-              quantity: '184272501',
-            },
-          ],
         },
       ],
       outputs: [
@@ -1010,9 +984,9 @@ export default class CardanoTestData {
           value: 1344798n,
           assets: [
             {
-              policy_id:
+              policyId:
                 'a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235',
-              asset_name: '484f534b59',
+              assetName: '484f534b59',
               quantity: '184272501',
             },
           ],
@@ -1038,15 +1012,6 @@ export default class CardanoTestData {
         {
           txId: 'faf9346ebeaf65c2720464eb9126e43dfd7b40742e337370b67b84ae0f03dc2b',
           index: 0,
-          value: 3000000n,
-          assets: [
-            {
-              policy_id:
-                'a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235',
-              asset_name: '484f534b59',
-              quantity: '184272501',
-            },
-          ],
         },
       ],
       outputs: [
@@ -1062,9 +1027,9 @@ export default class CardanoTestData {
           value: 1344798n,
           assets: [
             {
-              policy_id:
+              policyId:
                 'a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235',
-              asset_name: '484f534b59',
+              assetName: '484f534b59',
               quantity: '184272501',
             },
           ],
@@ -1113,8 +1078,8 @@ export default class CardanoTestData {
       value: 1344798n,
       assets: [
         {
-          policy_id: 'a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235',
-          asset_name: '484f534b59',
+          policyId: 'a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235',
+          assetName: '484f534b59',
           quantity: '184272501',
         },
       ],
@@ -1131,13 +1096,13 @@ export default class CardanoTestData {
       value: 1344798n,
       assets: [
         {
-          policy_id: 'a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235',
-          asset_name: '484f534b50',
+          policyId: 'a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235',
+          assetName: '484f534b50',
           quantity: '184272501',
         },
         {
-          policy_id: 'a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235',
-          asset_name: '484f534b59',
+          policyId: 'a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235',
+          assetName: '484f534b59',
           quantity: '184272501',
         },
       ],
@@ -1148,8 +1113,8 @@ export default class CardanoTestData {
       value: 10000000n,
       assets: [
         {
-          policy_id: 'a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235',
-          asset_name: '484f534b50',
+          policyId: 'a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235',
+          assetName: '484f534b50',
           quantity: '184272501',
         },
       ],

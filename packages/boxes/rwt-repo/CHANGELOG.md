@@ -1,5 +1,11 @@
 # @rosen-bridge/rwt-repo
 
+## 2.0.5
+
+### Patch Changes
+
+- Update ergo node and explorer clients
+
 ## 2.0.4
 
 ### Patch Changes

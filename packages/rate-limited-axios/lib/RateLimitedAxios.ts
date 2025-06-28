@@ -4,23 +4,23 @@ import originalAxios, {
   AxiosResponse,
   InternalAxiosRequestConfig,
 } from 'axios';
-import { Semaphore } from 'await-semaphore';
 import { RateLimitedAxiosConfig } from './config';
 import { Rule } from './types';
 import pkg from '../package.json' assert { type: 'json' };
 
 declare module 'axios' {
   export interface InternalAxiosRequestConfig {
-    meta: any;
+    meta: { release: (() => void) | undefined; startedTime: number };
   }
 }
 
 class RateLimitedAxios extends originalAxios.Axios {
   VERSION = pkg.version;
-  protected static queueReleaser: { [key: string]: (() => void)[] } = {};
-  protected static maxWaitingReleaserKeys: {
-    [key: string]: Map<() => void, ReturnType<typeof setTimeout>>;
-  } = {};
+  protected static timeoutIndicesPerRelease = new Map<
+    () => void,
+    ReturnType<typeof setTimeout>
+  >();
+
 
   constructor(config?: AxiosRequestConfig) {
     super(
@@ -45,28 +45,18 @@ class RateLimitedAxios extends originalAxios.Axios {
     const url = config.url ?? '';
     const rule = RateLimitedAxios.getUrlRule(url);
 
-    if (rule) {
+    if (rule && config.meta.release) {
       const key = rule.pattern.toString();
-      if (
-        Object.hasOwn(RateLimitedAxios.queueReleaser, key) &&
-        RateLimitedAxios.queueReleaser[key].length > 0
-      ) {
-        const release = config.meta['release'];
-        let releaseTime =
-          rule.throttleWindow * 1000 - (Date.now() - config.meta.startedTime);
-        if (releaseTime < 0) releaseTime = 0;
-        setTimeout(() => {
-          clearTimeout(
-            RateLimitedAxios.maxWaitingReleaserKeys[key].get(release)
-          );
-          RateLimitedAxios.maxWaitingReleaserKeys[key].delete(release);
-          // release the locked queue
-          release();
-          RateLimitedAxios.queueReleaser[key] = RateLimitedAxios.queueReleaser[
-            key
-          ].filter((r) => r != release);
-        }, releaseTime);
-      }
+      const release = config.meta['release'];
+      let releaseTime =
+        rule.throttleWindow * 1000 - (Date.now() - config.meta.startedTime);
+      if (releaseTime < 0) releaseTime = 0;
+      setTimeout(() => {
+        clearTimeout(RateLimitedAxios.timeoutIndicesPerRelease.get(release));
+        RateLimitedAxios.timeoutIndicesPerRelease.delete(release);
+        // release the locked queue
+        release();
+      }, releaseTime);
     }
   };
 
@@ -88,16 +78,7 @@ class RateLimitedAxios extends originalAxios.Axios {
     config.meta = { release: release, startedTime: Date.now() };
 
     try {
-      // It will be released after receiving the relevant response
-      RateLimitedAxios.queueReleaser[key] = (
-        RateLimitedAxios.queueReleaser[key] || []
-      ).concat([release]);
-      if (!Object.hasOwn(RateLimitedAxios.maxWaitingReleaserKeys, key))
-        RateLimitedAxios.maxWaitingReleaserKeys[key] = new Map<
-          () => void,
-          ReturnType<typeof setTimeout>
-        >();
-      RateLimitedAxios.maxWaitingReleaserKeys[key].set(
+      RateLimitedAxios.timeoutIndicesPerRelease.set(
         release,
         setTimeout(() => {
           RateLimitedAxiosConfig.getLogger().debug(
