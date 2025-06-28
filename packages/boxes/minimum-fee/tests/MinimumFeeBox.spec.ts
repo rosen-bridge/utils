@@ -1,11 +1,8 @@
 import { ErgoBox } from 'ergo-lib-wasm-nodejs';
-import {
-  ChainMinimumFee,
-  ErgoNetworkType,
-  FailedError,
-  NetworkError,
-  NotFoundError,
-} from '../lib';
+import { FailedError, NetworkError, NotFoundError } from '../lib/errors';
+import { ChainMinimumFee, ErgoNetworkType } from '../lib/types';
+import jest from '@jest/globals';
+
 import { TestMinimumFeeBox } from './TestMinimumFeeBox';
 import * as testData from './testData';
 import ergoExplorerClientFactory from '@rosen-clients/ergo-explorer';
@@ -37,29 +34,30 @@ describe('MinimumFeeBox', () => {
      */
     const mockExplorergetApiV1BoxesUnspentBytokenidP1 = (
       shouldIncludeItemsField = true
-    ) =>
-      jest.mocked(ergoExplorerClientFactory).mockReturnValueOnce({
-        v1: {
-          getApiV1BoxesUnspentBytokenidP1: async (
-            tokenId: string,
-            {
-              offset,
-              limit,
-            }: {
-              offset: bigint;
-              limit: bigint;
-            }
-          ) => ({
-            ...(shouldIncludeItemsField && {
-              items: testData.explorerTestBoxes.slice(
-                Number(offset),
-                Number(offset + limit)
-              ),
+    ) => {
+        jest.mocked(ergoExplorerClientFactory).mockReturnValueOnce({
+          v1: {
+            getApiV1BoxesUnspentBytokenidP1: async (
+              tokenId: string,
+              {
+                offset,
+                limit,
+              }: {
+                offset: bigint;
+                limit: bigint;
+              }
+            ) => ({
+              ...(shouldIncludeItemsField && {
+                items: testData.explorerTestBoxes.slice(
+                  Number(offset),
+                  Number(offset + limit)
+                ),
+              }),
+              total: testData.explorerTestBoxes.length,
             }),
-            total: testData.explorerTestBoxes.length,
-          }),
-        },
-      } as any);
+          },
+        } as any);
+      }
 
     /**
      * mocks `getBoxesByTokenIdUnspent` of ergo node client
@@ -76,14 +74,12 @@ describe('MinimumFeeBox', () => {
     /**
      * mocks `getBoxesByTokenIdUnspent` of ergo node client to throw error with status 400
      */
-    const mockNodegetBoxesByTokenIdUnspentToThrow = () =>
-      jest.mocked(ergoNodeClientFactory).mockReturnValueOnce({
-        getBoxesByTokenIdUnspent: jest.fn().mockRejectedValueOnce({
-          response: {
-            status: 400,
-          },
-        }),
-      } as any);
+    const mockNodegetBoxesByTokenIdUnspentToThrow = jest.fn() as jest.Mock<() => any>;
+    mockNodegetBoxesByTokenIdUnspentToThrow.mockRejectedValueOnce({
+      response: {
+        status: 400,
+      },
+    });
 
     /**
      * @target MinimumFeeBox.fetchBox should fetch and select

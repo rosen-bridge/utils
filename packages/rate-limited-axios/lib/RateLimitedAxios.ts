@@ -13,6 +13,7 @@ import { RateLimitedAxiosConfig } from './config';
 import { Rule } from './types';
 import pkg from '../package.json' assert { type: 'json' };
 
+
 declare module 'axios' {
   export interface InternalAxiosRequestConfig {
     meta: { release: (() => void) | undefined; startedTime: number };

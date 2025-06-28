@@ -4,5 +4,5 @@
   "setupFiles": ["./tests/setup.ts"],
   "testEnvironment": "node",
   "verbose": true,
-  "transformIgnorePatterns": ["node_modules/(?!(@rosen-bridge/*)/)"]
+  "transformIgnorePatterns": []
 }

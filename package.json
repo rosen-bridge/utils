@@ -14,11 +14,13 @@
     "lint": "npm run lint --workspaces",
     "prepare": "husky install",
     "release": "npm run release --workspaces",
-    "test": "npm run test --if-present --workspaces",
+    "test": "NODE_OPTIONS=--experimental-vm-modules npm run test --if-present --workspaces",
     "type-check": "npm run type-check --workspaces",
     "version": "npx changeset version && npm i"
   },
   "devDependencies": {
+    "@babel/plugin-syntax-import-attributes": "^7.27.1",
+    "@babel/preset-typescript": "^7.27.1",
     "@changesets/cli": "^2.27.1",
     "@rosen-bridge/changeset-formatter": "^1.0.0",
     "husky": "^8.0.1",
