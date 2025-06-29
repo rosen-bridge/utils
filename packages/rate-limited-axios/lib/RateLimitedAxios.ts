@@ -152,4 +152,4 @@ const create = (config: AxiosRequestConfig = {}) => {
   return axiosInstance;
 };
 
-export { RateLimitedAxios, RateLimitedAxiosConfig, create };
+export { create, RateLimitedAxios, RateLimitedAxiosConfig };
