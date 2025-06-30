@@ -5,6 +5,8 @@
 ### Patch Changes
 
 - Downgrade ethers version
+- Updated dependencies
+  - @rosen-bridge/address-codec@0.6.3
 
 ## 8.0.0
 

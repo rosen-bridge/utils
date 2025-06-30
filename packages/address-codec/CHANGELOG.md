@@ -1,5 +1,11 @@
 # @rosen-bridge/address-codec
 
+## 0.6.3
+
+### Patch Changes
+
+- Downgrade ethers version
+
 ## 0.6.2
 
 ### Patch Changes

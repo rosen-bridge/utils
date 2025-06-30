@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/address-codec",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "A Typescript package for encoding and decoding of addresses in Rosen bridge supported chains",
   "repository": "https://github.com/rosen-bridge/utils",
   "license": "GPL-3.0",
@@ -37,6 +37,6 @@
     "@emurgo/cardano-serialization-lib-nodejs": "^13.2.1",
     "bitcoinjs-lib": "^6.1.5",
     "ergo-lib-wasm-nodejs": "^0.24.1",
-    "ethers": "^6.14.3"
+    "ethers": "6.13.2"
   }
 }
