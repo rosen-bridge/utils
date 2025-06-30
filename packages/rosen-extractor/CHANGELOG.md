@@ -1,5 +1,13 @@
 # @rosen-bridge/rosen-extractor
 
+## 8.0.1
+
+### Patch Changes
+
+- Downgrade ethers version
+- Updated dependencies
+  - @rosen-bridge/address-codec@0.6.3
+
 ## 8.0.0
 
 ### Major Changes
