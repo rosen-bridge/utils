@@ -58,7 +58,7 @@ describe('EvmEthersRosenExtractor', () => {
     });
 
     beforeEach(() => {
-      rpcExtractorMock.mockReset();
+      rpcExtractorMock.mockClear();
     });
 
     /**

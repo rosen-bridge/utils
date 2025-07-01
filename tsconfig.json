@@ -1,0 +1,23 @@
+{
+  "files": [],
+  "references": [
+    { "path": "packages/address-codec" },
+    { "path": "packages/boxes/minimum-fee" },
+    { "path": "packages/boxes/permit" },
+    { "path": "packages/boxes/rwt-repo" },
+    { "path": "packages/changeset-formatter" },
+    { "path": "packages/cli" },
+    { "path": "packages/config" },
+    { "path": "packages/extended-typeorm" },
+    { "path": "packages/fastify-enhanced" },
+    { "path": "packages/json-bigint" },
+    { "path": "packages/loggers/abstract-logger" },
+    { "path": "packages/loggers/callback-logger" },
+    { "path": "packages/loggers/winston-logger" },
+    { "path": "packages/tokens" },
+    { "path": "packages/rosen-extractor" },
+    { "path": "packages/service-manager" },
+    { "path": "packages/tx-pot" },
+    { "path": "packages/utils" }
+  ]
+}

@@ -29,7 +29,7 @@ export class ErgoRosenExtractor extends AbstractRosenDataExtractor<string> {
     let transaction: Transaction;
     try {
       transaction = Transaction.sigma_parse_bytes(
-        Buffer.from(serializedTransaction, 'hex')
+        Uint8Array.from(Buffer.from(serializedTransaction, 'hex'))
       );
     } catch (e) {
       this.logger.debug(

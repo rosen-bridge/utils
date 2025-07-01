@@ -1,6 +1,10 @@
 {
   "extends": "./tsconfig.json",
-  "exclude": ["tests"],
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "dist"
+  },
+  "include": ["lib"],
   "references": [
     { "path": "../../loggers/abstract-logger" },
     { "path": "../../json-bigint/tsconfig.build.json" }

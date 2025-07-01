@@ -1,5 +1,9 @@
 {
   "extends": "./tsconfig.json",
-  "exclude": ["tests"],
+  "compilerOptions": {
+    "rootDir": "./lib",
+    "outDir": "./dist"
+  },
+  "include": ["lib"],
   "references": [{ "path": "../../loggers/abstract-logger" }]
 }

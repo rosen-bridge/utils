@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "./dist"
+  },
+  "include": ["lib"],
+  "references": [
+    { "path": "../tokens/tsconfig.build.json" },
+    { "path": "../loggers/abstract-logger" },
+    { "path": "../json-bigint/tsconfig.build.json" },
+    { "path": "../address-codec/tsconfig.build.json" }
+  ]
+}

@@ -1,10 +1,8 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "dist",
-    "rootDir": "./"
+    "rootDir": ".",
+    "types": ["node", "vitest/globals"]
   },
-  "exclude": ["lib/**/*.spec.ts", "lib/**/*.test.ts", "lib/**/*.mock.ts"],
-  "include": ["lib/**/*", "vitest.config.ts"],
   "references": [{ "path": "../loggers/abstract-logger" }]
 }

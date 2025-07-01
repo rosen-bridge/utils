@@ -15,6 +15,17 @@
     "skipLibCheck": true,
     "strict": true,
     "strictPropertyInitialization": false,
-    "target": "esnext"
+    "target": "esnext",
+
+    "pretty": true,
+
+    "strictBindCallApply": false,
+    "useUnknownInCatchVariables": false,
+    "alwaysStrict": true,
+    "preserveConstEnums": true,
+    "newLine": "lf",
+    "types": [],
+    "allowSyntheticDefaultImports": true,
+    "noEmitOnError": true
   }
 }

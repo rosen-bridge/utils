@@ -4,5 +4,6 @@
     "rootDir": ".",
     "outDir": "./dist"
   },
-  "include": ["lib"]
+  "include": ["bin"],
+  "references": [{ "path": "../utils/tsconfig.build.json" }]
 }

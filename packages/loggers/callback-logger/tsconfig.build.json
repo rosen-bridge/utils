@@ -1,11 +1,9 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "rootDir": "./lib"
+    "rootDir": "./lib",
+    "outDir": "./dist"
   },
-  "references": [
-    {
-      "path": "../abstract-logger"
-    }
-  ]
+  "include": ["lib"],
+  "references": [{ "path": "../abstract-logger" }]
 }
