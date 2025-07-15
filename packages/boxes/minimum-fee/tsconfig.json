@@ -4,6 +4,7 @@
     "rootDir": ".",
     "types": ["node", "jest"]
   },
+  "include": ["tests", "lib"],
   "references": [
     { "path": "../../loggers/abstract-logger" },
     { "path": "../../json-bigint/tsconfig.json" }

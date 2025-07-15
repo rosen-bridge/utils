@@ -4,5 +4,5 @@
     "rootDir": "./lib",
     "outDir": "./dist"
   },
-  "include": ["lib"]
+  "exclude": ["tests", "vitest.config.ts"]
 }

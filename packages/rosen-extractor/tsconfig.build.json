@@ -4,7 +4,7 @@
     "rootDir": ".",
     "outDir": "./dist"
   },
-  "include": ["lib"],
+  "exclude": ["lib/**/*.spec.ts", "lib/**/*.test.ts", "lib/**/*.mock.ts"],
   "references": [
     { "path": "../tokens/tsconfig.build.json" },
     { "path": "../loggers/abstract-logger" },
