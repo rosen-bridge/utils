@@ -6,9 +6,9 @@
   },
   "include": ["lib/**/*"],
   "references": [
-    { "path": "../tokens/tsconfig.json" },
     { "path": "../loggers/abstract-logger" },
-    { "path": "../json-bigint/tsconfig.json" },
-    { "path": "../address-codec/tsconfig.json" }
+    { "path": "../tokens" },
+    { "path": "../json-bigint" },
+    { "path": "../address-codec" }
   ]
 }

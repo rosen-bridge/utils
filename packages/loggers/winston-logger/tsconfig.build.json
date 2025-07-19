@@ -1,12 +1,11 @@
 {
-  "extends": "../../../tsconfig.base.json",
+  "extends": "./tsconfig.json",
   "compilerOptions": {
     "rootDir": "./lib",
     "outDir": "./dist"
   },
-  "include": ["lib"],
   "references": [
     { "path": "../abstract-logger" },
-    { "path": "../../json-bigint" }
+    { "path": "../../json-bigint/tsconfig.build.json" }
   ]
 }

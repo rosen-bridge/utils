@@ -5,5 +5,5 @@
     "types": ["node"]
   },
   "include": ["bin"],
-  "references": [{ "path": "../utils/tsconfig.json" }]
+  "references": [{ "path": "../utils" }]
 }
