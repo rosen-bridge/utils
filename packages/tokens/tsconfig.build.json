@@ -1,9 +1,14 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "rootDir": ".",
+    "rootDir": "./lib",
     "outDir": "./dist"
   },
-  "exclude": ["lib/**/*.spec.ts", "lib/**/*.test.ts", "lib/**/*.mock.ts"],
+  "exclude": [
+    "lib/**/*.spec.ts",
+    "lib/**/*.test.ts",
+    "lib/**/*.mock.ts",
+    "vitest.config.ts"
+  ],
   "references": [{ "path": "../loggers/abstract-logger" }]
 }

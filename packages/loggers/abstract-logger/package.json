@@ -2,8 +2,8 @@
   "name": "@rosen-bridge/abstract-logger",
   "version": "2.0.1",
   "description": "Rosen Bridge abstract logger class, the base type for loggers used in all Rosen packages",
-  "main": "dist/lib/index.js",
-  "types": "dist/lib/index.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "type": "module",
   "scripts": {
     "prettify": "prettier --write . --ignore-path .gitignore",

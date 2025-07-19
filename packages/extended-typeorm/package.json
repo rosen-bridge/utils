@@ -2,8 +2,8 @@
   "name": "@rosen-bridge/extended-typeorm",
   "version": "0.1.0",
   "description": "An extended typeorm datasource with run some queries better",
-  "main": "dist/lib/index.js",
-  "types": "dist/lib/index.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "type": "module",
   "scripts": {
     "prettify": "prettier --write . --ignore-path .gitignore",
