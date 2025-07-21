@@ -2,6 +2,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "rootDir": "./lib",
+    "outDir": "./dist",
     "module": "CommonJS"
   },
   "exclude": ["tests"]

@@ -1,8 +1,9 @@
 {
   "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "./dist",
-    "rootDir": "./lib"
+    "rootDir": ".",
+    "types": ["node", "vitest/globals"]
   },
-  "include": ["lib"]
+  "include": ["lib"],
+  "references": [{ "path": "../../loggers/abstract-logger" }]
 }

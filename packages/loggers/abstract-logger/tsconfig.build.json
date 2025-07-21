@@ -3,6 +3,5 @@
   "compilerOptions": {
     "rootDir": "./lib",
     "outDir": "./dist"
-  },
-  "exclude": ["tests"]
+  }
 }

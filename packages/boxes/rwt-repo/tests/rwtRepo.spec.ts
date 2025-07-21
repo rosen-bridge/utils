@@ -10,7 +10,7 @@ import { mockedErgoNodeClientFactory } from './mocked/ergoNodeClient.mock';
 import { repoAddress, repoNft, boxInfo1, boxInfo2 } from './rwtRepoTestData';
 
 describe('RWTRepo', () => {
-  let rwtRepoWithExplorer;
+  let rwtRepoWithExplorer: any;
   beforeEach(() => {
     rwtRepoWithExplorer = new RWTRepo(
       repoAddress,

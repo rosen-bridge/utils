@@ -1,14 +1,14 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "dist",
-    "rootDir": "./"
+    "rootDir": ".",
+    "types": ["node", "jest"]
   },
-  "exclude": ["lib/**/*.spec.ts", "lib/**/*.test.ts", "lib/**/*.mock.ts"],
   "include": ["lib/**/*"],
   "references": [
-    { "path": "../tokens" },
     { "path": "../loggers/abstract-logger" },
+    { "path": "../tokens" },
+    { "path": "../json-bigint" },
     { "path": "../address-codec" }
   ]
 }

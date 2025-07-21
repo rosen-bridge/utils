@@ -3,6 +3,7 @@
   "version": "2.0.5",
   "description": "a package to manage RWT Repo box",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "type": "module",
   "scripts": {
     "prettify": "prettier --write . --ignore-path .gitignore",
@@ -21,16 +22,11 @@
   "license": "GPL-3.0",
   "devDependencies": {
     "@types/json-bigint": "^1.0.1",
-    "@types/node": "^20.5.7",
-    "@typescript-eslint/eslint-plugin": "^6.5.0",
-    "@typescript-eslint/parser": "^6.5.0",
+    "@types/node": "^20.11.0",
     "@vitest/coverage-istanbul": "^2.0.5",
-    "eslint": "^8.48.0",
-    "eslint-config-prettier": "^9.0.0",
     "extensionless": "^1.9.6",
-    "prettier": "3.0.3",
     "ts-node": "^10.9.1",
-    "typescript": "^5.2.2",
+    "typescript": "^5.8.3",
     "vitest": "^2.0.5"
   },
   "dependencies": {
@@ -41,6 +37,6 @@
     "json-bigint": "^1.0.0"
   },
   "engines": {
-    "node": ">=18.16.1"
+    "node": ">=20.11.0"
   }
 }

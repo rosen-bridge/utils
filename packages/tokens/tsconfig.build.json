@@ -4,6 +4,11 @@
     "rootDir": "./lib",
     "outDir": "./dist"
   },
-  "exclude": ["tests", "vitest.config.ts"],
+  "exclude": [
+    "lib/**/*.spec.ts",
+    "lib/**/*.test.ts",
+    "lib/**/*.mock.ts",
+    "vitest.config.ts"
+  ],
   "references": [{ "path": "../loggers/abstract-logger/tsconfig.build.json" }]
 }
