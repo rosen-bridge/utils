@@ -5,7 +5,7 @@
     "outDir": "./dist"
   },
   "references": [
-    { "path": "../abstract-logger" },
+    { "path": "../abstract-logger/tsconfig.build.json" },
     { "path": "../../json-bigint/tsconfig.build.json" }
   ]
 }

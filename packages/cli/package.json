@@ -2,8 +2,8 @@
   "name": "@rosen-bridge/cli",
   "version": "1.0.0",
   "description": "The official Rosen bridge cli, providing helpers for the tasks related to Rosen bridge",
-  "main": "dist/bin/index.js",
-  "bin": "dist/bin/index.js",
+  "main": "dist/index.js",
+  "bin": "dist/index.js",
   "type": "module",
   "scripts": {
     "prettify": "prettier --write . --ignore-path .gitignore",
