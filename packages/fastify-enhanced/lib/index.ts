@@ -1,4 +1,3 @@
-export { ZodTypeProvider } from 'fastify-type-provider-zod';
-export * from './dataTypes';
+export type { FastifyZodOpenApiTypeProvider } from 'fastify-zod-openapi';
 export * from './fastify';
 export * from './types';
