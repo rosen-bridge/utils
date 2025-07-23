@@ -1,13 +1,13 @@
-import { FastifyBaseLogger, FastifyInstance } from 'fastify';
-import { ZodTypeProvider } from 'fastify-type-provider-zod';
 import * as http from 'http';
+import { FastifyBaseLogger, FastifyInstance } from 'fastify';
+import type { FastifyZodOpenApiTypeProvider } from 'fastify-zod-openapi';
 
 export type FastifyWithZod = FastifyInstance<
   http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>,
   http.IncomingMessage,
   http.ServerResponse<http.IncomingMessage>,
   FastifyBaseLogger,
-  ZodTypeProvider
+  FastifyZodOpenApiTypeProvider
 >;
 
 export interface SwaggerOpts {
