@@ -11,6 +11,8 @@ export abstract class PeriodicTaskService extends AbstractService {
 
   private timeouts: Map<string, NodeJS.Timeout> = new Map();
   private active = false;
+  protected abstract starterService(): Promise<void>;
+  protected abstract stoperService(): Promise<void>;
 
   /**
    * Process logic for a single execution cycle of the specified task.
@@ -38,10 +40,13 @@ export abstract class PeriodicTaskService extends AbstractService {
 
     this.logger.info(`Starting periodic task service [${this.taskName}]`);
 
+    await this.starterService();
+
     const configs = this.getTimeoutConfigs();
     configs.forEach(({ id, intervalMs }) => {
       const cycle = async () => {
         if (!this.active) return;
+
         try {
           await this.processCycle(id);
         } catch (err) {
@@ -49,11 +54,13 @@ export abstract class PeriodicTaskService extends AbstractService {
             `Error in task [${id}] of service [${this.getName()}]: ${err}`
           );
         }
+
         if (this.active) {
           const timeout = setTimeout(cycle, intervalMs);
           this.timeouts.set(id, timeout);
         }
       };
+
       cycle();
     });
 
@@ -68,6 +75,7 @@ export abstract class PeriodicTaskService extends AbstractService {
   protected stop = async (): Promise<boolean> => {
     this.setStatus(ServiceStatus.dormant);
     this.active = false;
+
     this.logger.info(`Stopping periodic task service [${this.taskName}]`);
 
     for (const [id, timeout] of this.timeouts) {
@@ -75,6 +83,8 @@ export abstract class PeriodicTaskService extends AbstractService {
       this.logger.debug(`Cleared timeout for task [${id}]`);
     }
     this.timeouts.clear();
+
+    await this.stoperService();
 
     return true;
   };
