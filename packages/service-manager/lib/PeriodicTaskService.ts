@@ -80,7 +80,6 @@ export abstract class PeriodicTaskService extends AbstractService {
       this.logger.info(`Stopping periodic task service [${this.taskName}]`);
 
       await this.stoperService();
-      this.active = false;
       const tasks = this.getTasks();
       const taskPromises = tasks.map(
         ({ fn }) =>
@@ -109,7 +108,7 @@ export abstract class PeriodicTaskService extends AbstractService {
       );
 
       await Promise.all(taskPromises);
-
+      this.active = false;
       for (const [fnName, timeout] of this.timeouts) {
         if (timeout) {
           clearTimeout(timeout);
