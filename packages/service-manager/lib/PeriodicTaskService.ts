@@ -12,6 +12,7 @@ export abstract class PeriodicTaskService extends AbstractService {
   private timeouts: Map<string, NodeJS.Timeout | number> = new Map();
   private active = false;
   private continueStop?: () => void;
+  private tasksInProgress = 0;
   protected abstract starterService(): Promise<void>;
   protected abstract stoperService(): Promise<void>;
 
@@ -35,6 +36,7 @@ export abstract class PeriodicTaskService extends AbstractService {
 
       this.setStatus(ServiceStatus.running);
       this.active = true;
+      this.tasksInProgress = 0;
 
       const tasks = this.getTasks();
       tasks.forEach(({ fn, interval }) => {
@@ -55,6 +57,7 @@ export abstract class PeriodicTaskService extends AbstractService {
           }
         };
 
+        this.tasksInProgress += 1;
         cycle();
       });
 
@@ -78,11 +81,6 @@ export abstract class PeriodicTaskService extends AbstractService {
 
       await this.stoperService();
       this.active = false;
-
-      const stopAllTasks = new Promise<void>((resolve) => {
-        this.continueStop = resolve;
-      });
-
       const tasks = this.getTasks();
       const taskPromises = tasks.map(
         ({ fn }) =>
@@ -92,11 +90,16 @@ export abstract class PeriodicTaskService extends AbstractService {
 
               try {
                 await fn();
-                resolve();
               } catch (err) {
                 this.logger.error(
                   `Error in stopping task [${this.getName()}]: ${err}`
                 );
+              } finally {
+                this.tasksInProgress -= 1;
+
+                if (this.tasksInProgress === 0 && this.continueStop) {
+                  this.continueStop();
+                }
                 resolve();
               }
             };
@@ -104,8 +107,6 @@ export abstract class PeriodicTaskService extends AbstractService {
             cycleFinished();
           })
       );
-
-      await Promise.all(taskPromises);
 
       await Promise.all(taskPromises);
 
