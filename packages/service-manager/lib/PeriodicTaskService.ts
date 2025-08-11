@@ -1,3 +1,4 @@
+import { resolve } from 'path';
 import { AbstractService } from './AbstractService';
 import { ServiceStatus } from './types';
 
@@ -6,13 +7,17 @@ type Task = {
   interval: number;
 };
 
+interface TaskManager extends Task {
+  isRunning: boolean;
+  finished: Promise<void>;
+}
+
 export abstract class PeriodicTaskService extends AbstractService {
   protected abstract readonly taskName: string;
 
   private timeouts: Map<string, NodeJS.Timeout | number> = new Map();
   private active = false;
-  private continueStop?: () => void;
-  private tasksInProgress = 0;
+  private taskManagers: TaskManager[] = [];
   protected abstract starterService(): Promise<void>;
   protected abstract stoperService(): Promise<void>;
 
@@ -31,34 +36,41 @@ export abstract class PeriodicTaskService extends AbstractService {
   protected start = async (): Promise<boolean> => {
     try {
       this.logger.info(`Starting periodic task service [${this.taskName}]`);
-
       await this.starterService();
 
       this.setStatus(ServiceStatus.running);
       this.active = true;
-      this.tasksInProgress = 0;
 
       const tasks = this.getTasks();
-      tasks.forEach(({ fn, interval }) => {
-        const cycle = async () => {
-          if (!this.active) return;
+      this.taskManagers = tasks.map(({ fn, interval }) => {
+        const taskManager: TaskManager = {
+          fn,
+          interval,
+          isRunning: false,
+          finished: new Promise<void>((resolve) => {
+            const cycle = async () => {
+              if (!this.active) return resolve();
 
-          try {
-            await fn();
-          } catch (err) {
-            this.logger.error(
-              `Error in executing periodic task for service [${this.getName()}]: ${err}`
-            );
-          }
+              try {
+                this.logger.debug(`Running task: ${fn.name}`);
+                await fn();
+                this.logger.debug(`Finished task: ${fn.name}`);
+              } catch (err) {
+                this.logger.error(`Error in executing task ${fn.name}: ${err}`);
+              }
 
-          if (this.active) {
-            const timeout = setTimeout(cycle, interval);
-            this.timeouts.set(fn.name, timeout);
-          }
+              if (this.active) {
+                const timeout = setTimeout(cycle, interval);
+                this.timeouts.set(fn.name, timeout);
+              }
+            };
+
+            taskManager.isRunning = true;
+            cycle();
+          }),
         };
 
-        this.tasksInProgress += 1;
-        cycle();
+        return taskManager;
       });
 
       return true;
@@ -78,43 +90,27 @@ export abstract class PeriodicTaskService extends AbstractService {
   protected stop = async (): Promise<boolean> => {
     try {
       this.logger.info(`Stopping periodic task service [${this.taskName}]`);
-
-      await this.stoperService();
-      const tasks = this.getTasks();
-      const taskPromises = tasks.map(
-        ({ fn }) =>
-          new Promise<void>((resolve) => {
-            const cycleFinished = async () => {
-              if (!this.active) return resolve();
-
-              try {
-                await fn();
-              } catch (err) {
-                this.logger.error(
-                  `Error in stopping task [${this.getName()}]: ${err}`
-                );
-              } finally {
-                this.tasksInProgress -= 1;
-
-                if (this.tasksInProgress === 0 && this.continueStop) {
-                  this.continueStop();
-                }
-                resolve();
-              }
-            };
-
-            cycleFinished();
-          })
-      );
-
-      await Promise.all(taskPromises);
       this.active = false;
-      for (const [fnName, timeout] of this.timeouts) {
-        if (timeout) {
-          clearTimeout(timeout);
-          this.logger.debug(`Cleared timeout for task [${fnName}]`);
+      await this.stoperService();
+
+      const stopPromises = this.taskManagers.map(async (taskManager) => {
+        try {
+          if (taskManager.isRunning) {
+            await taskManager.finished;
+          }
+        } catch (err) {
+          this.logger.error(
+            `Error in stopping task [${taskManager.fn.name}]: ${err}`
+          );
         }
-      }
+      });
+
+      await Promise.all(stopPromises);
+
+      this.timeouts.forEach((timeout, fnName) => {
+        clearTimeout(timeout);
+        this.logger.debug(`Cleared timeout for task [${fnName}]`);
+      });
       this.timeouts.clear();
 
       this.setStatus(ServiceStatus.dormant);
