@@ -1,4 +1,3 @@
-import { resolve } from 'path';
 import { AbstractService } from './AbstractService';
 import { ServiceStatus } from './types';
 
