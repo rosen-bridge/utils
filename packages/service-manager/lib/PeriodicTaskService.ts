@@ -18,11 +18,6 @@ export abstract class PeriodicTaskService extends AbstractService {
   private taskManagers: TaskManager[] = [];
   protected abstract starterService(): Promise<void>;
   protected abstract stoperService(): Promise<void>;
-
-  private continueStop: () => void = () => {
-    return;
-  };
-
   protected abstract getTasks(): Task[];
 
   /**
@@ -34,7 +29,6 @@ export abstract class PeriodicTaskService extends AbstractService {
     try {
       this.logger.info(`Starting periodic task service [${this.taskName}]`);
       await this.starterService();
-
       this.setStatus(ServiceStatus.running);
       this.active = true;
 
@@ -102,10 +96,8 @@ export abstract class PeriodicTaskService extends AbstractService {
           this.logger.info(
             `Waiting for task [${taskManager.fn.name}] to finish`
           );
-          this.continueStop = async () => {
-            await taskManager.finished;
-            this.logger.info(`Task [${taskManager.fn.name}] finished`);
-          };
+          await taskManager.finished;
+          this.logger.info(`Task [${taskManager.fn.name}] finished`);
         } catch (err) {
           this.logger.error(
             `Error in stopping task [${taskManager.fn.name}]: ${err}`
@@ -117,10 +109,9 @@ export abstract class PeriodicTaskService extends AbstractService {
 
       this.timeouts.forEach((timeout, fnName) => {
         clearTimeout(timeout);
-        this.logger.debug(`Cleared timeout for task [${fnName}]`);
+        this.logger.info(`Cleared timeout for task [${fnName}]`);
       });
       this.timeouts.clear();
-
       this.setStatus(ServiceStatus.dormant);
       return true;
     } catch (err) {
