@@ -38,6 +38,11 @@ export abstract class PeriodicTaskService extends AbstractService {
       this.setStatus(ServiceStatus.running);
       this.active = true;
 
+      /**
+       * returns a list of tasks with their associated functions and intervals.
+       *
+       * @returns {Task[]} Array of task objects containing the function and interval.
+       */
       const tasks = this.getTasks();
       this.taskManagers = tasks.map(({ fn, interval }) => {
         const taskManager: TaskManager = {
