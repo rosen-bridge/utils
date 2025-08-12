@@ -7,7 +7,6 @@ type Task = {
 };
 
 interface TaskManager extends Task {
-  isRunning: boolean;
   finished: Promise<void>;
 }
 
@@ -20,11 +19,10 @@ export abstract class PeriodicTaskService extends AbstractService {
   protected abstract starterService(): Promise<void>;
   protected abstract stoperService(): Promise<void>;
 
-  /**
-   * returns a list of tasks with their associated functions and intervals.
-   *
-   * @returns {Task[]} Array of task objects containing the function and interval.
-   */
+  private continueStop: () => void = () => {
+    return;
+  };
+
   protected abstract getTasks(): Task[];
 
   /**
@@ -45,7 +43,6 @@ export abstract class PeriodicTaskService extends AbstractService {
         const taskManager: TaskManager = {
           fn,
           interval,
-          isRunning: true,
           finished: new Promise<void>((resolve) => {
             const cycle = async () => {
               if (!this.active) {
@@ -97,9 +94,13 @@ export abstract class PeriodicTaskService extends AbstractService {
       await this.stoperService();
       const stopPromises = this.taskManagers.map(async (taskManager) => {
         try {
-          if (taskManager.isRunning) {
+          this.logger.info(
+            `Waiting for task [${taskManager.fn.name}] to finish`
+          );
+          this.continueStop = async () => {
             await taskManager.finished;
-          }
+            this.logger.info(`Task [${taskManager.fn.name}] finished`);
+          };
         } catch (err) {
           this.logger.error(
             `Error in stopping task [${taskManager.fn.name}]: ${err}`
