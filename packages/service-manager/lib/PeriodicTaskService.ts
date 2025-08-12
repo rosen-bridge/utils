@@ -45,10 +45,13 @@ export abstract class PeriodicTaskService extends AbstractService {
         const taskManager: TaskManager = {
           fn,
           interval,
-          isRunning: false,
+          isRunning: true,
           finished: new Promise<void>((resolve) => {
             const cycle = async () => {
-              if (!this.active) return resolve();
+              if (!this.active) {
+                resolve();
+                return;
+              }
 
               try {
                 this.logger.debug(`Running task: ${fn.name}`);
@@ -61,10 +64,11 @@ export abstract class PeriodicTaskService extends AbstractService {
               if (this.active) {
                 const timeout = setTimeout(cycle, interval);
                 this.timeouts.set(fn.name, timeout);
+              } else {
+                resolve();
               }
             };
 
-            taskManager.isRunning = true;
             cycle();
           }),
         };
@@ -91,7 +95,6 @@ export abstract class PeriodicTaskService extends AbstractService {
       this.logger.info(`Stopping periodic task service [${this.taskName}]`);
       this.active = false;
       await this.stoperService();
-
       const stopPromises = this.taskManagers.map(async (taskManager) => {
         try {
           if (taskManager.isRunning) {
