@@ -27,6 +27,7 @@ export abstract class PeriodicTaskService extends AbstractService {
    */
   protected start = async (): Promise<boolean> => {
     try {
+      let taskIdGenerator = 0;
       this.logger.info(`Starting periodic task service [${this.taskName}]`);
       await this.starterService();
       this.setStatus(ServiceStatus.running);
@@ -43,6 +44,7 @@ export abstract class PeriodicTaskService extends AbstractService {
           fn,
           interval,
           finished: new Promise<void>((resolve) => {
+            const taskId = `task_${taskIdGenerator++}_${fn.name}`;
             const cycle = async () => {
               if (!this.active) {
                 resolve();
@@ -50,21 +52,18 @@ export abstract class PeriodicTaskService extends AbstractService {
               }
 
               try {
-                this.logger.debug(`Running task: ${fn.name}`);
                 await fn();
-                this.logger.debug(`Finished task: ${fn.name}`);
               } catch (err) {
-                this.logger.error(`Error in executing task ${fn.name}: ${err}`);
+                this.logger.info(`Error in executing task ${fn.name}: ${err}`);
               }
 
               if (this.active) {
                 const timeout = setTimeout(cycle, interval);
-                this.timeouts.set(fn.name, timeout);
+                this.timeouts.set(taskId, timeout);
               } else {
                 resolve();
               }
             };
-
             cycle();
           }),
         };
@@ -105,14 +104,19 @@ export abstract class PeriodicTaskService extends AbstractService {
         }
       });
 
+      this.logger.info(`Awaiting all tasks to finish before stopping service.`);
       await Promise.all(stopPromises);
-
-      this.timeouts.forEach((timeout, fnName) => {
+      this.logger.info(`Task [${this.taskName}] promise finished`);
+      this.logger.info(`finishing all tasks before stopping service.`);
+      this.timeouts.forEach((timeout, taskId) => {
         clearTimeout(timeout);
-        this.logger.info(`Cleared timeout for task [${fnName}]`);
+        this.logger.info(`Cleared timeout for task [${taskId}]`);
       });
       this.timeouts.clear();
       this.setStatus(ServiceStatus.dormant);
+      this.logger.info(
+        `Periodic task service [${this.taskName}] stopped successfully.`
+      );
       return true;
     } catch (err) {
       this.logger.error(
