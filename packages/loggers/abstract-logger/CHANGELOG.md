@@ -1,5 +1,11 @@
 # @rosen-bridge/abstract-logger
 
+## 2.1.0
+
+### Minor Changes
+
+- Update versions of nodejs to 20.11 & typescript to 5.8
+
 ## 2.0.1
 
 ### Patch Changes

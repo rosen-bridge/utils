@@ -1,9 +1,9 @@
 {
   "name": "@rosen-bridge/changeset-formatter",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A changeset formatter based on default changeset formatter, but without commit hashes",
   "repository": "https://github.com/rosen-bridge/utils",
-  "license": "GPL-3.0",
+  "license": "MIT",
   "author": "Rosen Team",
   "type": "commonjs",
   "main": "dist/index.js",
