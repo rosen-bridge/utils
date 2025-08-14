@@ -92,11 +92,8 @@ export abstract class PeriodicTaskService extends AbstractService {
       await this.stoperService();
       const stopPromises = this.taskManagers.map(async (taskManager) => {
         try {
-          this.logger.info(
-            `Waiting for task [${taskManager.fn.name}] to finish`
-          );
           await taskManager.finished;
-          this.logger.info(`Task [${taskManager.fn.name}] finished`);
+          this.logger.debug(`Task [${taskManager.fn.name}] finished`);
         } catch (err) {
           this.logger.error(
             `Error in stopping task [${taskManager.fn.name}]: ${err}`
@@ -104,13 +101,14 @@ export abstract class PeriodicTaskService extends AbstractService {
         }
       });
 
-      this.logger.info(`Awaiting all tasks to finish before stopping service.`);
+      this.logger.debug(
+        `Awaiting all tasks to finish before stopping service.`
+      );
       await Promise.all(stopPromises);
-      this.logger.info(`Task [${this.taskName}] promise finished`);
-      this.logger.info(`finishing all tasks before stopping service.`);
+      this.logger.debug(`finishing all tasks before stopping service.`);
       this.timeouts.forEach((timeout, taskId) => {
         clearTimeout(timeout);
-        this.logger.info(`Cleared timeout for task [${taskId}]`);
+        this.logger.debug(`Cleared timeout for task [${taskId}]`);
       });
       this.timeouts.clear();
       this.setStatus(ServiceStatus.dormant);
