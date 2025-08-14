@@ -1,5 +1,11 @@
 # @rosen-bridge/address-codec
 
+## 0.7.0
+
+### Minor Changes
+
+- Update versions of nodejs to 20.11 & typescript to 5.8
+
 ## 0.6.3
 
 ### Patch Changes

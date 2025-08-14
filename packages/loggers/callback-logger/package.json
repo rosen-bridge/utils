@@ -1,8 +1,8 @@
 {
   "name": "@rosen-bridge/callback-logger",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A new logger with callback method on each levels",
-  "license": "GPL-3.0",
+  "license": "MIT",
   "author": "Rosen Team",
   "type": "module",
   "main": "dist/index.js",
@@ -26,6 +26,6 @@
     "node": ">=20.11.0"
   },
   "dependencies": {
-    "@rosen-bridge/abstract-logger": "^2.0.1"
+    "@rosen-bridge/abstract-logger": "^2.1.0"
   }
 }
