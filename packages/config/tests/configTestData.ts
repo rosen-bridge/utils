@@ -1214,3 +1214,44 @@ export const schemaConfigCharPair = {
     },
   },
 };
+
+export const arraySchemaDefaultValuePairSample = {
+  schema: {
+    stringArray: {
+      type: 'array',
+      default: ['item1', 'item2', 'item3'],
+      description: 'array of strings',
+      items: {
+        type: 'string',
+      },
+    },
+    numberArray: {
+      type: 'array',
+      default: [1, 2, 3, 42],
+      description: 'array of numbers',
+      items: {
+        type: 'number',
+      },
+    },
+    emptyArray: {
+      type: 'array',
+      default: [],
+      description: 'empty array',
+      items: {
+        type: 'string',
+      },
+    },
+    noDefaultArray: {
+      type: 'array',
+      description: 'array without default',
+      items: {
+        type: 'boolean',
+      },
+    },
+  },
+  defaultVal: {
+    stringArray: ['item1', 'item2', 'item3'],
+    numberArray: [1, 2, 3, 42],
+    emptyArray: [],
+  },
+};

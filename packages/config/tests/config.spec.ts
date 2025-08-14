@@ -40,6 +40,85 @@ describe('ConfigValidator', () => {
         testData.apiSchemaDefaultValuePairSample.defaultVal
       );
     });
+
+    /**
+     * @target generateDefault should return default values for array fields with
+     * string and number items
+     * @dependencies
+     * @scenario
+     * - call generateDefault on schema with array fields
+     * - check if correct default value object is returned
+     * @expected
+     * - correct default value object should have been returned including arrays
+     */
+    it(`should return default values for array fields with string and number items`, async () => {
+      const config = new ConfigValidator(
+        <ConfigSchema>testData.arraySchemaDefaultValuePairSample.schema
+      );
+      expect(config.generateDefault()).toEqual(
+        testData.arraySchemaDefaultValuePairSample.defaultVal
+      );
+    });
+
+    /**
+     * @target generateDefault should handle empty array defaults
+     * @dependencies
+     * @scenario
+     * - call generateDefault on schema with empty array default
+     * - check if empty array is included in result
+     * @expected
+     * - empty array should be included in default values
+     */
+    it(`should handle empty array defaults`, async () => {
+      const schema = {
+        emptyStringArray: {
+          type: 'array' as const,
+          default: [],
+          items: { type: 'string' as const },
+        },
+        emptyNumberArray: {
+          type: 'array' as const,
+          default: [],
+          items: { type: 'number' as const },
+        },
+      };
+      const config = new ConfigValidator(schema);
+      const result = config.generateDefault();
+
+      expect(result).toEqual({
+        emptyStringArray: [],
+        emptyNumberArray: [],
+      });
+    });
+
+    /**
+     * @target generateDefault should exclude arrays without default values
+     * @dependencies
+     * @scenario
+     * - call generateDefault on schema with array field without default
+     * - check if array field is excluded from result
+     * @expected
+     * - array field without default should be excluded from result
+     */
+    it(`should exclude arrays without default values`, async () => {
+      const schema = {
+        withDefault: {
+          type: 'string' as const,
+          default: 'test',
+        },
+        arrayWithoutDefault: {
+          type: 'array' as const,
+          items: { type: 'string' as const },
+        },
+      };
+      const config = new ConfigValidator(schema);
+      const result = config.generateDefault();
+
+      expect(result).toEqual({
+        withDefault: 'test',
+      });
+      expect(result).not.toHaveProperty('arrayWithoutDefault');
+    });
   });
 
   describe('validateSchema', () => {

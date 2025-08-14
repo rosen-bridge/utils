@@ -121,6 +121,13 @@ export const propertyValidators = {
         );
       }
     },
+    default: (field: types.ArrayField, config: ConfigValidator) => {
+      if (Object.hasOwn(field, 'default') && !Array.isArray(field.default)) {
+        throw new Error(
+          `default value=[${field.default}] doesn't match field type=[${field.type}]`
+        );
+      }
+    },
   },
   string: {
     default: (field: types.StringField, config: ConfigValidator) => {

@@ -23,6 +23,7 @@ export interface ArrayField {
   type: 'array';
   description?: string;
   label?: string;
+  default?: any[];
   items: ConfigField;
 }
 

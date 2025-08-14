@@ -374,7 +374,7 @@ export class ConfigValidator {
           fieldName: childName,
           children: Object.keys(field.children).reverse(),
         });
-      } else if (field.type !== 'array' && field.default != undefined) {
+      } else if (field.default != undefined) {
         value[childName] = field.default;
       }
     }
