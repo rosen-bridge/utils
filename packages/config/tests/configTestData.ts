@@ -1091,7 +1091,7 @@ export const schemaTypeScriptTypesPair = {
   types: `export interface Infrastructure {
   apis: Apis;
   server: Server;
-  explorer: Explorer1;
+  explorer: Explorer;
   logs: Logs[];
   apiType?: 'node' | 'explorer' | 'superApi';
 }
@@ -1104,7 +1104,7 @@ export interface Logs {
   level?: string;
 }
 
-export interface Explorer1 {
+export interface Explorer {
   domain?: string;
   path?: string;
 }
@@ -1115,10 +1115,10 @@ export interface Server {
 }
 
 export interface Apis {
-  explorer: Explorer;
+  explorer: ApisExplorer;
 }
 
-export interface Explorer {
+export interface ApisExplorer {
   url?: string;
   port?: number;
 }
