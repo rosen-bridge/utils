@@ -325,7 +325,7 @@ export class ConfigValidator {
    *
    * @return {Record<string, any>} object of default values
    */
-  generateDefault = (): Record<string, any> => {
+  generateDefault = (options?: { validate?: boolean }): Record<string, any> => {
     const valueTree: Record<string, any> = Object.create(null);
 
     const stack: {
@@ -374,12 +374,99 @@ export class ConfigValidator {
           fieldName: childName,
           children: Object.keys(field.children).reverse(),
         });
+      } else if (field.type === 'array') {
+        // For arrays, if a default is provided, use it. If items are objects,
+        // merge each element with the item's schema defaults
+        if (field.default != undefined) {
+          if (field.items.type === 'object') {
+            const itemDefaults = this.getDefaultsForSubSchema(
+              field.items.children
+            );
+            value[childName] = field.default.map((elem: any) => {
+              if (
+                elem != null &&
+                typeof elem === 'object' &&
+                !Array.isArray(elem)
+              ) {
+                return { ...itemDefaults, ...elem };
+              }
+              return elem;
+            });
+          } else {
+            value[childName] = field.default;
+          }
+        }
       } else if (field.default != undefined) {
         value[childName] = field.default;
       }
     }
 
+    if (options?.validate) {
+      // Validate the generated defaults against the schema
+      this.validateConfig(valueTree);
+    }
     return valueTree;
+  };
+
+  /**
+   * builds a default values object for a schema subtree (object children)
+   */
+  private getDefaultsForSubSchema = (
+    schema: ConfigSchema
+  ): Record<string, any> => {
+    const defaults: Record<string, any> = Object.create(null);
+    const stack: {
+      schema: ConfigSchema;
+      parentValue: Record<string, any> | undefined;
+      fieldName: string;
+      children: string[];
+    }[] = [
+      {
+        schema,
+        parentValue: undefined,
+        fieldName: '',
+        children: Object.keys(schema).reverse(),
+      },
+    ];
+
+    while (stack.length > 0) {
+      const {
+        schema: subSchema,
+        parentValue,
+        fieldName,
+        children,
+      } = stack.at(-1)!;
+
+      if (children.length === 0) {
+        if (
+          parentValue != undefined &&
+          Object.keys(parentValue[fieldName]).length === 0
+        ) {
+          delete parentValue[fieldName];
+        }
+        stack.pop();
+        continue;
+      }
+
+      const childName = children.pop()!;
+      const value =
+        parentValue != undefined ? parentValue[fieldName] : defaults;
+      const field = subSchema[childName];
+
+      if (field.type === 'object') {
+        value[childName] = Object.create(null);
+        stack.push({
+          schema: field.children,
+          parentValue: value,
+          fieldName: childName,
+          children: Object.keys(field.children).reverse(),
+        });
+      } else if (field.type !== 'array' && field.default != undefined) {
+        value[childName] = field.default;
+      }
+    }
+
+    return defaults;
   };
 
   /**

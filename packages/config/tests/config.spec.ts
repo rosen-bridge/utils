@@ -119,6 +119,159 @@ describe('ConfigValidator', () => {
       });
       expect(result).not.toHaveProperty('arrayWithoutDefault');
     });
+
+    /**
+     * @target generateDefault should merge array of object item defaults with provided elements
+     * @dependencies
+     * @scenario
+     * - define an array of object items with item-level defaults
+     * - provide array default with elements that override some fields
+     * - call generateDefault
+     * @expected
+     * - each element is merged with object item defaults
+     */
+    it(`should merge array of object item defaults with provided elements`, async () => {
+      const config = new ConfigValidator(
+        <ConfigSchema>testData.logsArraySchemaDefaultsPair.schema
+      );
+      const result = config.generateDefault();
+      expect(result).toEqual(testData.logsArraySchemaDefaultsPair.defaultVal);
+    });
+
+    /**
+     * @target generateDefault should not validate array item defaults; validateConfig should catch it
+     * @dependencies
+     * @scenario
+     * - define an array of object items with validations (choices/required)
+     * - provide an invalid array default (e.g., wrong choice and missing required)
+     * - call generateDefault and ensure it returns merged defaults
+     * - call validateConfig and ensure it throws
+     * @expected
+     * - generateDefault should succeed and return merged values
+     * - validateConfig should throw due to schema violations in defaults
+     */
+    it(`should not validate array item defaults; validateConfig should catch it`, async () => {
+      const schema: ConfigSchema = {
+        logs: {
+          type: 'array',
+          items: {
+            type: 'object',
+            children: {
+              type: {
+                type: 'string',
+                validations: [
+                  { required: true, error: 'log type must be specified' },
+                  { choices: ['file', 'console', 'loki'] },
+                ],
+              },
+              path: { type: 'string', default: '/var/log/app.log' },
+              level: { type: 'string', default: 'info' },
+            },
+          },
+          default: [
+            // invalid: unknown type choice
+            { type: 'unknown' as any },
+            // invalid: missing required "type"
+            { level: 'debug' },
+          ],
+        },
+      };
+
+      const confValidator = new ConfigValidator(schema);
+      const generated = confValidator.generateDefault();
+      // generateDefault should merge defaults without throwing
+      expect(generated).toEqual({
+        logs: [
+          { type: 'unknown', path: '/var/log/app.log', level: 'info' },
+          { level: 'debug', path: '/var/log/app.log' },
+        ],
+      });
+
+      // validateConfig should catch invalid defaults
+      expect(() => confValidator.validateConfig(generated)).toThrow();
+    });
+
+    /**
+     * @target generateDefault with validate option should throw for invalid defaults
+     * @dependencies
+     * @scenario
+     * - define invalid defaults (choices violation and missing required)
+     * - call generateDefault({ validate: true })
+     * @expected
+     * - generation should throw due to validation
+     */
+    it(`should throw when generateDefault is called with validate option and defaults are invalid`, async () => {
+      const schema: ConfigSchema = {
+        logs: {
+          type: 'array',
+          items: {
+            type: 'object',
+            children: {
+              type: {
+                type: 'string',
+                validations: [
+                  { required: true },
+                  { choices: ['file', 'console', 'loki'] },
+                ],
+              },
+              level: { type: 'string', default: 'info' },
+            },
+          },
+          default: [{ type: 'unknown' as any }, { level: 'debug' }],
+        },
+      };
+
+      const confValidator = new ConfigValidator(schema);
+      expect(() => confValidator.generateDefault({ validate: true })).toThrow();
+    });
+
+    /**
+     * @target generateDefault should carry unknown keys in array item defaults; schema ignores them
+     * @dependencies
+     * @scenario
+     * - define an array of object items with known keys (path, level)
+     * - provide defaults containing an unknown key (pathsskddkfjd)
+     * - call generateDefault and ensure unknown key is preserved alongside item defaults
+     * - call validateConfig and ensure no error is thrown (unknown keys are ignored by schema)
+     * @expected
+     * - generateDefault returns merged defaults plus unknown key
+     * - validateConfig does not throw
+     */
+    it(`should preserve unknown keys in array defaults; validateConfig should reject unknown keys`, async () => {
+      const schema: ConfigSchema = {
+        logs: {
+          type: 'array',
+          items: {
+            type: 'object',
+            children: {
+              path: { type: 'string', default: '/var/log/app.log' },
+              level: { type: 'string', default: 'info' },
+            },
+          },
+          default: [
+            // contains an unknown key not present in schema
+            { pathsskddkfjd: '/tmp/weird' } as any,
+          ],
+        },
+      };
+
+      const confValidator = new ConfigValidator(schema);
+      const generated = confValidator.generateDefault();
+      expect(generated).toEqual({
+        logs: [
+          {
+            path: '/var/log/app.log',
+            level: 'info',
+            pathsskddkfjd: '/tmp/weird',
+          },
+        ],
+      });
+
+      // Unknown keys are rejected by schema validation
+      expect(() => confValidator.validateConfig(generated)).toThrow(
+        'key is not found in the schema'
+      );
+    });
   });
 
   describe('validateSchema', () => {

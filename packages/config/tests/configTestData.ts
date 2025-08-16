@@ -1,5 +1,4 @@
 import { cloneDeep } from 'lodash-es';
-
 export const apiSchemaDefaultValuePairSample = {
   schema: {
     apiType: {
@@ -1212,6 +1211,79 @@ export const schemaConfigCharPair = {
         },
       },
     },
+  },
+};
+
+// logs array schema with item-level defaults and array default elements
+export const logsArraySchemaDefaultsPair = {
+  schema: {
+    logs: {
+      type: 'array',
+      items: {
+        type: 'object',
+        children: {
+          type: {
+            type: 'string',
+            validations: [
+              {
+                required: true,
+                error: 'log type must be specified',
+              },
+              { choices: ['file', 'console', 'loki'] },
+            ],
+          },
+          maxSize: {
+            type: 'string',
+            validations: [
+              {
+                required: true,
+                error: 'maxSize for file log type must be specified',
+                when: { path: 'logs.type', value: 'file' },
+              },
+            ],
+          },
+          maxFiles: {
+            type: 'string',
+            validations: [
+              {
+                required: true,
+                error: 'maxFiles for file log type must be specified',
+                when: { path: 'logs.type', value: 'file' },
+              },
+            ],
+          },
+          path: {
+            type: 'string',
+            default: '/var/log/app.log',
+            validations: [
+              {
+                required: true,
+                error: 'path for file log type must be specified',
+                when: { path: 'logs.type', value: 'file' },
+              },
+            ],
+          },
+          level: {
+            type: 'string',
+            default: 'info',
+            validations: [
+              {
+                required: true,
+                error: 'log level must be specified',
+                when: { path: 'logs.type', value: 'file' },
+              },
+            ],
+          },
+        },
+      },
+      default: [{ type: 'file', level: 'debug' }, { type: 'console' }],
+    },
+  },
+  defaultVal: {
+    logs: [
+      { type: 'file', level: 'debug', path: '/var/log/app.log' },
+      { type: 'console', level: 'info', path: '/var/log/app.log' },
+    ],
   },
 };
 
