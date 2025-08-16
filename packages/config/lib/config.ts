@@ -480,9 +480,7 @@ export class ConfigValidator {
       `TypeScript type generation failed for "${path.join('.')}" field`;
 
     const types: Array<string> = [];
-
-    const typeNames: Map<string, bigint> = new Map<string, bigint>();
-    typeNames.set(name, 1n);
+    const emittedTypeNames: Set<string> = new Set<string>();
 
     const stack: Array<{
       subSchema: ConfigSchema;
@@ -504,16 +502,20 @@ export class ConfigValidator {
     while (stack.length > 0) {
       const { subSchema, children, parentPath, typeName, attributes } =
         stack.at(-1)!;
-      const path = parentPath.concat([name]);
+      let path: string[] = parentPath;
       try {
         // if a subtree's processing is finished go to the previous level
         if (children.length == 0) {
-          types.push(this.genTSInterface(typeName, attributes));
+          if (!emittedTypeNames.has(typeName)) {
+            types.push(this.genTSInterface(typeName, attributes));
+            emittedTypeNames.add(typeName);
+          }
           stack.pop();
           continue;
         }
 
         const childName = children.pop()!;
+        path = parentPath.concat([childName]);
         const field = subSchema[childName];
 
         // if a node/field is of type object and thus is a subtree, add it to
@@ -523,14 +525,11 @@ export class ConfigValidator {
           field.type === 'object' ||
           (field.type === 'array' && field.items.type === 'object')
         ) {
-          let childTypeName = `${childName[0].toUpperCase()}${childName.substring(
-            1
-          )}`;
-          const typeNameCount = typeNames.get(childTypeName);
-          typeNames.set(childTypeName, (typeNames.get(childName) || 0n) + 1n);
-          if (typeNameCount) {
-            childTypeName += typeNameCount.toString();
-          }
+          // Create unique type name from schema path excluding root interface name
+          const pathParts = path;
+          const childTypeName = pathParts
+            .map((part) => part[0].toUpperCase() + part.substring(1))
+            .join('');
 
           const children =
             field.type === 'array' && field.items.type === 'object'

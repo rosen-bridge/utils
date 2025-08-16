@@ -1,5 +1,16 @@
 # @rosen-bridge/cli
 
+## 1.1.0
+
+### Minor Changes
+
+- Update versions of nodejs to 20.11 & typescript to 5.8
+
+### Patch Changes
+
+- Update dependencies
+  - @rosen-bridge/utils@0.3.0
+
 ## 1.0.0
 
 ### Major Changes

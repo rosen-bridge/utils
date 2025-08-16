@@ -1,9 +1,9 @@
 {
   "name": "@rosen-bridge/permit",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A package for managing permit boxes",
   "repository": "git+https://github.com/rosen-bridge/utils.git",
-  "license": "GPL-3.0",
+  "license": "MIT",
   "author": "Rosen Team",
   "type": "module",
   "main": "dist/index.js",

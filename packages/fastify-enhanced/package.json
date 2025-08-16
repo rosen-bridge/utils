@@ -1,9 +1,9 @@
 {
   "name": "@rosen-bridge/fastify-enhanced",
-  "version": "0.1.1",
+  "version": "1.0.0",
   "description": "a wrapper around fastify web framework to make it even better",
   "repository": "git+https://github.com/rosen-bridge/utils.git",
-  "license": "GPL-3.0",
+  "license": "MIT",
   "author": "Rosen Team",
   "type": "module",
   "main": "dist/index.js",

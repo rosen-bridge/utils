@@ -980,6 +980,94 @@ describe('ConfigValidator', () => {
       const types = confValidator.generateTSTypes('Infrastructure');
       expect(types).toEqual(testData.schemaTypeScriptTypesPair.types);
     });
+
+    /**
+     * @target generateTSTypes should generate unique path-based names without numeric suffixes
+     * @dependencies
+     * @scenario
+     * - define a schema with duplicate child keys under different parents
+     * - call generateTSTypes
+     * - check for path-based interface names
+     * @expected
+     * - types should include UserDatabase and ApisExplorer
+     * - types should not include numeric suffixes like Database1/Explorer1
+     */
+    it(`should generate unique path-based names without numeric suffixes`, async () => {
+      const confValidator = new ConfigValidator(
+        <ConfigSchema>testData.duplicateChildKeysSchema.schema
+      );
+      const types = confValidator.generateTSTypes('Infrastructure');
+
+      expect(types).toContain('export interface UserDatabase');
+      expect(types).toContain('export interface ApisExplorer');
+      expect(types).not.toContain('Database1');
+      expect(types).not.toContain('Explorer1');
+    });
+
+    /**
+     * @target generateTSTypes should not emit duplicate interface declarations
+     * @dependencies
+     * @scenario
+     * - define a schema with repeated key names under different parents
+     * - call generateTSTypes
+     * - count interface declarations for each name
+     * @expected
+     * - each interface name should be emitted only once
+     */
+    it(`should not emit duplicate interface declarations`, async () => {
+      const confValidator = new ConfigValidator(
+        <ConfigSchema>testData.duplicateChildKeysSchema.schema
+      );
+      const types = confValidator.generateTSTypes('Infrastructure');
+
+      const countName = (name: string) =>
+        (types.match(new RegExp(`export interface ${name}\\b`, 'g')) || [])
+          .length;
+
+      expect(countName('UserDatabase')).toBe(1);
+      expect(countName('ApisExplorer')).toBe(1);
+    });
+
+    /**
+     * @target generateTSTypes should generate distinct names for identical structures at different paths
+     * @dependencies
+     * @scenario
+     * - define identical object structures under different parents
+     * - call generateTSTypes
+     * - check that interfaces are named by path
+     * @expected
+     * - distinct names should be generated (PrimaryConnection, BackupConnection)
+     */
+    it(`should generate distinct names for identical structures at different paths`, async () => {
+      const confValidator = new ConfigValidator(
+        <ConfigSchema>testData.identicalStructurePathsSchema.schema
+      );
+      const types = confValidator.generateTSTypes('Infrastructure');
+
+      expect(types).toContain('export interface PrimaryConnection');
+      expect(types).toContain('export interface BackupConnection');
+    });
+
+    /**
+     * @target generateTSTypes should name array item object types based on path
+     * @dependencies
+     * @scenario
+     * - define an array of objects at root level
+     * - call generateTSTypes
+     * - check that array item type is generated and referenced correctly
+     * @expected
+     * - Logs array should reference Logs item interface and it should be emitted once
+     */
+    it(`should name array item object types based on path`, async () => {
+      const confValidator = new ConfigValidator(
+        <ConfigSchema>testData.arrayItemsAtRootSchema.schema
+      );
+      const types = confValidator.generateTSTypes('Infrastructure');
+
+      expect(types).toContain('export interface Logs');
+      expect((types.match(/export interface Logs\b/g) || []).length).toBe(1);
+      expect(types).toContain('logs: Logs[]');
+    });
   });
 
   describe('getConfigForLevel', () => {
