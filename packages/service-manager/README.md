@@ -128,3 +128,41 @@ serviceManager.start(serviceX1A.getName());
 ```ts
 serviceManager.stop(serviceX1A.getName());
 ```
+
+### Using `PeriodicTaskService`
+
+`PeriodicTaskService` is an abstract class designed to manage periodic services, allowing you to schedule and execute tasks at defined intervals. To use this class, you need to extend it and implement the necessary methods: `starterService`, `stoperService`, and `getTasks`.
+
+#### 1. Creating a Periodic Task Service
+
+define a new class that extends `PeriodicTaskService` and implement the required methods.
+
+```ts
+import { PeriodicTaskService } from '@rosen-bridge/service-manager';
+
+class MyPeriodicTaskService extends PeriodicTaskService {
+  taskName = 'MyPeriodicTaskService';
+
+  protected async starterService() {
+    this.logger.info('Starting my periodic tasks');
+  }
+
+  protected async stoperService() {
+    this.logger.info('Stopping my periodic tasks');
+  }
+
+  protected getTasks() {
+    return [
+      {
+        fn: this.someTask,
+        interval: 5000,
+      },
+    ];
+  }
+
+  private someTask = async () => {
+    this.logger.info('Executing periodic task');
+    // task logic here
+  };
+}
+```
