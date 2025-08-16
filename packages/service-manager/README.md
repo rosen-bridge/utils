@@ -144,11 +144,11 @@ class MyPeriodicTaskService extends PeriodicTaskService {
   taskName = 'MyPeriodicTaskService';
 
   protected async starterService() {
-    this.logger.info('Starting my periodic tasks');
+    this.logger.info(' initializing requirements ...');
   }
 
   protected async stoperService() {
-    this.logger.info('Stopping my periodic tasks');
+    this.logger.info('service state has been changed to "stopped"');
   }
 
   protected getTasks() {
