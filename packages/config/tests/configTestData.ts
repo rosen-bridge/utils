@@ -1214,3 +1214,79 @@ export const schemaConfigCharPair = {
     },
   },
 };
+
+// Schemas for duplicate key/type generation tests
+export const duplicateChildKeysSchema = {
+  schema: {
+    user: {
+      type: 'object',
+      children: {
+        database: {
+          type: 'object',
+          children: {
+            host: { type: 'string' },
+            port: { type: 'number' },
+          },
+        },
+      },
+    },
+    apis: {
+      type: 'object',
+      children: {
+        explorer: {
+          type: 'object',
+          children: {
+            url: { type: 'string' },
+            port: { type: 'number' },
+          },
+        },
+      },
+    },
+  },
+};
+
+export const identicalStructurePathsSchema = {
+  schema: {
+    primary: {
+      type: 'object',
+      children: {
+        connection: {
+          type: 'object',
+          children: {
+            host: { type: 'string' },
+            port: { type: 'number' },
+            ssl: { type: 'boolean' },
+          },
+        },
+      },
+    },
+    backup: {
+      type: 'object',
+      children: {
+        connection: {
+          type: 'object',
+          children: {
+            host: { type: 'string' },
+            port: { type: 'number' },
+            ssl: { type: 'boolean' },
+          },
+        },
+      },
+    },
+  },
+};
+
+export const arrayItemsAtRootSchema = {
+  schema: {
+    logs: {
+      type: 'array',
+      items: {
+        type: 'object',
+        children: {
+          message: { type: 'string' },
+          level: { type: 'string' },
+        },
+      },
+    },
+  },
+};

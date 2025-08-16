@@ -839,34 +839,9 @@ describe('ConfigValidator', () => {
      * - types should not include numeric suffixes like Database1/Explorer1
      */
     it(`should generate unique path-based names without numeric suffixes`, async () => {
-      const schema: ConfigSchema = {
-        user: {
-          type: 'object',
-          children: {
-            database: {
-              type: 'object',
-              children: {
-                host: { type: 'string' },
-                port: { type: 'number' },
-              },
-            },
-          },
-        },
-        apis: {
-          type: 'object',
-          children: {
-            explorer: {
-              type: 'object',
-              children: {
-                url: { type: 'string' },
-                port: { type: 'number' },
-              },
-            },
-          },
-        },
-      };
-
-      const confValidator = new ConfigValidator(schema);
+      const confValidator = new ConfigValidator(
+        <ConfigSchema>testData.duplicateChildKeysSchema.schema
+      );
       const types = confValidator.generateTSTypes('Infrastructure');
 
       expect(types).toContain('export interface UserDatabase');
@@ -886,34 +861,9 @@ describe('ConfigValidator', () => {
      * - each interface name should be emitted only once
      */
     it(`should not emit duplicate interface declarations`, async () => {
-      const schema: ConfigSchema = {
-        user: {
-          type: 'object',
-          children: {
-            database: {
-              type: 'object',
-              children: {
-                host: { type: 'string' },
-                port: { type: 'number' },
-              },
-            },
-          },
-        },
-        apis: {
-          type: 'object',
-          children: {
-            explorer: {
-              type: 'object',
-              children: {
-                url: { type: 'string' },
-                port: { type: 'number' },
-              },
-            },
-          },
-        },
-      };
-
-      const confValidator = new ConfigValidator(schema);
+      const confValidator = new ConfigValidator(
+        <ConfigSchema>testData.duplicateChildKeysSchema.schema
+      );
       const types = confValidator.generateTSTypes('Infrastructure');
 
       const countName = (name: string) =>
@@ -935,36 +885,9 @@ describe('ConfigValidator', () => {
      * - distinct names should be generated (PrimaryConnection, BackupConnection)
      */
     it(`should generate distinct names for identical structures at different paths`, async () => {
-      const schema: ConfigSchema = {
-        primary: {
-          type: 'object',
-          children: {
-            connection: {
-              type: 'object',
-              children: {
-                host: { type: 'string' },
-                port: { type: 'number' },
-                ssl: { type: 'boolean' },
-              },
-            },
-          },
-        },
-        backup: {
-          type: 'object',
-          children: {
-            connection: {
-              type: 'object',
-              children: {
-                host: { type: 'string' },
-                port: { type: 'number' },
-                ssl: { type: 'boolean' },
-              },
-            },
-          },
-        },
-      };
-
-      const confValidator = new ConfigValidator(schema);
+      const confValidator = new ConfigValidator(
+        <ConfigSchema>testData.identicalStructurePathsSchema.schema
+      );
       const types = confValidator.generateTSTypes('Infrastructure');
 
       expect(types).toContain('export interface PrimaryConnection');
@@ -982,20 +905,9 @@ describe('ConfigValidator', () => {
      * - Logs array should reference Logs item interface and it should be emitted once
      */
     it(`should name array item object types based on path`, async () => {
-      const schema: ConfigSchema = {
-        logs: {
-          type: 'array',
-          items: {
-            type: 'object',
-            children: {
-              message: { type: 'string' },
-              level: { type: 'string' },
-            },
-          },
-        },
-      };
-
-      const confValidator = new ConfigValidator(schema);
+      const confValidator = new ConfigValidator(
+        <ConfigSchema>testData.arrayItemsAtRootSchema.schema
+      );
       const types = confValidator.generateTSTypes('Infrastructure');
 
       expect(types).toContain('export interface Logs');
