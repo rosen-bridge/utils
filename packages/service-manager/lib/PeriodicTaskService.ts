@@ -54,7 +54,7 @@ export abstract class PeriodicTaskService extends AbstractService {
               try {
                 await fn();
               } catch (err) {
-                this.logger.info(`Error in executing task ${fn.name}: ${err}`);
+                this.logger.warn(`Error in executing task ${fn.name}: ${err}`);
               }
 
               if (this.active) {

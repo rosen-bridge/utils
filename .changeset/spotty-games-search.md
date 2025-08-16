@@ -1,5 +1,5 @@
 ---
-'@rosen-bridge/service-manager': major
+'@rosen-bridge/service-manager': minor
 ---
 
 Add periodicTaskService to service-manager package
