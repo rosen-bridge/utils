@@ -1091,7 +1091,7 @@ export const schemaTypeScriptTypesPair = {
   types: `export interface Infrastructure {
   apis: Apis;
   server: Server;
-  explorer: Explorer1;
+  explorer: Explorer;
   logs: Logs[];
   apiType?: 'node' | 'explorer' | 'superApi';
 }
@@ -1104,7 +1104,7 @@ export interface Logs {
   level?: string;
 }
 
-export interface Explorer1 {
+export interface Explorer {
   domain?: string;
   path?: string;
 }
@@ -1115,10 +1115,10 @@ export interface Server {
 }
 
 export interface Apis {
-  explorer: Explorer;
+  explorer: ApisExplorer;
 }
 
-export interface Explorer {
+export interface ApisExplorer {
   url?: string;
   port?: number;
 }
@@ -1209,6 +1209,82 @@ export const schemaConfigCharPair = {
           default: 443,
           value: null,
           override: null,
+        },
+      },
+    },
+  },
+};
+
+// Schemas for duplicate key/type generation tests
+export const duplicateChildKeysSchema = {
+  schema: {
+    user: {
+      type: 'object',
+      children: {
+        database: {
+          type: 'object',
+          children: {
+            host: { type: 'string' },
+            port: { type: 'number' },
+          },
+        },
+      },
+    },
+    apis: {
+      type: 'object',
+      children: {
+        explorer: {
+          type: 'object',
+          children: {
+            url: { type: 'string' },
+            port: { type: 'number' },
+          },
+        },
+      },
+    },
+  },
+};
+
+export const identicalStructurePathsSchema = {
+  schema: {
+    primary: {
+      type: 'object',
+      children: {
+        connection: {
+          type: 'object',
+          children: {
+            host: { type: 'string' },
+            port: { type: 'number' },
+            ssl: { type: 'boolean' },
+          },
+        },
+      },
+    },
+    backup: {
+      type: 'object',
+      children: {
+        connection: {
+          type: 'object',
+          children: {
+            host: { type: 'string' },
+            port: { type: 'number' },
+            ssl: { type: 'boolean' },
+          },
+        },
+      },
+    },
+  },
+};
+
+export const arrayItemsAtRootSchema = {
+  schema: {
+    logs: {
+      type: 'array',
+      items: {
+        type: 'object',
+        children: {
+          message: { type: 'string' },
+          level: { type: 'string' },
         },
       },
     },
