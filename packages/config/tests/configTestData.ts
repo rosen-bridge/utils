@@ -1287,6 +1287,95 @@ export const logsArraySchemaDefaultsPair = {
   },
 };
 
+// empty array defaults for primitive types
+export const emptyArrayDefaultsPair = {
+  schema: {
+    emptyStringArray: {
+      type: 'array' as const,
+      default: [],
+      items: { type: 'string' as const },
+    },
+    emptyNumberArray: {
+      type: 'array' as const,
+      default: [],
+      items: { type: 'number' as const },
+    },
+  },
+  defaultVal: {
+    emptyStringArray: [],
+    emptyNumberArray: [],
+  },
+};
+
+// schema including an array without default to be excluded from defaults result
+export const arrayWithoutDefaultPair = {
+  schema: {
+    withDefault: {
+      type: 'string' as const,
+      default: 'test',
+    },
+    arrayWithoutDefault: {
+      type: 'array' as const,
+      items: { type: 'string' as const },
+    },
+  },
+  defaultVal: {
+    withDefault: 'test',
+  },
+};
+
+// logs array with invalid defaults (choices violation, missing required) plus expected generated defaults
+export const invalidLogsArrayDefaultsPair = {
+  schema: {
+    logs: {
+      type: 'array',
+      items: {
+        type: 'object',
+        children: {
+          type: {
+            type: 'string',
+            validations: [
+              { required: true, error: 'log type must be specified' },
+              { choices: ['file', 'console', 'loki'] },
+            ],
+          },
+          path: { type: 'string', default: '/var/log/app.log' },
+          level: { type: 'string', default: 'info' },
+        },
+      },
+      default: [{ type: 'unknown' as any }, { level: 'debug' }],
+    },
+  },
+  defaultVal: {
+    logs: [
+      { type: 'unknown', path: '/var/log/app.log', level: 'info' },
+      { level: 'debug', path: '/var/log/app.log' },
+    ],
+  },
+};
+
+// logs array with unknown key inside defaults, plus expected generated defaults
+export const unknownKeyLogsArrayDefaultsPair = {
+  schema: {
+    logs: {
+      type: 'array',
+      items: {
+        type: 'object',
+        children: {
+          path: { type: 'string', default: '/var/log/app.log' },
+          level: { type: 'string', default: 'info' },
+        },
+      },
+      default: [{ pathsskddkfjd: '/tmp/weird' } as any],
+    },
+  },
+  defaultVal: {
+    logs: [
+      { path: '/var/log/app.log', level: 'info', pathsskddkfjd: '/tmp/weird' },
+    ],
+  },
+};
+
 export const arraySchemaDefaultValuePairSample = {
   schema: {
     stringArray: {

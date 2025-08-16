@@ -70,25 +70,11 @@ describe('ConfigValidator', () => {
      * - empty array should be included in default values
      */
     it(`should handle empty array defaults`, async () => {
-      const schema = {
-        emptyStringArray: {
-          type: 'array' as const,
-          default: [],
-          items: { type: 'string' as const },
-        },
-        emptyNumberArray: {
-          type: 'array' as const,
-          default: [],
-          items: { type: 'number' as const },
-        },
-      };
-      const config = new ConfigValidator(schema);
+      const config = new ConfigValidator(
+        <ConfigSchema>testData.emptyArrayDefaultsPair.schema
+      );
       const result = config.generateDefault();
-
-      expect(result).toEqual({
-        emptyStringArray: [],
-        emptyNumberArray: [],
-      });
+      expect(result).toEqual(testData.emptyArrayDefaultsPair.defaultVal);
     });
 
     /**
@@ -101,22 +87,11 @@ describe('ConfigValidator', () => {
      * - array field without default should be excluded from result
      */
     it(`should exclude arrays without default values`, async () => {
-      const schema = {
-        withDefault: {
-          type: 'string' as const,
-          default: 'test',
-        },
-        arrayWithoutDefault: {
-          type: 'array' as const,
-          items: { type: 'string' as const },
-        },
-      };
-      const config = new ConfigValidator(schema);
+      const config = new ConfigValidator(
+        <ConfigSchema>testData.arrayWithoutDefaultPair.schema
+      );
       const result = config.generateDefault();
-
-      expect(result).toEqual({
-        withDefault: 'test',
-      });
+      expect(result).toEqual(testData.arrayWithoutDefaultPair.defaultVal);
       expect(result).not.toHaveProperty('arrayWithoutDefault');
     });
 
@@ -151,43 +126,13 @@ describe('ConfigValidator', () => {
      * - validateConfig should throw due to schema violations in defaults
      */
     it(`should not validate array item defaults; validateConfig should catch it`, async () => {
-      const schema: ConfigSchema = {
-        logs: {
-          type: 'array',
-          items: {
-            type: 'object',
-            children: {
-              type: {
-                type: 'string',
-                validations: [
-                  { required: true, error: 'log type must be specified' },
-                  { choices: ['file', 'console', 'loki'] },
-                ],
-              },
-              path: { type: 'string', default: '/var/log/app.log' },
-              level: { type: 'string', default: 'info' },
-            },
-          },
-          default: [
-            // invalid: unknown type choice
-            { type: 'unknown' as any },
-            // invalid: missing required "type"
-            { level: 'debug' },
-          ],
-        },
-      };
-
-      const confValidator = new ConfigValidator(schema);
+      const confValidator = new ConfigValidator(
+        <ConfigSchema>testData.invalidLogsArrayDefaultsPair.schema
+      );
       const generated = confValidator.generateDefault();
-      // generateDefault should merge defaults without throwing
-      expect(generated).toEqual({
-        logs: [
-          { type: 'unknown', path: '/var/log/app.log', level: 'info' },
-          { level: 'debug', path: '/var/log/app.log' },
-        ],
-      });
-
-      // validateConfig should catch invalid defaults
+      expect(generated).toEqual(
+        testData.invalidLogsArrayDefaultsPair.defaultVal
+      );
       expect(() => confValidator.validateConfig(generated)).toThrow();
     });
 
@@ -238,36 +183,13 @@ describe('ConfigValidator', () => {
      * - validateConfig does not throw
      */
     it(`should preserve unknown keys in array defaults; validateConfig should reject unknown keys`, async () => {
-      const schema: ConfigSchema = {
-        logs: {
-          type: 'array',
-          items: {
-            type: 'object',
-            children: {
-              path: { type: 'string', default: '/var/log/app.log' },
-              level: { type: 'string', default: 'info' },
-            },
-          },
-          default: [
-            // contains an unknown key not present in schema
-            { pathsskddkfjd: '/tmp/weird' } as any,
-          ],
-        },
-      };
-
-      const confValidator = new ConfigValidator(schema);
+      const confValidator = new ConfigValidator(
+        <ConfigSchema>testData.unknownKeyLogsArrayDefaultsPair.schema
+      );
       const generated = confValidator.generateDefault();
-      expect(generated).toEqual({
-        logs: [
-          {
-            path: '/var/log/app.log',
-            level: 'info',
-            pathsskddkfjd: '/tmp/weird',
-          },
-        ],
-      });
-
-      // Unknown keys are rejected by schema validation
+      expect(generated).toEqual(
+        testData.unknownKeyLogsArrayDefaultsPair.defaultVal
+      );
       expect(() => confValidator.validateConfig(generated)).toThrow(
         'key is not found in the schema'
       );
