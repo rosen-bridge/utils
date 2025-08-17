@@ -15,6 +15,7 @@ import { valueValidations, valueValidators } from './value/validators';
 export class ConfigValidator {
   constructor(private schema: ConfigSchema) {
     this.validateSchema();
+    this.validateSchemaDefaultShapes(this.schema, []);
   }
 
   /**
@@ -250,6 +251,109 @@ export class ConfigValidator {
     }
   };
 
+  // Validates that schema-provided defaults structurally match their field schemas (no constraints)
+  private validateSchemaDefaultShapes = (
+    schema: ConfigSchema,
+    parentPath: string[]
+  ) => {
+    const errorPreamble = (path: Array<string>) =>
+      `Schema default validation failed for "${path.join('.')}" field`;
+
+    for (const name of Object.keys(schema)) {
+      const field = schema[name];
+      const path = parentPath.concat([name]);
+
+      // Recurse into objects
+      if (field.type === 'object') {
+        this.validateSchemaDefaultShapes(field.children, path);
+        continue;
+      }
+
+      // Validate array defaults against items schema, and also recurse into items schema to
+      // validate defaults that might exist on nested fields
+      if (field.type === 'array') {
+        if (Object.hasOwn(field, 'default')) {
+          const arr = (field as any).default;
+          if (arr != undefined) {
+            for (let i = 0; i < arr.length; i++) {
+              try {
+                this.checkValueShapeAgainstField(
+                  arr[i],
+                  field.items,
+                  path.concat([`[${i}]`])
+                );
+              } catch (e: any) {
+                throw new Error(`${errorPreamble(path)}: ${e.message}`);
+              }
+            }
+          }
+        }
+        // Recurse into items schema (if object) to validate any defaults defined inside nested fields
+        if (field.items.type === 'object') {
+          this.validateSchemaDefaultShapes(field.items.children, path);
+        }
+      }
+    }
+  };
+
+  private checkValueShapeAgainstField = (
+    value: any,
+    field: ConfigField,
+    path: string[]
+  ) => {
+    const err = (msg: string) => new Error(`${msg}`);
+    if (field.type === 'object') {
+      if (value == null || typeof value !== 'object' || Array.isArray(value)) {
+        throw err('value must be of object type');
+      }
+      const keys = Object.keys(value);
+      for (const k of keys) {
+        if (!Object.hasOwn(field.children, k)) {
+          throw err(`"${k}" key is not found in the schema`);
+        }
+        this.checkValueShapeAgainstField(
+          value[k],
+          field.children[k],
+          path.concat([k])
+        );
+      }
+      return;
+    }
+    if (field.type === 'array') {
+      if (!Array.isArray(value)) {
+        throw err('value must be of array type');
+      }
+      for (let i = 0; i < value.length; i++) {
+        this.checkValueShapeAgainstField(
+          value[i],
+          field.items,
+          path.concat([`[${i}]`])
+        );
+      }
+      return;
+    }
+    // primitives
+    if (value == undefined) return; // missing is allowed at schema time
+    switch (field.type) {
+      case 'string':
+        if (typeof value !== 'string')
+          throw err('value must be of string type');
+        break;
+      case 'number':
+        if (typeof value !== 'number')
+          throw err('value must be of number type');
+        break;
+      case 'boolean':
+        if (typeof value !== 'boolean')
+          throw err('value must be of boolean type');
+        break;
+      case 'bigint':
+        if (typeof value !== 'bigint')
+          throw err('value must be of bigint type');
+        break;
+    }
+  };
+
   /**
    * validates config key name
    *
@@ -326,63 +430,32 @@ export class ConfigValidator {
    * @return {Record<string, any>} object of default values
    */
   generateDefault = (options?: { validate?: boolean }): Record<string, any> => {
-    const valueTree: Record<string, any> = Object.create(null);
+    const valueTree = this.buildDefaultsForSchema(this.schema);
+    if (options?.validate) {
+      this.validateConfig(valueTree);
+    }
+    return valueTree;
+  };
 
-    const stack: {
-      schema: ConfigSchema;
-      parentValue: Record<string, any> | undefined;
-      fieldName: string;
-      children: string[];
-    }[] = [
-      {
-        schema: this.schema,
-        parentValue: undefined,
-        fieldName: '',
-        children: Object.keys(this.schema).reverse(),
-      },
-    ];
-
-    // Traverses the schema object tree depth first
-    while (stack.length > 0) {
-      const { schema, parentValue, fieldName, children } = stack.at(-1)!;
-
-      // if a subtree's processing is finished go to the previous level
-      if (children.length === 0) {
-        // if a subtree is empty (has no values) remove it from the result
-        if (
-          parentValue != undefined &&
-          Object.keys(parentValue[fieldName]).length === 0
-        ) {
-          delete parentValue[fieldName];
-        }
-        stack.pop();
-        continue;
-      }
-
-      const childName = children.pop()!;
-      const value =
-        parentValue != undefined ? parentValue[fieldName] : valueTree;
-      const field = schema[childName];
-      // if a node/field is of type object and thus is a subtree, add it both to
-      // value tree and to the stack to be traversed later. Otherwise it's a
-      // leaf and needs no traversal, so add it only to the value tree.
+  // Builds default values for a schema subtree (objects and arrays), recursively
+  private buildDefaultsForSchema = (
+    schema: ConfigSchema
+  ): Record<string, any> => {
+    const defaults: Record<string, any> = Object.create(null);
+    for (const key of Object.keys(schema)) {
+      const field = schema[key];
       if (field.type === 'object') {
-        value[childName] = Object.create(null);
-        stack.push({
-          schema: field.children,
-          parentValue: value,
-          fieldName: childName,
-          children: Object.keys(field.children).reverse(),
-        });
+        const childDefaults = this.buildDefaultsForSchema(field.children);
+        if (Object.keys(childDefaults).length > 0) {
+          defaults[key] = childDefaults;
+        }
       } else if (field.type === 'array') {
-        // For arrays, if a default is provided, use it. If items are objects,
-        // merge each element with the item's schema defaults
-        if (field.default != undefined) {
+        if ((field as any).default != undefined) {
           if (field.items.type === 'object') {
-            const itemDefaults = this.getDefaultsForSubSchema(
+            const itemDefaults = this.buildDefaultsForSchema(
               field.items.children
             );
-            value[childName] = field.default.map((elem: any) => {
+            defaults[key] = (field as any).default.map((elem: any) => {
               if (
                 elem != null &&
                 typeof elem === 'object' &&
@@ -393,81 +466,19 @@ export class ConfigValidator {
               return elem;
             });
           } else {
-            value[childName] = field.default;
+            defaults[key] = (field as any).default;
           }
         }
-      } else if (field.default != undefined) {
-        value[childName] = field.default;
-      }
-    }
-
-    if (options?.validate) {
-      // Validate the generated defaults against the schema
-      this.validateConfig(valueTree);
-    }
-    return valueTree;
-  };
-
-  /**
-   * builds a default values object for a schema subtree (object children)
-   */
-  private getDefaultsForSubSchema = (
-    schema: ConfigSchema
-  ): Record<string, any> => {
-    const defaults: Record<string, any> = Object.create(null);
-    const stack: {
-      schema: ConfigSchema;
-      parentValue: Record<string, any> | undefined;
-      fieldName: string;
-      children: string[];
-    }[] = [
-      {
-        schema,
-        parentValue: undefined,
-        fieldName: '',
-        children: Object.keys(schema).reverse(),
-      },
-    ];
-
-    while (stack.length > 0) {
-      const {
-        schema: subSchema,
-        parentValue,
-        fieldName,
-        children,
-      } = stack.at(-1)!;
-
-      if (children.length === 0) {
-        if (
-          parentValue != undefined &&
-          Object.keys(parentValue[fieldName]).length === 0
-        ) {
-          delete parentValue[fieldName];
+      } else {
+        if ((field as any).default != undefined) {
+          defaults[key] = (field as any).default;
         }
-        stack.pop();
-        continue;
-      }
-
-      const childName = children.pop()!;
-      const value =
-        parentValue != undefined ? parentValue[fieldName] : defaults;
-      const field = subSchema[childName];
-
-      if (field.type === 'object') {
-        value[childName] = Object.create(null);
-        stack.push({
-          schema: field.children,
-          parentValue: value,
-          fieldName: childName,
-          children: Object.keys(field.children).reverse(),
-        });
-      } else if (field.type !== 'array' && field.default != undefined) {
-        value[childName] = field.default;
       }
     }
-
     return defaults;
   };
+
+  // removed getDefaultsForSubSchema in favor of reusing generateDefault on child schemas
 
   /**
    * generates compatible TypeScript interface for this instance's schema

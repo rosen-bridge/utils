@@ -146,27 +146,9 @@ describe('ConfigValidator', () => {
      * - generation should throw due to validation
      */
     it(`should throw when generateDefault is called with validate option and defaults are invalid`, async () => {
-      const schema: ConfigSchema = {
-        logs: {
-          type: 'array',
-          items: {
-            type: 'object',
-            children: {
-              type: {
-                type: 'string',
-                validations: [
-                  { required: true },
-                  { choices: ['file', 'console', 'loki'] },
-                ],
-              },
-              level: { type: 'string', default: 'info' },
-            },
-          },
-          default: [{ type: 'unknown' as any }, { level: 'debug' }],
-        },
-      };
-
-      const confValidator = new ConfigValidator(schema);
+      const confValidator = new ConfigValidator(
+        <ConfigSchema>testData.invalidDefaultsValidateOptionSchema.schema
+      );
       expect(() => confValidator.generateDefault({ validate: true })).toThrow();
     });
 
@@ -182,17 +164,56 @@ describe('ConfigValidator', () => {
      * - generateDefault returns merged defaults plus unknown key
      * - validateConfig does not throw
      */
-    it(`should preserve unknown keys in array defaults; validateConfig should reject unknown keys`, async () => {
+    it(`should reject schema defaults with unknown keys at schema validation time`, async () => {
+      expect(
+        () =>
+          new ConfigValidator(
+            <ConfigSchema>testData.unknownKeyLogsArrayDefaultsPair.schema
+          )
+      ).toThrow('key is not found in the schema');
+    });
+
+    /**
+     * @target generateDefault should handle nested array fields inside array item objects
+     * @dependencies
+     * @scenario
+     * - define an array of objects; each object has a nested array field
+     * - provide array default with and without the nested array specified
+     * - call generateDefault
+     * @expected
+     * - item-level non-array defaults are merged
+     * - nested array schema default is not merged by current implementation
+     * - nested array provided in defaults is preserved
+     */
+    it(`should handle nested array field inside array item objects`, async () => {
       const confValidator = new ConfigValidator(
-        <ConfigSchema>testData.unknownKeyLogsArrayDefaultsPair.schema
+        <ConfigSchema>testData.nestedArrayInArrayDefaultsPair.schema
       );
-      const generated = confValidator.generateDefault();
-      expect(generated).toEqual(
-        testData.unknownKeyLogsArrayDefaultsPair.defaultVal
+      const result = confValidator.generateDefault();
+      expect(result).toEqual(
+        testData.nestedArrayInArrayDefaultsPair.defaultVal
       );
-      expect(() => confValidator.validateConfig(generated)).toThrow(
-        'key is not found in the schema'
+    });
+
+    /**
+     * @target generateDefault should omit required fields without defaults and validation should fail
+     * @dependencies
+     * @scenario
+     * - define a required field without default
+     * - call generateDefault and ensure the field is not present
+     * - call validateConfig and ensure it throws due to missing required value
+     * @expected
+     * - defaults omit the field
+     * - validation throws
+     */
+    it(`should omit required fields without defaults and fail validation`, async () => {
+      const confValidator = new ConfigValidator(
+        <ConfigSchema>testData.requiredWithoutDefaultSchema.schema
       );
+      const defaults = confValidator.generateDefault();
+      expect(defaults).toEqual({});
+      expect(() => confValidator.validateConfig(defaults)).toThrow();
+      expect(() => confValidator.generateDefault({ validate: true })).toThrow();
     });
   });
 
@@ -265,6 +286,122 @@ describe('ConfigValidator', () => {
         () =>
           new ConfigValidator(
             <ConfigSchema>testData.objectTypeSchemaWithoutChildren
+          )
+      ).toThrow();
+    });
+
+    /**
+     * @target validateSchema should pass when array primitive defaults match items type
+     * @dependencies
+     * @scenario
+     * - construct ConfigValidator with a valid array primitive default
+     * @expected
+     * - no error thrown
+     */
+    it(`should pass when array primitive defaults match items type`, async () => {
+      new ConfigValidator(
+        <ConfigSchema>testData.arrayPrimitiveDefaultsValid.schema
+      );
+    });
+
+    /**
+     * @target validateSchema should fail when array primitive defaults mismatch items type
+     * @dependencies
+     * @scenario
+     * - construct ConfigValidator with an invalid array primitive default
+     * @expected
+     * - error thrown
+     */
+    it(`should fail when array primitive defaults mismatch items type`, async () => {
+      expect(
+        () =>
+          new ConfigValidator(
+            <ConfigSchema>testData.arrayPrimitiveDefaultsInvalid.schema
+          )
+      ).toThrow();
+    });
+
+    /**
+     * @target validateSchema should fail when array object defaults have invalid child types
+     * @dependencies
+     * @scenario
+     * - construct ConfigValidator with an invalid array object default
+     * @expected
+     * - error thrown
+     */
+    it(`should fail when array object defaults have invalid child types`, async () => {
+      expect(
+        () =>
+          new ConfigValidator(
+            <ConfigSchema>testData.arrayObjectDefaultsInvalidChildType.schema
+          )
+      ).toThrow();
+    });
+
+    /**
+     * @target validateSchema should fail when nested array defaults have invalid element types
+     * @dependencies
+     * @scenario
+     * - construct ConfigValidator with invalid nested array defaults
+     * @expected
+     * - error thrown
+     */
+    it(`should fail when nested array defaults have invalid element types`, async () => {
+      expect(
+        () =>
+          new ConfigValidator(
+            <ConfigSchema>testData.nestedArrayDefaultsInvalid.schema
+          )
+      ).toThrow();
+    });
+
+    /**
+     * @target validateSchema should pass when nested array defaults are valid
+     * @dependencies
+     * @scenario
+     * - construct ConfigValidator with valid nested array defaults
+     * @expected
+     * - no error thrown
+     */
+    it(`should pass when nested array defaults are valid`, async () => {
+      new ConfigValidator(
+        <ConfigSchema>testData.nestedArrayDefaultsValid.schema
+      );
+    });
+
+    /**
+     * @target validateSchema should validate nested array of objects defaults (pass)
+     * @dependencies
+     * @scenario
+     * - array of objects, with a key that is an array of objects with defaults
+     * - construct ConfigValidator and then generate defaults to ensure merge works
+     * @expected
+     * - constructor succeeds
+     * - defaults merged as expected
+     */
+    it(`should pass for nested array of objects defaults`, async () => {
+      const cv = new ConfigValidator(
+        <ConfigSchema>testData.nestedArrayOfObjectsDefaultsValid.schema
+      );
+      const defaults = cv.generateDefault();
+      expect(defaults).toEqual(
+        testData.nestedArrayOfObjectsDefaultsValid.defaultVal
+      );
+    });
+
+    /**
+     * @target validateSchema should validate nested array of objects defaults (fail)
+     * @dependencies
+     * @scenario
+     * - array of objects, inner array default has invalid element shapes
+     * @expected
+     * - constructor throws
+     */
+    it(`should fail for nested array of objects defaults with invalid inner elements`, async () => {
+      expect(
+        () =>
+          new ConfigValidator(
+            <ConfigSchema>testData.nestedArrayOfObjectsDefaultsInvalid.schema
           )
       ).toThrow();
     });

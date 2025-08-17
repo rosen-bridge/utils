@@ -1452,6 +1452,214 @@ export const arrayItemsAtRootSchema = {
   },
 };
 
+// Nested defaults: array of objects where an item key is itself a nested array
+export const nestedArrayInArrayDefaultsPair = {
+  schema: {
+    logs: {
+      type: 'array',
+      items: {
+        type: 'object',
+        children: {
+          name: { type: 'string', default: 'file' },
+          tags: {
+            type: 'array',
+            items: { type: 'string' },
+            default: ['t1', 't2'],
+          },
+          labels: {
+            type: 'array',
+            items: { type: 'string' },
+            default: ['L1'],
+          },
+        },
+      },
+      default: [{}, { tags: ['custom'], labels: [] }],
+    },
+  },
+  defaultVal: {
+    logs: [
+      { name: 'file', tags: ['t1', 't2'], labels: ['L1'] },
+      { name: 'file', tags: ['custom'], labels: [] },
+    ],
+  },
+};
+
+// Schema for invalid defaults used with generateDefault({ validate: true })
+export const invalidDefaultsValidateOptionSchema = {
+  schema: {
+    logs: {
+      type: 'array',
+      items: {
+        type: 'object',
+        children: {
+          type: {
+            type: 'string',
+            validations: [
+              { required: true },
+              { choices: ['file', 'console', 'loki'] },
+            ],
+          },
+          level: { type: 'string', default: 'info' },
+        },
+      },
+      default: [{ type: 'unknown' as any }, { level: 'debug' }],
+    },
+  },
+};
+
+// Schema for required field without default
+export const requiredWithoutDefaultSchema = {
+  schema: {
+    service: {
+      type: 'object',
+      children: {
+        apiKey: {
+          type: 'string',
+          validations: [{ required: true }],
+        },
+      },
+    },
+  },
+};
+
+// Default-shape validation fixtures
+export const arrayPrimitiveDefaultsValid = {
+  schema: {
+    ports: {
+      type: 'array',
+      items: { type: 'number' },
+      default: [80, 443],
+    },
+  },
+};
+
+export const arrayPrimitiveDefaultsInvalid = {
+  schema: {
+    ports: {
+      type: 'array',
+      items: { type: 'number' },
+      // invalid: contains a string
+      default: [80, '443' as any],
+    },
+  },
+};
+
+export const arrayObjectDefaultsInvalidChildType = {
+  schema: {
+    services: {
+      type: 'array',
+      items: {
+        type: 'object',
+        children: {
+          enabled: { type: 'boolean' },
+          path: { type: 'string' },
+        },
+      },
+      // invalid: enabled should be boolean
+      default: [{ enabled: 'true' as any, path: '/var' }],
+    },
+  },
+};
+
+export const nestedArrayDefaultsInvalid = {
+  schema: {
+    logs: {
+      type: 'array',
+      items: {
+        type: 'object',
+        children: {
+          name: { type: 'string' },
+          tags: { type: 'array', items: { type: 'string' } },
+        },
+      },
+      // invalid: tags contains a number
+      default: [{ name: 'file', tags: ['ok', 1 as any] }],
+    },
+  },
+};
+
+export const nestedArrayDefaultsValid = {
+  schema: {
+    logs: {
+      type: 'array',
+      items: {
+        type: 'object',
+        children: {
+          name: { type: 'string' },
+          tags: { type: 'array', items: { type: 'string' } },
+        },
+      },
+      default: [{ name: 'file', tags: ['ok', 'x'] }],
+    },
+  },
+};
+
+// Nested array of objects inside array of objects (valid)
+export const nestedArrayOfObjectsDefaultsValid = {
+  schema: {
+    services: {
+      type: 'array',
+      items: {
+        type: 'object',
+        children: {
+          name: { type: 'string' },
+          handlers: {
+            type: 'array',
+            items: {
+              type: 'object',
+              children: {
+                type: { type: 'string' },
+                retries: { type: 'number' },
+              },
+            },
+            default: [{ type: 'file', retries: 3 }],
+          },
+        },
+      },
+      default: [
+        { name: 'api' },
+        { name: 'worker', handlers: [{ type: 'console', retries: 1 }] },
+      ],
+    },
+  },
+  defaultVal: {
+    services: [
+      { name: 'api', handlers: [{ type: 'file', retries: 3 }] },
+      { name: 'worker', handlers: [{ type: 'console', retries: 1 }] },
+    ],
+  },
+};
+
+// Nested array of objects inside array of objects (invalid inner element shape)
+export const nestedArrayOfObjectsDefaultsInvalid = {
+  schema: {
+    services: {
+      type: 'array',
+      items: {
+        type: 'object',
+        children: {
+          name: { type: 'string' },
+          handlers: {
+            type: 'array',
+            items: {
+              type: 'object',
+              children: {
+                type: { type: 'string' },
+                retries: { type: 'number' },
+              },
+            },
+            // invalid: retries should be number, unknown key also invalid
+            default: [
+              { type: 'file', retries: 'three' as any, extra: true as any },
+            ],
+          },
+        },
+      },
+      default: [{ name: 'api' }],
+    },
+  },
+};
+
 export const arraySchemaDefaultValuePairSample = {
   schema: {
     stringArray: {
