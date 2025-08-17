@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/service-manager",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "is a Typescript package to simplify auto-start and auto-stop service management in a hierarchical structure, ensuring proper startup order and dependency handling",
   "repository": "@rosen-bridge/service-manager",
   "license": "MIT",
