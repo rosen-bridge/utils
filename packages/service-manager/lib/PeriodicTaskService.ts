@@ -16,8 +16,23 @@ export abstract class PeriodicTaskService extends AbstractService {
   private timeouts: Map<string, NodeJS.Timeout | number> = new Map();
   private active = false;
   private taskManagers: TaskManager[] = [];
-  protected abstract starterService(): Promise<void>;
-  protected abstract stoperService(): Promise<void>;
+
+  /**
+   * This method is called before the service starts.
+   * It is used to prepare the service for starting the periodic tasks.
+   */
+  protected abstract preStart(): Promise<void>;
+
+  /**
+   * This method is called after the service stops.
+   * It is used to clean up the service after the periodic tasks have stopped.
+   */
+  protected abstract postStop(): Promise<void>;
+
+  /**
+   * This method is used to get the tasks to be executed periodically.
+   * Tasks are defined as a list of objects with a function and an interval.
+   */
   protected abstract getTasks(): Task[];
 
   /**
@@ -29,7 +44,7 @@ export abstract class PeriodicTaskService extends AbstractService {
     try {
       let taskIdGenerator = 0;
       this.logger.info(`Starting periodic task service [${this.taskName}]`);
-      await this.starterService();
+      await this.preStart();
       this.setStatus(ServiceStatus.running);
       this.active = true;
 
@@ -89,7 +104,6 @@ export abstract class PeriodicTaskService extends AbstractService {
     try {
       this.logger.info(`Stopping periodic task service [${this.taskName}]`);
       this.active = false;
-      await this.stoperService();
       const stopPromises = this.taskManagers.map(async (taskManager) => {
         try {
           await taskManager.finished;
@@ -111,6 +125,7 @@ export abstract class PeriodicTaskService extends AbstractService {
         this.logger.debug(`Cleared timeout for task [${taskId}]`);
       });
       this.timeouts.clear();
+      await this.postStop();
       this.setStatus(ServiceStatus.dormant);
       this.logger.info(
         `Periodic task service [${this.taskName}] stopped successfully.`
