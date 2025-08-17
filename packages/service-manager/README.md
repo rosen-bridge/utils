@@ -133,7 +133,7 @@ serviceManager.stop(serviceX1A.getName());
 
 `PeriodicTaskService` is an abstract class designed to manage periodic services, allowing you to schedule and execute tasks at defined intervals. To use this class, you need to extend it and implement the necessary methods: `preStart`, `postStop`, and `getTasks`.
 
-`PreStart` is used to initialize and prepare the periodic task materials. The `postStop` method is called after stopping all threads and is used to clean up the service after the periodic tasks have stopped. Finally, the `getTask` method returns all periodic tasks and their running intervals.
+`preStart` is used to initialize and prepare the periodic task materials. The `postStop` method is called after stopping all threads and is used to clean up the service after the periodic tasks have stopped. Finally, the `getTask` method returns all periodic tasks and their running intervals.
 
 #### 1. Creating a Periodic Task Service
 
