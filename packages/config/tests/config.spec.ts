@@ -42,6 +42,27 @@ describe('ConfigValidator', () => {
     });
 
     /**
+     * @target generateDefault({ validate: true }) should fail when defaults violate choices
+     * @dependencies
+     * @scenario
+     * - define a primitive with choices and a wrong default
+     * - define a nested array object where a field has choices and wrong default
+     * - call generateDefault({ validate: true }) and expect failure
+     * @expected
+     * - generateDefault with validate should throw
+     */
+    it(`should fail validate=true when defaults violate choices (primitive and nested)`, async () => {
+      const cv1 = new ConfigValidator(
+        <ConfigSchema>testData.wrongChoiceDefaultSchema.schema
+      );
+      expect(() => cv1.generateDefault({ validate: true })).toThrow();
+
+      const cv2 = new ConfigValidator(
+        <ConfigSchema>testData.nestedWrongChoiceDefaultSchema.schema
+      );
+      expect(() => cv2.generateDefault({ validate: true })).toThrow();
+    });
+    /**
      * @target generateDefault should return default values for array fields with
      * string and number items
      * @dependencies

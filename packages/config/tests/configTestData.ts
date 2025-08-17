@@ -1660,6 +1660,38 @@ export const nestedArrayOfObjectsDefaultsInvalid = {
   },
 };
 
+// Wrong choice default at primitive level
+export const wrongChoiceDefaultSchema = {
+  schema: {
+    mode: {
+      type: 'string',
+      default: 'good',
+      validations: [{ choices: ['hello', 'bye'] }],
+    },
+  },
+};
+
+// Wrong choice default nested in array of objects
+export const nestedWrongChoiceDefaultSchema = {
+  schema: {
+    logs: {
+      type: 'array',
+      items: {
+        type: 'object',
+        children: {
+          type: {
+            type: 'string',
+            default: 'unknown',
+            validations: [{ choices: ['file', 'console', 'loki'] }],
+          },
+          level: { type: 'string', default: 'info' },
+        },
+      },
+      default: [{}],
+    },
+  },
+};
+
 export const arraySchemaDefaultValuePairSample = {
   schema: {
     stringArray: {
