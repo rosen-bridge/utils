@@ -1,5 +1,11 @@
 # @rosen-bridge/extended-typeorm
 
+## 0.2.1
+
+### Patch Changes
+
+- Remove typeorm default export to fix the BigIntValueTransformer resolution
+
 ## 0.2.0
 
 ### Minor Changes
