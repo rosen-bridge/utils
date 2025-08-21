@@ -2,6 +2,55 @@ import { ConfigValidator } from '../../config';
 import * as types from '../types/fields';
 import { VAll, VNumeric, VString } from '../types/validations';
 
+// Ensures a provided value structurally matches a field schema (non-traversal of schema tree)
+const assertShapeMatchesField = (value: any, field: types.ConfigField) => {
+  if (field.type === 'object') {
+    if (value == null || typeof value !== 'object' || Array.isArray(value)) {
+      throw new Error('value must be of object type');
+    }
+    for (const k of Object.keys(value)) {
+      if (!Object.hasOwn((field as types.ObjectField).children, k)) {
+        throw new Error(`"${k}" key is not found in the schema`);
+      }
+      assertShapeMatchesField(
+        (value as Record<string, any>)[k],
+        (field as types.ObjectField).children[k]
+      );
+    }
+    return;
+  }
+
+  if (field.type === 'array') {
+    if (!Array.isArray(value)) {
+      throw new Error('value must be of array type');
+    }
+    for (const item of value) {
+      assertShapeMatchesField(item, (field as types.ArrayField).items);
+    }
+    return;
+  }
+
+  if (value == undefined) return;
+  switch (field.type) {
+    case 'string':
+      if (typeof value !== 'string')
+        throw new Error('value must be of string type');
+      break;
+    case 'number':
+      if (typeof value !== 'number')
+        throw new Error('value must be of number type');
+      break;
+    case 'boolean':
+      if (typeof value !== 'boolean')
+        throw new Error('value must be of boolean type');
+      break;
+    case 'bigint':
+      if (typeof value !== 'bigint')
+        throw new Error('value must be of bigint type');
+      break;
+  }
+};
+
 export const propertyValidators = {
   all: {
     type: (field: types.ConfigField, config: ConfigValidator) => {
@@ -122,10 +171,17 @@ export const propertyValidators = {
       }
     },
     default: (field: types.ArrayField, config: ConfigValidator) => {
-      if (Object.hasOwn(field, 'default') && !Array.isArray(field.default)) {
+      if (!Object.hasOwn(field, 'default')) return;
+      if (!Array.isArray((field as any).default)) {
         throw new Error(
-          `default value=[${field.default}] doesn't match field type=[${field.type}]`
+          `default value=[${
+            (field as any).default
+          }] doesn't match field type=[${field.type}]`
         );
+      }
+
+      for (const elem of (field as any).default as any[]) {
+        assertShapeMatchesField(elem, field.items);
       }
     },
   },

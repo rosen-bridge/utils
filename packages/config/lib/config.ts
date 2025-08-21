@@ -15,7 +15,6 @@ import { valueValidations, valueValidators } from './value/validators';
 export class ConfigValidator {
   constructor(private schema: ConfigSchema) {
     this.validateSchema();
-    this.validateSchemaDefaultShapes(this.schema, []);
   }
 
   /**
@@ -248,109 +247,6 @@ export class ConfigValidator {
           throw new Error(`${errorPreamble(path)}: ${error.message}`);
         }
       }
-    }
-  };
-
-  // Validates that schema-provided defaults structurally match their field schemas (no constraints)
-  private validateSchemaDefaultShapes = (
-    schema: ConfigSchema,
-    parentPath: string[]
-  ) => {
-    const errorPreamble = (path: Array<string>) =>
-      `Schema default validation failed for "${path.join('.')}" field`;
-
-    for (const name of Object.keys(schema)) {
-      const field = schema[name];
-      const path = parentPath.concat([name]);
-
-      // Recurse into objects
-      if (field.type === 'object') {
-        this.validateSchemaDefaultShapes(field.children, path);
-        continue;
-      }
-
-      // Validate array defaults against items schema, and also recurse into items schema to
-      // validate defaults that might exist on nested fields
-      if (field.type === 'array') {
-        if (Object.hasOwn(field, 'default')) {
-          const arr = (field as any).default;
-          if (arr != undefined) {
-            for (let i = 0; i < arr.length; i++) {
-              try {
-                this.checkValueShapeAgainstField(
-                  arr[i],
-                  field.items,
-                  path.concat([`[${i}]`])
-                );
-              } catch (e: any) {
-                throw new Error(`${errorPreamble(path)}: ${e.message}`);
-              }
-            }
-          }
-        }
-        // Recurse into items schema (if object) to validate any defaults defined inside nested fields
-        if (field.items.type === 'object') {
-          this.validateSchemaDefaultShapes(field.items.children, path);
-        }
-      }
-    }
-  };
-
-  private checkValueShapeAgainstField = (
-    value: any,
-    field: ConfigField,
-    path: string[]
-  ) => {
-    const err = (msg: string) => new Error(`${msg}`);
-    if (field.type === 'object') {
-      if (value == null || typeof value !== 'object' || Array.isArray(value)) {
-        throw err('value must be of object type');
-      }
-      const keys = Object.keys(value);
-      for (const k of keys) {
-        if (!Object.hasOwn(field.children, k)) {
-          throw err(`"${k}" key is not found in the schema`);
-        }
-        this.checkValueShapeAgainstField(
-          value[k],
-          field.children[k],
-          path.concat([k])
-        );
-      }
-      return;
-    }
-    if (field.type === 'array') {
-      if (!Array.isArray(value)) {
-        throw err('value must be of array type');
-      }
-      for (let i = 0; i < value.length; i++) {
-        this.checkValueShapeAgainstField(
-          value[i],
-          field.items,
-          path.concat([`[${i}]`])
-        );
-      }
-      return;
-    }
-    // primitives
-    if (value == undefined) return; // missing is allowed at schema time
-    switch (field.type) {
-      case 'string':
-        if (typeof value !== 'string')
-          throw err('value must be of string type');
-        break;
-      case 'number':
-        if (typeof value !== 'number')
-          throw err('value must be of number type');
-        break;
-      case 'boolean':
-        if (typeof value !== 'boolean')
-          throw err('value must be of boolean type');
-        break;
-      case 'bigint':
-        if (typeof value !== 'bigint')
-          throw err('value must be of bigint type');
-        break;
     }
   };
 
