@@ -250,7 +250,9 @@ describe('ConfigValidator', () => {
      * - no errors should be thrown
      */
     it(`should not throw any exceptions when a correct schema is passed`, async () => {
-      new ConfigValidator(<ConfigSchema>testData.correctApiSchema);
+      expect(() => {
+        new ConfigValidator(<ConfigSchema>testData.correctApiSchema);
+      }).not.toThrow();
     });
 
     /**
@@ -320,9 +322,11 @@ describe('ConfigValidator', () => {
      * - no error thrown
      */
     it(`should pass when array primitive defaults match items type`, async () => {
-      new ConfigValidator(
-        <ConfigSchema>testData.arrayPrimitiveDefaultsValid.schema
-      );
+      expect(() => {
+        new ConfigValidator(
+          <ConfigSchema>testData.arrayPrimitiveDefaultsValid.schema
+        );
+      }).not.toThrow();
     });
 
     /**
@@ -385,9 +389,11 @@ describe('ConfigValidator', () => {
      * - no error thrown
      */
     it(`should pass when nested array defaults are valid`, async () => {
-      new ConfigValidator(
-        <ConfigSchema>testData.nestedArrayDefaultsValid.schema
-      );
+      expect(() => {
+        new ConfigValidator(
+          <ConfigSchema>testData.nestedArrayDefaultsValid.schema
+        );
+      }).not.toThrow();
     });
 
     /**

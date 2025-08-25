@@ -374,8 +374,6 @@ export class ConfigValidator {
     return defaults;
   };
 
-  // removed getDefaultsForSubSchema in favor of reusing generateDefault on child schemas
-
   /**
    * generates compatible TypeScript interface for this instance's schema
    *
