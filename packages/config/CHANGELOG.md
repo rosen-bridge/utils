@@ -1,5 +1,16 @@
 # @rosen-bridge/config
 
+## 0.4.0
+
+### Minor Changes
+
+- Add functionality that enables array types and defaults
+- Changed duplicate key behaviour to include the parent name instead
+
+### Patch Changes
+
+- Fix primitive type check for bigint field in schema validation
+
 ## 0.3.0
 
 ### Minor Changes
