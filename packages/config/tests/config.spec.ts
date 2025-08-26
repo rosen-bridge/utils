@@ -62,6 +62,7 @@ describe('ConfigValidator', () => {
       );
       expect(() => cv2.generateDefault({ validate: true })).toThrow();
     });
+
     /**
      * @target generateDefault should return default values for array fields with
      * string and number items
@@ -996,7 +997,7 @@ describe('ConfigValidator', () => {
 
     /**
      * @target validateSchema should not throw exception when "bigint" field is
-     * passed in string format
+     * passed in string format in config and default field in schema
      * @dependencies
      * @scenario
      * - call validateConfig with the config
@@ -1004,15 +1005,16 @@ describe('ConfigValidator', () => {
      * @expected
      * - exception should not be thrown
      */
-    it(`should not throw exception when "bigint" field is passed in string
-    format`, async () => {
+    it(`should not throw exception when "bigint" field is passed in string format in config and default field in schema`, async () => {
       const confValidator = new ConfigValidator(
         <ConfigSchema>testData.apiSchemaConfigPairWithStringBigInt.schema
       );
 
-      confValidator.validateConfig(
-        testData.apiSchemaConfigPairWithStringBigInt.config
-      );
+      expect(() => {
+        confValidator.validateConfig(
+          testData.apiSchemaConfigPairWithStringBigInt.config
+        );
+      }).not.toThrow();
     });
 
     /**

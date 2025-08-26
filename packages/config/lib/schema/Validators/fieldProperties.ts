@@ -45,7 +45,13 @@ const assertShapeMatchesField = (value: any, field: types.ConfigField) => {
         throw new Error('value must be of boolean type');
       break;
     case 'bigint':
-      if (typeof value !== 'bigint')
+      if (
+        !(
+          typeof value === 'bigint' ||
+          ((typeof value === 'number' || typeof value === 'string') &&
+            BigInt(value))
+        )
+      )
         throw new Error('value must be of bigint type');
       break;
   }
@@ -225,7 +231,12 @@ export const propertyValidators = {
     default: (field: types.BigIntField, config: ConfigValidator) => {
       if (
         Object.hasOwn(field, 'default') &&
-        typeof field.default !== 'bigint'
+        !(
+          typeof field.default === 'bigint' ||
+          ((typeof field.default === 'number' ||
+            typeof field.default === 'string') &&
+            BigInt(field.default))
+        )
       ) {
         throw new Error(
           `default value=[${field.default}] doesn't match field type=[${field.type}]`

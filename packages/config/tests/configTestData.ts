@@ -960,6 +960,7 @@ export const apiSchemaConfigPairWithStringBigInt = {
       children: {
         port: {
           type: 'bigint',
+          default: '5372',
         },
       },
     },
