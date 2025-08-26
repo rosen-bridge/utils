@@ -325,61 +325,53 @@ export class ConfigValidator {
    *
    * @return {Record<string, any>} object of default values
    */
-  generateDefault = (): Record<string, any> => {
-    const valueTree: Record<string, any> = Object.create(null);
+  generateDefault = (options?: { validate?: boolean }): Record<string, any> => {
+    const valueTree = this.buildDefaultsForSchema(this.schema);
+    if (options?.validate) {
+      this.validateConfig(valueTree);
+    }
+    return valueTree;
+  };
 
-    const stack: {
-      schema: ConfigSchema;
-      parentValue: Record<string, any> | undefined;
-      fieldName: string;
-      children: string[];
-    }[] = [
-      {
-        schema: this.schema,
-        parentValue: undefined,
-        fieldName: '',
-        children: Object.keys(this.schema).reverse(),
-      },
-    ];
-
-    // Traverses the schema object tree depth first
-    while (stack.length > 0) {
-      const { schema, parentValue, fieldName, children } = stack.at(-1)!;
-
-      // if a subtree's processing is finished go to the previous level
-      if (children.length === 0) {
-        // if a subtree is empty (has no values) remove it from the result
-        if (
-          parentValue != undefined &&
-          Object.keys(parentValue[fieldName]).length === 0
-        ) {
-          delete parentValue[fieldName];
-        }
-        stack.pop();
-        continue;
-      }
-
-      const childName = children.pop()!;
-      const value =
-        parentValue != undefined ? parentValue[fieldName] : valueTree;
-      const field = schema[childName];
-      // if a node/field is of type object and thus is a subtree, add it both to
-      // value tree and to the stack to be traversed later. Otherwise it's a
-      // leaf and needs no traversal, so add it only to the value tree.
+  // Builds default values for a schema subtree (objects and arrays), recursively
+  private buildDefaultsForSchema = (
+    schema: ConfigSchema
+  ): Record<string, any> => {
+    const defaults: Record<string, any> = Object.create(null);
+    for (const key of Object.keys(schema)) {
+      const field = schema[key];
       if (field.type === 'object') {
-        value[childName] = Object.create(null);
-        stack.push({
-          schema: field.children,
-          parentValue: value,
-          fieldName: childName,
-          children: Object.keys(field.children).reverse(),
-        });
-      } else if (field.type !== 'array' && field.default != undefined) {
-        value[childName] = field.default;
+        const childDefaults = this.buildDefaultsForSchema(field.children);
+        if (Object.keys(childDefaults).length > 0) {
+          defaults[key] = childDefaults;
+        }
+      } else if (field.type === 'array') {
+        if ((field as any).default != undefined) {
+          if (field.items.type === 'object') {
+            const itemDefaults = this.buildDefaultsForSchema(
+              field.items.children
+            );
+            defaults[key] = (field as any).default.map((elem: any) => {
+              if (
+                elem != null &&
+                typeof elem === 'object' &&
+                !Array.isArray(elem)
+              ) {
+                return { ...itemDefaults, ...elem };
+              }
+              return elem;
+            });
+          } else {
+            defaults[key] = (field as any).default;
+          }
+        }
+      } else {
+        if ((field as any).default != undefined) {
+          defaults[key] = (field as any).default;
+        }
       }
     }
-
-    return valueTree;
+    return defaults;
   };
 
   /**
