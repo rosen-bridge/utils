@@ -30,17 +30,8 @@ export const txUtxos = {
   lockTx: {
     vout: [
       {
-        value: 0.000005,
-        n: 0,
-        scriptPubKey: {
-          asm: 'OP_1 33fadad0034bb0a7912d2bbf2c9163627ba5ec7833341418595418c33deb0fb7',
-          hex: '512033fadad0034bb0a7912d2bbf2c9163627ba5ec7833341418595418c33deb0fb7',
-          type: 'V1_P2TR',
-        },
-      },
-      {
         value: 0.00003793,
-        n: 1,
+        n: 0,
         scriptPubKey: {
           asm: 'OP_1 6049cdebe640d23d7a8e11d8591aca96c0cd96626fc850ab1b65e7d75fef5b17',
           hex: '512033fadad0034bb0a7912d2bbf2c9163627ba5ec7833341418595418c33deb0fb7',
@@ -49,11 +40,20 @@ export const txUtxos = {
       },
       {
         value: 0,
-        n: 2,
+        n: 1,
         scriptPubKey: {
           asm: 'OP_RETURN OP_13 160100f7e135ec1790a10f00',
           hex: '6a5d0c160100f7e135ec1790a10f00',
           type: 'OP_RETURN',
+        },
+      },
+      {
+        value: 0.000005,
+        n: 2,
+        scriptPubKey: {
+          asm: 'OP_1 33fadad0034bb0a7912d2bbf2c9163627ba5ec7833341418595418c33deb0fb7',
+          hex: '512033fadad0034bb0a7912d2bbf2c9163627ba5ec7833341418595418c33deb0fb7',
+          type: 'V1_P2TR',
         },
       },
       {

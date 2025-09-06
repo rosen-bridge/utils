@@ -1,7 +1,7 @@
 import { RosenData } from '../abstract/types';
 import AbstractRosenDataExtractor from '../abstract/AbstractRosenDataExtractor';
-import { RUNES_CHAIN } from '../const';
-import { BitcoinRpcTransaction, BitcoinRpcTxOutput } from '../bitcoin/types';
+import { BITCOIN_RUNES_CHAIN } from '../const';
+import { BitcoinEsploraTransaction, EsploraTxOutput } from '../bitcoin/types';
 import { TokenMap } from '@rosen-bridge/tokens';
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import { address } from 'bitcoinjs-lib';
@@ -11,8 +11,8 @@ import { LockDataChunk } from './types';
 import { MinimalOnChainRosenData } from '../../types';
 import { minUtxoValue } from './constants';
 
-export class RunesRpcRosenExtractor extends AbstractRosenDataExtractor<BitcoinRpcTransaction> {
-  readonly chain = RUNES_CHAIN;
+export class BitcoinRunesEsploraRosenExtractor extends AbstractRosenDataExtractor<BitcoinEsploraTransaction> {
+  readonly chain = BITCOIN_RUNES_CHAIN;
   protected lockScriptPubKey: string;
 
   constructor(lockAddress: string, tokens: TokenMap, logger?: AbstractLogger) {
@@ -21,11 +21,11 @@ export class RunesRpcRosenExtractor extends AbstractRosenDataExtractor<BitcoinRp
   }
 
   /**
-   * extracts RosenData from given lock transaction in Rpc format
-   * @param transaction the lock transaction in Rpc format
+   * extracts RosenData from given lock transaction in Esplora format
+   * @param transaction the lock transaction in Esplora format
    */
   extractRawData = (
-    transaction: BitcoinRpcTransaction
+    transaction: BitcoinEsploraTransaction
   ): RosenData | undefined => {
     const baseError = `No rosen data is found for tx [${transaction.txid}]`;
     try {
@@ -38,7 +38,6 @@ export class RunesRpcRosenExtractor extends AbstractRosenDataExtractor<BitcoinRp
 
       // validate lock conditions
       const validLock = this.validateLock(outputs);
-
       if (!validLock) {
         this.logger.debug(baseError + `: Failed to find rosen lock utxo`);
         return undefined;
@@ -47,7 +46,6 @@ export class RunesRpcRosenExtractor extends AbstractRosenDataExtractor<BitcoinRp
       // validate data conditions
       const lockDataChunks = this.getLockDataChunks(outputs);
       const lockData = this.lockDataFromChunks(lockDataChunks);
-
       if (!lockData) {
         this.logger.debug(
           baseError + `: Failed to extract rosen data from utxos`
@@ -69,7 +67,7 @@ export class RunesRpcRosenExtractor extends AbstractRosenDataExtractor<BitcoinRp
       };
     } catch (e) {
       this.logger.debug(
-        `An error occurred while getting Runes rosen data from Rpc: ${e}`
+        `An error occurred while getting Runes rosen data from Esplora: ${e}`
       );
       if (e instanceof Error && e.stack) {
         this.logger.debug(e.stack);
@@ -84,20 +82,20 @@ export class RunesRpcRosenExtractor extends AbstractRosenDataExtractor<BitcoinRp
    * @return array of LockDataChunk
    */
   protected getLockDataChunks = (
-    outputs: BitcoinRpcTxOutput[]
+    outputs: EsploraTxOutput[]
   ): LockDataChunk[] => {
     const lockDataChunks: LockDataChunk[] = [];
 
     for (let i = 0; i < 4; i++) {
-      for (let boxIndex = 0; boxIndex < outputs.length; boxIndex++) {
+      for (let boxIndex = 3; boxIndex < outputs.length; boxIndex++) {
         const output = outputs[boxIndex];
 
-        if (output.value * 10 ** 8 !== minUtxoValue + i) continue; // wrong data index
-        if (output.scriptPubKey.hex.slice(0, 4) !== '0014') continue; // not a native-segwit utxo
+        if (output.value !== minUtxoValue + i) continue; // wrong data index
+        if (output.scriptpubkey.slice(0, 4) !== '0014') continue; // not a native-segwit utxo
 
         lockDataChunks.push({
           index: i,
-          data: output.scriptPubKey.hex.slice(4),
+          data: output.scriptpubkey.slice(4),
         });
         break;
       }
@@ -136,9 +134,9 @@ export class RunesRpcRosenExtractor extends AbstractRosenDataExtractor<BitcoinRp
    * @param outputs
    * @return boolean
    */
-  protected validateLock = (outputs: BitcoinRpcTxOutput[]): boolean => {
+  protected validateLock = (outputs: EsploraTxOutput[]): boolean => {
     for (let i = 0; i < outputs.length; i++) {
-      if (outputs[i].scriptPubKey.hex === this.lockScriptPubKey) {
+      if (outputs[i].scriptpubkey === this.lockScriptPubKey) {
         return true;
       }
     }
