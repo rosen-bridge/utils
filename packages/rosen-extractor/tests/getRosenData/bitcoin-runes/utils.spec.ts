@@ -1,4 +1,4 @@
-import { parseAggregatedData } from '../../../lib/getRosenData/runes/utils';
+import { parseAggregatedData } from '../../../lib/getRosenData/bitcoin-runes/utils';
 import * as testData from './testData';
 
 describe('parseAggregatedData', () => {

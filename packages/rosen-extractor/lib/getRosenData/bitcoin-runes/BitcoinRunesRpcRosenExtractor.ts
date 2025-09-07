@@ -1,6 +1,6 @@
 import { RosenData } from '../abstract/types';
 import AbstractRosenDataExtractor from '../abstract/AbstractRosenDataExtractor';
-import { RUNES_CHAIN } from '../const';
+import { BITCOIN_RUNES_CHAIN } from '../const';
 import { BitcoinRpcTransaction, BitcoinRpcTxOutput } from '../bitcoin/types';
 import { TokenMap } from '@rosen-bridge/tokens';
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
@@ -11,8 +11,8 @@ import { LockDataChunk } from './types';
 import { MinimalOnChainRosenData } from '../../types';
 import { minUtxoValue } from './constants';
 
-export class RunesRpcRosenExtractor extends AbstractRosenDataExtractor<BitcoinRpcTransaction> {
-  readonly chain = RUNES_CHAIN;
+export class BitcoinRunesRpcRosenExtractor extends AbstractRosenDataExtractor<BitcoinRpcTransaction> {
+  readonly chain = BITCOIN_RUNES_CHAIN;
   protected lockScriptPubKey: string;
 
   constructor(lockAddress: string, tokens: TokenMap, logger?: AbstractLogger) {
@@ -89,7 +89,8 @@ export class RunesRpcRosenExtractor extends AbstractRosenDataExtractor<BitcoinRp
     const lockDataChunks: LockDataChunk[] = [];
 
     for (let i = 0; i < 4; i++) {
-      for (let boxIndex = 0; boxIndex < outputs.length; boxIndex++) {
+      // the first 3 boxes are expected to be change, OP_RETURN and lock address, which should not be considered for data chunks
+      for (let boxIndex = 3; boxIndex < outputs.length; boxIndex++) {
         const output = outputs[boxIndex];
 
         if (output.value * 10 ** 8 !== minUtxoValue + i) continue; // wrong data index

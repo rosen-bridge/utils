@@ -1,10 +1,10 @@
-import { RunesRpcRosenExtractor } from '../../../lib';
-import * as testData from './rpcTestData';
+import { BitcoinRunesEsploraRosenExtractor } from '../../../lib';
+import * as testData from './esploraTestData';
 import TestUtils from '../TestUtils';
-import { BitcoinRpcTransaction } from '../../../lib/getRosenData/bitcoin/types';
+import { BitcoinEsploraTransaction } from '../../../lib/getRosenData/bitcoin/types';
 import { TokenMap } from '@rosen-bridge/tokens';
 
-describe('RunesRpcRosenExtractor', () => {
+describe('BitcoinRunesEsploraRosenExtractor', () => {
   const tokenMap = new TokenMap();
 
   beforeAll(async () => {
@@ -13,7 +13,7 @@ describe('RunesRpcRosenExtractor', () => {
 
   describe('get', () => {
     /**
-     * @target `RunesRpcRosenExtractor.get` should extract rosenData from
+     * @target `BitcoinRunesEsploraRosenExtractor.get` should extract rosenData from
      * Runes lock tx successfully
      * @dependencies
      * @scenario
@@ -26,17 +26,17 @@ describe('RunesRpcRosenExtractor', () => {
     it('should extract rosenData from Runes lock tx successfully', () => {
       const validLockTx = testData.txs.lockTx;
 
-      const extractor = new RunesRpcRosenExtractor(
+      const extractor = new BitcoinRunesEsploraRosenExtractor(
         testData.mockLockAddress,
         tokenMap
       );
-      const result = extractor.get(validLockTx as BitcoinRpcTransaction);
+      const result = extractor.get(validLockTx as BitcoinEsploraTransaction);
 
       expect(result).toStrictEqual(testData.rosenData);
     });
 
     /**
-     * @target `RunesRpcRosenExtractor.get` should return undefined when
+     * @target `BitcoinRunesEsploraRosenExtractor.get` should return undefined when
      * aggregated data is corrupted
      * @dependencies
      * @scenario
@@ -49,17 +49,17 @@ describe('RunesRpcRosenExtractor', () => {
     it('should return undefined when aggregated data is corrupted', () => {
       const invalidTx = testData.txs.corruptData;
 
-      const extractor = new RunesRpcRosenExtractor(
+      const extractor = new BitcoinRunesEsploraRosenExtractor(
         testData.mockLockAddress,
         tokenMap
       );
-      const result = extractor.get(invalidTx as BitcoinRpcTransaction);
+      const result = extractor.get(invalidTx as BitcoinEsploraTransaction);
 
       expect(result).toBeUndefined();
     });
 
     /**
-     * @target `RunesRpcRosenExtractor.get` should extract rosenData from Runes lock tx successfully when
+     * @target `BitcoinRunesEsploraRosenExtractor.get` should return undefined when
      * the utxos are unorganized
      * @dependencies
      * @scenario
@@ -69,20 +69,20 @@ describe('RunesRpcRosenExtractor', () => {
      * @expected
      * - it should return expected rosenData object
      */
-    it('should extract rosenData from Runes lock tx successfully when the utxos are unorganized', () => {
-      const invalidTx = testData.txs.unorderedTx;
+    it('should return undefined when the utxos are unorganized', () => {
+      const unorderedTx = testData.txs.unorderedTx;
 
-      const extractor = new RunesRpcRosenExtractor(
+      const extractor = new BitcoinRunesEsploraRosenExtractor(
         testData.mockLockAddress,
         tokenMap
       );
-      const result = extractor.get(invalidTx as BitcoinRpcTransaction);
+      const result = extractor.get(unorderedTx as BitcoinEsploraTransaction);
 
-      expect(result).toStrictEqual(testData.rosenData);
+      expect(result).toBeUndefined();
     });
 
     /**
-     * @target `RunesRpcRosenExtractor.get` should return undefined when
+     * @target `BitcoinRunesEsploraRosenExtractor.get` should return undefined when
      * there are not enough utxos
      * @dependencies
      * @scenario
@@ -93,19 +93,19 @@ describe('RunesRpcRosenExtractor', () => {
      * - it should return undefined
      */
     it('should return undefined when there are not enough utxos', () => {
-      const invalidTx = testData.txs.lessBoxes;
+      const lessBoxesTx = testData.txs.lessBoxes;
 
-      const extractor = new RunesRpcRosenExtractor(
+      const extractor = new BitcoinRunesEsploraRosenExtractor(
         testData.mockLockAddress,
         tokenMap
       );
-      const result = extractor.get(invalidTx as BitcoinRpcTransaction);
+      const result = extractor.get(lessBoxesTx as BitcoinEsploraTransaction);
 
       expect(result).toBeUndefined();
     });
 
     /**
-     * @target `RunesRpcRosenExtractor.get` should return undefined when
+     * @target `BitcoinRunesEsploraRosenExtractor.get` should return undefined when
      * outputs contain no lock address utxo
      * @dependencies
      * @scenario
@@ -118,11 +118,11 @@ describe('RunesRpcRosenExtractor', () => {
     it('should return undefined when outputs contain no lock address utxo', () => {
       const invalidTx = testData.txs.noLock;
 
-      const extractor = new RunesRpcRosenExtractor(
+      const extractor = new BitcoinRunesEsploraRosenExtractor(
         testData.mockLockAddress,
         tokenMap
       );
-      const result = extractor.get(invalidTx as BitcoinRpcTransaction);
+      const result = extractor.get(invalidTx as BitcoinEsploraTransaction);
 
       expect(result).toBeUndefined();
     });

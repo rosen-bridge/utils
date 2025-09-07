@@ -1,7 +1,7 @@
 import { RosenData } from '../abstract/types';
 import AbstractRosenDataExtractor from '../abstract/AbstractRosenDataExtractor';
-import { RUNES_CHAIN } from '../const';
-import { BitcoinTxOutput, BitcoinTx } from '../bitcoin/types';
+import { BITCOIN_RUNES_CHAIN } from '../const';
+import { BitcoinEsploraTransaction, EsploraTxOutput } from '../bitcoin/types';
 import { TokenMap } from '@rosen-bridge/tokens';
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import { address } from 'bitcoinjs-lib';
@@ -11,8 +11,8 @@ import { LockDataChunk } from './types';
 import { MinimalOnChainRosenData } from '../../types';
 import { minUtxoValue } from './constants';
 
-export class RunesRosenExtractor extends AbstractRosenDataExtractor<string> {
-  readonly chain = RUNES_CHAIN;
+export class BitcoinRunesEsploraRosenExtractor extends AbstractRosenDataExtractor<BitcoinEsploraTransaction> {
+  readonly chain = BITCOIN_RUNES_CHAIN;
   protected lockScriptPubKey: string;
 
   constructor(lockAddress: string, tokens: TokenMap, logger?: AbstractLogger) {
@@ -21,22 +21,16 @@ export class RunesRosenExtractor extends AbstractRosenDataExtractor<string> {
   }
 
   /**
-   * extracts RosenData from given lock transaction in BitcoinTx format
-   * @param serializedTransaction stringified transaction in BitcoinTx format
+   * extracts RosenData from given lock transaction in Esplora format
+   * @param transaction the lock transaction in Esplora format
    */
-  extractRawData = (serializedTransaction: string): RosenData | undefined => {
-    let transaction: BitcoinTx;
-    try {
-      transaction = JsonBigInt.parse(serializedTransaction);
-    } catch (e) {
-      throw new Error(
-        `Failed to parse transaction json to BitcoinTx format while extracting rosen data: ${e}`
-      );
-    }
-    const baseError = `No rosen data is found for tx [${transaction.id}]`;
+  extractRawData = (
+    transaction: BitcoinEsploraTransaction
+  ): RosenData | undefined => {
+    const baseError = `No rosen data is found for tx [${transaction.txid}]`;
     try {
       // validate number of output boxes
-      const outputs = transaction.outputs;
+      const outputs = transaction.vout;
       if (outputs.length < 5) {
         this.logger.debug(baseError + `: Insufficient number of boxes`);
         return undefined;
@@ -52,7 +46,6 @@ export class RunesRosenExtractor extends AbstractRosenDataExtractor<string> {
       // validate data conditions
       const lockDataChunks = this.getLockDataChunks(outputs);
       const lockData = this.lockDataFromChunks(lockDataChunks);
-
       if (!lockData) {
         this.logger.debug(
           baseError + `: Failed to extract rosen data from utxos`
@@ -60,7 +53,7 @@ export class RunesRosenExtractor extends AbstractRosenDataExtractor<string> {
         return undefined;
       }
 
-      const fromAddress = `box:${transaction.inputs[0].txId}.${transaction.inputs[0].index}`;
+      const fromAddress = `box:${transaction.vin[0].txid}.${transaction.vin[0].vout}`;
       return {
         toChain: lockData.toChain,
         toAddress: lockData.toAddress,
@@ -70,11 +63,11 @@ export class RunesRosenExtractor extends AbstractRosenDataExtractor<string> {
         sourceChainTokenId: '',
         amount: '',
         targetChainTokenId: '',
-        sourceTxId: transaction.id,
+        sourceTxId: transaction.txid,
       };
     } catch (e) {
       this.logger.debug(
-        `An error occurred while getting Runes rosen data from BitcoinTx: ${e}`
+        `An error occurred while getting Runes rosen data from Esplora: ${e}`
       );
       if (e instanceof Error && e.stack) {
         this.logger.debug(e.stack);
@@ -89,20 +82,21 @@ export class RunesRosenExtractor extends AbstractRosenDataExtractor<string> {
    * @return array of LockDataChunk
    */
   protected getLockDataChunks = (
-    outputs: BitcoinTxOutput[]
+    outputs: EsploraTxOutput[]
   ): LockDataChunk[] => {
     const lockDataChunks: LockDataChunk[] = [];
 
     for (let i = 0; i < 4; i++) {
-      for (let boxIndex = 0; boxIndex < outputs.length; boxIndex++) {
+      // the first 3 boxes are expected to be change, OP_RETURN and lock address, which should not be considered for data chunks
+      for (let boxIndex = 3; boxIndex < outputs.length; boxIndex++) {
         const output = outputs[boxIndex];
 
-        if (output.value !== BigInt(minUtxoValue) + BigInt(i)) continue; // wrong data index
-        if (output.scriptPubKey.slice(0, 4) !== '0014') continue; // not a native-segwit utxo
+        if (output.value !== minUtxoValue + i) continue; // wrong data index
+        if (output.scriptpubkey.slice(0, 4) !== '0014') continue; // not a native-segwit utxo
 
         lockDataChunks.push({
           index: i,
-          data: output.scriptPubKey.slice(4),
+          data: output.scriptpubkey.slice(4),
         });
         break;
       }
@@ -141,9 +135,9 @@ export class RunesRosenExtractor extends AbstractRosenDataExtractor<string> {
    * @param outputs
    * @return boolean
    */
-  protected validateLock = (outputs: BitcoinTxOutput[]): boolean => {
+  protected validateLock = (outputs: EsploraTxOutput[]): boolean => {
     for (let i = 0; i < outputs.length; i++) {
-      if (outputs[i].scriptPubKey === this.lockScriptPubKey) {
+      if (outputs[i].scriptpubkey === this.lockScriptPubKey) {
         return true;
       }
     }
