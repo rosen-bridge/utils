@@ -87,6 +87,7 @@ export class BitcoinRunesEsploraRosenExtractor extends AbstractRosenDataExtracto
     const lockDataChunks: LockDataChunk[] = [];
 
     for (let i = 0; i < 4; i++) {
+      // the first 3 boxes are expected to be change, OP_RETURN and lock address, which should not be considered for data chunks
       for (let boxIndex = 3; boxIndex < outputs.length; boxIndex++) {
         const output = outputs[boxIndex];
 
