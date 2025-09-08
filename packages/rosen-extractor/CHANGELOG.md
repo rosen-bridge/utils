@@ -1,5 +1,15 @@
 # @rosen-bridge/rosen-extractor
 
+## 9.0.0
+
+### Major Changes
+
+- Rename Runes chain name to Bitcoin Runes
+
+### Patch Changes
+
+- Update Bitcoin Runes getLockDataChunks to ignore the first 3 output boxes
+
 ## 8.1.0
 
 ### Minor Changes
