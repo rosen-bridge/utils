@@ -1,14 +1,5 @@
 import { AbstractService } from './AbstractService';
-import { ServiceStatus } from './types';
-
-type Task = {
-  fn: () => Promise<void>;
-  interval: number;
-};
-
-interface TaskManager extends Task {
-  finished: Promise<void>;
-}
+import { ServiceStatus, Task, TaskManager } from './types';
 
 export abstract class PeriodicTaskService extends AbstractService {
   private timeouts: Map<string, NodeJS.Timeout | number> = new Map();
