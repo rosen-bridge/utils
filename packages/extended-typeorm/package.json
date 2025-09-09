@@ -40,6 +40,6 @@
   },
   "dependencies": {
     "async-mutex": "^0.4.0",
-    "typeorm": "^0.3.20"
+    "typeorm": "^0.3.26"
   }
 }
