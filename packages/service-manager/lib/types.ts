@@ -12,6 +12,7 @@ export interface Task {
 export interface TaskManager extends Task {
   finished: Promise<void>;
 }
+
 export interface Dependency {
   serviceName: string;
   allowedStatuses: Array<ServiceStatus>;
