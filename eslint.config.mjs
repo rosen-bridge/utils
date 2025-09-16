@@ -23,6 +23,7 @@ export default [
         // Node-Specific Globals
         ...globals.node,
         ...vitestPlugin.environments.env.globals,
+        ...globals.jest,
       },
     },
     plugins: {
