@@ -7,8 +7,10 @@
   "type": "module",
   "author": "Rosen Team",
   "scripts": {
-    "prettify": "prettier --write . --ignore-path .gitignore",
+    "prettify": "prettier --write . --ignore-path ../../../.gitignore",
+    "prettify:check": "prettier --check . --ignore-path ../../../.gitignore",
     "lint": "eslint --fix . && npm run prettify",
+    "lint:check": "eslint . && npm run prettify:check",
     "build": "tsc --build tsconfig.build.json",
     "type-check": "tsc --noEmit",
     "test": "jest --runInBand",

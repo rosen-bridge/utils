@@ -9,7 +9,7 @@ import globals from 'globals';
 export default [
   {
     // General Ignore Patterns
-    ignores: ['**/dist/*', '**/node_modules/*'],
+    ignores: ['**/dist/*', '**/node_modules/*', '**/coverage/*'],
   },
   pluginJs.configs.recommended,
   {
