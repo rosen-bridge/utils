@@ -5,6 +5,16 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./bootstrap": {
+      "import": "./dist/bootstrap.js",
+      "types": "./dist/bootstrap.d.ts"
+    }
+  },
   "scripts": {
     "prettify": "prettier --write . --ignore-path .gitignore",
     "lint": "eslint --fix . && npm run prettify",
@@ -40,6 +50,7 @@
   },
   "dependencies": {
     "async-mutex": "^0.4.0",
-    "typeorm": "^0.3.26"
+    "reflect-metadata": "0.2.2",
+    "typeorm": "0.3.26"
   }
 }
