@@ -10,7 +10,7 @@
     "lint": "eslint --fix . && npm run prettify",
     "build": "tsc --build tsconfig.build.json",
     "type-check": "tsc --noEmit",
-    "test": "vitest",
+    "test": "NODE_OPTIONS='--import tsx' vitest",
     "coverage": "npm run test -- --run --coverage",
     "release": "npm run test -- --run && npm run build && npm publish --access public"
   },
@@ -24,11 +24,11 @@
   "author": "Rosen Team",
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "^20.11.0",
-    "@vitest/coverage-istanbul": "^2.0.5",
-    "ts-node": "^10.8.1",
+    "@types/node": "^22.18.0",
+    "@vitest/coverage-istanbul": "^3.1.4",
+    "tsx": "^4.20.5",
     "typescript": "^5.8.3",
-    "vitest": "^2.0.5"
+    "vitest": "^3.1.4"
   },
   "dependencies": {
     "@rosen-bridge/abstract-logger": "^2.1.0",
