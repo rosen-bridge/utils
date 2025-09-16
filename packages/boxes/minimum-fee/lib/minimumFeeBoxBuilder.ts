@@ -8,7 +8,7 @@ import {
   TokenId,
   ErgoBoxCandidate,
 } from 'ergo-lib-wasm-nodejs';
-import { MinimumFeeConfig } from './MinimumFeeConfig';
+import { MinimumFeeConfig } from './minimumFeeConfig';
 import { Fee } from './types';
 import { InvalidConfig } from './errors';
 import { ERGO_NATIVE_TOKEN } from './constants';
@@ -93,7 +93,7 @@ export class MinimumFeeBoxBuilder {
       throw new InvalidConfig(`Config token id is not defined`);
     if (this.fees.length === 0)
       throw new InvalidConfig(
-        `No config added. Please add at least one config`
+        `No config added. Please add at least one config`,
       );
 
     for (let i = 0; i < this.fees.length - 1; i++) {
@@ -101,7 +101,7 @@ export class MinimumFeeBoxBuilder {
       chains.forEach((chain) => {
         if (!this.fees[i + 1].heights[chain])
           throw new InvalidConfig(
-            `Expected chain [${chain}] at index [${i + 1}]`
+            `Expected chain [${chain}] at index [${i + 1}]`,
           );
         if (this.fees[i + 1].heights[chain] < this.fees[i].heights[chain])
           throw new InvalidConfig(
@@ -109,7 +109,7 @@ export class MinimumFeeBoxBuilder {
               i + 1
             }] are invalid [${this.fees[i + 1].heights[chain]} < ${
               this.fees[i].heights[chain]
-            }]`
+            }]`,
           );
       });
     }
@@ -160,18 +160,18 @@ export class MinimumFeeBoxBuilder {
     const boxBuilder = new ErgoBoxCandidateBuilder(
       this.boxValue,
       Contract.new(Address.from_base58(this.address).to_ergo_tree()),
-      this.boxHeight
+      this.boxHeight,
     );
 
     // add box tokens
     boxBuilder.add_token(
       TokenId.from_str(this.minimumFeeNFT),
-      TokenAmount.from_i64(I64.from_str('1'))
+      TokenAmount.from_i64(I64.from_str('1')),
     );
     if (this.tokenId !== ERGO_NATIVE_TOKEN)
       boxBuilder.add_token(
         TokenId.from_str(this.tokenId),
-        TokenAmount.from_i64(I64.from_str('1'))
+        TokenAmount.from_i64(I64.from_str('1')),
       );
 
     // generate register values

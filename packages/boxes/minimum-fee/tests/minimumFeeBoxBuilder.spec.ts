@@ -38,8 +38,8 @@ describe('MinimumFeeBoxBuilder', () => {
           minimumFeeConfig.setChainConfig(
             chain,
             fee.heights[chain],
-            fee.configs[chain]
-          )
+            fee.configs[chain],
+          ),
         );
         feeConfig.push(minimumFeeConfig);
       });
@@ -47,7 +47,7 @@ describe('MinimumFeeBoxBuilder', () => {
       // run test
       const builder = new MinimumFeeBoxBuilder(
         defaultMinimumFeeNFT,
-        defaultAddress
+        defaultAddress,
       )
         .setValue(defaultValue)
         .setHeight(defaultHeight)
@@ -59,11 +59,11 @@ describe('MinimumFeeBoxBuilder', () => {
       expect(result.value().as_i64().to_str()).toEqual(defaultValue.toString());
       expect(result.creation_height()).toEqual(defaultHeight);
       expect(result.ergo_tree().to_base16_bytes()).toEqual(
-        Address.from_base58(defaultAddress).to_ergo_tree().to_base16_bytes()
+        Address.from_base58(defaultAddress).to_ergo_tree().to_base16_bytes(),
       );
       expect(result.tokens().len()).toEqual(1);
       expect(result.tokens().get(0).id().to_str()).toEqual(
-        defaultMinimumFeeNFT
+        defaultMinimumFeeNFT,
       );
       expect(result.tokens().get(0).amount().as_i64().to_str()).toEqual('1');
       const expectedChains = ['binance', 'cardano', 'ergo'];
@@ -71,7 +71,7 @@ describe('MinimumFeeBoxBuilder', () => {
         result
           .register_value(4)
           ?.to_coll_coll_byte()
-          .map((element) => Buffer.from(element).toString())
+          .map((element) => Buffer.from(element).toString()),
       ).toEqual(expectedChains);
       const expectedHeights = [
         [666, 444444, 11111],
@@ -135,8 +135,8 @@ describe('MinimumFeeBoxBuilder', () => {
           minimumFeeConfig.setChainConfig(
             chain,
             fee.heights[chain],
-            fee.configs[chain]
-          )
+            fee.configs[chain],
+          ),
         );
         feeConfig.push(minimumFeeConfig);
       });
@@ -146,7 +146,7 @@ describe('MinimumFeeBoxBuilder', () => {
       // run test
       const builder = new MinimumFeeBoxBuilder(
         defaultMinimumFeeNFT,
-        defaultAddress
+        defaultAddress,
       )
         .setValue(defaultValue)
         .setHeight(defaultHeight)
@@ -158,11 +158,11 @@ describe('MinimumFeeBoxBuilder', () => {
       expect(result.value().as_i64().to_str()).toEqual(defaultValue.toString());
       expect(result.creation_height()).toEqual(defaultHeight);
       expect(result.ergo_tree().to_base16_bytes()).toEqual(
-        Address.from_base58(defaultAddress).to_ergo_tree().to_base16_bytes()
+        Address.from_base58(defaultAddress).to_ergo_tree().to_base16_bytes(),
       );
       expect(result.tokens().len()).toEqual(2);
       expect(result.tokens().get(0).id().to_str()).toEqual(
-        defaultMinimumFeeNFT
+        defaultMinimumFeeNFT,
       );
       expect(result.tokens().get(0).amount().as_i64().to_str()).toEqual('1');
       expect(result.tokens().get(1).id().to_str()).toEqual(tokenId);
@@ -172,7 +172,7 @@ describe('MinimumFeeBoxBuilder', () => {
         result
           .register_value(4)
           ?.to_coll_coll_byte()
-          .map((element) => Buffer.from(element).toString())
+          .map((element) => Buffer.from(element).toString()),
       ).toEqual(expectedChains);
       const expectedHeights = [
         [666, 444444, 11111],
@@ -236,8 +236,8 @@ describe('MinimumFeeBoxBuilder', () => {
           minimumFeeConfig.setChainConfig(
             chain,
             fee.heights[chain],
-            fee.configs[chain]
-          )
+            fee.configs[chain],
+          ),
         );
         feeConfig.push(minimumFeeConfig);
       });
@@ -245,7 +245,7 @@ describe('MinimumFeeBoxBuilder', () => {
       // run test
       const builder = new MinimumFeeBoxBuilder(
         defaultMinimumFeeNFT,
-        defaultAddress
+        defaultAddress,
       )
         .setValue(defaultValue)
         .setHeight(defaultHeight)
@@ -257,11 +257,11 @@ describe('MinimumFeeBoxBuilder', () => {
       expect(result.value().as_i64().to_str()).toEqual(defaultValue.toString());
       expect(result.creation_height()).toEqual(defaultHeight);
       expect(result.ergo_tree().to_base16_bytes()).toEqual(
-        Address.from_base58(defaultAddress).to_ergo_tree().to_base16_bytes()
+        Address.from_base58(defaultAddress).to_ergo_tree().to_base16_bytes(),
       );
       expect(result.tokens().len()).toEqual(1);
       expect(result.tokens().get(0).id().to_str()).toEqual(
-        defaultMinimumFeeNFT
+        defaultMinimumFeeNFT,
       );
       expect(result.tokens().get(0).amount().as_i64().to_str()).toEqual('1');
       const expectedChains = ['binance', 'cardano', 'ergo'];
@@ -269,7 +269,7 @@ describe('MinimumFeeBoxBuilder', () => {
         result
           .register_value(4)
           ?.to_coll_coll_byte()
-          .map((element) => Buffer.from(element).toString())
+          .map((element) => Buffer.from(element).toString()),
       ).toEqual(expectedChains);
       const expectedHeights = [
         [666, -1, 11111],
@@ -333,8 +333,8 @@ describe('MinimumFeeBoxBuilder', () => {
           minimumFeeConfig.setChainConfig(
             chain,
             fee.heights[chain],
-            fee.configs[chain]
-          )
+            fee.configs[chain],
+          ),
         );
         feeConfig.push(minimumFeeConfig);
       });
@@ -342,7 +342,7 @@ describe('MinimumFeeBoxBuilder', () => {
       // run test
       const builder = new MinimumFeeBoxBuilder(
         defaultMinimumFeeNFT,
-        defaultAddress
+        defaultAddress,
       )
         .setValue(defaultValue)
         .setHeight(defaultHeight)
@@ -354,11 +354,11 @@ describe('MinimumFeeBoxBuilder', () => {
       expect(result.value().as_i64().to_str()).toEqual(defaultValue.toString());
       expect(result.creation_height()).toEqual(defaultHeight);
       expect(result.ergo_tree().to_base16_bytes()).toEqual(
-        Address.from_base58(defaultAddress).to_ergo_tree().to_base16_bytes()
+        Address.from_base58(defaultAddress).to_ergo_tree().to_base16_bytes(),
       );
       expect(result.tokens().len()).toEqual(1);
       expect(result.tokens().get(0).id().to_str()).toEqual(
-        defaultMinimumFeeNFT
+        defaultMinimumFeeNFT,
       );
       expect(result.tokens().get(0).amount().as_i64().to_str()).toEqual('1');
       const expectedChains = ['binance', 'cardano', 'ergo'];
@@ -366,7 +366,7 @@ describe('MinimumFeeBoxBuilder', () => {
         result
           .register_value(4)
           ?.to_coll_coll_byte()
-          .map((element) => Buffer.from(element).toString())
+          .map((element) => Buffer.from(element).toString()),
       ).toEqual(expectedChains);
       const expectedHeights = [
         [666, 444444, 11111],
@@ -417,7 +417,7 @@ describe('MinimumFeeBoxBuilder', () => {
     it('should throw Error when given value is invalid', () => {
       const builder = new MinimumFeeBoxBuilder(
         defaultMinimumFeeNFT,
-        defaultAddress
+        defaultAddress,
       );
       expect(() => {
         builder.setValue(1n);
@@ -448,8 +448,8 @@ describe('MinimumFeeBoxBuilder', () => {
           minimumFeeConfig.setChainConfig(
             chain,
             fee.heights[chain],
-            fee.configs[chain]
-          )
+            fee.configs[chain],
+          ),
         );
         feeConfig.push(minimumFeeConfig);
       });
@@ -457,7 +457,7 @@ describe('MinimumFeeBoxBuilder', () => {
       // build builder and set arguments (except value)
       const builder = new MinimumFeeBoxBuilder(
         defaultMinimumFeeNFT,
-        defaultAddress
+        defaultAddress,
       )
         .setHeight(defaultHeight)
         .setToken(defaultTokenId);
@@ -491,8 +491,8 @@ describe('MinimumFeeBoxBuilder', () => {
           minimumFeeConfig.setChainConfig(
             chain,
             fee.heights[chain],
-            fee.configs[chain]
-          )
+            fee.configs[chain],
+          ),
         );
         feeConfig.push(minimumFeeConfig);
       });
@@ -500,7 +500,7 @@ describe('MinimumFeeBoxBuilder', () => {
       // build builder and set arguments (except value)
       const builder = new MinimumFeeBoxBuilder(
         defaultMinimumFeeNFT,
-        defaultAddress
+        defaultAddress,
       )
         .setValue(defaultValue)
         .setToken(defaultTokenId);
@@ -534,8 +534,8 @@ describe('MinimumFeeBoxBuilder', () => {
           minimumFeeConfig.setChainConfig(
             chain,
             fee.heights[chain],
-            fee.configs[chain]
-          )
+            fee.configs[chain],
+          ),
         );
         feeConfig.push(minimumFeeConfig);
       });
@@ -543,7 +543,7 @@ describe('MinimumFeeBoxBuilder', () => {
       // build builder and set arguments (except value)
       const builder = new MinimumFeeBoxBuilder(
         defaultMinimumFeeNFT,
-        defaultAddress
+        defaultAddress,
       )
         .setValue(defaultValue)
         .setHeight(defaultHeight);
@@ -577,8 +577,8 @@ describe('MinimumFeeBoxBuilder', () => {
           minimumFeeConfig.setChainConfig(
             chain,
             fee.heights[chain],
-            fee.configs[chain]
-          )
+            fee.configs[chain],
+          ),
         );
         feeConfig.push(minimumFeeConfig);
       });
@@ -586,7 +586,7 @@ describe('MinimumFeeBoxBuilder', () => {
       // build builder and set arguments (except value)
       const builder = new MinimumFeeBoxBuilder(
         defaultMinimumFeeNFT,
-        defaultAddress
+        defaultAddress,
       )
         .setValue(defaultValue)
         .setHeight(defaultHeight)
@@ -620,8 +620,8 @@ describe('MinimumFeeBoxBuilder', () => {
           minimumFeeConfig.setChainConfig(
             chain,
             fee.heights[chain],
-            fee.configs[chain]
-          )
+            fee.configs[chain],
+          ),
         );
         feeConfig.push(minimumFeeConfig);
       });
@@ -629,7 +629,7 @@ describe('MinimumFeeBoxBuilder', () => {
       // build builder and set arguments (except value)
       const builder = new MinimumFeeBoxBuilder(
         defaultMinimumFeeNFT,
-        defaultAddress
+        defaultAddress,
       )
         .setValue(defaultValue)
         .setHeight(defaultHeight)
@@ -664,8 +664,8 @@ describe('MinimumFeeBoxBuilder', () => {
           minimumFeeConfig.setChainConfig(
             chain,
             fee.heights[chain],
-            fee.configs[chain]
-          )
+            fee.configs[chain],
+          ),
         );
         feeConfig.push(minimumFeeConfig);
       });
@@ -673,7 +673,7 @@ describe('MinimumFeeBoxBuilder', () => {
       // build builder and set arguments (except value)
       const builder = new MinimumFeeBoxBuilder(
         defaultMinimumFeeNFT,
-        defaultAddress
+        defaultAddress,
       )
         .setValue(defaultValue)
         .setHeight(defaultHeight)
@@ -710,8 +710,8 @@ describe('MinimumFeeBoxBuilder', () => {
           minimumFeeConfig.setChainConfig(
             chain,
             fee.heights[chain],
-            fee.configs[chain]
-          )
+            fee.configs[chain],
+          ),
         );
         feeConfig.push(minimumFeeConfig);
       });
@@ -719,7 +719,7 @@ describe('MinimumFeeBoxBuilder', () => {
       // run test
       const builder = new MinimumFeeBoxBuilder(
         defaultMinimumFeeNFT,
-        defaultAddress
+        defaultAddress,
       )
         .setValue(defaultValue)
         .setHeight(defaultHeight)
@@ -756,8 +756,8 @@ describe('MinimumFeeBoxBuilder', () => {
           minimumFeeConfig.setChainConfig(
             chain,
             fee.heights[chain],
-            fee.configs[chain]
-          )
+            fee.configs[chain],
+          ),
         );
         feeConfig.push(minimumFeeConfig);
       });
@@ -765,7 +765,7 @@ describe('MinimumFeeBoxBuilder', () => {
       // run test
       const builder = new MinimumFeeBoxBuilder(
         defaultMinimumFeeNFT,
-        defaultAddress
+        defaultAddress,
       )
         .setValue(defaultValue)
         .setHeight(defaultHeight)
@@ -804,8 +804,8 @@ describe('MinimumFeeBoxBuilder', () => {
           minimumFeeConfig.setChainConfig(
             chain,
             fee.heights[chain],
-            fee.configs[chain]
-          )
+            fee.configs[chain],
+          ),
         );
         feeConfig.push(minimumFeeConfig);
       });
@@ -813,7 +813,7 @@ describe('MinimumFeeBoxBuilder', () => {
       // create builder and set configs
       const builder = new MinimumFeeBoxBuilder(
         defaultMinimumFeeNFT,
-        defaultAddress
+        defaultAddress,
       );
       feeConfig.forEach((fee) => builder.addConfig(fee));
 

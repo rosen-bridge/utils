@@ -21,7 +21,7 @@ export class MinimumFeeConfig {
   setChainConfig = (
     chain: string,
     height: number,
-    chainFee: ChainFee | undefined
+    chainFee: ChainFee | undefined,
   ): MinimumFeeConfig => {
     this.fee.heights[chain] = height;
     if (chainFee) this.fee.configs[chain] = chainFee;

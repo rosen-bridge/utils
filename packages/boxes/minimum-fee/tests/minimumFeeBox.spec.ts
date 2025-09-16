@@ -6,7 +6,7 @@ import {
   NetworkError,
   NotFoundError,
 } from '../lib';
-import { TestMinimumFeeBox } from './TestMinimumFeeBox';
+import { TestMinimumFeeBox } from './testMinimumFeeBox';
 import * as testData from './testData';
 import ergoExplorerClientFactory from '@rosen-clients/ergo-explorer';
 import ergoNodeClientFactory from '@rosen-clients/ergo-node';
@@ -21,14 +21,13 @@ describe('MinimumFeeBox', () => {
     '6cbeec04af6a5047d8818eac2ac6e2b28e1e74a0d339cff96f7641a1a0c3ca9b';
   const defaultMinimumFeeNFT =
     'c597eac4db28f62419eab5639122f2bc4955dfedf958e7cdba5248ba2a81210a';
-  const defaultAddress = '9fsd61VwCBMZaFGctm8q7v59FsS67KusD5yHDhuwQc6KFfFX34U';
 
   const generateDefaultMinimumFeeBox = () =>
     new TestMinimumFeeBox(
       nativeTokenId,
       defaultMinimumFeeNFT,
       ErgoNetworkType.explorer,
-      ''
+      '',
     );
 
   describe('fetchBox', () => {
@@ -36,7 +35,7 @@ describe('MinimumFeeBox', () => {
      * mocks `getApiV1BoxesUnspentBytokenidP1` of ergo explorer client
      */
     const mockExplorergetApiV1BoxesUnspentBytokenidP1 = (
-      shouldIncludeItemsField = true
+      shouldIncludeItemsField = true,
     ) =>
       jest.mocked(ergoExplorerClientFactory).mockReturnValueOnce({
         v1: {
@@ -48,12 +47,12 @@ describe('MinimumFeeBox', () => {
             }: {
               offset: bigint;
               limit: bigint;
-            }
+            },
           ) => ({
             ...(shouldIncludeItemsField && {
               items: testData.explorerTestBoxes.slice(
                 Number(offset),
-                Number(offset + limit)
+                Number(offset + limit),
               ),
             }),
             total: testData.explorerTestBoxes.length,
@@ -68,21 +67,9 @@ describe('MinimumFeeBox', () => {
       jest.mocked(ergoNodeClientFactory).mockReturnValueOnce({
         getBoxesByTokenIdUnspent: async (
           address: string,
-          { offset, limit }: { offset: number; limit: number }
+          { offset, limit }: { offset: number; limit: number },
         ) =>
           testData.nodeTestBoxes.slice(Number(offset), Number(offset + limit)),
-      } as any);
-
-    /**
-     * mocks `getBoxesByTokenIdUnspent` of ergo node client to throw error with status 400
-     */
-    const mockNodegetBoxesByTokenIdUnspentToThrow = () =>
-      jest.mocked(ergoNodeClientFactory).mockReturnValueOnce({
-        getBoxesByTokenIdUnspent: jest.fn().mockRejectedValueOnce({
-          response: {
-            status: 400,
-          },
-        }),
       } as any);
 
     /**
@@ -104,7 +91,7 @@ describe('MinimumFeeBox', () => {
       const res = await minimumFeeBox.fetchBox();
       expect(res).toEqual(true);
       expect(minimumFeeBox.getBox()?.box_id().to_str()).toEqual(
-        '7def746de14a14756002c3dcaf19b3192d9cfb9ecb76c8c48eb7a8f8648675c2'
+        '7def746de14a14756002c3dcaf19b3192d9cfb9ecb76c8c48eb7a8f8648675c2',
       );
     });
 
@@ -127,12 +114,12 @@ describe('MinimumFeeBox', () => {
         tokenId,
         defaultMinimumFeeNFT,
         ErgoNetworkType.explorer,
-        ''
+        '',
       );
       const res = await minimumFeeBox.fetchBox();
       expect(res).toEqual(true);
       expect(minimumFeeBox.getBox()?.box_id().to_str()).toEqual(
-        'c65fad07c680589c80cddcc6c4a431317c647955aaf0f3ded6f73c42d805466c'
+        'c65fad07c680589c80cddcc6c4a431317c647955aaf0f3ded6f73c42d805466c',
       );
     });
 
@@ -155,12 +142,12 @@ describe('MinimumFeeBox', () => {
         nativeTokenId,
         defaultMinimumFeeNFT,
         ErgoNetworkType.node,
-        ''
+        '',
       );
       const res = await minimumFeeBox.fetchBox();
       expect(res).toEqual(true);
       expect(minimumFeeBox.getBox()?.box_id().to_str()).toEqual(
-        '7def746de14a14756002c3dcaf19b3192d9cfb9ecb76c8c48eb7a8f8648675c2'
+        '7def746de14a14756002c3dcaf19b3192d9cfb9ecb76c8c48eb7a8f8648675c2',
       );
     });
 
@@ -183,12 +170,12 @@ describe('MinimumFeeBox', () => {
         tokenId,
         defaultMinimumFeeNFT,
         ErgoNetworkType.node,
-        ''
+        '',
       );
       await minimumFeeBox.fetchBox();
       const result = minimumFeeBox.getBox();
       expect(result?.box_id().to_str()).toEqual(
-        'c65fad07c680589c80cddcc6c4a431317c647955aaf0f3ded6f73c42d805466c'
+        'c65fad07c680589c80cddcc6c4a431317c647955aaf0f3ded6f73c42d805466c',
       );
     });
 
@@ -283,7 +270,7 @@ describe('MinimumFeeBox', () => {
      */
     it('should throw FailedError when found multiple config box', async () => {
       const testBoxes = testData.nodeTestBoxes.map((boxJson) =>
-        ErgoBox.from_json(JsonBigInt.stringify(boxJson))
+        ErgoBox.from_json(JsonBigInt.stringify(boxJson)),
       );
       const minimumFeeBox = generateDefaultMinimumFeeBox();
       expect(() => {
@@ -308,7 +295,7 @@ describe('MinimumFeeBox', () => {
       minimumFeeBox.setBox(ErgoBox.from_json(testData.normalFeeBox));
       const result = minimumFeeBox.getFee('ergo', 12000, 'cardano');
       expect(result).toEqual(
-        new ChainMinimumFee(testData.normalFee[0].configs.cardano)
+        new ChainMinimumFee(testData.normalFee[0].configs.cardano),
       );
     });
 
@@ -328,7 +315,7 @@ describe('MinimumFeeBox', () => {
       minimumFeeBox.setBox(ErgoBox.from_json(testData.newChainFeeBox));
       const result = minimumFeeBox.getFee('ergo', 23000, 'cardano');
       expect(result).toEqual(
-        new ChainMinimumFee(testData.newChainFee[1].configs.cardano)
+        new ChainMinimumFee(testData.newChainFee[1].configs.cardano),
       );
     });
 
@@ -348,7 +335,7 @@ describe('MinimumFeeBox', () => {
       minimumFeeBox.setBox(ErgoBox.from_json(testData.removeChainFeeBox));
       const result = minimumFeeBox.getFee('ergo', 12000, 'cardano');
       expect(result).toEqual(
-        new ChainMinimumFee(testData.removeChainFee[0].configs.cardano)
+        new ChainMinimumFee(testData.removeChainFee[0].configs.cardano),
       );
     });
 
@@ -449,20 +436,20 @@ describe('MinimumFeeBox', () => {
       const resultBoxCandidate = result.build();
 
       expect(resultBoxCandidate.value().as_i64().to_str()).toEqual(
-        testBox.value().as_i64().to_str()
+        testBox.value().as_i64().to_str(),
       );
       expect(resultBoxCandidate.ergo_tree().to_base16_bytes()).toEqual(
-        testBox.ergo_tree().to_base16_bytes()
+        testBox.ergo_tree().to_base16_bytes(),
       );
       expect(resultBoxCandidate.tokens().len()).toEqual(
-        resultBoxCandidate.tokens().len()
+        resultBoxCandidate.tokens().len(),
       );
       for (let i = 0; i < resultBoxCandidate.tokens().len(); i++) {
         expect(resultBoxCandidate.tokens().get(i).id().to_str()).toEqual(
-          testBox.tokens().get(i).id().to_str()
+          testBox.tokens().get(i).id().to_str(),
         );
         expect(
-          resultBoxCandidate.tokens().get(i).amount().as_i64().to_str()
+          resultBoxCandidate.tokens().get(i).amount().as_i64().to_str(),
         ).toEqual(testBox.tokens().get(i).amount().as_i64().to_str());
       }
 
@@ -470,16 +457,16 @@ describe('MinimumFeeBox', () => {
         resultBoxCandidate
           .register_value(4)
           ?.to_coll_coll_byte()
-          .map((element) => Buffer.from(element).toString())
+          .map((element) => Buffer.from(element).toString()),
       ).toEqual(
         testBox
           .register_value(4)
           ?.to_coll_coll_byte()
-          .map((element) => Buffer.from(element).toString())
+          .map((element) => Buffer.from(element).toString()),
       );
       for (let i = 5; i < 10; i++) {
         expect(resultBoxCandidate.register_value(i)?.to_js()).toEqual(
-          testBox.register_value(i)?.to_js()
+          testBox.register_value(i)?.to_js(),
         );
       }
     });
@@ -509,20 +496,20 @@ describe('MinimumFeeBox', () => {
       const resultBoxCandidate = result.build();
 
       expect(resultBoxCandidate.value().as_i64().to_str()).toEqual(
-        testBox.value().as_i64().to_str()
+        testBox.value().as_i64().to_str(),
       );
       expect(resultBoxCandidate.ergo_tree().to_base16_bytes()).toEqual(
-        testBox.ergo_tree().to_base16_bytes()
+        testBox.ergo_tree().to_base16_bytes(),
       );
       expect(resultBoxCandidate.tokens().len()).toEqual(
-        resultBoxCandidate.tokens().len()
+        resultBoxCandidate.tokens().len(),
       );
       for (let i = 0; i < resultBoxCandidate.tokens().len(); i++) {
         expect(resultBoxCandidate.tokens().get(i).id().to_str()).toEqual(
-          testBox.tokens().get(i).id().to_str()
+          testBox.tokens().get(i).id().to_str(),
         );
         expect(
-          resultBoxCandidate.tokens().get(i).amount().as_i64().to_str()
+          resultBoxCandidate.tokens().get(i).amount().as_i64().to_str(),
         ).toEqual(testBox.tokens().get(i).amount().as_i64().to_str());
       }
 
@@ -530,16 +517,16 @@ describe('MinimumFeeBox', () => {
         resultBoxCandidate
           .register_value(4)
           ?.to_coll_coll_byte()
-          .map((element) => Buffer.from(element).toString())
+          .map((element) => Buffer.from(element).toString()),
       ).toEqual(
         testBox
           .register_value(4)
           ?.to_coll_coll_byte()
-          .map((element) => Buffer.from(element).toString())
+          .map((element) => Buffer.from(element).toString()),
       );
       for (let i = 5; i < 10; i++) {
         expect(resultBoxCandidate.register_value(i)?.to_js()).toEqual(
-          testBox.register_value(i)?.to_js()
+          testBox.register_value(i)?.to_js(),
         );
       }
     });

@@ -7,21 +7,36 @@ export class RWTRepoBuilder {
   private lastModifiedWidIndex?: number;
 
   constructor(
+    // eslint-disable-next-line no-unused-vars
     private repoAddress: string,
+    // eslint-disable-next-line no-unused-vars
     private repoNft: string,
+    // eslint-disable-next-line no-unused-vars
     private rwt: string,
+    // eslint-disable-next-line no-unused-vars
     private rwtCount: bigint,
+    // eslint-disable-next-line no-unused-vars
     private rsn: string,
+    // eslint-disable-next-line no-unused-vars
     private rsnCount: bigint,
+    // eslint-disable-next-line no-unused-vars
     private chainId: string,
+    // eslint-disable-next-line no-unused-vars
     private commitmentRwtCount: bigint,
+    // eslint-disable-next-line no-unused-vars
     private quorumPercentage: number,
+    // eslint-disable-next-line no-unused-vars
     private approvalOffset: number,
+    // eslint-disable-next-line no-unused-vars
     private maximumApproval: number,
+    // eslint-disable-next-line no-unused-vars
     private ergCollateral: bigint,
+    // eslint-disable-next-line no-unused-vars
     private rsnCollateral: bigint,
+    // eslint-disable-next-line no-unused-vars
     private widPermits: Array<{ wid: string; rwtCount: bigint }>,
-    private logger: AbstractLogger = new DummyLogger()
+    // eslint-disable-next-line no-unused-vars
+    private logger: AbstractLogger = new DummyLogger(),
   ) {}
 
   /**
@@ -40,14 +55,14 @@ export class RWTRepoBuilder {
 
     if (this.rwtCount < rwtCount) {
       throw new Error(
-        `available RWT count [${this.rwtCount}] is less than required rwt count[${rwtCount}]`
+        `available RWT count [${this.rwtCount}] is less than required rwt count[${rwtCount}]`,
       );
     }
     this.rwtCount -= rwtCount;
     this.rsnCount += rwtCount;
 
     this.logger.debug(
-      `added new user with wid=[${wid}] and rwtCount=[${rwtCount}]`
+      `added new user with wid=[${wid}] and rwtCount=[${rwtCount}]`,
     );
 
     return this;
@@ -93,7 +108,7 @@ export class RWTRepoBuilder {
    * @return {RWTRepoBuilder}
    */
   setWatcherQuorumPercentage = (
-    watcherQuorumPercentage: number
+    watcherQuorumPercentage: number,
   ): RWTRepoBuilder => {
     this.quorumPercentage = watcherQuorumPercentage;
     return this;
@@ -189,33 +204,33 @@ export class RWTRepoBuilder {
   build = (): ergoLib.ErgoBoxCandidate => {
     if (this.value == undefined || this.height == undefined) {
       throw new Error(
-        `value and height should be set on the instance in order for box to be created: value=${this.value}, height=${this.height}`
+        `value and height should be set on the instance in order for box to be created: value=${this.value}, height=${this.height}`,
       );
     }
 
     const boxBuilder = new ergoLib.ErgoBoxCandidateBuilder(
       ergoLib.BoxValue.from_i64(ergoLib.I64.from_str(this.value.toString())),
       ergoLib.Contract.new(
-        ergoLib.Address.from_base58(this.repoAddress).to_ergo_tree()
+        ergoLib.Address.from_base58(this.repoAddress).to_ergo_tree(),
       ),
-      this.height
+      this.height,
     );
 
     this.logger.debug(
-      `using following permits in R4 to build the box: [${this.widPermits}]`
+      `using following permits in R4 to build the box: [${this.widPermits}]`,
     );
     const r4 = ergoLib.Constant.from_coll_coll_byte(
       [this.chainId, ...this.widPermits.map((permit) => permit.wid)].map(
         (item, index) =>
-          Uint8Array.from(Buffer.from(item, index === 0 ? undefined : 'hex'))
-      )
+          Uint8Array.from(Buffer.from(item, index === 0 ? undefined : 'hex')),
+      ),
     );
     boxBuilder.set_register_value(4, r4);
 
     const r5 = ergoLib.Constant.from_i64_str_array(
       [0n, ...this.widPermits.map((permit) => permit.rwtCount)].map((item) =>
-        item.toString()
-      )
+        item.toString(),
+      ),
     );
     boxBuilder.set_register_value(5, r5);
 
@@ -227,7 +242,7 @@ export class RWTRepoBuilder {
         this.maximumApproval,
         this.ergCollateral,
         this.rsnCollateral,
-      ].map((item) => item.toString())
+      ].map((item) => item.toString()),
     );
     boxBuilder.set_register_value(6, r6);
 
@@ -238,30 +253,30 @@ export class RWTRepoBuilder {
 
     boxBuilder.add_token(
       ergoLib.TokenId.from_str(this.repoNft),
-      ergoLib.TokenAmount.from_i64(ergoLib.I64.from_str('1'))
+      ergoLib.TokenAmount.from_i64(ergoLib.I64.from_str('1')),
     );
     this.logger.debug(
-      `add 1 repoNft token to the box with tokenId=[${this.repoNft}]`
+      `add 1 repoNft token to the box with tokenId=[${this.repoNft}]`,
     );
 
     boxBuilder.add_token(
       ergoLib.TokenId.from_str(this.rwt),
       ergoLib.TokenAmount.from_i64(
-        ergoLib.I64.from_str(this.rwtCount.toString())
-      )
+        ergoLib.I64.from_str(this.rwtCount.toString()),
+      ),
     );
     this.logger.debug(
-      `add ${this.rwtCount} rwt tokens to the box with tokenId=[${this.rwt}]`
+      `add ${this.rwtCount} rwt tokens to the box with tokenId=[${this.rwt}]`,
     );
 
     boxBuilder.add_token(
       ergoLib.TokenId.from_str(this.rsn),
       ergoLib.TokenAmount.from_i64(
-        ergoLib.I64.from_str(this.rsnCount.toString())
-      )
+        ergoLib.I64.from_str(this.rsnCount.toString()),
+      ),
     );
     this.logger.debug(
-      `add ${this.rsn} rsn tokens to the box with tokenId=[${this.rsn}]`
+      `add ${this.rsn} rsn tokens to the box with tokenId=[${this.rsn}]`,
     );
 
     return boxBuilder.build();

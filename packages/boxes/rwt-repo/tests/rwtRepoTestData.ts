@@ -76,16 +76,16 @@ export const boxInfo1 = {
 
 export const boxInfo1Properties = {
   r4: ergoLib.Constant.decode_from_base16(
-    boxInfo1.additionalRegisters.R4.serializedValue
+    boxInfo1.additionalRegisters.R4.serializedValue,
   ).to_coll_coll_byte(),
   r5: (
     ergoLib.Constant.decode_from_base16(
-      boxInfo1.additionalRegisters.R5.serializedValue
+      boxInfo1.additionalRegisters.R5.serializedValue,
     ).to_i64_str_array() as string[]
   ).map(BigInt),
   r6: (
     ergoLib.Constant.decode_from_base16(
-      boxInfo1.additionalRegisters.R6.serializedValue
+      boxInfo1.additionalRegisters.R6.serializedValue,
     ).to_i64_str_array() as string[]
   ).map(BigInt),
   get widPermits() {

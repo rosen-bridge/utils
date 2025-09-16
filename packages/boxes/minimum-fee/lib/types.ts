@@ -32,7 +32,9 @@ export class ChainMinimumFee implements ChainFee {
 }
 
 export enum ErgoNetworkType {
+  // eslint-disable-next-line no-unused-vars
   explorer = 'explorer',
+  // eslint-disable-next-line no-unused-vars
   node = 'node',
 }
 

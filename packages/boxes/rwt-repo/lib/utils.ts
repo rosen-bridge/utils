@@ -14,7 +14,7 @@ export const jsonBigInt = JSONbigint({
 export const min = (...nums: bigint[]) => {
   const val = nums.reduce(
     (currentMin, num) => (num <= currentMin ? num : currentMin),
-    nums[0]
+    nums[0],
   );
   return val;
 };
