@@ -4,6 +4,15 @@ export enum ServiceStatus {
   running = 'running',
 }
 
+export interface Task {
+  fn: () => Promise<void>;
+  interval: number;
+}
+
+export interface TaskManager extends Task {
+  finished: Promise<void>;
+}
+
 export interface Dependency {
   serviceName: string;
   allowedStatuses: Array<ServiceStatus>;
