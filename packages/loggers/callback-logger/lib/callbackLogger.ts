@@ -2,12 +2,17 @@ import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 
 export class CallbackLogger extends AbstractLogger {
   constructor(
+    // eslint-disable-next-line no-unused-vars
     protected logger: AbstractLogger,
+    // eslint-disable-next-line no-unused-vars
     protected callback: (
+      // eslint-disable-next-line no-unused-vars
       level: keyof AbstractLogger,
+      // eslint-disable-next-line no-unused-vars
       message: string,
-      context?: unknown
-    ) => unknown
+      // eslint-disable-next-line no-unused-vars
+      context?: unknown,
+    ) => unknown,
   ) {
     super();
   }
@@ -21,7 +26,7 @@ export class CallbackLogger extends AbstractLogger {
   log = (level: keyof AbstractLogger, message: string, context?: unknown) => {
     try {
       this.callback(level, message, context);
-    } catch (e) {
+    } catch {
       this.logger.warn('Can not execute callback function for log');
     }
     this.logger[level](message, context);

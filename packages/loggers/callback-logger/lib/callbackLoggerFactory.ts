@@ -2,7 +2,7 @@ import {
   AbstractLoggerFactory,
   AbstractLogger,
 } from '@rosen-bridge/abstract-logger';
-import { CallbackLogger } from './CallbackLogger';
+import { CallbackLogger } from './callbackLogger';
 import { LogCallback } from './types';
 
 export class CallbackLoggerFactory extends AbstractLoggerFactory {
@@ -10,6 +10,7 @@ export class CallbackLoggerFactory extends AbstractLoggerFactory {
   protected defaultLogger: AbstractLogger | undefined;
 
   protected static instance: CallbackLoggerFactory;
+  // eslint-disable-next-line no-unused-vars
   protected constructor(protected loggerFactory: AbstractLoggerFactory) {
     super();
   }
@@ -29,7 +30,7 @@ export class CallbackLoggerFactory extends AbstractLoggerFactory {
   static getInstance = () => {
     if (!this.instance)
       throw new Error(
-        'You should call `CallbackLoggerFactory.init` before calling `CallbackLoggerFactory.getInstance`'
+        'You should call `CallbackLoggerFactory.init` before calling `CallbackLoggerFactory.getInstance`',
       );
     return this.instance;
   };
@@ -55,7 +56,7 @@ export class CallbackLoggerFactory extends AbstractLoggerFactory {
   protected callback = (
     level: keyof AbstractLogger,
     message: string,
-    context?: unknown
+    context?: unknown,
   ) => {
     const callbacks = this.callbacks.get(level);
     if (callbacks) {
@@ -72,7 +73,7 @@ export class CallbackLoggerFactory extends AbstractLoggerFactory {
     if (!this.defaultLogger) {
       this.defaultLogger = new CallbackLogger(
         this.loggerFactory.getDefaultLogger(),
-        this.callback
+        this.callback,
       );
     }
     return this.defaultLogger;

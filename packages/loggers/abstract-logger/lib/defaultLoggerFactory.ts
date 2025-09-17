@@ -1,7 +1,8 @@
-import { AbstractLoggerFactory } from './AbstractLoggerFactory';
+import { AbstractLoggerFactory } from './abstractLoggerFactory';
 
 export class DefaultLoggerFactory extends AbstractLoggerFactory {
   protected static instance: DefaultLoggerFactory;
+  // eslint-disable-next-line no-unused-vars
   protected constructor(protected loggerFactory: AbstractLoggerFactory) {
     super();
   }
@@ -21,7 +22,7 @@ export class DefaultLoggerFactory extends AbstractLoggerFactory {
   static getInstance = () => {
     if (!this.instance)
       throw new Error(
-        'You should call `DefaultLoggerFactory.init` before calling `DefaultLoggerFactory.getInstance`'
+        'You should call `DefaultLoggerFactory.init` before calling `DefaultLoggerFactory.getInstance`',
       );
     return this.instance;
   };

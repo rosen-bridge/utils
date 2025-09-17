@@ -1,4 +1,4 @@
-import { AbstractLogger } from './logger/AbstractLogger';
+import { AbstractLogger } from './logger/abstractLogger';
 
 export abstract class AbstractLoggerFactory {
   /**
@@ -11,5 +11,6 @@ export abstract class AbstractLoggerFactory {
    *
    * @param filePath
    */
+  // eslint-disable-next-line no-unused-vars
   getLogger: (filePath: string) => AbstractLogger;
 }

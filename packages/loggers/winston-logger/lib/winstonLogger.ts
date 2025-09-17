@@ -30,7 +30,7 @@ const logFormat = printf(
         ? ` ${JsonBigInt.stringify(context)}`
         : ''
     }`;
-  }
+  },
 );
 
 const logTransports = {
