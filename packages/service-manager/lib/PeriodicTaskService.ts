@@ -1,18 +1,7 @@
 import { AbstractService } from './AbstractService';
-import { ServiceStatus } from './types';
-
-type Task = {
-  fn: () => Promise<void>;
-  interval: number;
-};
-
-interface TaskManager extends Task {
-  finished: Promise<void>;
-}
+import { ServiceStatus, Task, TaskManager } from './types';
 
 export abstract class PeriodicTaskService extends AbstractService {
-  protected abstract readonly taskName: string;
-
   private timeouts: Map<string, NodeJS.Timeout | number> = new Map();
   private active = false;
   private taskManagers: TaskManager[] = [];
@@ -43,7 +32,7 @@ export abstract class PeriodicTaskService extends AbstractService {
   protected start = async (): Promise<boolean> => {
     try {
       let taskIdGenerator = 0;
-      this.logger.info(`Starting periodic task service [${this.taskName}]`);
+      this.logger.info(`Starting periodic task service [${this.name}]`);
       await this.preStart();
       this.setStatus(ServiceStatus.running);
       this.active = true;
@@ -89,7 +78,7 @@ export abstract class PeriodicTaskService extends AbstractService {
       return true;
     } catch (err) {
       this.logger.error(
-        `Failed to start periodic task service [${this.taskName}]: ${err}`
+        `Failed to start periodic task service [${this.name}]: ${err}`
       );
       return false;
     }
@@ -102,7 +91,7 @@ export abstract class PeriodicTaskService extends AbstractService {
    */
   protected stop = async (): Promise<boolean> => {
     try {
-      this.logger.info(`Stopping periodic task service [${this.taskName}]`);
+      this.logger.info(`Stopping periodic task service [${this.name}]`);
       this.active = false;
       const stopPromises = this.taskManagers.map(async (taskManager) => {
         try {
@@ -128,12 +117,12 @@ export abstract class PeriodicTaskService extends AbstractService {
       await this.postStop();
       this.setStatus(ServiceStatus.dormant);
       this.logger.info(
-        `Periodic task service [${this.taskName}] stopped successfully.`
+        `Periodic task service [${this.name}] stopped successfully.`
       );
       return true;
     } catch (err) {
       this.logger.error(
-        `Failed to stop periodic task service [${this.taskName}]: ${err}`
+        `Failed to stop periodic task service [${this.name}]: ${err}`
       );
       return false;
     }
