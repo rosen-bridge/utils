@@ -6,9 +6,9 @@ import {
   TransactionStatus,
   ValidatorFunction,
 } from '../../lib';
-import { TestTxPot } from './TestTxPot';
+import { TestTxPot } from './testTxPot';
 import * as testData from './testData';
-import { TestPotChainManager } from '../network/TestPotChainManager';
+import { TestPotChainManager } from '../network/testPotChainManager';
 
 describe('TxPot', () => {
   let txRepository: Repository<TransactionEntity>;
@@ -42,6 +42,7 @@ describe('TxPot', () => {
      * - there should be no validator
      */
     it('should remove registered validator successfully', async () => {
+      // eslint-disable-next-line no-unused-vars
       const mockedValidator = async (tx: TransactionEntity) => true;
       txPot.registerValidator('chain', 'txType', 'id', mockedValidator);
 
@@ -67,6 +68,7 @@ describe('TxPot', () => {
      * - there should be no validator
      */
     it('should remove registered submit validator successfully', async () => {
+      // eslint-disable-next-line no-unused-vars
       const mockedValidator = async (tx: TransactionEntity) => true;
       txPot.registerSubmitValidator('chain', 'id', mockedValidator);
 
@@ -96,7 +98,7 @@ describe('TxPot', () => {
         'txType',
         TransactionStatus.SIGNED,
         'id',
-        mockedCallback
+        mockedCallback,
       );
 
       txPot.unregisterCallback('txType', TransactionStatus.SIGNED, 'id');
@@ -106,7 +108,7 @@ describe('TxPot', () => {
         Map<TransactionStatus, Map<string, CallbackFunction>>
       > = (txPot as any).txTypeCallbacks;
       expect(
-        callbacksMap.get('txType')?.get(TransactionStatus.SIGNED)?.size
+        callbacksMap.get('txType')?.get(TransactionStatus.SIGNED)?.size,
       ).toEqual(0);
     });
   });
@@ -142,7 +144,7 @@ describe('TxPot', () => {
       vi.spyOn(mockedManager, 'getHeight').mockResolvedValue(currentHeight);
       // mock `getTxRequiredConfirmation`
       vi.spyOn(mockedManager, 'getTxRequiredConfirmation').mockReturnValue(
-        requiredConfirmation
+        requiredConfirmation,
       );
 
       // run test
@@ -191,7 +193,7 @@ describe('TxPot', () => {
       vi.spyOn(mockedManager, 'getHeight').mockResolvedValue(currentHeight);
       // mock `getTxRequiredConfirmation`
       vi.spyOn(mockedManager, 'getTxRequiredConfirmation').mockReturnValue(
-        requiredConfirmation
+        requiredConfirmation,
       );
 
       // run test
@@ -235,12 +237,13 @@ describe('TxPot', () => {
      * - should return true
      */
     it('should return true when tx is valid', async () => {
+      // eslint-disable-next-line no-unused-vars
       const mockedValidator = async (tx: TransactionEntity) => true;
       txPot.registerValidator(
         testData.tx1.chain,
         testData.tx1.txType,
         'id',
-        mockedValidator
+        mockedValidator,
       );
 
       const res = await txPot.callValidateTx(testData.tx1);
@@ -265,17 +268,18 @@ describe('TxPot', () => {
     it('should return false and set tx as invalid', async () => {
       await txRepository.insert(testData.tx1);
 
+      // eslint-disable-next-line no-unused-vars
       const mockedValidator = async (tx: TransactionEntity) => false;
       txPot.registerValidator(
         testData.tx1.chain,
         testData.tx1.txType,
         'id',
-        mockedValidator
+        mockedValidator,
       );
 
       const mockedSetTransactionAsInvalid = vi.fn();
       vi.spyOn(txPot as any, 'setTransactionAsInvalid').mockImplementation(
-        mockedSetTransactionAsInvalid
+        mockedSetTransactionAsInvalid,
       );
 
       const res = await txPot.callValidateTx(testData.tx1);
@@ -303,11 +307,14 @@ describe('TxPot', () => {
       await txRepository.insert(testData.tx1);
 
       const mockedValidators = [
+        // eslint-disable-next-line no-unused-vars
         { id: 'validator-1', validator: async (tx: TransactionEntity) => true },
         {
           id: 'validator-2',
+          // eslint-disable-next-line no-unused-vars
           validator: async (tx: TransactionEntity) => false,
         },
+        // eslint-disable-next-line no-unused-vars
         { id: 'validator-3', validator: async (tx: TransactionEntity) => true },
       ];
       mockedValidators.forEach((mockedValidator) =>
@@ -315,13 +322,13 @@ describe('TxPot', () => {
           testData.tx1.chain,
           testData.tx1.txType,
           mockedValidator.id,
-          mockedValidator.validator
-        )
+          mockedValidator.validator,
+        ),
       );
 
       const mockedSetTransactionAsInvalid = vi.fn();
       vi.spyOn(txPot as any, 'setTransactionAsInvalid').mockImplementation(
-        mockedSetTransactionAsInvalid
+        mockedSetTransactionAsInvalid,
       );
 
       const res = await txPot.callValidateTx(testData.tx1);
@@ -400,7 +407,7 @@ describe('TxPot', () => {
         testData.tx1.txType,
         newStatus,
         'id',
-        mockedCallback
+        mockedCallback,
       );
 
       // run test
@@ -455,7 +462,7 @@ describe('TxPot', () => {
       const mockedSubmitTransaction = vi.fn();
       mockedSubmitTransaction.mockResolvedValue(undefined);
       vi.spyOn(mockedManager, 'submitTransaction').mockImplementation(
-        mockedSubmitTransaction
+        mockedSubmitTransaction,
       );
 
       // run test
@@ -507,17 +514,18 @@ describe('TxPot', () => {
       // mock `submitTransaction`
       const mockedSubmitTransaction = vi.fn();
       mockedSubmitTransaction.mockRejectedValue(
-        Error(`TestError: submit failed`)
+        Error(`TestError: submit failed`),
       );
       vi.spyOn(mockedManager, 'submitTransaction').mockImplementation(
-        mockedSubmitTransaction
+        mockedSubmitTransaction,
       );
 
       // register submit validator function
       txPot.registerSubmitValidator(
         testData.tx1.chain,
         'validator-1',
-        async (tx: TransactionEntity) => true
+        // eslint-disable-next-line no-unused-vars
+        async (tx: TransactionEntity) => true,
       );
 
       // run test
@@ -571,24 +579,27 @@ describe('TxPot', () => {
       const mockedSubmitTransaction = vi.fn();
       mockedSubmitTransaction.mockResolvedValue(undefined);
       vi.spyOn(mockedManager, 'submitTransaction').mockImplementation(
-        mockedSubmitTransaction
+        mockedSubmitTransaction,
       );
 
       // register 3 submit validator functions
       const mockedValidators = [
+        // eslint-disable-next-line no-unused-vars
         { id: 'validator-1', validator: async (tx: TransactionEntity) => true },
         {
           id: 'validator-2',
+          // eslint-disable-next-line no-unused-vars
           validator: async (tx: TransactionEntity) => false,
         },
+        // eslint-disable-next-line no-unused-vars
         { id: 'validator-3', validator: async (tx: TransactionEntity) => true },
       ];
       mockedValidators.forEach((mockedValidator) =>
         txPot.registerSubmitValidator(
           testData.tx1.chain,
           mockedValidator.id,
-          mockedValidator.validator
-        )
+          mockedValidator.validator,
+        ),
       );
 
       // run test
@@ -797,7 +808,7 @@ describe('TxPot', () => {
       const mockedSubmitTransaction = vi.fn();
       mockedSubmitTransaction.mockResolvedValue(undefined);
       vi.spyOn(mockedManager, 'submitTransaction').mockImplementation(
-        mockedSubmitTransaction
+        mockedSubmitTransaction,
       );
 
       // run test
@@ -844,14 +855,15 @@ describe('TxPot', () => {
       const mockedSubmitTransaction = vi.fn();
       mockedSubmitTransaction.mockResolvedValue(undefined);
       vi.spyOn(mockedManager, 'submitTransaction').mockImplementation(
-        mockedSubmitTransaction
+        mockedSubmitTransaction,
       );
 
       // register a submit validator function to return false
       txPot.registerSubmitValidator(
         testData.tx6.chain,
         'validator-2',
-        async (tx: TransactionEntity) => false
+        // eslint-disable-next-line no-unused-vars
+        async (tx: TransactionEntity) => false,
       );
 
       // run test
@@ -898,7 +910,7 @@ describe('TxPot', () => {
       // mock TxPot.setTransactionAsInvalid
       const mockedSetTransactionAsInvalid = vi.fn();
       vi.spyOn(txPot as any, 'setTransactionAsInvalid').mockImplementation(
-        mockedSetTransactionAsInvalid
+        mockedSetTransactionAsInvalid,
       );
 
       // run test
@@ -933,12 +945,13 @@ describe('TxPot', () => {
       await txRepository.insert(testData.tx6);
 
       // register a validator function
+      // eslint-disable-next-line no-unused-vars
       const mockedValidator = async (tx: TransactionEntity) => false;
       txPot.registerValidator(
         testData.tx6.chain,
         testData.tx6.txType,
         'id',
-        mockedValidator
+        mockedValidator,
       );
 
       // mock PotChainManager and register to TxPot
@@ -956,7 +969,7 @@ describe('TxPot', () => {
       // mock TxPot.setTransactionAsInvalid
       const mockedSetTransactionAsInvalid = vi.fn();
       vi.spyOn(txPot as any, 'setTransactionAsInvalid').mockImplementation(
-        mockedSetTransactionAsInvalid
+        mockedSetTransactionAsInvalid,
       );
 
       // run test
@@ -985,7 +998,7 @@ describe('TxPot', () => {
       await txRepository.insert(testData.tx5);
 
       const txs = await txPot.getTxsByStatus(
-        testData.tx3.status as TransactionStatus
+        testData.tx3.status as TransactionStatus,
       );
       expect(txs.length).toEqual(2);
       expect(txs[0].txId).toEqual(testData.tx3.txId);
@@ -1022,24 +1035,24 @@ describe('TxPot', () => {
         testData.tx3.chain,
         testData.tx3.txType,
         'tx3-validator',
-        mockedValidator
+        mockedValidator,
       );
       txPot.registerValidator(
         testData.tx5.chain,
         testData.tx5.txType,
         'tx5-validator',
-        mockedValidator
+        mockedValidator,
       );
 
       // mock TxPot.setTransactionAsInvalid
       vi.spyOn(txPot as any, 'setTransactionAsInvalid').mockResolvedValue(
-        undefined
+        undefined,
       );
 
       // run test
       const txs = await txPot.getTxsByStatus(
         testData.tx3.status as TransactionStatus,
-        true
+        true,
       );
       expect(txs.length).toEqual(1);
       expect(txs[0].txId).toEqual(testData.tx3.txId);
@@ -1066,7 +1079,7 @@ describe('TxPot', () => {
         testData.tx1.requiredSign,
         testData.tx1.serializedTx,
         testData.tx1.status as TransactionStatus,
-        testData.tx1.lastCheck
+        testData.tx1.lastCheck,
       );
 
       const txs = await txRepository.find();
@@ -1100,7 +1113,7 @@ describe('TxPot', () => {
         testData.tx3.status as TransactionStatus,
         testData.tx3.lastCheck,
         testData.tx3.extra,
-        testData.tx3.extra2
+        testData.tx3.extra2,
       );
 
       const txs = await txRepository.find();
@@ -1132,7 +1145,7 @@ describe('TxPot', () => {
         await txPot.setTxStatusById(
           testData.tx1.txId,
           testData.tx1.chain,
-          TransactionStatus.IN_SIGN
+          TransactionStatus.IN_SIGN,
         );
       }).rejects.toThrow(Error);
     });
@@ -1160,7 +1173,7 @@ describe('TxPot', () => {
       await txPot.setTxStatusById(
         testData.tx1.txId,
         testData.tx1.chain,
-        newStatus
+        newStatus,
       );
 
       const txs = (await txRepository.find()).map((tx) => [
@@ -1257,7 +1270,7 @@ describe('TxPot', () => {
         testData.tx3.txId,
         testData.tx3.chain,
         serializedSignedTx,
-        currentHeight
+        currentHeight,
       );
 
       const txs = (await txRepository.find()).map((tx) => [
@@ -1318,7 +1331,7 @@ describe('TxPot', () => {
         serializedSignedTx,
         currentHeight,
         updatedExtra,
-        updatedExtra2
+        updatedExtra2,
       );
 
       const txs = (await txRepository.find()).map((tx) => [
@@ -1374,7 +1387,7 @@ describe('TxPot', () => {
       await txPot.updateTxLastCheck(
         testData.tx1.txId,
         testData.tx1.chain,
-        updatedLastCheck
+        updatedLastCheck,
       );
 
       const txs = (await txRepository.find()).map((tx) => [
@@ -1443,7 +1456,7 @@ describe('TxPot', () => {
       await txPot.updateRequiredSign(
         testData.tx1.txId,
         testData.tx1.chain,
-        updatedRequiredSign
+        updatedRequiredSign,
       );
 
       const txs = (await txRepository.find()).map((tx) => [
@@ -1843,7 +1856,7 @@ describe('TxPot', () => {
       await txPot.updateExtra(
         testData.tx3.txId,
         testData.tx3.chain,
-        updatedExtra
+        updatedExtra,
       );
 
       const txs = (await txRepository.find()).map((tx) => [tx.txId, tx.extra]);
@@ -1871,7 +1884,7 @@ describe('TxPot', () => {
       await txPot.updateExtra(
         testData.tx3.txId,
         testData.tx3.chain,
-        updatedExtra
+        updatedExtra,
       );
 
       const txs = (await txRepository.find()).map((tx) => [tx.txId, tx.extra]);

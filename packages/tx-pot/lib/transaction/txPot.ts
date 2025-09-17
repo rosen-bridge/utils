@@ -1,5 +1,5 @@
 import { DataSource, Repository } from 'typeorm';
-import { TransactionEntity } from '../db/entities/TransactionEntity';
+import { TransactionEntity } from '../db/entities/transactionEntity';
 import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
 import {
   CallbackFunction,
@@ -10,7 +10,7 @@ import {
   ValidatorFunction,
 } from './types';
 import { txOptionToClause } from './utils';
-import { AbstractPotChainManager } from '../network/AbstractPotChainManager';
+import { AbstractPotChainManager } from '../network/abstractPotChainManager';
 
 export class TxPot {
   protected static instance: TxPot;
@@ -44,7 +44,7 @@ export class TxPot {
    */
   public static setup = (
     dataSource: DataSource,
-    logger?: AbstractLogger
+    logger?: AbstractLogger,
   ): TxPot => {
     TxPot.instance = new TxPot(dataSource, logger);
     return TxPot.instance;
@@ -66,11 +66,11 @@ export class TxPot {
    */
   registerChain = (
     chain: string,
-    chainManager: AbstractPotChainManager
+    chainManager: AbstractPotChainManager,
   ): void => {
     this.chains.set(chain, chainManager);
     this.logger.debug(
-      `A TxPot chain manager is registered for chain [${chain}]`
+      `A TxPot chain manager is registered for chain [${chain}]`,
     );
   };
 
@@ -85,7 +85,7 @@ export class TxPot {
     chain: string,
     txType: string,
     id: string,
-    validator: ValidatorFunction
+    validator: ValidatorFunction,
   ): void => {
     let chainValidators = this.validators.get(chain);
     if (!chainValidators) {
@@ -102,11 +102,11 @@ export class TxPot {
     typeValidators.set(id, validator);
     if (currentValidator) {
       this.logger.debug(
-        `The tx validator function for chain [${chain}], type [${txType}] and id [${id}] is replaced`
+        `The tx validator function for chain [${chain}], type [${txType}] and id [${id}] is replaced`,
       );
     } else {
       this.logger.info(
-        `New tx validator function is registered for chain [${chain}] and type [${txType}] by id [${id}]`
+        `New tx validator function is registered for chain [${chain}] and type [${txType}] by id [${id}]`,
       );
     }
   };
@@ -121,14 +121,14 @@ export class TxPot {
     const validators = this.validators.get(chain)?.get(txType);
     if (!validators) {
       this.logger.debug(
-        `No tx validator function is set for chain [${chain}], type [${txType}] and id [${id}]`
+        `No tx validator function is set for chain [${chain}], type [${txType}] and id [${id}]`,
       );
       return;
     }
 
     validators.delete(id);
     this.logger.info(
-      `Removed tx validator function for chain [${chain}], type [${txType}] and id [${id}]`
+      `Removed tx validator function for chain [${chain}], type [${txType}] and id [${id}]`,
     );
   };
 
@@ -141,7 +141,7 @@ export class TxPot {
   registerSubmitValidator = (
     chain: string,
     id: string,
-    validator: ValidatorFunction
+    validator: ValidatorFunction,
   ): void => {
     let chainAllowance = this.submissionAllowance.get(chain);
     if (!chainAllowance) {
@@ -153,11 +153,11 @@ export class TxPot {
     chainAllowance.set(id, validator);
     if (currentValidator) {
       this.logger.debug(
-        `The tx submit validator function for chain [${chain}] and id [${id}] is replaced`
+        `The tx submit validator function for chain [${chain}] and id [${id}] is replaced`,
       );
     } else {
       this.logger.info(
-        `New tx submit validator function is registered for chain [${chain}] by id [${id}]`
+        `New tx submit validator function is registered for chain [${chain}] by id [${id}]`,
       );
     }
   };
@@ -171,14 +171,14 @@ export class TxPot {
     const chainAllowance = this.submissionAllowance.get(chain);
     if (!chainAllowance) {
       this.logger.debug(
-        `No tx submit validator function is set for chain [${chain}] and id [${id}]`
+        `No tx submit validator function is set for chain [${chain}] and id [${id}]`,
       );
       return;
     }
 
     chainAllowance.delete(id);
     this.logger.info(
-      `Removed tx submit validator function for chain [${chain}] and id [${id}]`
+      `Removed tx submit validator function for chain [${chain}] and id [${id}]`,
     );
   };
 
@@ -195,7 +195,7 @@ export class TxPot {
     txType: string,
     status: TransactionStatus,
     id: string,
-    callback: CallbackFunction
+    callback: CallbackFunction,
   ): void => {
     let typeCallbacks = this.txTypeCallbacks.get(txType);
     if (!typeCallbacks) {
@@ -216,11 +216,11 @@ export class TxPot {
     statusCallbacks.set(id, callback);
     if (currentCallback) {
       this.logger.debug(
-        `The tx status callback function for type [${txType}] and status [${status}] and id [${id}] is replaced`
+        `The tx status callback function for type [${txType}] and status [${status}] and id [${id}] is replaced`,
       );
     } else {
       this.logger.info(
-        `New tx status callback function is registered for type [${txType}] and status [${status}] by id [${id}]`
+        `New tx status callback function is registered for type [${txType}] and status [${status}] by id [${id}]`,
       );
     }
   };
@@ -234,19 +234,19 @@ export class TxPot {
   unregisterCallback = (
     txType: string,
     status: TransactionStatus,
-    id: string
+    id: string,
   ): void => {
     const callbacks = this.txTypeCallbacks.get(txType)?.get(status);
     if (!callbacks) {
       this.logger.debug(
-        `No tx status callback function is set for type [${txType}] and status [${status}] and id [${id}]`
+        `No tx status callback function is set for type [${txType}] and status [${status}] and id [${id}]`,
       );
       return;
     }
 
     callbacks.delete(id);
     this.logger.info(
-      `Removed tx status callback function for type [${txType}] and status [${status}] and id [${id}]`
+      `Removed tx status callback function for type [${txType}] and status [${status}] and id [${id}]`,
     );
   };
 
@@ -259,7 +259,7 @@ export class TxPot {
     const manager = this.chains.get(chain);
     if (!manager)
       throw new UnregisteredChain(
-        `No manager is registered for chain [${chain}]`
+        `No manager is registered for chain [${chain}]`,
       );
     return manager;
   };
@@ -269,7 +269,7 @@ export class TxPot {
    * @param tx
    */
   protected setTransactionAsInvalid = async (
-    tx: TransactionEntity
+    tx: TransactionEntity,
   ): Promise<void> => {
     const manager = this.getChainManager(tx.chain);
 
@@ -285,7 +285,7 @@ export class TxPot {
           tx.txId
         }] seems invalid. Waiting for enough confirmation of this proposition [${
           currentHeight - tx.lastCheck
-        }/${requiredConfirmation}]`
+        }/${requiredConfirmation}]`,
       );
     }
   };
@@ -301,14 +301,14 @@ export class TxPot {
     if (validators === undefined) {
       // tx is valid since no validator is found
       this.logger.debug(
-        `No validator function is found for chain [${tx.chain}] and type [${tx.txType}]`
+        `No validator function is found for chain [${tx.chain}] and type [${tx.txType}]`,
       );
       return true;
     }
     for (const idValidatorPair of validators) {
       if ((await idValidatorPair[1](tx)) === false) {
         this.logger.debug(
-          `tx [${tx.txId}] is recognized as invalid by validator [${idValidatorPair[0]}]`
+          `tx [${tx.txId}] is recognized as invalid by validator [${idValidatorPair[0]}]`,
         );
         await this.setTransactionAsInvalid(tx);
         return false;
@@ -324,20 +324,20 @@ export class TxPot {
    * @param tx
    */
   protected isSubmitAllowed = async (
-    tx: TransactionEntity
+    tx: TransactionEntity,
   ): Promise<boolean> => {
     const validators = this.submissionAllowance.get(tx.chain);
     if (validators === undefined) {
       // tx is allowed for submission since no validator is found
       this.logger.debug(
-        `No submit validator function is found for chain [${tx.chain}]`
+        `No submit validator function is found for chain [${tx.chain}]`,
       );
       return true;
     }
     for (const idValidatorPair of validators) {
       if ((await idValidatorPair[1](tx)) === false) {
         this.logger.debug(
-          `tx [${tx.txId}] is not allowed for submission by submit validator [${idValidatorPair[0]}]`
+          `tx [${tx.txId}] is not allowed for submission by submit validator [${idValidatorPair[0]}]`,
         );
         return false;
       }
@@ -352,7 +352,7 @@ export class TxPot {
    */
   protected setTxStatus = async (
     tx: TransactionEntity,
-    status: TransactionStatus
+    status: TransactionStatus,
   ): Promise<void> => {
     await this.txRepository.update(
       {
@@ -362,21 +362,21 @@ export class TxPot {
       {
         status: status,
         lastStatusUpdate: this.currentTime(),
-      }
+      },
     );
     const callbacks = this.txTypeCallbacks.get(tx.txType)?.get(status);
     if (callbacks) {
       for (const idCallbackPair of callbacks) {
         idCallbackPair[1](tx, status).catch((e) => {
           this.logger.debug(
-            `An error occurred while handling tx [${tx.txId}] status change in callback [${idCallbackPair[0]}]: ${e}`
+            `An error occurred while handling tx [${tx.txId}] status change in callback [${idCallbackPair[0]}]: ${e}`,
           );
           if (e instanceof Error && e.stack) this.logger.debug(e.stack);
         });
       }
     } else
       this.logger.debug(
-        `No callback function is set for type [${tx.txType}] and status [${status}]`
+        `No callback function is set for type [${tx.txType}] and status [${status}]`,
       );
   };
 
@@ -396,7 +396,7 @@ export class TxPot {
       await manager.submitTransaction(tx.serializedTx);
     } catch (e) {
       this.logger.warn(
-        `Failed to submit tx [${tx.txId}] to chain [${tx.chain}]: ${e}`
+        `Failed to submit tx [${tx.txId}] to chain [${tx.chain}]: ${e}`,
       );
       if (e instanceof Error && e.stack) this.logger.warn(e.stack);
     }
@@ -427,21 +427,21 @@ export class TxPot {
         // tx is not in mempool, checking if tx is still valid
         const isValidTx = await manager.isTxValid(
           tx.serializedTx,
-          SigningStatus.Signed
+          SigningStatus.Signed,
         );
         const isValidToType = await this.validateTx(tx);
 
         if (isValidTx && isValidToType) {
           // tx is valid. resending...
           this.logger.info(
-            `Tx [${tx.txId}] is still valid. Attempting resend...`
+            `Tx [${tx.txId}] is still valid. Attempting resend...`,
           );
           if (await this.isSubmitAllowed(tx)) {
             try {
               await manager.submitTransaction(tx.serializedTx);
             } catch (e) {
               this.logger.warn(
-                `Failed to submit tx [${tx.txId}] to chain [${tx.chain}]: ${e}`
+                `Failed to submit tx [${tx.txId}] to chain [${tx.chain}]: ${e}`,
               );
               if (e instanceof Error && e.stack) this.logger.warn(e.stack);
             }
@@ -456,7 +456,7 @@ export class TxPot {
       const height = await manager.getHeight();
       await this.updateTxLastCheck(tx.txId, tx.chain, height);
       this.logger.info(
-        `Tx [${tx.txId}] is in confirmation process [${txConfirmation}/${requiredConfirmation}]`
+        `Tx [${tx.txId}] is in confirmation process [${txConfirmation}/${requiredConfirmation}]`,
       );
     }
   };
@@ -477,13 +477,13 @@ export class TxPot {
         await this.processSignedTx(tx);
       } catch (e) {
         this.logger.warn(
-          `An error occurred while processing tx [${tx.txId}] with status [${TransactionStatus.SIGNED}]: ${e}`
+          `An error occurred while processing tx [${tx.txId}] with status [${TransactionStatus.SIGNED}]: ${e}`,
         );
         if (e instanceof Error && e.stack) this.logger.warn(e.stack);
       }
     }
     this.logger.debug(
-      `Processed [${signedTxs.length}] txs with status [${TransactionStatus.SIGNED}]`
+      `Processed [${signedTxs.length}] txs with status [${TransactionStatus.SIGNED}]`,
     );
 
     // process sent txs
@@ -492,13 +492,13 @@ export class TxPot {
         await this.processesSentTx(tx);
       } catch (e) {
         this.logger.warn(
-          `An error occurred while processing tx [${tx.txId}] with status [${TransactionStatus.SENT}]: ${e}`
+          `An error occurred while processing tx [${tx.txId}] with status [${TransactionStatus.SENT}]: ${e}`,
         );
         if (e instanceof Error && e.stack) this.logger.warn(e.stack);
       }
     }
     this.logger.debug(
-      `Processed [${sentTxs.length}] txs with status [${TransactionStatus.SENT}]`
+      `Processed [${sentTxs.length}] txs with status [${TransactionStatus.SENT}]`,
     );
   };
 
@@ -510,7 +510,7 @@ export class TxPot {
    */
   getTxsByStatus = async (
     status: TransactionStatus,
-    validate = false
+    validate = false,
   ): Promise<Array<TransactionEntity>> => {
     const txs = await this.txRepository.find({
       where: {
@@ -549,7 +549,7 @@ export class TxPot {
     initialStatus = TransactionStatus.APPROVED,
     lastCheck = 0,
     extra?: string | null,
-    extra2?: string | null
+    extra2?: string | null,
   ): Promise<void> => {
     await this.txRepository.insert({
       txId: txId,
@@ -576,7 +576,7 @@ export class TxPot {
   setTxStatusById = async (
     txId: string,
     chain: string,
-    status: TransactionStatus
+    status: TransactionStatus,
   ): Promise<void> => {
     const tx = await this.txRepository.findOneOrFail({
       where: { txId, chain },
@@ -601,7 +601,7 @@ export class TxPot {
         lastStatusUpdate: this.currentTime(),
         signFailedCount: () => '"signFailedCount" + 1',
         failedInSign: true,
-      }
+      },
     );
   };
 
@@ -620,7 +620,7 @@ export class TxPot {
     serializedTx: string,
     currentHeight: number,
     extra?: string,
-    extra2?: string
+    extra2?: string,
   ): Promise<void> => {
     const updatedFields: Partial<TransactionEntity> = {
       serializedTx: serializedTx,
@@ -643,11 +643,11 @@ export class TxPot {
   updateTxLastCheck = async (
     txId: string,
     chain: string,
-    currentHeight: number
+    currentHeight: number,
   ): Promise<void> => {
     await this.txRepository.update(
       { txId, chain },
-      { lastCheck: currentHeight }
+      { lastCheck: currentHeight },
     );
   };
 
@@ -661,7 +661,7 @@ export class TxPot {
       { txId, chain },
       {
         failedInSign: false,
-      }
+      },
     );
   };
 
@@ -674,13 +674,13 @@ export class TxPot {
   updateRequiredSign = async (
     txId: string,
     chain: string,
-    requiredSign: number
+    requiredSign: number,
   ): Promise<void> => {
     await this.txRepository.update(
       { txId, chain },
       {
         requiredSign: requiredSign,
-      }
+      },
     );
   };
 
@@ -691,7 +691,7 @@ export class TxPot {
    */
   getTxByKey = async (
     txId: string,
-    chain: string
+    chain: string,
   ): Promise<TransactionEntity | null> => {
     return await this.txRepository.findOne({
       where: { txId, chain },
@@ -702,7 +702,7 @@ export class TxPot {
    * @returns the transactions with valid status
    */
   getTxsQuery = (
-    options: Array<TxOptions> = []
+    options: Array<TxOptions> = [],
   ): Promise<TransactionEntity[]> => {
     return this.txRepository.find({
       where: options.map(txOptionToClause),
@@ -720,7 +720,7 @@ export class TxPot {
     txId: string,
     chain: string,
     extra?: string | null,
-    extra2?: string | null
+    extra2?: string | null,
   ): Promise<void> => {
     if (extra === undefined && extra2 === undefined) return;
     await this.txRepository.update({ txId, chain }, { extra, extra2 });

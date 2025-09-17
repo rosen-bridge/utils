@@ -7,7 +7,7 @@ export class TestTxPot extends TxPot {
 
   public static setup = (
     dataSource: DataSource,
-    logger?: AbstractLogger
+    logger?: AbstractLogger,
   ): TestTxPot => {
     TestTxPot.instance = new TestTxPot(dataSource, logger);
     return TestTxPot.instance;
@@ -21,7 +21,7 @@ export class TestTxPot extends TxPot {
 
   callSetTxStatus = async (
     tx: TransactionEntity,
-    status: TransactionStatus
+    status: TransactionStatus,
   ): Promise<void> => this.setTxStatus(tx, status);
 
   callProcessSignedTx = async (tx: TransactionEntity): Promise<void> =>

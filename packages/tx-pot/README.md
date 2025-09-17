@@ -135,7 +135,7 @@ await txPot.addTx(
   'ergo',
   'my-type',
   1,
-  'your-serialized-tx'
+  'your-serialized-tx',
 );
 ```
 
@@ -151,7 +151,7 @@ await txPot.addTx(
   1,
   'your-serialized-tx',
   TransactionStatus.SIGNED,
-  1000000
+  1000000,
 );
 ```
 
@@ -169,7 +169,7 @@ await txPot.addTx(
   undefined,
   undefined,
   'your-foreign-key',
-  '{ yourData: "any-data", secondKey: 100 }'
+  '{ yourData: "any-data", secondKey: 100 }',
 );
 ```
 
@@ -219,12 +219,12 @@ const txPotJob = async () => {
 
   const approvedTxs = await TxPot.getTxsByStatus(
     TransactionStatus.APPROVED,
-    true // only returns valid txs (also mutate invalid ones)
+    true, // only returns valid txs (also mutate invalid ones)
   );
   await processApprovedTxs(approvedTxs);
 
   const signFailedTxs = await TxPot.getTxsByStatus(
-    TransactionStatus.SIGN_FAILED
+    TransactionStatus.SIGN_FAILED,
   );
   await processSignFailedTxs(signFailedTxs);
 
@@ -258,13 +258,13 @@ txPot.registerValidator(
   `ergo`,
   `payment`,
   `service-1`,
-  s1ErgoPaymentTxValidator
+  s1ErgoPaymentTxValidator,
 );
 txPot.registerValidator(
   `ergo`,
   `payment`,
   `service-2`,
-  s2ErgoPaymentTxValidator
+  s2ErgoPaymentTxValidator,
 );
 ```
 
@@ -297,7 +297,7 @@ txPot.registerCallback(
   `payment`,
   TransactionStatus.COMPLETED,
   'service-1',
-  onPaymentComplete
+  onPaymentComplete,
 );
 ```
 

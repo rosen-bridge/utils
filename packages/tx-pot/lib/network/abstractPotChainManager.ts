@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+// TODO: there should be no need for above line, as the variables are all defined for an abstract function (local:ergo/rosen-bridge/utils#289)
 import { SigningStatus } from '../transaction/types';
 
 export abstract class AbstractPotChainManager {
@@ -26,7 +28,7 @@ export abstract class AbstractPotChainManager {
    */
   abstract isTxValid: (
     serializedTx: string,
-    signingStatus: SigningStatus
+    signingStatus: SigningStatus,
   ) => Promise<boolean>;
 
   /**
