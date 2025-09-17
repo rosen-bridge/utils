@@ -2,9 +2,19 @@
   "name": "@rosen-bridge/abstract-logger",
   "version": "2.1.0",
   "description": "Rosen Bridge abstract logger class, the base type for loggers used in all Rosen packages",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rosen-bridge/utils.git"
+  },
+  "license": "MIT",
+  "author": "Rosen Team",
+  "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "type": "module",
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
   "scripts": {
     "prettify": "prettier --write . --ignore-path ../../../.gitignore",
     "prettify:check": "prettier --check . --ignore-path ../../../.gitignore",
@@ -14,14 +24,6 @@
     "type-check": "tsc --noEmit",
     "release": "npm run test && npm run build && npm publish --access public"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/rosen-bridge/utils.git"
-  },
-  "files": [
-    "dist"
-  ],
-  "license": "MIT",
   "devDependencies": {
     "@types/node": "^22.18.0",
     "tsx": "^4.20.5",

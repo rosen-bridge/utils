@@ -2,12 +2,19 @@
   "name": "@rosen-bridge/changeset-formatter",
   "version": "1.1.0",
   "description": "A changeset formatter based on default changeset formatter, but without commit hashes",
-  "repository": "https://github.com/rosen-bridge/utils",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rosen-bridge/utils.git"
+  },
   "license": "MIT",
   "author": "Rosen Team",
   "type": "commonjs",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
   "scripts": {
     "build": "tsc --build tsconfig.build.json",
     "lint": "eslint --fix . && npm run prettify",

@@ -2,12 +2,19 @@
   "name": "@rosen-bridge/address-codec",
   "version": "0.7.0",
   "description": "A Typescript package for encoding and decoding of addresses in Rosen bridge supported chains",
-  "repository": "https://github.com/rosen-bridge/utils",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rosen-bridge/utils.git"
+  },
   "license": "MIT",
   "author": "Rosen Team",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
   "scripts": {
     "build": "tsc --build tsconfig.build.json",
     "coverage": "npm run test -- --run --coverage",

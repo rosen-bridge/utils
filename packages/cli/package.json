@@ -2,9 +2,18 @@
   "name": "@rosen-bridge/cli",
   "version": "1.1.0",
   "description": "The official Rosen bridge cli, providing helpers for the tasks related to Rosen bridge",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rosen-bridge/utils.git"
+  },
+  "license": "MIT",
+  "type": "module",
   "main": "dist/index.js",
   "bin": "dist/index.js",
-  "type": "module",
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
   "scripts": {
     "prettify": "prettier --write . --ignore-path ../../.gitignore",
     "prettify:check": "prettier --check . --ignore-path ../../.gitignore",
@@ -14,11 +23,6 @@
     "type-check": "tsc --noEmit",
     "release": "npm run build && npm publish --access public"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/rosen-bridge/utils.git"
-  },
-  "license": "MIT",
   "devDependencies": {
     "@types/node": "^22.18.0",
     "typescript": "^5.8.3"

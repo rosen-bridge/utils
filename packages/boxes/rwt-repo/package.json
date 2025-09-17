@@ -2,9 +2,19 @@
   "name": "@rosen-bridge/rwt-repo",
   "version": "2.1.0",
   "description": "a package to manage RWT Repo box",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rosen-bridge/utils.git"
+  },
+  "license": "MIT",
+  "author": "Rosen Team",
+  "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "type": "module",
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
   "scripts": {
     "prettify": "prettier --write . --ignore-path ../../../.gitignore",
     "prettify:check": "prettier --check . --ignore-path ../../../.gitignore",
@@ -16,12 +26,6 @@
     "coverage": "npm run test -- --run --coverage",
     "release": "npm run test && npm run build && npm publish --access public"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/rosen-bridge/utils.git"
-  },
-  "author": "Rosen Team",
-  "license": "MIT",
   "devDependencies": {
     "@types/json-bigint": "^1.0.1",
     "@types/node": "^22.18.0",

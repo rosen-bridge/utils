@@ -2,9 +2,19 @@
   "name": "@rosen-bridge/tokens",
   "version": "3.2.0",
   "description": "this project manage supported tokens",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rosen-bridge/utils.git"
+  },
+  "license": "MIT",
+  "author": "Rosen Team",
+  "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "type": "module",
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
   "scripts": {
     "prettify": "prettier --write . --ignore-path ../../.gitignore",
     "prettify:check": "prettier --check . --ignore-path ../../.gitignore",
@@ -16,15 +26,6 @@
     "coverage": "npm run test -- --run --coverage",
     "release": "npm run test -- --run && npm run build && npm publish --access public"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/rosen-bridge/utils.git"
-  },
-  "files": [
-    "dist"
-  ],
-  "author": "Rosen Team",
-  "license": "MIT",
   "devDependencies": {
     "@types/node": "^22.18.0",
     "@vitest/coverage-istanbul": "^3.1.4",

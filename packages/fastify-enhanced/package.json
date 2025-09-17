@@ -2,12 +2,19 @@
   "name": "@rosen-bridge/fastify-enhanced",
   "version": "1.0.0",
   "description": "a wrapper around fastify web framework to make it even better",
-  "repository": "git+https://github.com/rosen-bridge/utils.git",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rosen-bridge/utils.git"
+  },
   "license": "MIT",
   "author": "Rosen Team",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
   "scripts": {
     "build": "tsc --build tsconfig.build.json",
     "coverage": "npm run test -- --run --coverage",
