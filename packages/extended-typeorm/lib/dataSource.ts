@@ -1,5 +1,5 @@
 import { DataSource, DataSourceOptions } from 'typeorm';
-import { SqliteDriver } from './SqliteDriver';
+import { SqliteDriver } from './sqliteDriver';
 
 class CustomDataSource extends DataSource {
   constructor(options: DataSourceOptions) {

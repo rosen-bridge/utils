@@ -1,7 +1,7 @@
 import { SqliteDriver } from 'typeorm/driver/sqlite/SqliteDriver';
 import { Mutex } from 'async-mutex';
 import { DataSource, QueryRunner, ReplicationMode } from 'typeorm';
-import { CustomQueryRunner } from './CustomQueryRunner';
+import { CustomQueryRunner } from './customQueryRunner';
 
 class CustomSqliteDriver extends SqliteDriver {
   protected mutex: Mutex;
@@ -11,6 +11,7 @@ class CustomSqliteDriver extends SqliteDriver {
     this.mutex = new Mutex();
   }
 
+  // eslint-disable-next-line no-unused-vars
   createQueryRunner = (mode: ReplicationMode): QueryRunner => {
     if (!this.queryRunner)
       this.queryRunner = new CustomQueryRunner(this, this.mutex);

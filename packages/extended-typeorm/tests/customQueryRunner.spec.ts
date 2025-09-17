@@ -1,4 +1,4 @@
-import { createAndInitializeDataSource } from './CustomQueryRunnerTestUtils';
+import { createAndInitializeDataSource } from './customQueryRunnerTestUtils';
 
 describe('CustomQueryRunner', () => {
   describe('commitTransaction', () => {

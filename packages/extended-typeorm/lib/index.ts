@@ -1,3 +1,3 @@
 export * from 'typeorm';
-export { DataSource } from './DataSource';
-export { BigIntValueTransformer } from './BigIntTransformer';
+export { DataSource } from './dataSource';
+export { BigIntValueTransformer } from './bigIntTransformer';
