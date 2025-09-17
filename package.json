@@ -12,6 +12,7 @@
     "build": "npm run build --workspaces",
     "coverage": "npm run coverage --workspaces --if-present",
     "lint": "npm run lint --workspaces",
+    "lint:check": "npm run lint:check --workspaces",
     "prepare": "husky install",
     "release": "npm run release --workspaces",
     "test": "npm run test --if-present --workspaces",
