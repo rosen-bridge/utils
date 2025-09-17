@@ -1,4 +1,4 @@
-import { AbstractService } from './AbstractService';
+import { AbstractService } from './abstractService';
 import { Action, Dependency, ServiceAction, ServiceStatus } from './types';
 import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
 
@@ -43,14 +43,14 @@ export class ServiceManager {
   protected callbackHandler = (
     service: AbstractService,
     previousStatus: ServiceStatus,
-    newStatus: ServiceStatus
+    newStatus: ServiceStatus,
   ): void => {
     this.getServiceDependants(service.getName()).forEach((dependant) => {
       if (newStatus === ServiceStatus.dormant) {
         this.getService(dependant.serviceName).stopService();
       } else {
         const dependantsPending = this.pendingActions.get(
-          dependant.serviceName
+          dependant.serviceName,
         );
         if (
           dependantsPending &&
@@ -61,8 +61,8 @@ export class ServiceManager {
             .some(
               (dependency) =>
                 !dependency.allowedStatuses.includes(
-                  this.getService(dependency.serviceName).getStatus()
-                )
+                  this.getService(dependency.serviceName).getStatus(),
+                ),
             );
           if (!dependenciesNotPassed) {
             this.start(dependant.serviceName)
@@ -76,18 +76,18 @@ export class ServiceManager {
     if (newStatus === ServiceStatus.dormant) {
       service.getDependencies().forEach((dependency) => {
         const dependencyPending = this.pendingActions.get(
-          dependency.serviceName
+          dependency.serviceName,
         );
         if (
           dependencyPending &&
           dependencyPending.action === ServiceAction.stop
         ) {
           const dependenciesNotPassed = this.getServiceDependants(
-            dependency.serviceName
+            dependency.serviceName,
           ).some(
             (dependency) =>
               this.getService(dependency.serviceName).getStatus() !==
-              ServiceStatus.dormant
+              ServiceStatus.dormant,
           );
           if (!dependenciesNotPassed) {
             this.stop(dependency.serviceName)
@@ -133,7 +133,7 @@ export class ServiceManager {
         // if any dependencies is not ready, set pending action
         const allDependenciesPassed = this.startDependencies(
           service,
-          serviceAction
+          serviceAction,
         );
 
         // if all dependencies are ready, do action
@@ -146,7 +146,7 @@ export class ServiceManager {
     } else if (servicePendingAction.action !== ServiceAction.start) {
       // service has another action, so throw Error
       throw Error(
-        `Invalid action: There is already 'stop' action request for service [${serviceName}]`
+        `Invalid action: There is already 'stop' action request for service [${serviceName}]`,
       );
     } else {
       // reprocess current pending action
@@ -155,7 +155,7 @@ export class ServiceManager {
       // if any dependencies is not ready, set pending action
       const allDependenciesPassed = this.startDependencies(
         service,
-        servicePendingAction
+        servicePendingAction,
       );
 
       // if all dependencies are ready, do action
@@ -193,7 +193,7 @@ export class ServiceManager {
         // if any dependencies is not ready, set pending action
         const allDependenciesPassed = this.stopDependants(
           service,
-          serviceAction
+          serviceAction,
         );
 
         // if all dependencies are ready, do action
@@ -206,7 +206,7 @@ export class ServiceManager {
     } else if (servicePendingAction.action !== ServiceAction.stop) {
       // service has another action, so throw Error
       throw Error(
-        `Invalid action: There is already 'start' action request for service [${serviceName}]`
+        `Invalid action: There is already 'start' action request for service [${serviceName}]`,
       );
     } else {
       // reprocess current pending action
@@ -215,7 +215,7 @@ export class ServiceManager {
       // if any dependencies is not ready, set pending action
       const allDependenciesPassed = this.stopDependants(
         service,
-        servicePendingAction
+        servicePendingAction,
       );
 
       // if all dependencies are ready, do action
@@ -245,12 +245,12 @@ export class ServiceManager {
    */
   removeFromWatch = (serviceName: string): void => {
     const serviceIndex = this.onWatchServices.findIndex(
-      (s) => s === serviceName
+      (s) => s === serviceName,
     );
     if (serviceIndex !== -1) {
       this.onWatchServices.splice(serviceIndex, 1);
       this.logger.debug(
-        `service [${serviceName}] is removed from on-watch list`
+        `service [${serviceName}] is removed from on-watch list`,
       );
     }
   };
@@ -290,7 +290,7 @@ export class ServiceManager {
         if (allDependenciesPassed) {
           this.executeServiceAction(service, ServiceAction.start);
         }
-      }
+      },
     );
   };
 
@@ -351,7 +351,7 @@ export class ServiceManager {
    */
   protected startDependencies = (
     service: AbstractService,
-    action: Action
+    action: Action,
   ): boolean => {
     const serviceName = service.getName();
     this.logger.debug(`starting dependencies of [${serviceName}]`);
@@ -384,7 +384,7 @@ export class ServiceManager {
    */
   protected stopDependants = (
     service: AbstractService,
-    action: Action
+    action: Action,
   ): boolean => {
     const serviceName = service.getName();
     this.logger.debug(`stopping dependants of [${serviceName}]`);
@@ -417,7 +417,7 @@ export class ServiceManager {
    */
   protected executeServiceAction = async (
     service: AbstractService,
-    action: ServiceAction
+    action: ServiceAction,
   ): Promise<boolean> => {
     const serviceName = service.getName();
 

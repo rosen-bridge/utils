@@ -40,24 +40,20 @@ The concept of dependency entails a service requiring another service or service
 The process of starting and stopping services in this system follows a hierarchical structure. This means that the start and stop operations of services are performed in a cascading manner, where starting a service triggers the start of its dependent services, and stopping a service also stops its dependants. Service manager checks and behaviors includes:
 
 - Pending Action Check:
-
   - Before any action is initiated, a check is performed to determine if there are any pending actions for the corresponding service in the `pendingActions` map.
   - If no pending action is found for the service, the new action is added to the action map.
   - The action requirements are then examined and the necessary steps are taken to ensure they are satisfied.
   - Only when all requirements are met, the action is executed for the service.
 
 - Action Collision Handling:
-
   - If there is already a different pending action for the same service in the `pendingActions` map, an appropriate error is returned to prevent a potential action collision.
 
 - Dependency Resolution:
-
   - If the same action is already present in the `pendingActions`, the dependencies are re-evaluated.
   - If all dependencies are in the appropriate state, the action proceeds.
   - If some dependencies are still not ready, the promise of current pending action for this service which is stored in the `pendingPromises`, is returned.
 
 - Dependency Handling:
-
   - Dependencies are handled through action requirements.
   - For instance, if Service B depends on Service C and Service M, the status of these two services is checked for the "start" operation.
   - If either Service C or Service M is not in the "running" state, the "start" operation for Service B is held off until both reach the specified state.

@@ -1,4 +1,4 @@
 export * from './types';
-export * from './AbstractService';
-export * from './ServiceManager';
-export * from './PeriodicTaskService';
+export * from './abstractService';
+export * from './serviceManager';
+export * from './periodicTaskService';

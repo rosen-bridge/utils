@@ -8,9 +8,12 @@ import {
 import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
 
 export type StatusChangeCallbackFunction = (
+  // eslint-disable-next-line no-unused-vars
   service: AbstractService,
+  // eslint-disable-next-line no-unused-vars
   previousStatus: ServiceStatus,
-  newStatus: ServiceStatus
+  // eslint-disable-next-line no-unused-vars
+  newStatus: ServiceStatus,
 ) => unknown;
 
 export abstract class AbstractService {
@@ -34,7 +37,7 @@ export abstract class AbstractService {
    * @param serviceManagerCallback
    */
   addCallback = (
-    serviceManagerCallback: StatusChangeCallbackFunction
+    serviceManagerCallback: StatusChangeCallbackFunction,
   ): void => {
     this.callbacks.push(serviceManagerCallback);
   };
@@ -61,10 +64,10 @@ export abstract class AbstractService {
     const previousStatus = this.status;
     this.status = status;
     this.logger.info(
-      `Service [${this.getName()}] status changed from [${previousStatus}] to [${status}]`
+      `Service [${this.getName()}] status changed from [${previousStatus}] to [${status}]`,
     );
     this.callbacks.forEach((callback) =>
-      callback(this, previousStatus, status)
+      callback(this, previousStatus, status),
     );
   };
 
@@ -77,7 +80,7 @@ export abstract class AbstractService {
     if (this.actionPromise) {
       if (this.actionPromise.action === ServiceAction.start) {
         this.logger.debug(
-          `there is already an active request to start service [${this.getName()}]`
+          `there is already an active request to start service [${this.getName()}]`,
         );
         return this.actionPromise.promise;
       } else
@@ -86,7 +89,7 @@ export abstract class AbstractService {
     return this.actionSemaphore.acquire().then((release) => {
       if (this.getStatus() !== ServiceStatus.dormant) {
         this.logger.debug(
-          `service [${this.getName()}] is already in [${this.getStatus()}] status`
+          `service [${this.getName()}] is already in [${this.getStatus()}] status`,
         );
         release();
         return true;
@@ -105,7 +108,7 @@ export abstract class AbstractService {
         })
         .catch((error) => {
           this.logger.warn(
-            `An error occurred while starting service [${this.name}]: ${error}`
+            `An error occurred while starting service [${this.name}]: ${error}`,
           );
           release();
           return false;
@@ -130,7 +133,7 @@ export abstract class AbstractService {
       this.actionPromise.action === ServiceAction.stop
     ) {
       this.logger.debug(
-        `there is already an active request to stop service [${this.getName()}]`
+        `there is already an active request to stop service [${this.getName()}]`,
       );
       return this.actionPromise.promise;
     }
@@ -155,7 +158,7 @@ export abstract class AbstractService {
         })
         .catch((error) => {
           this.logger.warn(
-            `An error occurred while stopping service [${this.name}]: ${error}`
+            `An error occurred while stopping service [${this.name}]: ${error}`,
           );
           release();
           return false;

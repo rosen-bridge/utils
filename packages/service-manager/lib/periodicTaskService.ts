@@ -1,7 +1,8 @@
-import { AbstractService } from './AbstractService';
+import { AbstractService } from './abstractService';
 import { ServiceStatus, Task, TaskManager } from './types';
 
 export abstract class PeriodicTaskService extends AbstractService {
+  // eslint-disable-next-line no-undef
   private timeouts: Map<string, NodeJS.Timeout | number> = new Map();
   private active = false;
   private taskManagers: TaskManager[] = [];
@@ -78,7 +79,7 @@ export abstract class PeriodicTaskService extends AbstractService {
       return true;
     } catch (err) {
       this.logger.error(
-        `Failed to start periodic task service [${this.name}]: ${err}`
+        `Failed to start periodic task service [${this.name}]: ${err}`,
       );
       return false;
     }
@@ -99,13 +100,13 @@ export abstract class PeriodicTaskService extends AbstractService {
           this.logger.debug(`Task [${taskManager.fn.name}] finished`);
         } catch (err) {
           this.logger.error(
-            `Error in stopping task [${taskManager.fn.name}]: ${err}`
+            `Error in stopping task [${taskManager.fn.name}]: ${err}`,
           );
         }
       });
 
       this.logger.debug(
-        `Awaiting all tasks to finish before stopping service.`
+        `Awaiting all tasks to finish before stopping service.`,
       );
       await Promise.all(stopPromises);
       this.logger.debug(`finishing all tasks before stopping service.`);
@@ -117,12 +118,12 @@ export abstract class PeriodicTaskService extends AbstractService {
       await this.postStop();
       this.setStatus(ServiceStatus.dormant);
       this.logger.info(
-        `Periodic task service [${this.name}] stopped successfully.`
+        `Periodic task service [${this.name}] stopped successfully.`,
       );
       return true;
     } catch (err) {
       this.logger.error(
-        `Failed to stop periodic task service [${this.name}]: ${err}`
+        `Failed to stop periodic task service [${this.name}]: ${err}`,
       );
       return false;
     }

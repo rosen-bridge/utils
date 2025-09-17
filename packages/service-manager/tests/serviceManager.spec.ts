@@ -42,16 +42,16 @@ describe('ServiceManager', () => {
     const res = await startPromise;
     expect(res).toEqual(true);
     expect(serviceManager.getStatus(a.getName())).toEqual(
-      ServiceStatus.running
+      ServiceStatus.running,
     );
     expect(serviceManager.getStatus(b.getName())).toEqual(
-      ServiceStatus.running
+      ServiceStatus.running,
     );
     expect(serviceManager.getStatus(m.getName())).toEqual(
-      ServiceStatus.running
+      ServiceStatus.running,
     );
     expect(serviceManager.getStatus(c.getName())).toEqual(
-      ServiceStatus.running
+      ServiceStatus.running,
     );
   }, 5500);
 
@@ -88,13 +88,13 @@ describe('ServiceManager', () => {
     const res = await startPromise;
     expect(res).toEqual(true);
     expect(serviceManager.getStatus(a.getName())).toEqual(
-      ServiceStatus.dormant
+      ServiceStatus.dormant,
     );
     expect(serviceManager.getStatus(b.getName())).toEqual(
-      ServiceStatus.dormant
+      ServiceStatus.dormant,
     );
     expect(serviceManager.getStatus(m.getName())).toEqual(
-      ServiceStatus.dormant
+      ServiceStatus.dormant,
     );
   }, 5500);
 
@@ -162,17 +162,17 @@ describe('ServiceManager', () => {
     const res = await startPromise;
     expect(res).toEqual(false);
     expect(serviceManager.getStatus(a.getName())).toEqual(
-      ServiceStatus.dormant
+      ServiceStatus.dormant,
     );
     expect(serviceManager.getStatus(b.getName())).toEqual(
-      ServiceStatus.dormant
+      ServiceStatus.dormant,
     );
     expect(serviceManager.getStatus(c.getName())).toEqual(
-      ServiceStatus.dormant
+      ServiceStatus.dormant,
     );
 
     expect(serviceManager.getStatus(d.getName())).toEqual(
-      ServiceStatus.running
+      ServiceStatus.running,
     );
   }, 5500);
 
@@ -210,16 +210,16 @@ describe('ServiceManager', () => {
     const res = await startPromise;
     expect(res).toEqual(true);
     expect(serviceManager.getStatus(a.getName())).toEqual(
-      ServiceStatus.running
+      ServiceStatus.running,
     );
     expect(serviceManager.getStatus(b.getName())).toEqual(
-      ServiceStatus.running
+      ServiceStatus.running,
     );
     expect(serviceManager.getStatus(c.getName())).toEqual(
-      ServiceStatus.running
+      ServiceStatus.running,
     );
     expect(serviceManager.getStatus(d.getName())).toEqual(
-      ServiceStatus.running
+      ServiceStatus.running,
     );
   }, 5500);
 
@@ -257,17 +257,17 @@ describe('ServiceManager', () => {
     const res = await startPromise;
     expect(res).toEqual(true);
     expect(serviceManager.getStatus(a.getName())).toEqual(
-      ServiceStatus.running
+      ServiceStatus.running,
     );
     expect(serviceManager.getStatus(d.getName())).toEqual(
-      ServiceStatus.running
+      ServiceStatus.running,
     );
 
     expect(serviceManager.getStatus(b.getName())).toEqual(
-      ServiceStatus.dormant
+      ServiceStatus.dormant,
     );
     expect(serviceManager.getStatus(c.getName())).toEqual(
-      ServiceStatus.dormant
+      ServiceStatus.dormant,
     );
   }, 3500);
 
@@ -303,17 +303,17 @@ describe('ServiceManager', () => {
     const startPromise = serviceManager.start(a.getName());
     await sleep(1.5);
     expect(serviceManager.getStatus(a.getName())).toEqual(
-      ServiceStatus.dormant
+      ServiceStatus.dormant,
     );
     expect(serviceManager.getStatus(b.getName())).toEqual(
-      ServiceStatus.started
+      ServiceStatus.started,
     );
     await sleep(2.3);
     expect(serviceManager.getStatus(a.getName())).toEqual(
-      ServiceStatus.running
+      ServiceStatus.running,
     );
     expect(serviceManager.getStatus(b.getName())).toEqual(
-      ServiceStatus.running
+      ServiceStatus.running,
     );
     const res = await startPromise;
     expect(res).toEqual(true);
@@ -353,17 +353,17 @@ describe('ServiceManager', () => {
     const res = await startPromise;
     expect(res).toEqual(true);
     expect(serviceManager.getStatus(a.getName())).toEqual(
-      ServiceStatus.dormant
+      ServiceStatus.dormant,
     );
     expect(serviceManager.getStatus(b.getName())).toEqual(
-      ServiceStatus.dormant
+      ServiceStatus.dormant,
     );
     expect(serviceManager.getStatus(c.getName())).toEqual(
-      ServiceStatus.dormant
+      ServiceStatus.dormant,
     );
 
     expect(serviceManager.getStatus(m.getName())).toEqual(
-      ServiceStatus.running
+      ServiceStatus.running,
     );
   }, 3000);
 
@@ -402,17 +402,17 @@ describe('ServiceManager', () => {
     const res = await startPromise;
     expect(res).toEqual(false);
     expect(serviceManager.getStatus(b.getName())).toEqual(
-      ServiceStatus.running
+      ServiceStatus.running,
     );
     expect(serviceManager.getStatus(c.getName())).toEqual(
-      ServiceStatus.running
+      ServiceStatus.running,
     );
     expect(serviceManager.getStatus(d.getName())).toEqual(
-      ServiceStatus.running
+      ServiceStatus.running,
     );
 
     expect(serviceManager.getStatus(a.getName())).toEqual(
-      ServiceStatus.dormant
+      ServiceStatus.dormant,
     );
   }, 3500);
 
@@ -444,10 +444,10 @@ describe('ServiceManager', () => {
     b.callSetStatus(ServiceStatus.started);
     await sleep(0.5);
     expect(serviceManager.getStatus(a.getName())).toEqual(
-      ServiceStatus.dormant
+      ServiceStatus.dormant,
     );
     expect(serviceManager.getStatus(b.getName())).toEqual(
-      ServiceStatus.started
+      ServiceStatus.started,
     );
   }, 2000);
 });

@@ -11,7 +11,7 @@ export abstract class TestAbstractService extends AbstractService {
   };
 
   startAfter = (seconds = 1) =>
-    new Promise<boolean>((resolve, reject) => {
+    new Promise<boolean>((resolve) => {
       setTimeout(() => {
         this.setStatus(ServiceStatus.running);
         resolve(true);
@@ -19,7 +19,7 @@ export abstract class TestAbstractService extends AbstractService {
     });
 
   stopAfter = (seconds = 0.5) =>
-    new Promise<boolean>((resolve, reject) => {
+    new Promise<boolean>((resolve) => {
       setTimeout(() => {
         this.setStatus(ServiceStatus.dormant);
         resolve(true);
