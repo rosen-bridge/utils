@@ -21,9 +21,9 @@ export const isValidOS = (OSName: string) => (releaseAssetName: string) =>
  */
 export const truncateAssetName = (
   assetName: string,
-  alternativeSuffix?: string
+  alternativeSuffix?: string,
 ) =>
   assetName.replace(
     /(contracts-.+?|tokensMap)-.+.json/,
-    alternativeSuffix ? `$1-${alternativeSuffix}.json` : '$1.json'
+    alternativeSuffix ? `$1-${alternativeSuffix}.json` : '$1.json',
   );

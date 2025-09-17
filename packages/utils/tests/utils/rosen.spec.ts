@@ -122,7 +122,7 @@ describe('truncateAssetName', () => {
    * @expected
    * - result should be truncated name
    */
-  it('should truncate contract file names correctly', () => {
+  it('should truncate contract file names correctly (duplicate?!)', () => {
     const tokensMapAssetName = 'tokensMap-mainnet-1.json';
     const truncatedName = truncateAssetName(tokensMapAssetName);
 
@@ -143,7 +143,7 @@ describe('truncateAssetName', () => {
     const truncatedNameWithSuffix = truncateAssetName(assetName, 'suffix');
 
     expect(truncatedNameWithSuffix).toEqual(
-      'contracts-awesomechain-suffix.json'
+      'contracts-awesomechain-suffix.json',
     );
   });
 });
