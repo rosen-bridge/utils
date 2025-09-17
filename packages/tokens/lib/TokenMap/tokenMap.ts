@@ -42,7 +42,7 @@ export class TokenMap {
     const callbackId = this.nextCallbackId++;
     this.callbacks.set(callbackId, callback);
     this.logger.info(
-      `New callback function is registered with id [${callbackId}]`
+      `New callback function is registered with id [${callbackId}]`,
     );
     return callbackId;
   };
@@ -75,7 +75,7 @@ export class TokenMap {
   updateConfigByBoxes = async (serializedBoxes: string[]) => {
     if (typeof window !== 'undefined')
       throw Error(
-        'The `updateConfigByBoxes` function cannot be used on browser (and similar platform where `window` variable is injected) due to usage of the `ergo-lib-wasm-nodejs` package'
+        'The `updateConfigByBoxes` function cannot be used on browser (and similar platform where `window` variable is injected) due to usage of the `ergo-lib-wasm-nodejs` package',
       );
     const wasm = await import('ergo-lib-wasm-nodejs');
     const tokens: RosenTokens = [];
@@ -84,12 +84,12 @@ export class TokenMap {
 
     serializedBoxes.forEach((serializedBox) => {
       const box = wasm.ErgoBox.sigma_parse_bytes(
-        Uint8Array.from(Buffer.from(serializedBox, 'hex'))
+        Uint8Array.from(Buffer.from(serializedBox, 'hex')),
       );
       const boxId = box.box_id().to_str();
 
       const chain = Buffer.from(
-        box.register_value(4)?.to_byte_array() ?? []
+        box.register_value(4)?.to_byte_array() ?? [],
       ).toString();
       const headers: string[] = (
         box.register_value(5)?.to_coll_coll_byte() ?? []
@@ -98,22 +98,22 @@ export class TokenMap {
         .register_value(6)
         ?.to_js()
         .map((arr: Uint8Array[]) =>
-          arr.map((value) => Buffer.from(value).toString())
+          arr.map((value) => Buffer.from(value).toString()),
         );
 
       if (!REQUIRED_FIELDS.every((field) => headers.includes(field)))
         throw new CorruptedConfigError(
           boxId,
           `Headers does not contain all required fields. Found [${headers.join(
-            ','
-          )}]`
+            ',',
+          )}]`,
         );
       if (headers[0] !== ERGO_SIDE_TOKEN_ID_KEY)
         throw new CorruptedConfigError(
           boxId,
           `Expected first header to be [${ERGO_SIDE_TOKEN_ID_KEY}] but found [${headers.join(
-            ','
-          )}]`
+            ',',
+          )}]`,
         );
 
       (chain === ERGO_CHAIN ? ergoConfigs : nonErgoConfigs).push({
@@ -134,13 +134,13 @@ export class TokenMap {
           throw new CorruptedConfigError(
             boxId,
             `Mismatch between headers and data at [${values.indexOf(
-              data
-            )}]: Expected length [${headers.length}] found [${data.length}]`
+              data,
+            )}]: Expected length [${headers.length}] found [${data.length}]`,
           );
         if (tokens.find((token) => token.ergo.tokenId === data[0]))
           throw new CorruptedConfigError(
             boxId,
-            `Duplicate ergo token [${data[0]}] is found`
+            `Duplicate ergo token [${data[0]}] is found`,
           );
 
         const chainToken: Record<string, any> = { extra: {} };
@@ -165,16 +165,16 @@ export class TokenMap {
           throw new CorruptedConfigError(
             boxId,
             `Mismatch between headers and data at [${values.indexOf(
-              data
-            )}]: Expected length [${headers.length}] found [${data.length}]`
+              data,
+            )}]: Expected length [${headers.length}] found [${data.length}]`,
           );
         const index = tokens.findIndex(
-          (token) => token.ergo.tokenId === data[0]
+          (token) => token.ergo.tokenId === data[0],
         );
         if (index === -1)
           throw new CorruptedConfigError(
             boxId,
-            `Ergo token [${data[0]}] is not found`
+            `Ergo token [${data[0]}] is not found`,
           );
 
         const chainToken: Record<string, any> = { extra: {} };
@@ -188,7 +188,7 @@ export class TokenMap {
         if (Object.hasOwn(tokens[index], chain))
           throw new CorruptedConfigError(
             boxId,
-            `Duplicate token for ergo token [${data[0]}] on chain [${chain}] is found: Have [${tokens[index][chain].tokenId}] found [${chainToken.tokenId}]`
+            `Duplicate token for ergo token [${data[0]}] on chain [${chain}] is found: Have [${tokens[index][chain].tokenId}] found [${chainToken.tokenId}]`,
           );
         tokens[index][chain] = chainToken as RosenChainToken;
       });
@@ -217,7 +217,8 @@ export class TokenMap {
   getTokens = (fromChain: string, toChain: string): Array<RosenChainToken> => {
     return this.tokensConfig
       .filter(
-        (item) => Object.hasOwn(item, fromChain) && Object.hasOwn(item, toChain)
+        (item) =>
+          Object.hasOwn(item, fromChain) && Object.hasOwn(item, toChain),
       )
       .map((item) => item[fromChain]);
   };
@@ -232,7 +233,7 @@ export class TokenMap {
         (allUniqChains, tokenChains) => [
           ...new Set([...allUniqChains, ...tokenChains]),
         ],
-        []
+        [],
       );
   };
 
@@ -246,7 +247,7 @@ export class TokenMap {
       .map((token) => Object.keys(token))
       .reduce(
         (allChains, newChains) => [...new Set([...allChains, ...newChains])],
-        []
+        [],
       )
       .filter((chain) => chain !== sourceChain);
   };
@@ -266,7 +267,7 @@ export class TokenMap {
           const typedKey = key as keyof RosenChainToken;
           if (typedKey === 'extra' && typeof val === 'object') {
             return Object.entries(condition.extra!).every(
-              ([key, val]) => resToken.extra[key] === val
+              ([key, val]) => resToken.extra[key] === val,
             );
           } else return resToken[typedKey] === val;
         });
@@ -295,7 +296,7 @@ export class TokenMap {
    */
   getID = (
     token: { [key: string]: RosenChainToken },
-    chain: string
+    chain: string,
   ): string => {
     return token[chain].tokenId;
   };
@@ -309,7 +310,7 @@ export class TokenMap {
       .filter(
         (token) =>
           Object.hasOwn(token, chain) &&
-          token[chain].residency == NATIVE_RESIDENCY
+          token[chain].residency == NATIVE_RESIDENCY,
       )
       .map((token) => token[chain]);
   };
@@ -319,13 +320,13 @@ export class TokenMap {
    * @param tokenId
    */
   getTokenSet = (
-    tokenId: string
+    tokenId: string,
   ): Record<string, RosenChainToken> | undefined => {
     const result = this.tokensConfig.filter(
       (tokenSet) =>
         Object.keys(tokenSet).filter(
-          (chain) => tokenSet[chain].tokenId === tokenId
-        ).length
+          (chain) => tokenSet[chain].tokenId === tokenId,
+        ).length,
     );
     if (result.length === 0) return undefined;
     return result[0];
@@ -340,7 +341,7 @@ export class TokenMap {
   wrapAmount = (
     tokenId: string,
     amount: bigint,
-    chain: string
+    chain: string,
   ): RosenAmount => {
     const tokens = this.getTokenSet(tokenId);
 
@@ -353,11 +354,11 @@ export class TokenMap {
     } else {
       const significantDecimals = Math.min(
         ...Object.keys(tokens).map(
-          (supportedChain) => tokens[supportedChain].decimals
-        )
+          (supportedChain) => tokens[supportedChain].decimals,
+        ),
       );
       const divisor = BigInt(
-        '1' + '0'.repeat(tokens[chain].decimals - significantDecimals)
+        '1' + '0'.repeat(tokens[chain].decimals - significantDecimals),
       );
       const result = amount / divisor + (amount % divisor ? 1n : 0n);
       return {
@@ -376,7 +377,7 @@ export class TokenMap {
   unwrapAmount = (
     tokenId: string,
     amount: bigint,
-    toChain: string
+    toChain: string,
   ): RosenAmount => {
     const tokens = this.getTokenSet(tokenId);
 
@@ -388,12 +389,12 @@ export class TokenMap {
       };
     } else {
       const significantDecimals = Math.min(
-        ...Object.keys(tokens).map((chain) => tokens[chain].decimals)
+        ...Object.keys(tokens).map((chain) => tokens[chain].decimals),
       );
       const result =
         amount *
         BigInt(
-          '1' + '0'.repeat(tokens[toChain].decimals - significantDecimals)
+          '1' + '0'.repeat(tokens[toChain].decimals - significantDecimals),
         );
       return {
         amount: result,
@@ -413,7 +414,7 @@ export class TokenMap {
       return undefined;
     }
     return Math.min(
-      ...Object.keys(tokens).map((chain) => tokens[chain].decimals)
+      ...Object.keys(tokens).map((chain) => tokens[chain].decimals),
     );
   };
 }

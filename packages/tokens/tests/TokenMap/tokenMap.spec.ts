@@ -14,7 +14,7 @@ import {
   secondToken,
   thirdTokenMap,
   wrongFieldIndexConfigBox,
-} from './TokenMapTestData';
+} from './tokenMapTestData';
 
 describe('TokenMap', () => {
   describe('updateConfigByBoxes', () => {
@@ -38,8 +38,8 @@ describe('TokenMap', () => {
 
       const serializedBoxes = Object.values(configBoxes).map((boxJson) =>
         Buffer.from(
-          ErgoBox.from_json(boxJson).sigma_serialize_bytes()
-        ).toString('hex')
+          ErgoBox.from_json(boxJson).sigma_serialize_bytes(),
+        ).toString('hex'),
       );
 
       await tokenMap.updateConfigByBoxes(serializedBoxes);
@@ -67,7 +67,7 @@ describe('TokenMap', () => {
       tokenMap.registerCallback(mockedCallback);
 
       const serializedBox = Buffer.from(
-        ErgoBox.from_json(missingHeaderFieldConfigBox).sigma_serialize_bytes()
+        ErgoBox.from_json(missingHeaderFieldConfigBox).sigma_serialize_bytes(),
       ).toString('hex');
 
       await expect(async () => {
@@ -95,7 +95,7 @@ describe('TokenMap', () => {
       tokenMap.registerCallback(mockedCallback);
 
       const serializedBox = Buffer.from(
-        ErgoBox.from_json(wrongFieldIndexConfigBox).sigma_serialize_bytes()
+        ErgoBox.from_json(wrongFieldIndexConfigBox).sigma_serialize_bytes(),
       ).toString('hex');
 
       await expect(async () => {
@@ -123,7 +123,9 @@ describe('TokenMap', () => {
       tokenMap.registerCallback(mockedCallback);
 
       const serializedBox = Buffer.from(
-        ErgoBox.from_json(inconsistentDataErgoConfigBox).sigma_serialize_bytes()
+        ErgoBox.from_json(
+          inconsistentDataErgoConfigBox,
+        ).sigma_serialize_bytes(),
       ).toString('hex');
 
       await expect(async () => {
@@ -155,8 +157,8 @@ describe('TokenMap', () => {
         configBoxes.ergo0,
       ].map((boxJson) =>
         Buffer.from(
-          ErgoBox.from_json(boxJson).sigma_serialize_bytes()
-        ).toString('hex')
+          ErgoBox.from_json(boxJson).sigma_serialize_bytes(),
+        ).toString('hex'),
       );
 
       await expect(async () => {
@@ -185,8 +187,8 @@ describe('TokenMap', () => {
 
       const serializedBoxes = [duplicateTokenConfigBox].map((boxJson) =>
         Buffer.from(
-          ErgoBox.from_json(boxJson).sigma_serialize_bytes()
-        ).toString('hex')
+          ErgoBox.from_json(boxJson).sigma_serialize_bytes(),
+        ).toString('hex'),
       );
 
       await expect(async () => {
@@ -218,8 +220,8 @@ describe('TokenMap', () => {
         configBoxes.ergo0,
       ].map((boxJson) =>
         Buffer.from(
-          ErgoBox.from_json(boxJson).sigma_serialize_bytes()
-        ).toString('hex')
+          ErgoBox.from_json(boxJson).sigma_serialize_bytes(),
+        ).toString('hex'),
       );
 
       await expect(async () => {
@@ -252,8 +254,8 @@ describe('TokenMap', () => {
         configBoxes.bitcoin,
       ].map((boxJson) =>
         Buffer.from(
-          ErgoBox.from_json(boxJson).sigma_serialize_bytes()
-        ).toString('hex')
+          ErgoBox.from_json(boxJson).sigma_serialize_bytes(),
+        ).toString('hex'),
       );
 
       await expect(async () => {
@@ -287,8 +289,8 @@ describe('TokenMap', () => {
         configBoxes.bitcoin,
       ].map((boxJson) =>
         Buffer.from(
-          ErgoBox.from_json(boxJson).sigma_serialize_bytes()
-        ).toString('hex')
+          ErgoBox.from_json(boxJson).sigma_serialize_bytes(),
+        ).toString('hex'),
       );
 
       await expect(async () => {
@@ -584,7 +586,7 @@ describe('TokenMap', () => {
       const result = tokenMap.wrapAmount(
         'policyId3.assetName3',
         123456789n,
-        'cardano'
+        'cardano',
       );
       expect(result.amount).toEqual(1235n);
       expect(result.decimals).toEqual(3);
@@ -605,7 +607,7 @@ describe('TokenMap', () => {
       const result = tokenMap.wrapAmount(
         'policyId3.assetName3',
         123400000n,
-        'cardano'
+        'cardano',
       );
       expect(result.amount).toEqual(1234n);
       expect(result.decimals).toEqual(3);
@@ -662,7 +664,7 @@ describe('TokenMap', () => {
       const result = tokenMap.unwrapAmount(
         'policyId3.assetName3',
         1234n,
-        'cardano'
+        'cardano',
       );
       expect(result.amount).toEqual(123400000n);
       expect(result.decimals).toEqual(8);
@@ -752,7 +754,7 @@ describe('TokenMap', () => {
       const tokenMap = new TokenMap();
       const mockedCallback = vi.fn();
       mockedCallback.mockResolvedValue(undefined);
-      const callbackId = tokenMap.registerCallback(mockedCallback);
+      tokenMap.registerCallback(mockedCallback);
       await tokenMap.updateConfigByJson(firstTokenMap);
 
       expect(mockedCallback).toHaveBeenCalled();
