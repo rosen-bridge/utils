@@ -7,14 +7,14 @@ import { MinimalOnChainRosenData } from './types';
  * @param scriptPubKeyHex
  */
 export const parseRosenData = (
-  scriptPubKeyHex: string
+  scriptPubKeyHex: string,
 ): MinimalOnChainRosenData => {
   // parse toChain
   const toChainHex = scriptPubKeyHex.slice(0, 2);
   const toChainCode = parseInt(toChainHex, 16);
   if (toChainCode >= SUPPORTED_CHAINS.length)
     throw Error(
-      `invalid toChain code, found [${toChainCode}] but only [${SUPPORTED_CHAINS.length}] chains are supported`
+      `invalid toChain code, found [${toChainCode}] but only [${SUPPORTED_CHAINS.length}] chains are supported`,
     );
   const toChain = SUPPORTED_CHAINS[toChainCode];
 
@@ -30,7 +30,7 @@ export const parseRosenData = (
   const addressLengthCode = scriptPubKeyHex.slice(34, 36);
   const addressHex = scriptPubKeyHex.slice(
     36,
-    36 + parseInt(addressLengthCode, 16) * 2
+    36 + parseInt(addressLengthCode, 16) * 2,
   );
   const toAddress = decodeAddress(toChain, addressHex);
 
