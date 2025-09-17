@@ -14,7 +14,7 @@ const assertShapeMatchesField = (value: any, field: types.ConfigField) => {
       }
       assertShapeMatchesField(
         (value as Record<string, any>)[k],
-        (field as types.ObjectField).children[k]
+        (field as types.ObjectField).children[k],
       );
     }
     return;
@@ -59,10 +59,11 @@ const assertShapeMatchesField = (value: any, field: types.ConfigField) => {
 
 export const propertyValidators = {
   all: {
-    type: (field: types.ConfigField, config: ConfigValidator) => {
+    // eslint-disable-next-line no-unused-vars
+    type: (field: types.ConfigField, _config: ConfigValidator) => {
       if (!Object.hasOwn(field, 'type') || typeof field.type !== 'string') {
         throw new Error(
-          `every schema field must have a "type" property of type "string"`
+          `every schema field must have a "type" property of type "string"`,
         );
       }
 
@@ -70,12 +71,14 @@ export const propertyValidators = {
         throw new Error(`unsupported field type "${field.type}"`);
       }
     },
-    label: (field: types.ConfigField, config: ConfigValidator) => {
+    // eslint-disable-next-line no-unused-vars
+    label: (field: types.ConfigField, _config: ConfigValidator) => {
       if (Object.hasOwn(field, 'label') && typeof field.label !== 'string') {
         throw new Error(`"label" property should be a "string"`);
       }
     },
-    description: (field: types.ConfigField, config: ConfigValidator) => {
+    // eslint-disable-next-line no-unused-vars
+    description: (field: types.ConfigField, _config: ConfigValidator) => {
       if (
         Object.hasOwn(field, 'description') &&
         typeof field.description !== 'string'
@@ -92,7 +95,7 @@ export const propertyValidators = {
 
       if (!Array.isArray(field.validations)) {
         throw new Error(
-          '"validations" property must be an array of validation descriptions'
+          '"validations" property must be an array of validation descriptions',
         );
       }
 
@@ -102,7 +105,7 @@ export const propertyValidators = {
           typeof validation.error !== 'string'
         ) {
           throw new Error(
-            '"error" property of a validation description must be a string'
+            '"error" property of a validation description must be a string',
           );
         }
 
@@ -112,7 +115,7 @@ export const propertyValidators = {
             typeof validation.when.path !== 'string'
           ) {
             throw new Error(
-              `"when" property of a validation description must have a "path" property of type "string"`
+              `"when" property of a validation description must have a "path" property of type "string"`,
             );
           }
 
@@ -120,19 +123,19 @@ export const propertyValidators = {
             config.getSchemaField(validation.when.path.split('.')) == undefined
           ) {
             throw new Error(
-              `"when" property of a validation description has a non-existent path=[${validation.when.path}]`
+              `"when" property of a validation description has a non-existent path=[${validation.when.path}]`,
             );
           }
 
           if (!Object.hasOwn(validation.when, 'value')) {
             throw new Error(
-              `"when" property of a validation description must have a "value" property`
+              `"when" property of a validation description must have a "value" property`,
             );
           }
         }
 
         const validationProperties = Object.keys(validation).filter(
-          (key) => key !== 'when' && key !== 'error'
+          (key) => key !== 'when' && key !== 'error',
         );
         if (validationProperties.length !== 1) {
           throw new Error('validation description format is wrong');
@@ -143,7 +146,7 @@ export const propertyValidators = {
         const typeValidator = fieldValidations[field.type][validationName];
         if (primitiveValidator == undefined && typeValidator == undefined) {
           throw new Error(
-            `validation description has an unknown validator "${validationName}"`
+            `validation description has an unknown validator "${validationName}"`,
           );
         }
 
@@ -156,33 +159,36 @@ export const propertyValidators = {
     },
   },
   object: {
-    children: (field: types.ObjectField, config: ConfigValidator) => {
+    // eslint-disable-next-line no-unused-vars
+    children: (field: types.ObjectField, _config: ConfigValidator) => {
       if (
         !Object.hasOwn(field, 'children') ||
         typeof field.children !== 'object'
       ) {
         throw new Error(
-          `object field type must have a "children" property of type "object"`
+          `object field type must have a "children" property of type "object"`,
         );
       }
       return;
     },
   },
   array: {
-    items: (field: types.ArrayField, config: ConfigValidator) => {
+    // eslint-disable-next-line no-unused-vars
+    items: (field: types.ArrayField, _config: ConfigValidator) => {
       if (!Object.hasOwn(field, 'items') || typeof field.items !== 'object') {
         throw new Error(
-          `array field type must have a "items" property of type "object"`
+          `array field type must have a "items" property of type "object"`,
         );
       }
     },
-    default: (field: types.ArrayField, config: ConfigValidator) => {
+    // eslint-disable-next-line no-unused-vars
+    default: (field: types.ArrayField, _config: ConfigValidator) => {
       if (!Object.hasOwn(field, 'default')) return;
       if (!Array.isArray((field as any).default)) {
         throw new Error(
           `default value=[${
             (field as any).default
-          }] doesn't match field type=[${field.type}]`
+          }] doesn't match field type=[${field.type}]`,
         );
       }
 
@@ -192,43 +198,47 @@ export const propertyValidators = {
     },
   },
   string: {
-    default: (field: types.StringField, config: ConfigValidator) => {
+    // eslint-disable-next-line no-unused-vars
+    default: (field: types.StringField, _config: ConfigValidator) => {
       if (
         Object.hasOwn(field, 'default') &&
         typeof field.default !== 'string'
       ) {
         throw new Error(
-          `default value=[${field.default}] doesn't match field type=[${field.type}]`
+          `default value=[${field.default}] doesn't match field type=[${field.type}]`,
         );
       }
     },
   },
   boolean: {
-    default: (field: types.BooleanField, config: ConfigValidator) => {
+    // eslint-disable-next-line no-unused-vars
+    default: (field: types.BooleanField, _config: ConfigValidator) => {
       if (
         Object.hasOwn(field, 'default') &&
         typeof field.default !== 'boolean'
       ) {
         throw new Error(
-          `default value=[${field.default}] doesn't match field type=[${field.type}]`
+          `default value=[${field.default}] doesn't match field type=[${field.type}]`,
         );
       }
     },
   },
   number: {
-    default: (field: types.NumberField, config: ConfigValidator) => {
+    // eslint-disable-next-line no-unused-vars
+    default: (field: types.NumberField, _config: ConfigValidator) => {
       if (
         Object.hasOwn(field, 'default') &&
         typeof field.default !== 'number'
       ) {
         throw new Error(
-          `default value=[${field.default}] doesn't match field type=[${field.type}]`
+          `default value=[${field.default}] doesn't match field type=[${field.type}]`,
         );
       }
     },
   },
   bigint: {
-    default: (field: types.BigIntField, config: ConfigValidator) => {
+    // eslint-disable-next-line no-unused-vars
+    default: (field: types.BigIntField, _config: ConfigValidator) => {
       if (
         Object.hasOwn(field, 'default') &&
         !(
@@ -239,7 +249,7 @@ export const propertyValidators = {
         )
       ) {
         throw new Error(
-          `default value=[${field.default}] doesn't match field type=[${field.type}]`
+          `default value=[${field.default}] doesn't match field type=[${field.type}]`,
         );
       }
     },
@@ -247,7 +257,7 @@ export const propertyValidators = {
 };
 
 export const supportedTypes = Object.keys(propertyValidators).filter(
-  (key) => key !== 'all' && key !== 'primitive'
+  (key) => key !== 'all' && key !== 'primitive',
 );
 
 const fieldValidations: Record<string, Record<string, any>> = {
@@ -277,14 +287,14 @@ const fieldValidations: Record<string, Record<string, any>> = {
       }
       if (!Array.isArray(validation.choices)) {
         throw new Error(
-          `"choices" validation property should be an "array" of strings`
+          `"choices" validation property should be an "array" of strings`,
         );
       }
 
       for (const choice of validation.choices) {
         if (typeof choice !== 'string') {
           throw new Error(
-            `"choices" validation property should be an array of "strings"`
+            `"choices" validation property should be an array of "strings"`,
           );
         }
       }
