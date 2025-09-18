@@ -34,5 +34,8 @@
   },
   "keywords": [
     "rosen"
-  ]
+  ],
+  "engines": {
+    "node": ">=22.18.0"
+  }
 }

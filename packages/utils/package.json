@@ -45,5 +45,8 @@
   "dependencies": {
     "download": "^8.0.0",
     "octokit": "^2.0.14"
+  },
+  "engines": {
+    "node": ">=22.18.0"
   }
 }

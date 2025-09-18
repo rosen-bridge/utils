@@ -29,14 +29,14 @@
     "tsx": "^4.20.5",
     "typescript": "^5.8.3"
   },
-  "engines": {
-    "node": ">=22.18.0"
-  },
   "dependencies": {
     "@rosen-bridge/abstract-logger": "^2.1.0",
     "@rosen-bridge/json-bigint": "^0.2.0",
     "winston": "^3.17.0",
     "winston-daily-rotate-file": "^4.7.1",
     "winston-loki": "^6.0.7"
+  },
+  "engines": {
+    "node": ">=22.18.0"
   }
 }

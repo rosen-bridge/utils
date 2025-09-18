@@ -33,11 +33,11 @@
     "typescript": "^5.8.3",
     "vitest": "^3.1.4"
   },
-  "engines": {
-    "node": ">=22.18.0"
-  },
   "dependencies": {
     "@rosen-bridge/abstract-logger": "^2.1.0",
     "typeorm": "^0.3.20"
+  },
+  "engines": {
+    "node": ">=22.18.0"
   }
 }

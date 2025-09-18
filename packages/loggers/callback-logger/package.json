@@ -29,10 +29,10 @@
     "tsx": "^4.20.5",
     "typescript": "^5.8.3"
   },
-  "engines": {
-    "node": ">=22.18.0"
-  },
   "dependencies": {
     "@rosen-bridge/abstract-logger": "^2.1.0"
+  },
+  "engines": {
+    "node": ">=22.18.0"
   }
 }

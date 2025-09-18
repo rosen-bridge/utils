@@ -19,4 +19,4 @@
 '@rosen-bridge/cli': major
 ---
 
-Update node version to 20.18
+Update node version to 22.18
