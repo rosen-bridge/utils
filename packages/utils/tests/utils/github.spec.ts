@@ -129,7 +129,7 @@ describe('getReleaseByTag', () => {
   it('should get release by tag', async () => {
     mockOctokitGetReleaseByTag(contractReleases);
 
-    const release = await getReleaseByTag('contract', '3');
+    const release = await getReleaseByTag('contract', '2.0.1-0b08045');
 
     expect(release.id).toEqual(3);
   });

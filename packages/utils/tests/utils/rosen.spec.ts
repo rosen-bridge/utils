@@ -17,8 +17,8 @@ describe('isValidAssetName', () => {
    * - result should be true
    */
   it('should return `true` if an address file name matches a chain type', () => {
-    const matchAssetName = 'contracts-awesomechain-mainnet-1.json';
-    const isMatchingAssetName = isValidAssetName('mainnet')(matchAssetName);
+    const matchAssetName = 'contracts-awesome-chain-main-net-1.json';
+    const isMatchingAssetName = isValidAssetName('main-net')(matchAssetName);
 
     expect(isMatchingAssetName).toEqual(true);
   });
@@ -107,10 +107,15 @@ describe('truncateAssetName', () => {
    * - result should be truncated name
    */
   it('should truncate contract file names correctly', () => {
-    const addressAssetName = 'contracts-awesomechain-mainnet-1.json';
-    const truncatedName = truncateAssetName(addressAssetName);
+    const addressAssetName =
+      'contracts-awesome-chain-main-net-2.0.1-0b08041.json';
+    const truncatedName = truncateAssetName(
+      addressAssetName,
+      'main-net',
+      '2.0.1-0b08041'
+    );
 
-    expect(truncatedName).toEqual('contracts-awesomechain.json');
+    expect(truncatedName).toEqual('contracts-awesome-chain.json');
   });
 
   /**
@@ -123,8 +128,12 @@ describe('truncateAssetName', () => {
    * - result should be truncated name
    */
   it('should truncate contract file names correctly', () => {
-    const tokensMapAssetName = 'tokensMap-mainnet-1.json';
-    const truncatedName = truncateAssetName(tokensMapAssetName);
+    const tokensMapAssetName = 'tokensMap-mainnet-2.0.1-0b08041.json';
+    const truncatedName = truncateAssetName(
+      tokensMapAssetName,
+      'mainnet',
+      '2.0.1-0b08041'
+    );
 
     expect(truncatedName).toEqual('tokensMap.json');
   });
@@ -139,11 +148,16 @@ describe('truncateAssetName', () => {
    * - result should be truncated name with suffix
    */
   it('should truncate asset name and append suffix correctly', () => {
-    const assetName = 'contracts-awesomechain-mainnet-1.json';
-    const truncatedNameWithSuffix = truncateAssetName(assetName, 'suffix');
+    const assetName = 'contracts-awesome-chain-mainnet-2.0.1-0b08041.json';
+    const truncatedNameWithSuffix = truncateAssetName(
+      assetName,
+      'mainnet',
+      '2.0.1-0b08041',
+      'suffix'
+    );
 
     expect(truncatedNameWithSuffix).toEqual(
-      'contracts-awesomechain-suffix.json'
+      'contracts-awesome-chain-suffix.json'
     );
   });
 });
