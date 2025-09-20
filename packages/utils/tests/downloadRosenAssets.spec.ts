@@ -143,7 +143,7 @@ describe('downloadRosenAssets', () => {
   it('should download a Rosen asset by tag', async () => {
     mockOctokitGetReleaseByTag(contractReleases);
     await downloadRosenAssets('mainnet', 'rosen', {
-      tag: '3',
+      tag: '2.0.1-0b08045',
     });
 
     expect(download).toHaveBeenCalledWith(

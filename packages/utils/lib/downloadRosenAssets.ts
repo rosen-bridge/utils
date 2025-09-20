@@ -41,7 +41,12 @@ const downloadRosenAssets = async (
             .filter((asset) => isValidAssetName(chainType)(asset.name))
             .map(async (asset) =>
               download(asset.browser_download_url, destinationPath, {
-                filename: truncateAssetName(asset.name, config?.nameSuffix),
+                filename: truncateAssetName(
+                  asset.name,
+                  chainType,
+                  release.tag_name,
+                  config?.nameSuffix,
+                ),
               }),
             )),
       ]);
