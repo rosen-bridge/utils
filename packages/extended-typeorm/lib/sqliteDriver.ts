@@ -11,7 +11,7 @@ class CustomSqliteDriver extends SqliteDriver {
     this.mutex = new Mutex();
   }
 
-  // eslint-disable-next-line no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   createQueryRunner = (mode: ReplicationMode): QueryRunner => {
     if (!this.queryRunner)
       this.queryRunner = new CustomQueryRunner(this, this.mutex);

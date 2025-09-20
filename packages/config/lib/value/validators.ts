@@ -23,31 +23,31 @@ export const valueValidators: Record<string, any> = {
       }
     }
   },
-  // eslint-disable-next-line no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   array: (value: Array<any>, _field: types.ArrayField) => {
     if (!Array.isArray(value)) {
       throw new Error(`value must be of array type`);
     }
   },
-  // eslint-disable-next-line no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   string: (value: string, _field: types.StringField) => {
     if (typeof value !== 'string') {
       throw new Error(`value must be of string type`);
     }
   },
-  // eslint-disable-next-line no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   boolean: (value: boolean, _field: types.BooleanField) => {
     if (typeof value !== 'boolean') {
       throw new Error(`value must be of boolean type`);
     }
   },
-  // eslint-disable-next-line no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   number: (value: number, _field: types.NumberField) => {
     if (typeof value !== 'number') {
       throw new Error(`value must be of number type`);
     }
   },
-  // eslint-disable-next-line no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   bigint: (value: bigint, _field: types.BigIntField) => {
     if (typeof value !== 'bigint') {
       throw new Error(`value must be of bigint type`);

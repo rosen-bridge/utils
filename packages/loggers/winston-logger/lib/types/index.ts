@@ -27,12 +27,10 @@ export type TransportOptions =
   | LokiTransportOptions;
 
 export interface TransportFactory<T extends TransportOptions> {
-  // eslint-disable-next-line no-unused-vars
   (transportOptions: T): winston.transport;
 }
 
 export type LogTransports = {
-  // eslint-disable-next-line no-unused-vars
   [Key in TransportOptions['type']]:
     | TransportFactory<ConsoleTransportOptions>
     | TransportFactory<FileTransportOptions>

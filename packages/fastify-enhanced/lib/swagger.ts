@@ -44,7 +44,7 @@ export const registerSwagger = async (
     },
     staticCSP: true,
     transformStaticCSP: (header: any) => header,
-    // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     transformSpecification: (swaggerObject: any, request: any, reply: any) => {
       return swaggerObject;
     },

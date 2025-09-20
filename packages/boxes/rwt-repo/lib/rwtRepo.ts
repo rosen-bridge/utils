@@ -20,16 +20,15 @@ export class RWTRepo {
   private repoErgoTree: ergoLib.ErgoTree;
 
   constructor(
-    // eslint-disable-next-line no-unused-vars
     private repoAddress: string,
-    // eslint-disable-next-line no-unused-vars
+
     private repoNft: string,
-    // eslint-disable-next-line no-unused-vars
+
     private rwt: string,
     private networkType: ErgoNetworkType,
-    // eslint-disable-next-line no-unused-vars
+
     private networkUrl: string,
-    // eslint-disable-next-line no-unused-vars
+
     private logger: AbstractLogger = new DummyLogger(),
   ) {
     if (networkType === ErgoNetworkType.Explorer) {

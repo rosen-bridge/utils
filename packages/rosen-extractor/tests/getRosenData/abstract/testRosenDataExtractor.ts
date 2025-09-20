@@ -14,7 +14,7 @@ export class TestRosenDataExtractor extends AbstractRosenDataExtractor<string> {
    * extracts RosenData from given lock transaction in Esplora format
    * @param transaction the lock transaction in Esplora format
    */
-  // eslint-disable-next-line no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   extractRawData = (transaction: string): RosenData | undefined => {
     return {
       toChain: 'cardano',

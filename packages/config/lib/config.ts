@@ -13,7 +13,6 @@ import { getSourceName, getValueFromConfigSources } from './utils';
 import { valueValidations, valueValidators } from './value/validators';
 
 export class ConfigValidator {
-  // eslint-disable-next-line no-unused-vars
   constructor(private schema: ConfigSchema) {
     this.validateSchema();
   }

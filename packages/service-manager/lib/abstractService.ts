@@ -8,11 +8,10 @@ import {
 import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
 
 export type StatusChangeCallbackFunction = (
-  // eslint-disable-next-line no-unused-vars
   service: AbstractService,
-  // eslint-disable-next-line no-unused-vars
+
   previousStatus: ServiceStatus,
-  // eslint-disable-next-line no-unused-vars
+
   newStatus: ServiceStatus,
 ) => unknown;
 

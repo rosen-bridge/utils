@@ -1,7 +1,6 @@
 import { FailedError, NetworkError, UnexpectedApiError } from './errors';
 
 interface ErrorHandler<HandlerReturnType> {
-  // eslint-disable-next-line no-unused-vars
   (error: any): HandlerReturnType;
 }
 

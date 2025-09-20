@@ -42,7 +42,7 @@ describe('TxPot', () => {
      * - there should be no validator
      */
     it('should remove registered validator successfully', async () => {
-      // eslint-disable-next-line no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const mockedValidator = async (tx: TransactionEntity) => true;
       txPot.registerValidator('chain', 'txType', 'id', mockedValidator);
 
@@ -68,7 +68,7 @@ describe('TxPot', () => {
      * - there should be no validator
      */
     it('should remove registered submit validator successfully', async () => {
-      // eslint-disable-next-line no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const mockedValidator = async (tx: TransactionEntity) => true;
       txPot.registerSubmitValidator('chain', 'id', mockedValidator);
 
@@ -237,7 +237,7 @@ describe('TxPot', () => {
      * - should return true
      */
     it('should return true when tx is valid', async () => {
-      // eslint-disable-next-line no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const mockedValidator = async (tx: TransactionEntity) => true;
       txPot.registerValidator(
         testData.tx1.chain,
@@ -268,7 +268,7 @@ describe('TxPot', () => {
     it('should return false and set tx as invalid', async () => {
       await txRepository.insert(testData.tx1);
 
-      // eslint-disable-next-line no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const mockedValidator = async (tx: TransactionEntity) => false;
       txPot.registerValidator(
         testData.tx1.chain,
@@ -307,14 +307,14 @@ describe('TxPot', () => {
       await txRepository.insert(testData.tx1);
 
       const mockedValidators = [
-        // eslint-disable-next-line no-unused-vars
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         { id: 'validator-1', validator: async (tx: TransactionEntity) => true },
         {
           id: 'validator-2',
-          // eslint-disable-next-line no-unused-vars
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           validator: async (tx: TransactionEntity) => false,
         },
-        // eslint-disable-next-line no-unused-vars
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         { id: 'validator-3', validator: async (tx: TransactionEntity) => true },
       ];
       mockedValidators.forEach((mockedValidator) =>
@@ -524,7 +524,7 @@ describe('TxPot', () => {
       txPot.registerSubmitValidator(
         testData.tx1.chain,
         'validator-1',
-        // eslint-disable-next-line no-unused-vars
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         async (tx: TransactionEntity) => true,
       );
 
@@ -584,14 +584,14 @@ describe('TxPot', () => {
 
       // register 3 submit validator functions
       const mockedValidators = [
-        // eslint-disable-next-line no-unused-vars
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         { id: 'validator-1', validator: async (tx: TransactionEntity) => true },
         {
           id: 'validator-2',
-          // eslint-disable-next-line no-unused-vars
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           validator: async (tx: TransactionEntity) => false,
         },
-        // eslint-disable-next-line no-unused-vars
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         { id: 'validator-3', validator: async (tx: TransactionEntity) => true },
       ];
       mockedValidators.forEach((mockedValidator) =>
@@ -862,7 +862,7 @@ describe('TxPot', () => {
       txPot.registerSubmitValidator(
         testData.tx6.chain,
         'validator-2',
-        // eslint-disable-next-line no-unused-vars
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         async (tx: TransactionEntity) => false,
       );
 
@@ -945,7 +945,7 @@ describe('TxPot', () => {
       await txRepository.insert(testData.tx6);
 
       // register a validator function
-      // eslint-disable-next-line no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const mockedValidator = async (tx: TransactionEntity) => false;
       txPot.registerValidator(
         testData.tx6.chain,

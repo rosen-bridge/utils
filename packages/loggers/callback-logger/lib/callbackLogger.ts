@@ -2,15 +2,13 @@ import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 
 export class CallbackLogger extends AbstractLogger {
   constructor(
-    // eslint-disable-next-line no-unused-vars
     protected logger: AbstractLogger,
-    // eslint-disable-next-line no-unused-vars
+
     protected callback: (
-      // eslint-disable-next-line no-unused-vars
       level: keyof AbstractLogger,
-      // eslint-disable-next-line no-unused-vars
+
       message: string,
-      // eslint-disable-next-line no-unused-vars
+
       context?: unknown,
     ) => unknown,
   ) {

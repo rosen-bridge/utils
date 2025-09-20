@@ -2,7 +2,7 @@ import { AbstractLoggerFactory } from './abstractLoggerFactory';
 
 export class DefaultLoggerFactory extends AbstractLoggerFactory {
   protected static instance: DefaultLoggerFactory;
-  // eslint-disable-next-line no-unused-vars
+
   protected constructor(protected loggerFactory: AbstractLoggerFactory) {
     super();
   }

@@ -39,6 +39,8 @@ export default [
       ],
       // vitest Rules
       ...vitestPlugin.configs.recommended.rules,
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': ['error'],
     },
   },
   // Integrate Prettier for Formatting

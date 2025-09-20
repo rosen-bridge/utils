@@ -48,7 +48,7 @@ async function* fetchReleasesPage(
  */
 const findLastRelease = async (
   repoName: SupportedRepo,
-  // eslint-disable-next-line no-unused-vars
+
   predicate: (release: GithubRelease) => boolean = () => true,
 ) => {
   const releasesPageIterator = fetchReleasesPage(repoName);

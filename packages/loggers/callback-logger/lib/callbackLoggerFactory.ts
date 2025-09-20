@@ -10,7 +10,7 @@ export class CallbackLoggerFactory extends AbstractLoggerFactory {
   protected defaultLogger: AbstractLogger | undefined;
 
   protected static instance: CallbackLoggerFactory;
-  // eslint-disable-next-line no-unused-vars
+
   protected constructor(protected loggerFactory: AbstractLoggerFactory) {
     super();
   }

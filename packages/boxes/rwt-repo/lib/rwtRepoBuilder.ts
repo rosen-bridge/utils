@@ -7,35 +7,34 @@ export class RWTRepoBuilder {
   private lastModifiedWidIndex?: number;
 
   constructor(
-    // eslint-disable-next-line no-unused-vars
     private repoAddress: string,
-    // eslint-disable-next-line no-unused-vars
+
     private repoNft: string,
-    // eslint-disable-next-line no-unused-vars
+
     private rwt: string,
-    // eslint-disable-next-line no-unused-vars
+
     private rwtCount: bigint,
-    // eslint-disable-next-line no-unused-vars
+
     private rsn: string,
-    // eslint-disable-next-line no-unused-vars
+
     private rsnCount: bigint,
-    // eslint-disable-next-line no-unused-vars
+
     private chainId: string,
-    // eslint-disable-next-line no-unused-vars
+
     private commitmentRwtCount: bigint,
-    // eslint-disable-next-line no-unused-vars
+
     private quorumPercentage: number,
-    // eslint-disable-next-line no-unused-vars
+
     private approvalOffset: number,
-    // eslint-disable-next-line no-unused-vars
+
     private maximumApproval: number,
-    // eslint-disable-next-line no-unused-vars
+
     private ergCollateral: bigint,
-    // eslint-disable-next-line no-unused-vars
+
     private rsnCollateral: bigint,
-    // eslint-disable-next-line no-unused-vars
+
     private widPermits: Array<{ wid: string; rwtCount: bigint }>,
-    // eslint-disable-next-line no-unused-vars
+
     private logger: AbstractLogger = new DummyLogger(),
   ) {}
 

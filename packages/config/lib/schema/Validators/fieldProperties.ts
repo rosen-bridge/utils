@@ -59,7 +59,7 @@ const assertShapeMatchesField = (value: any, field: types.ConfigField) => {
 
 export const propertyValidators = {
   all: {
-    // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type: (field: types.ConfigField, _config: ConfigValidator) => {
       if (!Object.hasOwn(field, 'type') || typeof field.type !== 'string') {
         throw new Error(
@@ -71,13 +71,13 @@ export const propertyValidators = {
         throw new Error(`unsupported field type "${field.type}"`);
       }
     },
-    // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     label: (field: types.ConfigField, _config: ConfigValidator) => {
       if (Object.hasOwn(field, 'label') && typeof field.label !== 'string') {
         throw new Error(`"label" property should be a "string"`);
       }
     },
-    // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     description: (field: types.ConfigField, _config: ConfigValidator) => {
       if (
         Object.hasOwn(field, 'description') &&
@@ -159,7 +159,7 @@ export const propertyValidators = {
     },
   },
   object: {
-    // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     children: (field: types.ObjectField, _config: ConfigValidator) => {
       if (
         !Object.hasOwn(field, 'children') ||
@@ -173,7 +173,7 @@ export const propertyValidators = {
     },
   },
   array: {
-    // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     items: (field: types.ArrayField, _config: ConfigValidator) => {
       if (!Object.hasOwn(field, 'items') || typeof field.items !== 'object') {
         throw new Error(
@@ -181,7 +181,7 @@ export const propertyValidators = {
         );
       }
     },
-    // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     default: (field: types.ArrayField, _config: ConfigValidator) => {
       if (!Object.hasOwn(field, 'default')) return;
       if (!Array.isArray((field as any).default)) {
@@ -198,7 +198,7 @@ export const propertyValidators = {
     },
   },
   string: {
-    // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     default: (field: types.StringField, _config: ConfigValidator) => {
       if (
         Object.hasOwn(field, 'default') &&
@@ -211,7 +211,7 @@ export const propertyValidators = {
     },
   },
   boolean: {
-    // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     default: (field: types.BooleanField, _config: ConfigValidator) => {
       if (
         Object.hasOwn(field, 'default') &&
@@ -224,7 +224,7 @@ export const propertyValidators = {
     },
   },
   number: {
-    // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     default: (field: types.NumberField, _config: ConfigValidator) => {
       if (
         Object.hasOwn(field, 'default') &&
@@ -237,7 +237,7 @@ export const propertyValidators = {
     },
   },
   bigint: {
-    // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     default: (field: types.BigIntField, _config: ConfigValidator) => {
       if (
         Object.hasOwn(field, 'default') &&

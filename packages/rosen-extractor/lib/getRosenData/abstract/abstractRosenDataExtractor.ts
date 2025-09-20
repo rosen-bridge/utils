@@ -44,8 +44,6 @@ export default abstract class AbstractRosenDataExtractor<TransactionType> {
    * extracts RosenData from given lock transaction
    */
   abstract extractRawData: (
-    // TODO: there should be no need for next line, as the variables are all defined for an abstract function (local:ergo/rosen-bridge/utils#289)
-    // eslint-disable-next-line no-unused-vars
     transaction: TransactionType,
   ) => RosenData | undefined;
 }

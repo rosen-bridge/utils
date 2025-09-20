@@ -1374,7 +1374,7 @@ describe('ConfigValidator', () => {
       const confValidator = new ConfigValidator(
         <ConfigSchema>testData.schemaConfigCharPair.schema,
       );
-      // eslint-disable-next-line no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const originalObj = JSON.parse(
         fs.readFileSync(path.join(configDir, 'local.json'), 'utf-8'),
       );
