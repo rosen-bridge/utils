@@ -4,34 +4,36 @@ export type PartialReleases = Partial<GithubRelease>[];
 
 export const mainNetPrereleaseRelease = {
   id: 1,
-  tag_name: '1',
+  tag_name: '2.0.1-0b08047',
   prerelease: true,
   assets: [
     {
       browser_download_url:
-        'https://example.com/contracts-awesomechain-mainnet-7.json',
-      name: 'contracts-awesomechain-mainnet-7.json',
+        'https://example.com/contracts-awesomechain-mainnet-2.0.1-0b08047.json',
+      name: 'contracts-awesomechain-mainnet-2.0.1-0b08047.json',
     } as any,
     {
-      browser_download_url: 'https://example.com/tokensMap-mainnet-7.json',
-      name: 'tokensMap-mainnet-6.json',
+      browser_download_url:
+        'https://example.com/tokensMap-mainnet-2.0.1-0b08047.json',
+      name: 'tokensMap-mainnet-2.0.1-0b08047.json',
     } as any,
   ],
 };
 
 export const mainNetStableRelease = {
   id: 2,
-  tag_name: '2',
+  tag_name: '2.0.1-0b08046',
   prerelease: false,
   assets: [
     {
       browser_download_url:
-        'https://example.com/contracts-awesomechain-mainnet-6.json',
-      name: 'contracts-awesomechain-mainnet-6.json',
+        'https://example.com/contracts-awesomechain-mainnet-2.0.1-0b08046.json',
+      name: 'contracts-awesomechain-mainnet-2.0.1-0b08046.json',
     } as any,
     {
-      browser_download_url: 'https://example.com/tokensMap-mainnet-6.json',
-      name: 'tokensMap-mainnet-6.json',
+      browser_download_url:
+        'https://example.com/tokensMap-mainnet-2.0.1-0b08046.json',
+      name: 'tokensMap-mainnet-2.0.1-0b08046.json',
     } as any,
   ],
 };
@@ -109,26 +111,26 @@ export const tssTag3PreRelease = {
 
 export const testNetPrereleaseRelease = {
   id: 4,
-  tag_name: '4',
+  tag_name: '2.0.1-0b08041',
   prerelease: true,
   assets: [
     {
       browser_download_url:
-        'https://example.com/contracts-awesomechain-testnet-1.json',
-      name: 'contracts-awesomechain-testnet-1.json',
+        'https://example.com/contracts-awesomechain-testnet-2.0.1-0b08041.json',
+      name: 'contracts-awesomechain-testnet-2.0.1-0b08041.json',
     } as any,
   ],
 };
 
 export const testNetStableRelease = {
   id: 5,
-  tag_name: '5',
+  tag_name: '2.0.1-0b08042',
   prerelease: false,
   assets: [
     {
       browser_download_url:
-        'https://example.com/contracts-awesomechain-testnet-1.json',
-      name: 'contracts-awesomechain-testnet-1.json',
+        'https://example.com/contracts-awesomechain-testnet-2.0.1-0b08042.json',
+      name: 'contracts-awesomechain-testnet-2.0.1-0b08042.json',
     } as any,
   ],
 };
@@ -138,13 +140,13 @@ export const contractReleases = [
   mainNetStableRelease,
   {
     id: 3,
-    tag_name: '3',
+    tag_name: '2.0.1-0b08045',
     prerelease: false,
     assets: [
       {
         browser_download_url:
-          'https://example.com/contracts-awesomechain-mainnet-5.json',
-        name: 'contracts-awesomechain-mainnet-5.json',
+          'https://example.com/contracts-awesomechain-mainnet-2.0.1-0b08045.json',
+        name: 'contracts-awesomechain-mainnet-2.0.1-0b08045.json',
       } as any,
     ],
   },
@@ -152,49 +154,49 @@ export const contractReleases = [
   testNetStableRelease,
   {
     id: 6,
-    tag_name: '6',
+    tag_name: '2.0.1-0b08044',
     prerelease: false,
     assets: [
       {
         browser_download_url:
-          'https://example.com/contracts-awesomechain-mainnet-4.json',
-        name: 'contracts-awesomechain-mainnet-4.json',
+          'https://example.com/contracts-awesomechain-mainnet-2.0.1-0b08044.json',
+        name: 'contracts-awesomechain-mainnet-2.0.1-0b08044.json',
       } as any,
     ],
   },
   {
     id: 7,
-    tag_name: '7',
+    tag_name: '2.0.1-0b08043',
     prerelease: false,
     assets: [
       {
         browser_download_url:
-          'https://example.com/contracts-awesomechain-mainnet-3.json',
-        name: 'contracts-awesomechain-mainnet-3.json',
+          'https://example.com/contracts-awesomechain-mainnet-2.0.1-0b08043.json',
+        name: 'contracts-awesomechain-mainnet-2.0.1-0b08043.json',
       } as any,
     ],
   },
   {
     id: 8,
-    tag_name: '8',
+    tag_name: '2.0.1-0b08042',
     prerelease: false,
     assets: [
       {
         browser_download_url:
-          'https://example.com/contracts-awesomechain-mainnet-2.json',
-        name: 'contracts-awesomechain-mainnet-2.json',
+          'https://example.com/contracts-awesomechain-mainnet-2.0.1-0b08042.json',
+        name: 'contracts-awesomechain-mainnet-2.0.1-0b08042.json',
       } as any,
     ],
   },
   {
     id: 9,
-    tag_name: '9',
+    tag_name: '2.0.1-0b08041',
     prerelease: false,
     assets: [
       {
         browser_download_url:
-          'https://example.com/contracts-awesomechain-mainnet-1.json',
-        name: 'contracts-awesomechain-mainnet-1.json',
+          'https://example.com/contracts-awesomechain-mainnet-2.0.1-0b08041.json',
+        name: 'contracts-awesomechain-mainnet-2.0.1-0b08041.json',
       } as any,
     ],
   },
