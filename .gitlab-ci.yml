@@ -2,6 +2,7 @@ image: node:20.11
 
 stages:
   - installation
+  - knip
   - build
   - type_check
   - lint
@@ -18,6 +19,18 @@ installation:
       - packages/**/node_modules
   script:
     - npm ci
+
+knip:
+  stage: knip
+  cache:
+    key: $CI_COMMIT_REF_NAME
+    policy: pull
+    paths:
+      - node_modules
+      - packages/**/node_modules
+      - packages/**/dist
+  script:
+    - npm run knip
 
 build:
   stage: build
