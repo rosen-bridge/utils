@@ -112,7 +112,7 @@ describe('truncateAssetName', () => {
     const truncatedName = truncateAssetName(
       addressAssetName,
       'main-net',
-      '2.0.1-0b08041'
+      '2.0.1-0b08041',
     );
 
     expect(truncatedName).toEqual('contracts-awesome-chain.json');
@@ -127,12 +127,12 @@ describe('truncateAssetName', () => {
    * @expected
    * - result should be truncated name
    */
-  it('should truncate contract file names correctly', () => {
+  it('should truncate contract file names correctly (duplicate?!)', () => {
     const tokensMapAssetName = 'tokensMap-mainnet-2.0.1-0b08041.json';
     const truncatedName = truncateAssetName(
       tokensMapAssetName,
       'mainnet',
-      '2.0.1-0b08041'
+      '2.0.1-0b08041',
     );
 
     expect(truncatedName).toEqual('tokensMap.json');
@@ -153,11 +153,11 @@ describe('truncateAssetName', () => {
       assetName,
       'mainnet',
       '2.0.1-0b08041',
-      'suffix'
+      'suffix',
     );
 
     expect(truncatedNameWithSuffix).toEqual(
-      'contracts-awesome-chain-suffix.json'
+      'contracts-awesome-chain-suffix.json',
     );
   });
 });

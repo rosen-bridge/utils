@@ -2,37 +2,44 @@
   "name": "@rosen-bridge/config",
   "version": "0.4.0",
   "description": "a package to manage configs of rosen bridge projects",
-  "repository": "git+https://github.com/rosen-bridge/utils.git",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rosen-bridge/utils.git"
+  },
   "license": "MIT",
   "author": "Rosen Team",
   "type": "module",
   "main": "dist/index.js",
   "bin": "dist/cli.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
   "scripts": {
     "build": "tsc --build tsconfig.build.json",
     "coverage": "npm run test -- --run --coverage",
     "lint": "eslint --fix . && npm run prettify",
-    "prettify": "prettier --write . --ignore-path ./.gitignore",
+    "lint:check": "eslint . && npm run prettify:check",
+    "prettify": "prettier --write . --ignore-path ../../.gitignore",
+    "prettify:check": "prettier --check . --ignore-path ../../.gitignore",
     "release": "npm run build && npm publish --access public",
-    "test": "NODE_OPTIONS=--experimental-specifier-resolution=node vitest",
+    "test": "NODE_OPTIONS='--import tsx' vitest",
     "type-check": "tsc --noEmit"
   },
   "devDependencies": {
     "@types/config": "^3.3.3",
     "@types/js-yaml": "^4.0.9",
-    "@types/node": "^20.11.0",
+    "@types/json-bigint": "^1.0.1",
+    "@types/lodash-es": "^4.17.12",
+    "@types/node": "^22.18.0",
     "@types/uuid": "^9.0.8",
-    "@vitest/coverage-istanbul": "^2.0.5",
+    "@vitest/coverage-istanbul": "^3.1.4",
     "lodash-es": "^4.17.21",
+    "tsx": "^4.20.5",
     "typescript": "^5.8.3",
     "uuid": "^9.0.1",
-    "vitest": "^2.0.5",
-    "@types/json-bigint": "^1.0.1",
-    "@types/lodash-es": "^4.17.12"
-  },
-  "engines": {
-    "node": ">=20.11.0"
+    "vitest": "^3.1.4"
   },
   "dependencies": {
     "chalk": "^5.3.0",
@@ -41,5 +48,8 @@
     "json-bigint": "^1.0.0",
     "ora": "^8.0.1",
     "yargs": "^17.7.2"
+  },
+  "engines": {
+    "node": ">=22.18.0"
   }
 }

@@ -495,34 +495,34 @@ export const baseSchemaConfigPairComparison = {
 };
 
 export const apiSchemaConfigPairWrongGreater = cloneDeep(
-  baseSchemaConfigPairComparison
+  baseSchemaConfigPairComparison,
 );
 apiSchemaConfigPairWrongGreater.schema.apis.children.explorer.children.port.validations.push(
-  { gt: 500 }
+  { gt: 500 },
 );
 apiSchemaConfigPairWrongGreater.config.apis.explorer.port = 443;
 
 export const apiSchemaConfigPairWrongLess = cloneDeep(
-  baseSchemaConfigPairComparison
+  baseSchemaConfigPairComparison,
 );
 apiSchemaConfigPairWrongLess.schema.apis.children.explorer.children.port.validations.push(
-  { lt: 500 }
+  { lt: 500 },
 );
 apiSchemaConfigPairWrongLess.config.apis.explorer.port = 700;
 
 export const apiSchemaConfigPairWrongGreaterEqual = cloneDeep(
-  baseSchemaConfigPairComparison
+  baseSchemaConfigPairComparison,
 );
 apiSchemaConfigPairWrongGreaterEqual.schema.apis.children.explorer.children.port.validations.push(
-  { gte: 500 }
+  { gte: 500 },
 );
 apiSchemaConfigPairWrongGreaterEqual.config.apis.explorer.port = 443;
 
 export const apiSchemaConfigPairWrongLessEqual = cloneDeep(
-  baseSchemaConfigPairComparison
+  baseSchemaConfigPairComparison,
 );
 apiSchemaConfigPairWrongLessEqual.schema.apis.children.explorer.children.port.validations.push(
-  { lte: 500 }
+  { lte: 500 },
 );
 apiSchemaConfigPairWrongLessEqual.config.apis.explorer.port = 600;
 
@@ -553,34 +553,34 @@ const baseSchemaConfigPairComparisonBigInt = {
 };
 
 export const apiSchemaConfigPairWrongGreaterBigInt = cloneDeep(
-  baseSchemaConfigPairComparisonBigInt
+  baseSchemaConfigPairComparisonBigInt,
 );
 apiSchemaConfigPairWrongGreaterBigInt.schema.apis.children.explorer.children.port.validations.push(
-  { gt: 500n }
+  { gt: 500n },
 );
 apiSchemaConfigPairWrongGreaterBigInt.config.apis.explorer.port = 400n;
 
 export const apiSchemaConfigPairWrongGreaterEqualBigInt = cloneDeep(
-  baseSchemaConfigPairComparisonBigInt
+  baseSchemaConfigPairComparisonBigInt,
 );
 apiSchemaConfigPairWrongGreaterEqualBigInt.schema.apis.children.explorer.children.port.validations.push(
-  { gte: 500n }
+  { gte: 500n },
 );
 apiSchemaConfigPairWrongGreaterEqualBigInt.config.apis.explorer.port = 400n;
 
 export const apiSchemaConfigPairWrongLessBigInt = cloneDeep(
-  baseSchemaConfigPairComparisonBigInt
+  baseSchemaConfigPairComparisonBigInt,
 );
 apiSchemaConfigPairWrongLessBigInt.schema.apis.children.explorer.children.port.validations.push(
-  { lt: 500n }
+  { lt: 500n },
 );
 apiSchemaConfigPairWrongLessBigInt.config.apis.explorer.port = 900n;
 
 export const apiSchemaConfigPairWrongLessEqualBigInt = cloneDeep(
-  baseSchemaConfigPairComparisonBigInt
+  baseSchemaConfigPairComparisonBigInt,
 );
 apiSchemaConfigPairWrongLessEqualBigInt.schema.apis.children.explorer.children.port.validations.push(
-  { lte: 500n }
+  { lte: 500n },
 );
 apiSchemaConfigPairWrongLessEqualBigInt.config.apis.explorer.port = 900n;
 

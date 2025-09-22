@@ -1,6 +1,6 @@
 import { Octokit } from 'octokit';
 
-import { contractReleases, PartialReleases } from '../data/octokit.data';
+import { PartialReleases } from '../data/octokit.data';
 
 import { DEFAULT_RELEASES_FETCHING_PAGE_SIZE } from '../../lib/constants';
 

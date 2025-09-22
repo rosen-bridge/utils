@@ -25,7 +25,7 @@ export const truncateAssetName = (
   assetName: string,
   chainType: string,
   releaseName: string,
-  alternativeSuffix?: string
+  alternativeSuffix?: string,
 ) => {
   const name = assetName.replace(`-${chainType}-${releaseName}.json`, '');
   return alternativeSuffix

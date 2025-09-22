@@ -13,12 +13,12 @@ import { v4 as uuidv4 } from 'uuid';
  * }}
  */
 const setupConfigTestEnv = (
-  envVars: Record<string, any>
+  envVars: Record<string, any>,
 ): {
   configDir: string;
 } => {
   const configDir = fs.mkdtempSync(
-    path.join(os.tmpdir(), `config-${uuidv4()}`)
+    path.join(os.tmpdir(), `config-${uuidv4()}`),
   );
   process.env['NODE_CONFIG_DIR'] = configDir;
   fs.cpSync(path.join(__dirname, 'configTestFiles'), configDir, {

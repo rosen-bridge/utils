@@ -13,7 +13,7 @@ import { FastifyWithZod, SwaggerOpts } from './types';
  */
 export const registerSwagger = async (
   fastify: FastifyWithZod,
-  opts: SwaggerOpts
+  opts: SwaggerOpts,
 ) => {
   await fastify.register(swagger, {
     openapi: {
@@ -44,6 +44,7 @@ export const registerSwagger = async (
     },
     staticCSP: true,
     transformStaticCSP: (header: any) => header,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     transformSpecification: (swaggerObject: any, request: any, reply: any) => {
       return swaggerObject;
     },

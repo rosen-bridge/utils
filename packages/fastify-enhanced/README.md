@@ -44,7 +44,7 @@ const addTokenPaymentRoute = (
     ServerResponse<IncomingMessage>,
     FastifyBaseLogger,
     ZodTypeProvider
-  >
+  >,
 ) => {
   const bodySchema = types.object({
     tokenName: types.string(),
@@ -85,7 +85,7 @@ const fastify = await createFastify(
     description: '',
     version: '0.0.1',
   },
-  { logger: false }
+  { logger: false },
 );
 addTokenPaymentRoute(fastify);
 
@@ -109,6 +109,6 @@ fastify.register(
     addTokenPaymentRoute(subFastify);
     next();
   },
-  { prefix: 'subroute' }
+  { prefix: 'subroute' },
 );
 ```

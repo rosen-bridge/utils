@@ -1,4 +1,4 @@
-export { AbstractLoggerFactory } from './AbstractLoggerFactory';
-export { DefaultLoggerFactory } from './DefaultLoggerFactory';
-export { AbstractLogger } from './logger/AbstractLogger';
-export { DummyLogger } from './logger/DummyLogger';
+export { AbstractLoggerFactory } from './abstractLoggerFactory';
+export { DefaultLoggerFactory } from './defaultLoggerFactory';
+export { AbstractLogger } from './logger/abstractLogger';
+export { DummyLogger } from './logger/dummyLogger';

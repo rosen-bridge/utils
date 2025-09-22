@@ -52,14 +52,14 @@ yargs(hideBin(process.argv))
       if (argv.tag && argv.includePrereleases) {
         console.error(
           chalk.red(
-            'Tag and prerelease arguments are mutually exclusive. Use either but not both.'
-          )
+            'Tag and prerelease arguments are mutually exclusive. Use either but not both.',
+          ),
         );
         return;
       }
       const spinner = ora();
       spinner.start(
-        `downloading Rosen assets for "${argv.chainType}" chain type`
+        `downloading Rosen assets for "${argv.chainType}" chain type`,
       );
 
       await downloadRosenAssets(argv.chainType, argv.out, {
@@ -70,10 +70,10 @@ yargs(hideBin(process.argv))
 
       spinner.succeed(
         chalk.green(
-          `downloaded Rosen assets for "${argv.chainType}" chain type successfully`
-        )
+          `downloaded Rosen assets for "${argv.chainType}" chain type successfully`,
+        ),
       );
-    }
+    },
   )
   .command(
     'download-tss',
@@ -113,7 +113,7 @@ yargs(hideBin(process.argv))
     async (argv) => {
       const spinner = ora();
       spinner.start(
-        `downloading Tss binary for "${argv.osName}" OSName and tag ${argv.tag}`
+        `downloading Tss binary for "${argv.osName}" OSName and tag ${argv.tag}`,
       );
 
       await downloadTssBinary(argv.out, {
@@ -125,10 +125,10 @@ yargs(hideBin(process.argv))
 
       spinner.succeed(
         chalk.green(
-          `downloaded Tss binary for "${argv.osName}" OSName and tag ${argv.tag} successfully`
-        )
+          `downloaded Tss binary for "${argv.osName}" OSName and tag ${argv.tag} successfully`,
+        ),
       );
-    }
+    },
   )
   .command(
     'tss-secret <action> [input]',
@@ -176,7 +176,7 @@ yargs(hideBin(process.argv))
               }
               default:
                 console.error(
-                  `Type of your secret is wrong should be one of 'ecdsa', 'eddsa'`
+                  `Type of your secret is wrong should be one of 'ecdsa', 'eddsa'`,
                 );
                 return;
             }
@@ -196,7 +196,7 @@ yargs(hideBin(process.argv))
                 }
                 default:
                   console.error(
-                    `Type of your secret is wrong should be one of 'ecdsa', 'eddsa'`
+                    `Type of your secret is wrong should be one of 'ecdsa', 'eddsa'`,
                   );
                   return;
               }
@@ -206,7 +206,7 @@ yargs(hideBin(process.argv))
             return;
         }
       }
-    }
+    },
   )
   .command(
     'blake2b-hash [input]',
@@ -247,7 +247,7 @@ yargs(hideBin(process.argv))
           if (passwordCheck.feedback.suggestions.length > 0) {
             console.warn('Suggestions:');
             passwordCheck.feedback.suggestions.forEach((s) =>
-              console.warn(`- ${s}`)
+              console.warn(`- ${s}`),
             );
           }
           return;
@@ -259,10 +259,10 @@ yargs(hideBin(process.argv))
       const saltedPass = Buffer.concat([randomSalt, Buffer.from(argv.input)]);
       console.log(
         `HASH: $${randomSalt.toString('base64')}$${Buffer.from(
-          blake2b(saltedPass, undefined, 32)
-        ).toString('base64')}`
+          blake2b(saltedPass, undefined, 32),
+        ).toString('base64')}`,
       );
-    }
+    },
   )
   .demandCommand(1)
   .parse();

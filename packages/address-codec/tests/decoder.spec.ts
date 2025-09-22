@@ -124,7 +124,7 @@ describe('decodeAddress', () => {
   it('should decode Runes address successfully', () => {
     const res = decodeAddress(
       RUNES_CHAIN,
-      testData.encodedTaprootBitcoinAddress
+      testData.encodedTaprootBitcoinAddress,
     );
     expect(res).toEqual(testData.taprootBitcoinAddress);
   });
