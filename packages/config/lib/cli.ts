@@ -65,9 +65,9 @@ yargs(hideBin(process.argv))
       fs.writeFileSync(argv.output, output);
 
       spinner.succeed(
-        chalk.green(`default config values were output at "${argv.output}"`)
+        chalk.green(`default config values were output at "${argv.output}"`),
       );
-    }
+    },
   )
   .command(
     'generate-ts-types',
@@ -105,9 +105,9 @@ yargs(hideBin(process.argv))
       fs.writeFileSync(argv.output, tsTypes);
 
       spinner.succeed(
-        chalk.green(`TypeScript types were output at "${argv.output}"`)
+        chalk.green(`TypeScript types were output at "${argv.output}"`),
       );
-    }
+    },
   )
   .demandCommand(1)
   .parse();

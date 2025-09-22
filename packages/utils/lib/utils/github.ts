@@ -17,7 +17,7 @@ import { GithubRelease, SupportedRepo } from '../types';
  */
 async function* fetchReleasesPage(
   repoName: SupportedRepo,
-  pageSize = DEFAULT_RELEASES_FETCHING_PAGE_SIZE
+  pageSize = DEFAULT_RELEASES_FETCHING_PAGE_SIZE,
 ) {
   const octokit = new Octokit();
 
@@ -48,7 +48,8 @@ async function* fetchReleasesPage(
  */
 const findLastRelease = async (
   repoName: SupportedRepo,
-  predicate: (release: GithubRelease) => boolean = () => true
+
+  predicate: (release: GithubRelease) => boolean = () => true,
 ) => {
   const releasesPageIterator = fetchReleasesPage(repoName);
 
@@ -131,7 +132,7 @@ const findLatestRelease = async (repoName: SupportedRepo, chainType: string) =>
  */
 const findLatestStableRelease = async (
   repoName: SupportedRepo,
-  chainType: string
+  chainType: string,
 ) => findLastRelease(repoName, isStableReleaseForChainType(chainType));
 
 /**
@@ -141,7 +142,7 @@ const findLatestStableRelease = async (
  */
 const findLatestStableReleaseByPrefixTag = async (
   repoName: SupportedRepo,
-  tagPrefix: string
+  tagPrefix: string,
 ) => findLastRelease(repoName, isStableReleaseForRegexTagType(tagPrefix));
 
 /**
@@ -151,7 +152,7 @@ const findLatestStableReleaseByPrefixTag = async (
  */
 const findLatestReleaseByPrefixTag = async (
   repoName: SupportedRepo,
-  tagPrefix: string
+  tagPrefix: string,
 ) => findLastRelease(repoName, hasMatchedTagPrefix(tagPrefix));
 
 export {

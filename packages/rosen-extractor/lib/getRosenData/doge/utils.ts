@@ -1,7 +1,7 @@
 import { decodeAddress } from '@rosen-bridge/address-codec';
 import { SUPPORTED_CHAINS } from '../const';
 import { OpReturnData } from './types';
-import { address, networks } from 'bitcoinjs-lib';
+import { address } from 'bitcoinjs-lib';
 
 const dogecoinNetwork = {
   messagePrefix: '\x19Dogecoin Signed Message:\n',
@@ -38,7 +38,7 @@ export const parseRosenData = (scriptPubKeyHex: string): OpReturnData => {
     throw Error(
       `script length is unexpected [${parseInt(dataLength, 16) + 3} !== ${
         scriptPubKeyHex.length / 2
-      }]`
+      }]`,
     );
 
   // parse toChain
@@ -46,7 +46,7 @@ export const parseRosenData = (scriptPubKeyHex: string): OpReturnData => {
   const toChainCode = parseInt(toChainHex, 16);
   if (toChainCode >= SUPPORTED_CHAINS.length)
     throw Error(
-      `invalid toChain code, found [${toChainCode}] but only [${SUPPORTED_CHAINS.length}] chains are supported`
+      `invalid toChain code, found [${toChainCode}] but only [${SUPPORTED_CHAINS.length}] chains are supported`,
     );
   const toChain = SUPPORTED_CHAINS[toChainCode];
 
@@ -62,7 +62,7 @@ export const parseRosenData = (scriptPubKeyHex: string): OpReturnData => {
   const addressLengthCode = scriptPubKeyHex.slice(38, 40);
   const addressHex = scriptPubKeyHex.slice(
     40,
-    40 + parseInt(addressLengthCode, 16) * 2
+    40 + parseInt(addressLengthCode, 16) * 2,
   );
   const toAddress = decodeAddress(toChain, addressHex);
 

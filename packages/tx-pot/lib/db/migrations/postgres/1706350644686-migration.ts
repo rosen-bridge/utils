@@ -1,3 +1,4 @@
+/* eslint-disable check-file/filename-naming-convention */
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class Migration1706350644686 implements MigrationInterface {

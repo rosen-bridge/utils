@@ -17,12 +17,12 @@ export const extractFeeFromBox = (box: ErgoBox): Array<Fee> => {
     throw Error(
       `Incomplete register data for minimum-fee config box [${box
         .box_id()
-        .to_str()}]`
+        .to_str()}]`,
     );
 
   const fees: Array<Fee> = [];
   const chains = R4.to_coll_coll_byte().map((element) =>
-    Buffer.from(element).toString()
+    Buffer.from(element).toString(),
   );
   const heights = R5.to_js() as Array<Array<number>>;
   const bridgeFees = R6.to_js() as Array<Array<string>>;

@@ -23,7 +23,7 @@ const downloadTssBinary = async (
     tag: string;
     regex: boolean;
     includePrereleases?: boolean;
-  }
+  },
 ) => {
   const getRelease = () => {
     if (config.regex) {
@@ -41,7 +41,7 @@ const downloadTssBinary = async (
           release.assets
             .filter((asset) => isValidOS(config.osName)(asset.name))
             .map(async (asset) =>
-              download(asset.browser_download_url, destinationPath)
+              download(asset.browser_download_url, destinationPath),
             )),
       ]);
     } else {
@@ -49,7 +49,7 @@ const downloadTssBinary = async (
     }
   } catch (error) {
     console.error(
-      `An error occurred while trying to download release assets: ${error}`
+      `An error occurred while trying to download release assets: ${error}`,
     );
     if (error instanceof Error) {
       console.error(error.stack);

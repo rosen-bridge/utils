@@ -21,11 +21,15 @@ export class RWTRepo {
 
   constructor(
     private repoAddress: string,
+
     private repoNft: string,
+
     private rwt: string,
     private networkType: ErgoNetworkType,
+
     private networkUrl: string,
-    private logger: AbstractLogger = new DummyLogger()
+
+    private logger: AbstractLogger = new DummyLogger(),
   ) {
     if (networkType === ErgoNetworkType.Explorer) {
       this.explorerClient = ergoExplorerClientFactory(this.networkUrl);
@@ -34,11 +38,11 @@ export class RWTRepo {
     }
 
     this.repoErgoTree = ergoLib.Address.from_base58(
-      this.repoAddress
+      this.repoAddress,
     ).to_ergo_tree();
 
     this.logger.debug(
-      `RWTRepo instance created with repo-address=[${this.repoAddress}] and repo-nft=[${this.repoNft}]`
+      `RWTRepo instance created with repo-address=[${this.repoAddress}] and repo-nft=[${this.repoNft}]`,
     );
   }
 
@@ -50,7 +54,7 @@ export class RWTRepo {
    * @return {(Promise<ergoLib.ErgoBox | undefined>)}
    */
   updateAndGetBox = async (
-    trackMempool: boolean
+    trackMempool: boolean,
   ): Promise<ergoLib.ErgoBox | undefined> => {
     this.logger.debug(`box is being updated from ${this.networkType} api`);
     if (trackMempool) {
@@ -73,12 +77,12 @@ export class RWTRepo {
       const currentBoxInfo =
         this.networkType === ErgoNetworkType.Explorer
           ? await this.explorerClient.v1.getApiV1BoxesP1(
-              this.box.box_id().to_str()
+              this.box.box_id().to_str(),
             )
           : await this.nodeClient.getBoxById(this.box.box_id().to_str());
       if (!currentBoxInfo.spentTransactionId) {
         this.logger.debug(
-          `box is still unspent and didn't need to be updated: ${this.rwtRepoLogDescription}`
+          `box is still unspent and didn't need to be updated: ${this.rwtRepoLogDescription}`,
         );
         return this.box;
       }
@@ -89,7 +93,7 @@ export class RWTRepo {
     if (this.networkType === ErgoNetworkType.Explorer) {
       const explorerUnspentItems =
         await this.explorerClient.v1.getApiV1BoxesUnspentByaddressP1(
-          this.repoAddress
+          this.repoAddress,
         );
 
       if (explorerUnspentItems.items == undefined) {
@@ -101,7 +105,7 @@ export class RWTRepo {
       boxInfos = explorerUnspentItems.items;
     } else {
       boxInfos = await this.nodeClient.getBoxesByAddressUnspent(
-        this.repoAddress
+        this.repoAddress,
       );
     }
 
@@ -123,13 +127,13 @@ export class RWTRepo {
     if (this.networkType === ErgoNetworkType.Explorer) {
       const explorerMempoolTxs =
         await this.explorerClient.v0.getApiV0TransactionsUnconfirmedByaddressP1(
-          this.repoAddress
+          this.repoAddress,
         );
 
       if (explorerMempoolTxs.items == undefined) {
         this.box = undefined;
         this.logger.debug(
-          `no box found in mempool: ${this.rwtRepoLogDescription}`
+          `no box found in mempool: ${this.rwtRepoLogDescription}`,
         );
         return this.box;
       }
@@ -137,7 +141,7 @@ export class RWTRepo {
       mempoolTxs = explorerMempoolTxs.items;
     } else {
       mempoolTxs = await this.nodeClient.getUnconfirmedTransactionsByErgoTree(
-        this.repoErgoTree.to_base16_bytes()
+        this.repoErgoTree.to_base16_bytes(),
       );
     }
 
@@ -155,16 +159,16 @@ export class RWTRepo {
    * @return {ErgoBox | undefined}
    */
   private createBoxFromBoxInfo = (
-    boxInfos: IndexedErgoBox[] | V1.OutputInfo[]
+    boxInfos: IndexedErgoBox[] | V1.OutputInfo[],
   ) => {
     const rwtBoxInfos = boxInfos.filter((item) =>
-      item.assets?.some((asset) => asset.tokenId === this.repoNft)
+      item.assets?.some((asset) => asset.tokenId === this.repoNft),
     );
 
     this.logger.debug(
       `rwtRepo boxIds received: [${rwtBoxInfos
         .map((item) => item.boxId)
-        .join(', ')}]`
+        .join(', ')}]`,
     );
 
     if (rwtBoxInfos === undefined || rwtBoxInfos.length <= 0) {
@@ -187,13 +191,13 @@ export class RWTRepo {
     const inputBoxIds = txs.flatMap(
       (tx) =>
         tx.inputs?.map((input) => ('id' in input ? input.id : input.boxId)) ||
-        []
+        [],
     );
 
     const inputBoxIdSet = new Set(inputBoxIds);
 
     this.logger.debug(
-      `boxIds found in mempool: [${[...inputBoxIdSet].join(', ')}]`
+      `boxIds found in mempool: [${[...inputBoxIdSet].join(', ')}]`,
     );
 
     const rwtOutputBoxInfos = txs
@@ -203,18 +207,18 @@ export class RWTRepo {
           (('id' in box && box.id && !inputBoxIdSet.has(box.id)) ||
             ('boxId' in box && box.boxId && !inputBoxIdSet.has(box.boxId))) &&
           box.ergoTree === this.repoErgoTree.to_base16_bytes() &&
-          box.assets?.some((asset) => asset.tokenId === this.repoNft)
+          box.assets?.some((asset) => asset.tokenId === this.repoNft),
       );
 
     if (!rwtOutputBoxInfos.length) {
       this.logger.debug(
-        `no box found in mempool: ${this.rwtRepoLogDescription}`
+        `no box found in mempool: ${this.rwtRepoLogDescription}`,
       );
       return undefined;
     }
 
     const box = ergoLib.ErgoBox.from_json(
-      jsonBigInt.stringify(rwtOutputBoxInfos[0])
+      jsonBigInt.stringify(rwtOutputBoxInfos[0]),
     );
     return box;
   };
@@ -227,17 +231,17 @@ export class RWTRepo {
   toBuilder = () => {
     if (!this.box) {
       throw new Error(
-        `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
+        `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`,
       );
     }
 
     const rwtCount = BigInt(
-      this.box.tokens().get(1).amount().as_i64().to_str()
+      this.box.tokens().get(1).amount().as_i64().to_str(),
     );
 
     const rsn = this.box.tokens().get(2).id().to_str();
     const rsnCount = BigInt(
-      this.box.tokens().get(2).amount().as_i64().to_str()
+      this.box.tokens().get(2).amount().as_i64().to_str(),
     );
 
     const chainIdBytes = this.r4?.at(0);
@@ -264,7 +268,7 @@ export class RWTRepo {
       !widPermits
     ) {
       throw new Error(
-        `could not create RWTRepoBuilder because one of [chainId=${chainId}, quorumPercentage=${quorumPercentage}, approvalOffset=${approvalOffset}, maximumApproval=${maximumApproval}, widPermits=${widPermits}] could not be calculated: ${this.rwtRepoLogDescription} `
+        `could not create RWTRepoBuilder because one of [chainId=${chainId}, quorumPercentage=${quorumPercentage}, approvalOffset=${approvalOffset}, maximumApproval=${maximumApproval}, widPermits=${widPermits}] could not be calculated: ${this.rwtRepoLogDescription} `,
       );
     }
 
@@ -273,7 +277,7 @@ export class RWTRepo {
         this.repoAddress
       }], repoNft=[${this.repoNft}], rwt=[${
         this.rwt
-      }], rwtCount=[${rwtCount}], rsn=[${rsn}], rsnCount=[${rsnCount}], chainId=[${chainId}], commitmentRwtCount=[${this.getCommitmentRwtCount()}], quorumPercentage=[${quorumPercentage}], approvalOffset=[${approvalOffset}], maximumApproval=[${maximumApproval}], ergCollateral=[${this.getErgCollateral()}], rsnCollateral=[${this.getRsnCollateral()}], widPermits=[${widPermits}]`
+      }], rwtCount=[${rwtCount}], rsn=[${rsn}], rsnCount=[${rsnCount}], chainId=[${chainId}], commitmentRwtCount=[${this.getCommitmentRwtCount()}], quorumPercentage=[${quorumPercentage}], approvalOffset=[${approvalOffset}], maximumApproval=[${maximumApproval}], ergCollateral=[${this.getErgCollateral()}], rsnCollateral=[${this.getRsnCollateral()}], widPermits=[${widPermits}]`,
     );
 
     return new RWTRepoBuilder(
@@ -291,7 +295,7 @@ export class RWTRepo {
       this.getErgCollateral(),
       this.getRsnCollateral(),
       widPermits,
-      this.logger
+      this.logger,
     );
   };
 
@@ -304,7 +308,7 @@ export class RWTRepo {
   getErgCollateral = () => {
     if (!this.box) {
       throw new Error(
-        `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
+        `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`,
       );
     }
 
@@ -314,12 +318,12 @@ export class RWTRepo {
 
     if (!ergCollateralRegister) {
       throw new Error(
-        `could not extract ergCollateral from R6[4]: ${this.rwtRepoLogDescription} `
+        `could not extract ergCollateral from R6[4]: ${this.rwtRepoLogDescription} `,
       );
     }
 
     this.logger.debug(
-      `ergCollateral in R6[4] register value: ${ergCollateralRegister}`
+      `ergCollateral in R6[4] register value: ${ergCollateralRegister}`,
     );
 
     return BigInt(ergCollateralRegister);
@@ -334,7 +338,7 @@ export class RWTRepo {
   getRsnCollateral = () => {
     if (!this.box) {
       throw new Error(
-        `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
+        `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`,
       );
     }
 
@@ -344,12 +348,12 @@ export class RWTRepo {
 
     if (!rsnCollateralRegister) {
       throw new Error(
-        `could not extract rsnCollateral from R6[5]: ${this.rwtRepoLogDescription} `
+        `could not extract rsnCollateral from R6[5]: ${this.rwtRepoLogDescription} `,
       );
     }
 
     this.logger.debug(
-      `rsnCollateral in R6[5] register value: ${rsnCollateralRegister}`
+      `rsnCollateral in R6[5] register value: ${rsnCollateralRegister}`,
     );
 
     return BigInt(rsnCollateralRegister);
@@ -364,7 +368,7 @@ export class RWTRepo {
   getRequiredCommitmentCount = () => {
     if (!this.box) {
       throw new Error(
-        `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
+        `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`,
       );
     }
 
@@ -375,13 +379,13 @@ export class RWTRepo {
 
     if (!r6_1 || !r6_2 || !r6_3 || !r4) {
       throw new Error(
-        `could not calculate RequiredCommitmentCount, because R6[1] or R6[2] or R6[3] or R4 is undefined: ${this.rwtRepoLogDescription} `
+        `could not calculate RequiredCommitmentCount, because R6[1] or R6[2] or R6[3] or R4 is undefined: ${this.rwtRepoLogDescription} `,
       );
     }
 
     const requiredCommitmentCount = min(
       (r6_1 * BigInt(r4.length - 1)) / 100n + r6_2,
-      r6_3
+      r6_3,
     );
 
     return requiredCommitmentCount;
@@ -396,7 +400,7 @@ export class RWTRepo {
   getCommitmentRwtCount = () => {
     if (!this.box) {
       throw new Error(
-        `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
+        `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`,
       );
     }
 
@@ -404,12 +408,12 @@ export class RWTRepo {
 
     if (!commitmentRwtCount) {
       throw new Error(
-        `could not extract commitmentRwtCount from R6[0]: ${this.rwtRepoLogDescription} `
+        `could not extract commitmentRwtCount from R6[0]: ${this.rwtRepoLogDescription} `,
       );
     }
 
     this.logger.debug(
-      `commitmentRwtCount in R6[0] register value: ${commitmentRwtCount}`
+      `commitmentRwtCount in R6[0] register value: ${commitmentRwtCount}`,
     );
 
     return commitmentRwtCount;
@@ -424,7 +428,7 @@ export class RWTRepo {
   getWidIndex = (wid: string) => {
     if (!this.box) {
       throw new Error(
-        `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
+        `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`,
       );
     }
 
@@ -432,7 +436,7 @@ export class RWTRepo {
 
     if (!r4Hex) {
       throw new Error(
-        `could not extract widIndex for wid=[${wid}] from R4: ${this.rwtRepoLogDescription} `
+        `could not extract widIndex for wid=[${wid}] from R4: ${this.rwtRepoLogDescription} `,
       );
     }
 
@@ -441,7 +445,7 @@ export class RWTRepo {
 
     if (widIndex !== -1) {
       this.logger.debug(
-        `index of wid=[${wid}] found in R4: index=[${widIndex}], R4[${widIndex}]=[${r4Hex[widIndex]}]`
+        `index of wid=[${wid}] found in R4: index=[${widIndex}], R4[${widIndex}]=[${r4Hex[widIndex]}]`,
       );
     } else {
       this.logger.debug(`index of wid=[${wid}] not found in R4`);
@@ -459,7 +463,7 @@ export class RWTRepo {
   getPermitCount = (wid: string) => {
     if (!this.box) {
       throw new Error(
-        `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`
+        `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`,
       );
     }
 
@@ -473,12 +477,12 @@ export class RWTRepo {
 
     if (permitCount == undefined) {
       throw new Error(
-        `could not extract permitCount for wid=[${wid}] and widIndex=[${widIndex}] from R5: ${this.rwtRepoLogDescription} `
+        `could not extract permitCount for wid=[${wid}] and widIndex=[${widIndex}] from R5: ${this.rwtRepoLogDescription} `,
       );
     }
 
     this.logger.debug(
-      `permitCount for wid=[${wid}] in R5: permitCount=${permitCount}, widIndex=${widIndex}`
+      `permitCount for wid=[${wid}] in R5: permitCount=${permitCount}, widIndex=${widIndex}`,
     );
 
     return permitCount;

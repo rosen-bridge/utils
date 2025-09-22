@@ -25,7 +25,7 @@ describe('RWTRepoBuilder', () => {
       Number(boxInfo1Properties.r6[3]),
       boxInfo1Properties.r6[4],
       boxInfo1Properties.r6[5],
-      boxInfo1Properties.widPermits
+      boxInfo1Properties.widPermits,
     );
   });
 
@@ -58,11 +58,11 @@ describe('RWTRepoBuilder', () => {
       rwtRepoBuilder.addNewUser(wid, rwtCount);
 
       expect(oldWidPermits.map((permit) => permit.wid).includes(wid)).toEqual(
-        false
+        false,
       );
       expect(
         rwtRepoBuilder['widPermits'][rwtRepoBuilder['widPermits'].length - 1]
-          .wid
+          .wid,
       ).toEqual(wid);
       expect(rwtRepoBuilder['rwtCount']).toEqual(oldRwtCount - rwtCount);
       expect(rwtRepoBuilder['rsnCount']).toEqual(oldRsnCount + rwtCount);
@@ -84,7 +84,7 @@ describe('RWTRepoBuilder', () => {
       const wid = '34f2a6bb';
 
       expect(() =>
-        rwtRepoBuilder.addNewUser(wid, rwtRepoBuilder['rwtCount'] + 1n)
+        rwtRepoBuilder.addNewUser(wid, rwtRepoBuilder['rwtCount'] + 1n),
       ).toThrowError();
     });
 
@@ -100,7 +100,7 @@ describe('RWTRepoBuilder', () => {
      */
     it(`should throw exception when adding an existing watcher id`, async () => {
       expect(() =>
-        rwtRepoBuilder.addNewUser(rwtRepoBuilder['widPermits'][0].wid, 1n)
+        rwtRepoBuilder.addNewUser(rwtRepoBuilder['widPermits'][0].wid, 1n),
       ).toThrowError();
     });
   });
@@ -137,10 +137,10 @@ describe('RWTRepoBuilder', () => {
       rwtRepoBuilder.removeUser(wid);
 
       expect(oldWidPermits.map((permit) => permit.wid).includes(wid)).toEqual(
-        true
+        true,
       );
       expect(
-        rwtRepoBuilder['widPermits'].map((permit) => permit.wid).includes(wid)
+        rwtRepoBuilder['widPermits'].map((permit) => permit.wid).includes(wid),
       ).toEqual(false);
       expect(rwtRepoBuilder['rwtCount']).toEqual(oldRwtCount + rwtCount);
       expect(rwtRepoBuilder['rsnCount']).toEqual(oldRsnCount - rwtCount);
@@ -192,12 +192,12 @@ describe('RWTRepoBuilder', () => {
     it(`should set value of this.commitmentRwtCount and return this`, async () => {
       const newCommitmentRwtCount = 123n;
       const returnValue = rwtRepoBuilder.setCommitmentRwtCount(
-        newCommitmentRwtCount
+        newCommitmentRwtCount,
       );
 
       expect(returnValue).toBe(rwtRepoBuilder);
       expect(rwtRepoBuilder['commitmentRwtCount']).toEqual(
-        newCommitmentRwtCount
+        newCommitmentRwtCount,
       );
     });
   });
@@ -352,7 +352,7 @@ describe('RWTRepoBuilder', () => {
 
       expect(returnValue).toBe(rwtRepoBuilder);
       expect(rwtRepoBuilder['widPermits'][widIndex].rwtCount).toEqual(
-        widOldRwtCount - decrement
+        widOldRwtCount - decrement,
       );
       expect(rwtRepoBuilder['rwtCount']).toEqual(oldRwtCount + decrement);
       expect(rwtRepoBuilder['rsnCount']).toEqual(oldRsnCount - decrement);
@@ -394,7 +394,7 @@ describe('RWTRepoBuilder', () => {
 
       expect(returnValue).toBe(rwtRepoBuilder);
       expect(rwtRepoBuilder['widPermits'][widIndex].rwtCount).toEqual(
-        widOldRwtCount + increment
+        widOldRwtCount + increment,
       );
       expect(rwtRepoBuilder['rwtCount']).toEqual(oldRwtCount - increment);
       expect(rwtRepoBuilder['rsnCount']).toEqual(oldRsnCount + increment);
@@ -439,44 +439,44 @@ describe('RWTRepoBuilder', () => {
 
       expect(
         ergoLib.Address.recreate_from_ergo_tree(
-          candidateBox.ergo_tree()
-        ).to_base58(ergoLib.NetworkPrefix.Mainnet)
+          candidateBox.ergo_tree(),
+        ).to_base58(ergoLib.NetworkPrefix.Mainnet),
       ).toEqual(repoAddress);
       expect(candidateBox.value().as_i64().to_str()).toEqual(
-        ergValue.toString()
+        ergValue.toString(),
       );
       expect(candidateBox.creation_height()).toEqual(height);
 
       expect(candidateBox.register_value(4)?.encode_to_base16()).toEqual(
-        r4Serialized
+        r4Serialized,
       );
       expect(candidateBox.register_value(5)?.encode_to_base16()).toEqual(
-        r5Serialized
+        r5Serialized,
       );
       expect(candidateBox.register_value(6)?.encode_to_base16()).toEqual(
-        r6Serialized
+        r6Serialized,
       );
       expect(candidateBox.register_value(7)?.to_js()).toEqual(
-        lastModifiedWidIndex
+        lastModifiedWidIndex,
       );
 
       expect(candidateBox.tokens().get(0).id().to_str()).toEqual(repoNft);
       expect(candidateBox.tokens().get(0).amount().as_i64().to_str()).toEqual(
-        '1'
+        '1',
       );
 
       expect(candidateBox.tokens().get(1).id().to_str()).toEqual(
-        boxInfo1.assets[1].tokenId
+        boxInfo1.assets[1].tokenId,
       );
       expect(candidateBox.tokens().get(1).amount().as_i64().to_str()).toEqual(
-        boxInfo1.assets[1].amount.toString()
+        boxInfo1.assets[1].amount.toString(),
       );
 
       expect(candidateBox.tokens().get(2).id().to_str()).toEqual(
-        boxInfo1.assets[2].tokenId
+        boxInfo1.assets[2].tokenId,
       );
       expect(candidateBox.tokens().get(2).amount().as_i64().to_str()).toEqual(
-        boxInfo1.assets[2].amount.toString()
+        boxInfo1.assets[2].amount.toString(),
       );
     });
   });

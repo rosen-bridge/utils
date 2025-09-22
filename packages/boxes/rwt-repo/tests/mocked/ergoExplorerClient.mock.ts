@@ -2,7 +2,7 @@ import { mempoolTxsSample, repoAddress, boxInfo1 } from '../rwtRepoTestData';
 
 export function mockedErgoExplorerClientFactory(
   url: string,
-  boxInfo: any = boxInfo1
+  boxInfo: any = boxInfo1,
 ) {
   return {
     v0: {

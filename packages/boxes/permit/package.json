@@ -2,31 +2,41 @@
   "name": "@rosen-bridge/permit",
   "version": "0.2.0",
   "description": "A package for managing permit boxes",
-  "repository": "git+https://github.com/rosen-bridge/utils.git",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rosen-bridge/utils.git"
+  },
   "license": "MIT",
   "author": "Rosen Team",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
   "scripts": {
     "build": "tsc --build tsconfig.build.json",
     "coverage": "npm run test -- --run --coverage",
     "lint": "eslint --fix . && npm run prettify",
-    "prettify": "prettier --write . --ignore-path ./.gitignore",
+    "lint:check": "eslint . && npm run prettify:check",
+    "prettify": "prettier --write . --ignore-path ../../../.gitignore",
+    "prettify:check": "prettier --check . --ignore-path ../../../.gitignore",
     "release": "npm run build && npm publish --access public",
-    "test": "NODE_OPTIONS=--experimental-specifier-resolution=node vitest",
+    "test": "NODE_OPTIONS='--import tsx' vitest",
     "type-check": "tsc --noEmit"
   },
   "devDependencies": {
-    "@types/node": "^20.11.0",
-    "@vitest/coverage-istanbul": "^2.0.5",
+    "@types/node": "^22.18.0",
+    "@vitest/coverage-istanbul": "^3.1.4",
+    "tsx": "^4.20.5",
     "typescript": "^5.8.3",
-    "vitest": "^2.0.5"
-  },
-  "engines": {
-    "node": ">=20.11.0"
+    "vitest": "^3.1.4"
   },
   "dependencies": {
     "ergo-lib-wasm-nodejs": "^0.24.1"
+  },
+  "engines": {
+    "node": ">=22.18.0"
   }
 }

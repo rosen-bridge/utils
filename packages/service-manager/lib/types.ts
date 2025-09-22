@@ -1,6 +1,8 @@
 export enum ServiceStatus {
   dormant = 'dormant',
+
   started = 'started',
+
   running = 'running',
 }
 
@@ -20,6 +22,7 @@ export interface Dependency {
 
 export enum ServiceAction {
   start = 'start',
+
   stop = 'stop',
 }
 
@@ -30,6 +33,7 @@ export interface ActionPromise {
 
 export interface Action {
   resolve: (value: boolean | PromiseLike<boolean>) => void;
+
   reject: (reason?: any) => void;
   action: ServiceAction;
 }

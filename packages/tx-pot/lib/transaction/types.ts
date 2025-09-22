@@ -1,4 +1,4 @@
-import { TransactionEntity } from '../db/entities/TransactionEntity';
+import { TransactionEntity } from '../db/entities/transactionEntity';
 
 export type ChainRequiredConfirmations = Record<string, number>; // tx type => required number
 export type RequiredConfirmations = Record<string, ChainRequiredConfirmations>;
@@ -6,21 +6,29 @@ export type RequiredConfirmations = Record<string, ChainRequiredConfirmations>;
 export type ValidatorFunction = (tx: TransactionEntity) => Promise<boolean>;
 export type CallbackFunction = (
   tx: TransactionEntity,
-  newStatus: TransactionStatus
+
+  newStatus: TransactionStatus,
 ) => Promise<void>;
 
 export enum TransactionStatus {
   APPROVED = 'approved',
+
   IN_SIGN = 'in-sign',
+
   SIGN_FAILED = 'sign-failed',
+
   SIGNED = 'signed',
+
   SENT = 'sent',
+
   INVALID = 'invalid',
+
   COMPLETED = 'completed',
 }
 
 export enum SigningStatus {
   Signed,
+
   UnSigned,
 }
 

@@ -1,6 +1,6 @@
 import { mempoolTxsSample, repoAddress, boxInfo1 } from '../rwtRepoTestData';
 
-export function mockedErgoNodeClientFactory(url: string) {
+export function mockedErgoNodeClientFactory() {
   return {
     getBoxesByAddressUnspent(address: string) {
       if (address === repoAddress) {

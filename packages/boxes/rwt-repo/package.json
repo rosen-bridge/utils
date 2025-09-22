@@ -2,32 +2,37 @@
   "name": "@rosen-bridge/rwt-repo",
   "version": "2.1.0",
   "description": "a package to manage RWT Repo box",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "type": "module",
-  "scripts": {
-    "prettify": "prettier --write . --ignore-path .gitignore",
-    "lint": "eslint --fix . && npm run prettify",
-    "build": "tsc --build tsconfig.build.json",
-    "type-check": "tsc --noEmit",
-    "test": "NODE_OPTIONS=--loader=extensionless vitest",
-    "coverage": "npm run test -- --run --coverage",
-    "release": "npm run test && npm run build && npm publish --access public"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rosen-bridge/utils.git"
   },
-  "author": "Rosen Team",
   "license": "MIT",
+  "author": "Rosen Team",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "prettify": "prettier --write . --ignore-path ../../../.gitignore",
+    "prettify:check": "prettier --check . --ignore-path ../../../.gitignore",
+    "lint": "eslint --fix . && npm run prettify",
+    "lint:check": "eslint . && npm run prettify:check",
+    "build": "tsc --build tsconfig.build.json",
+    "type-check": "tsc --noEmit",
+    "test": "NODE_OPTIONS='--import tsx' vitest",
+    "coverage": "npm run test -- --run --coverage",
+    "release": "npm run test && npm run build && npm publish --access public"
+  },
   "devDependencies": {
     "@types/json-bigint": "^1.0.1",
-    "@types/node": "^20.11.0",
-    "@vitest/coverage-istanbul": "^2.0.5",
-    "extensionless": "^1.9.6",
-    "ts-node": "^10.9.1",
+    "@types/node": "^22.18.0",
+    "@vitest/coverage-istanbul": "^3.1.4",
+    "tsx": "^4.20.5",
     "typescript": "^5.8.3",
-    "vitest": "^2.0.5"
+    "vitest": "^3.1.4"
   },
   "dependencies": {
     "@rosen-bridge/abstract-logger": "^2.1.0",
@@ -37,6 +42,6 @@
     "json-bigint": "^1.0.0"
   },
   "engines": {
-    "node": ">=20.11.0"
+    "node": ">=22.18.0"
   }
 }

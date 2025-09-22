@@ -1,4 +1,3 @@
-import { BITCOIN_CHAIN, DOGE_CHAIN } from '../../../lib/getRosenData/const';
 import {
   parseRosenData,
   addressToOutputScript,

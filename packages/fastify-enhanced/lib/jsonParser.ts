@@ -2,7 +2,7 @@ import { ContentTypeParserDoneFunction } from 'fastify/types/content-type-parser
 import JsonBigIntFactory from 'json-bigint';
 
 export const makeJsonParser = (
-  jsonHandler: ReturnType<typeof JsonBigIntFactory>
+  jsonHandler: ReturnType<typeof JsonBigIntFactory>,
 ) => {
   return (req: unknown, body: string, done: ContentTypeParserDoneFunction) => {
     try {
@@ -14,7 +14,7 @@ export const makeJsonParser = (
       } else {
         const wrappedErr = new Error(
           `An unexpected error occurred while trying to parse request body`,
-          { cause: err }
+          { cause: err },
         );
         done(wrappedErr, undefined);
       }
