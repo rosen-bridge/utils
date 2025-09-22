@@ -1,10 +1,8 @@
-import ergoExplorerClientFactory from '@rosen-clients/ergo-explorer';
 import * as ergoLib from 'ergo-lib-wasm-nodejs';
 import { Constant } from 'ergo-lib-wasm-nodejs';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { RWTRepo, RWTRepoBuilder } from '../lib';
 import { jsonBigInt } from '../lib/utils';
-import { mockedErgoExplorerClientFactory } from './mocked/ergoExplorerClient.mock';
 import { repoAddress, repoNft, boxInfo1, boxInfo2 } from './rwtRepoTestData';
 
 describe('RWTRepo', () => {
@@ -31,10 +29,6 @@ describe('RWTRepo', () => {
      * - this.getErgCollateral() should return the correct value
      */
     it(`should return a bigint with the value stored in R6[4] of this.box`, async () => {
-      rwtRepoWithExplorer['explorerClient'] = mockedErgoExplorerClientFactory(
-        '',
-      ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
-
       expect(rwtRepoWithExplorer.getErgCollateral()).toEqual(
         jsonBigInt.parse(boxInfo1.additionalRegisters.R6.renderedValue)[4],
       );
@@ -54,10 +48,6 @@ describe('RWTRepo', () => {
      * - this.getRsnCollateral() should return the correct value
      */
     it(`should return a bigint with the value stored in R6[5] of this.box`, async () => {
-      rwtRepoWithExplorer['explorerClient'] = mockedErgoExplorerClientFactory(
-        '',
-      ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
-
       expect(rwtRepoWithExplorer.getRsnCollateral()).toEqual(
         jsonBigInt.parse(boxInfo1.additionalRegisters.R6.renderedValue)[5],
       );
@@ -113,10 +103,6 @@ describe('RWTRepo', () => {
      */
     it(`RWTRepo.getRequiredCommitmentCount should return R6[3], when R6[3] is
     less than (R6[1] * (len(R4) - 1) / 100 + R6[2])`, async () => {
-      rwtRepoWithExplorer['explorerClient'] = mockedErgoExplorerClientFactory(
-        '',
-      ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
-
       const boxInfo = boxInfo1;
       const r6 = Constant.decode_from_base16(
         boxInfo.additionalRegisters.R6.serializedValue,
@@ -141,10 +127,6 @@ describe('RWTRepo', () => {
      * - this.getCommitmentRwtCount() should return the correct value
      */
     it(`should return a bigint with the value stored in R6[0] of this.box`, async () => {
-      rwtRepoWithExplorer['explorerClient'] = mockedErgoExplorerClientFactory(
-        '',
-      ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
-
       const r6 = Constant.decode_from_base16(
         boxInfo1.additionalRegisters.R6.serializedValue,
       )
@@ -168,10 +150,6 @@ describe('RWTRepo', () => {
      * - RWTRepo.getWidIndex() should return the correct index
      */
     it(`should return index of watcher id in R4 register of this.box`, async () => {
-      rwtRepoWithExplorer['explorerClient'] = mockedErgoExplorerClientFactory(
-        '',
-      ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
-
       const r4_2 = Constant.decode_from_base16(
         boxInfo1.additionalRegisters.R4.serializedValue,
       ).to_coll_coll_byte()[2];
@@ -194,10 +172,6 @@ describe('RWTRepo', () => {
      * - this.getWidIndex() should return -1 for a non-existent watcher id
      */
     it(`should return -1 if watcher id is not present in R4 register of this.box`, async () => {
-      rwtRepoWithExplorer['explorerClient'] = mockedErgoExplorerClientFactory(
-        '',
-      ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
-
       expect(rwtRepoWithExplorer.getWidIndex('ff4a5b')).toEqual(-1);
     });
   });
@@ -215,10 +189,6 @@ describe('RWTRepo', () => {
      * - RWTRepo.getPermitCount() should return correct value for permitCount
      */
     it(`should return permitCount for a watcher id`, async () => {
-      rwtRepoWithExplorer['explorerClient'] = mockedErgoExplorerClientFactory(
-        '',
-      ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
-
       const r4_2 = Constant.decode_from_base16(
         boxInfo1.additionalRegisters.R4.serializedValue,
       ).to_coll_coll_byte()[2];
@@ -246,10 +216,6 @@ describe('RWTRepo', () => {
      * - this.getPermitCount() should return 0 for a missing watcher id
      */
     it(`should return 0 for nonexistent watcher id`, async () => {
-      rwtRepoWithExplorer['explorerClient'] = mockedErgoExplorerClientFactory(
-        '',
-      ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
-
       expect(rwtRepoWithExplorer.getPermitCount('ff4a5b')).toEqual(0n);
     });
   });
@@ -273,10 +239,6 @@ describe('RWTRepo', () => {
      */
     it(`should create and return an instance of RWTRepoBuilder using this
     instance's properties`, async () => {
-      rwtRepoWithExplorer['explorerClient'] = mockedErgoExplorerClientFactory(
-        '',
-      ) as unknown as ReturnType<typeof ergoExplorerClientFactory>;
-
       const rwtRepoBuilder = rwtRepoWithExplorer.toBuilder();
 
       const r4 = Constant.decode_from_base16(
