@@ -1,5 +1,11 @@
 # @rosen-bridge/utils
 
+## 1.0.0
+
+### Major Changes
+
+- Update truncateAssetName to handle kebab-case chain names
+
 ## 0.3.0
 
 ### Minor Changes

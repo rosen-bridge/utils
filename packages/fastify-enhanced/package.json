@@ -2,32 +2,38 @@
   "name": "@rosen-bridge/fastify-enhanced",
   "version": "1.0.0",
   "description": "a wrapper around fastify web framework to make it even better",
-  "repository": "git+https://github.com/rosen-bridge/utils.git",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rosen-bridge/utils.git"
+  },
   "license": "MIT",
   "author": "Rosen Team",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
   "scripts": {
     "build": "tsc --build tsconfig.build.json",
     "coverage": "npm run test -- --run --coverage",
     "lint": "eslint --fix . && npm run prettify",
-    "prettify": "prettier --write . --ignore-path ./.gitignore",
+    "lint:check": "eslint . && npm run prettify:check",
+    "prettify": "prettier --write . --ignore-path ../../.gitignore",
+    "prettify:check": "prettier --check . --ignore-path ../../.gitignore",
     "release": "npm run build && npm publish --access public",
     "test": "NODE_OPTIONS='--import tsx' vitest",
     "test:bin": "tsx tests/bin.ts",
     "type-check": "tsc --noEmit"
   },
   "devDependencies": {
-    "@types/node": "^20.11.0",
-    "@vitest/coverage-istanbul": "^2.0.5",
-    "tsx": "^4.19.2",
+    "@types/json-bigint": "^1.0.1",
+    "@types/node": "^22.18.0",
+    "@vitest/coverage-istanbul": "^3.1.4",
+    "tsx": "^4.20.5",
     "typescript": "^5.8.3",
-    "vitest": "^2.0.5",
-    "@types/json-bigint": "^1.0.1"
-  },
-  "engines": {
-    "node": ">=20.11.0"
+    "vitest": "^3.1.4"
   },
   "dependencies": {
     "@fastify/swagger": "^9.5.1",
@@ -37,5 +43,8 @@
     "json-bigint": "^1.0.0",
     "zod": "^3.25.56",
     "zod-openapi": "^4.2.4"
+  },
+  "engines": {
+    "node": ">=22.18.0"
   }
 }

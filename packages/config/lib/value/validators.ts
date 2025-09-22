@@ -23,27 +23,32 @@ export const valueValidators: Record<string, any> = {
       }
     }
   },
-  array: (value: Array<any>, field: types.ArrayField) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  array: (value: Array<any>, _field: types.ArrayField) => {
     if (!Array.isArray(value)) {
       throw new Error(`value must be of array type`);
     }
   },
-  string: (value: string, field: types.StringField) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  string: (value: string, _field: types.StringField) => {
     if (typeof value !== 'string') {
       throw new Error(`value must be of string type`);
     }
   },
-  boolean: (value: boolean, field: types.BooleanField) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  boolean: (value: boolean, _field: types.BooleanField) => {
     if (typeof value !== 'boolean') {
       throw new Error(`value must be of boolean type`);
     }
   },
-  number: (value: number, field: types.NumberField) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  number: (value: number, _field: types.NumberField) => {
     if (typeof value !== 'number') {
       throw new Error(`value must be of number type`);
     }
   },
-  bigint: (value: bigint, field: types.BigIntField) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  bigint: (value: bigint, _field: types.BigIntField) => {
     if (typeof value !== 'bigint') {
       throw new Error(`value must be of bigint type`);
     }
@@ -54,7 +59,7 @@ const required = (
   value: any,
   validation: VRequired,
   config: Record<string, any>,
-  configValidator: ConfigValidator
+  configValidator: ConfigValidator,
 ) => {
   if (validation.when && !configValidator.isWhenTrue(validation.when, config)) {
     return;
@@ -73,7 +78,7 @@ export const valueValidations: Record<string, Record<string, any>> = {
       value: string,
       validation: VRegex,
       config: Record<string, any>,
-      configValidator: ConfigValidator
+      configValidator: ConfigValidator,
     ) => {
       if (
         value == undefined ||
@@ -93,7 +98,7 @@ export const valueValidations: Record<string, Record<string, any>> = {
       value: string,
       validation: VChoices,
       config: Record<string, any>,
-      configValidator: ConfigValidator
+      configValidator: ConfigValidator,
     ) => {
       if (
         value == undefined ||
@@ -106,8 +111,8 @@ export const valueValidations: Record<string, Record<string, any>> = {
       if (!validation.choices.includes(value)) {
         throw new Error(
           `value should be one of the choices=[${validation.choices.join(
-            ', '
-          )}]`
+            ', ',
+          )}]`,
         );
       }
     },
@@ -118,7 +123,7 @@ export const valueValidations: Record<string, Record<string, any>> = {
       value: number,
       validation: VGreater<number>,
       config: Record<string, any>,
-      configValidator: ConfigValidator
+      configValidator: ConfigValidator,
     ) => {
       if (
         value == undefined ||
@@ -136,7 +141,7 @@ export const valueValidations: Record<string, Record<string, any>> = {
       value: number,
       validation: VGreaterEqual<number>,
       config: Record<string, any>,
-      configValidator: ConfigValidator
+      configValidator: ConfigValidator,
     ) => {
       if (
         value == undefined ||
@@ -148,7 +153,7 @@ export const valueValidations: Record<string, Record<string, any>> = {
 
       if (value < validation.gte) {
         throw new Error(
-          `value should be greater than or equal to ${validation.gte}`
+          `value should be greater than or equal to ${validation.gte}`,
         );
       }
     },
@@ -156,7 +161,7 @@ export const valueValidations: Record<string, Record<string, any>> = {
       value: number,
       validation: VLess<number>,
       config: Record<string, any>,
-      configValidator: ConfigValidator
+      configValidator: ConfigValidator,
     ) => {
       if (
         value == undefined ||
@@ -174,7 +179,7 @@ export const valueValidations: Record<string, Record<string, any>> = {
       value: number,
       validation: VLessEqual<number>,
       config: Record<string, any>,
-      configValidator: ConfigValidator
+      configValidator: ConfigValidator,
     ) => {
       if (
         value == undefined ||
@@ -186,7 +191,7 @@ export const valueValidations: Record<string, Record<string, any>> = {
 
       if (value > validation.lte) {
         throw new Error(
-          `value should be less than or equal to ${validation.lte}`
+          `value should be less than or equal to ${validation.lte}`,
         );
       }
     },
@@ -197,7 +202,7 @@ export const valueValidations: Record<string, Record<string, any>> = {
       value: bigint,
       validation: VGreater<bigint>,
       config: Record<string, any>,
-      configValidator: ConfigValidator
+      configValidator: ConfigValidator,
     ) => {
       if (
         value == undefined ||
@@ -215,7 +220,7 @@ export const valueValidations: Record<string, Record<string, any>> = {
       value: bigint,
       validation: VGreaterEqual<bigint>,
       config: Record<string, any>,
-      configValidator: ConfigValidator
+      configValidator: ConfigValidator,
     ) => {
       if (
         value == undefined ||
@@ -227,7 +232,7 @@ export const valueValidations: Record<string, Record<string, any>> = {
 
       if (value < validation.gte) {
         throw new Error(
-          `value should be greater than or equal to ${validation.gte}`
+          `value should be greater than or equal to ${validation.gte}`,
         );
       }
     },
@@ -235,7 +240,7 @@ export const valueValidations: Record<string, Record<string, any>> = {
       value: bigint,
       validation: VLess<bigint>,
       config: Record<string, any>,
-      configValidator: ConfigValidator
+      configValidator: ConfigValidator,
     ) => {
       if (
         value == undefined ||
@@ -253,7 +258,7 @@ export const valueValidations: Record<string, Record<string, any>> = {
       value: bigint,
       validation: VLessEqual<bigint>,
       config: Record<string, any>,
-      configValidator: ConfigValidator
+      configValidator: ConfigValidator,
     ) => {
       if (
         value == undefined ||
@@ -265,7 +270,7 @@ export const valueValidations: Record<string, Record<string, any>> = {
 
       if (value > validation.lte) {
         throw new Error(
-          `value should be less than or equal to ${validation.lte}`
+          `value should be less than or equal to ${validation.lte}`,
         );
       }
     },

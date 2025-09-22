@@ -2,30 +2,37 @@
   "name": "@rosen-bridge/callback-logger",
   "version": "0.2.0",
   "description": "A new logger with callback method on each levels",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rosen-bridge/utils.git"
+  },
   "license": "MIT",
   "author": "Rosen Team",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/rosen-bridge/utils.git"
-  },
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
   "scripts": {
     "build": "tsc --build tsconfig.build.json",
     "lint": "eslint --fix . && npm run prettify",
-    "prettify": "prettier --write . --ignore-path ./.gitignore",
+    "lint:check": "eslint . && npm run prettify:check",
+    "prettify": "prettier --write . --ignore-path ../../../.gitignore",
+    "prettify:check": "prettier --check . --ignore-path ../../../.gitignore",
     "release": "npm run build && npm publish --access public",
     "type-check": "tsc --noEmit"
   },
   "devDependencies": {
-    "@types/node": "^20.11.0",
+    "@types/node": "^22.18.0",
+    "tsx": "^4.20.5",
     "typescript": "^5.8.3"
-  },
-  "engines": {
-    "node": ">=20.11.0"
   },
   "dependencies": {
     "@rosen-bridge/abstract-logger": "^2.1.0"
+  },
+  "engines": {
+    "node": ">=22.18.0"
   }
 }

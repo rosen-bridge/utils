@@ -1,24 +1,30 @@
 {
   "name": "@rosen-bridge/cli",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "The official Rosen bridge cli, providing helpers for the tasks related to Rosen bridge",
-  "main": "dist/index.js",
-  "bin": "dist/index.js",
-  "type": "module",
-  "scripts": {
-    "prettify": "prettier --write . --ignore-path .gitignore",
-    "lint": "eslint --fix . && npm run prettify",
-    "build": "tsc --build tsconfig.build.json",
-    "type-check": "tsc --noEmit",
-    "release": "npm run build && npm publish --access public"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rosen-bridge/utils.git"
   },
   "license": "MIT",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": "dist/index.js",
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "prettify": "prettier --write . --ignore-path ../../.gitignore",
+    "prettify:check": "prettier --check . --ignore-path ../../.gitignore",
+    "lint": "eslint --fix . && npm run prettify",
+    "lint:check": "eslint . && npm run prettify:check",
+    "build": "tsc --build tsconfig.build.json",
+    "type-check": "tsc --noEmit",
+    "release": "npm run build && npm publish --access public"
+  },
   "devDependencies": {
-    "@types/node": "^20.11.0",
+    "@types/node": "^22.18.0",
     "typescript": "^5.8.3"
   },
   "keywords": [
@@ -26,14 +32,17 @@
   ],
   "dependencies": {
     "@rosen-bridge/tss": "^3.0.0",
-    "@rosen-bridge/utils": "^0.3.0",
+    "@rosen-bridge/utils": "^1.0.0",
     "@zxcvbn-ts/core": "^3.0.4",
     "@zxcvbn-ts/language-common": "^3.0.4",
     "@zxcvbn-ts/language-en": "^3.0.2",
     "blakejs": "^1.2.1",
     "chalk": "^5.2.0",
     "ora": "^6.3.0",
-    "tsx": "^4.19.2",
+    "tsx": "^4.20.5",
     "yargs": "^17.7.2"
+  },
+  "engines": {
+    "node": ">=22.18.0"
   }
 }

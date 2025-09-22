@@ -1,6 +1,6 @@
 export const sleep = (seconds: number): Promise<void> => {
   let sleepResolve: (value: void | PromiseLike<void>) => void;
-  const promise = new Promise<void>((resolve, reject) => {
+  const promise = new Promise<void>((resolve) => {
     sleepResolve = resolve;
   });
   setTimeout(() => {

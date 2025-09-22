@@ -1,5 +1,5 @@
 import { Dependency, ServiceStatus } from '../../lib';
-import { TestAbstractService } from '../TestAbstractService';
+import { TestAbstractService } from '../testAbstractService';
 
 export class OneServiceA extends TestAbstractService {
   name = 'OneServiceA';
@@ -10,7 +10,7 @@ export class OneServiceA extends TestAbstractService {
   protected dependencies: Dependency[] = [];
 
   start = (): Promise<boolean> =>
-    new Promise<boolean>((resolve, reject) => {
+    new Promise<boolean>((resolve) => {
       setTimeout(() => {
         resolve(false);
       }, 1000);

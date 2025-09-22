@@ -17,13 +17,18 @@ export const isValidOS = (OSName: string) => (releaseAssetName: string) =>
  * Remove chain type and tag from the asset name and optionally replaces them
  * with a suffix
  * @param assetName
+ * @param chainType
+ * @param releaseName
  * @param alternativeSuffix a suffix which will be added before `.json` (if provided)
  */
 export const truncateAssetName = (
   assetName: string,
-  alternativeSuffix?: string
-) =>
-  assetName.replace(
-    /(contracts-.+?|tokensMap)-.+.json/,
-    alternativeSuffix ? `$1-${alternativeSuffix}.json` : '$1.json'
-  );
+  chainType: string,
+  releaseName: string,
+  alternativeSuffix?: string,
+) => {
+  const name = assetName.replace(`-${chainType}-${releaseName}.json`, '');
+  return alternativeSuffix
+    ? `${name}-${alternativeSuffix}.json`
+    : `${name}.json`;
+};

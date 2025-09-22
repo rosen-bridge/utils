@@ -11,7 +11,7 @@ import path from 'path';
  */
 export const getValue = (
   obj: any,
-  path: string[]
+  path: string[],
 ): { defined: boolean; value: any } => {
   let value = obj;
   for (const key of path) {
@@ -46,7 +46,7 @@ export const getSourceName = (source: IConfigSource): string => {
  */
 export const getValueFromConfigSources = (
   sources: IConfigSource[],
-  path: string[]
+  path: string[],
 ) => {
   for (let i = sources.length - 1; i >= 0; i--) {
     const source = sources[i];

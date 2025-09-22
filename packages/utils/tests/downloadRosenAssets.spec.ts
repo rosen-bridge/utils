@@ -43,14 +43,14 @@ describe('downloadRosenAssets', () => {
       'rosen',
       {
         filename: 'contracts-awesomechain.json',
-      }
+      },
     );
     expect(download).toHaveBeenCalledWith(
       mainNetStableRelease.assets[1].browser_download_url,
       'rosen',
       {
         filename: 'tokensMap.json',
-      }
+      },
     );
   });
 
@@ -82,14 +82,14 @@ describe('downloadRosenAssets', () => {
       'rosen',
       {
         filename: 'contracts-awesomechain.json',
-      }
+      },
     );
     expect(download).toHaveBeenCalledWith(
       mainNetPrereleaseRelease.assets[1].browser_download_url,
       'rosen',
       {
         filename: 'tokensMap.json',
-      }
+      },
     );
   });
 
@@ -120,14 +120,14 @@ describe('downloadRosenAssets', () => {
       'rosen',
       {
         filename: 'contracts-awesomechain-suffix.json',
-      }
+      },
     );
     expect(download).toHaveBeenCalledWith(
       mainNetStableRelease.assets[1].browser_download_url,
       'rosen',
       {
         filename: 'tokensMap-suffix.json',
-      }
+      },
     );
   });
 
@@ -143,7 +143,7 @@ describe('downloadRosenAssets', () => {
   it('should download a Rosen asset by tag', async () => {
     mockOctokitGetReleaseByTag(contractReleases);
     await downloadRosenAssets('mainnet', 'rosen', {
-      tag: '3',
+      tag: '2.0.1-0b08045',
     });
 
     expect(download).toHaveBeenCalledWith(
@@ -151,7 +151,7 @@ describe('downloadRosenAssets', () => {
       'rosen',
       {
         filename: 'contracts-awesomechain.json',
-      }
+      },
     );
   });
 

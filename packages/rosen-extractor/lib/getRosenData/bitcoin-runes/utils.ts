@@ -6,7 +6,7 @@ import { MinimalOnChainRosenData } from '../../types';
  * @param scriptPubKeyHex
  */
 export const parseAggregatedData = (
-  scriptPubKeyHex: string
+  scriptPubKeyHex: string,
 ): MinimalOnChainRosenData => {
   return parseRosenData(scriptPubKeyHex);
 };

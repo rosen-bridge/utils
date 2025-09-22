@@ -26,7 +26,7 @@ export class ConfigValidator {
     this.validateValue(
       config,
       { type: 'object', children: this.schema },
-      config
+      config,
     );
 
     this.validateSubConfig(config, config, this.schema, []);
@@ -46,7 +46,7 @@ export class ConfigValidator {
     config: Record<string, any>,
     subConfig: Record<string, any>,
     subSchema: ConfigSchema,
-    path: string[]
+    path: string[],
   ) {
     const errorPreamble = (path: Array<string>) =>
       `config validation failed for "${path.join('.')}" field`;
@@ -72,7 +72,7 @@ export class ConfigValidator {
                 config,
                 { [name]: item },
                 { [name]: field.items },
-                childPath
+                childPath,
               );
               ConfigValidator.modifyObject(config, value, childPath);
             }
@@ -121,7 +121,7 @@ export class ConfigValidator {
   private validateValue = (
     value: any,
     field: ConfigField,
-    config: Record<string, any>
+    config: Record<string, any>,
   ) => {
     if (value != undefined) {
       if (field.type === 'bigint') {
@@ -139,7 +139,7 @@ export class ConfigValidator {
     ) {
       for (const validation of field.validations) {
         const name = Object.keys(validation).filter(
-          (key) => key !== 'when' && key !== 'error'
+          (key) => key !== 'when' && key !== 'error',
         )[0];
         if (Object.hasOwn(valueValidations[field.type], name)) {
           try {
@@ -220,7 +220,7 @@ export class ConfigValidator {
 
           if (!Object.hasOwn(field, 'type') || typeof field.type !== 'string') {
             throw new Error(
-              `every schema field must have a "type" property of type "string"`
+              `every schema field must have a "type" property of type "string"`,
             );
           }
 
@@ -311,8 +311,8 @@ export class ConfigValidator {
           'children' in field
             ? field.children
             : 'items' in field && 'children' in field.items
-            ? field.items.children
-            : undefined;
+              ? field.items.children
+              : undefined;
       } else {
         return undefined;
       }
@@ -335,7 +335,7 @@ export class ConfigValidator {
 
   // Builds default values for a schema subtree (objects and arrays), recursively
   private buildDefaultsForSchema = (
-    schema: ConfigSchema
+    schema: ConfigSchema,
   ): Record<string, any> => {
     const defaults: Record<string, any> = Object.create(null);
     for (const key of Object.keys(schema)) {
@@ -349,7 +349,7 @@ export class ConfigValidator {
         if ((field as any).default != undefined) {
           if (field.items.type === 'object') {
             const itemDefaults = this.buildDefaultsForSchema(
-              field.items.children
+              field.items.children,
             );
             defaults[key] = (field as any).default.map((elem: any) => {
               if (
@@ -440,8 +440,8 @@ export class ConfigValidator {
             field.type === 'array' && field.items.type === 'object'
               ? field.items.children
               : field.type === 'object'
-              ? field.children
-              : {};
+                ? field.children
+                : {};
 
           stack.push({
             subSchema: children,
@@ -492,7 +492,7 @@ export class ConfigValidator {
    */
   private genTSInterface = (
     name: string,
-    attributes: Array<[string, string]>
+    attributes: Array<[string, string]>,
   ): string => {
     return `export interface ${name} {
   ${attributes.map((attr) => `${attr[0]}: ${attr[1]};`).join('\n  ')}
@@ -511,13 +511,13 @@ export class ConfigValidator {
     const levelIndex = confLevels.indexOf(level);
     if (levelIndex === -1) {
       throw new Error(
-        `The "${level}" level not found in the current system configuration levels`
+        `The "${level}" level not found in the current system configuration levels`,
       );
     }
     const higherLevelSources = config.util
       .getConfigSources()
       .filter(
-        (source) => confLevels.indexOf(getSourceName(source)) > levelIndex
+        (source) => confLevels.indexOf(getSourceName(source)) > levelIndex,
       );
     const currentLevelSource = config.util
       .getConfigSources()
@@ -526,7 +526,7 @@ export class ConfigValidator {
     const lowerLevelSources = config.util
       .getConfigSources()
       .filter(
-        (source) => confLevels.indexOf(getSourceName(source)) < levelIndex
+        (source) => confLevels.indexOf(getSourceName(source)) < levelIndex,
       );
 
     // Traverses the schema object tree depth first
@@ -535,7 +535,7 @@ export class ConfigValidator {
       [],
       higherLevelSources,
       currentLevelSource,
-      lowerLevelSources
+      lowerLevelSources,
     );
 
     return valueTree;
@@ -559,7 +559,7 @@ export class ConfigValidator {
     path: string[],
     higherLevelSources: IConfigSource[],
     currentLevelSource: IConfigSource | undefined,
-    lowerLevelSources: IConfigSource[]
+    lowerLevelSources: IConfigSource[],
   ): Record<string, any> {
     const value = Object.create(null);
     for (const childName of Object.keys(schema).reverse()) {
@@ -574,7 +574,7 @@ export class ConfigValidator {
           childPath,
           higherLevelSources,
           currentLevelSource,
-          lowerLevelSources
+          lowerLevelSources,
         );
       } else {
         value[childName]['label'] =
@@ -583,15 +583,15 @@ export class ConfigValidator {
           field.description != undefined ? field.description : null;
         value[childName]['default'] = getValueFromConfigSources(
           lowerLevelSources,
-          childPath
+          childPath,
         );
         value[childName]['value'] = getValueFromConfigSources(
           [...(currentLevelSource != undefined ? [currentLevelSource] : [])],
-          childPath
+          childPath,
         );
         value[childName]['override'] = getValueFromConfigSources(
           higherLevelSources,
-          childPath
+          childPath,
         );
       }
     }
@@ -672,15 +672,15 @@ export class ConfigValidator {
     configObj: Record<string, any>,
     config: IConfig,
     level: string,
-    format: string
+    format: string,
   ) => {
     const confLevels = ConfigValidator.getNodeConfigLevels(config).filter(
-      (l) => l !== 'custom-environment-variables'
+      (l) => l !== 'custom-environment-variables',
     );
     const levelIndex = confLevels.indexOf(level);
     if (levelIndex === -1) {
       throw new Error(
-        `The [${level}] level not found in the current system's configuration levels`
+        `The [${level}] level not found in the current system's configuration levels`,
       );
     }
 

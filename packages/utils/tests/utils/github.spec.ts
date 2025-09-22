@@ -71,7 +71,7 @@ describe('findLastRelease', () => {
   it('should find last release correctly when a predicate is provided', async () => {
     const foundRelease = await findLastRelease(
       'contract',
-      (release) => release.id === mainNetStableRelease.id
+      (release) => release.id === mainNetStableRelease.id,
     );
 
     expect(foundRelease?.id).toEqual(mainNetStableRelease.id);
@@ -109,7 +109,7 @@ describe('findLastRelease', () => {
   it('should return null when no matching release is found', async () => {
     const foundRelease = await findLastRelease(
       'contract',
-      (release) => release.id === 100
+      (release) => release.id === 100,
     );
 
     expect(foundRelease).toEqual(null);
@@ -129,7 +129,7 @@ describe('getReleaseByTag', () => {
   it('should get release by tag', async () => {
     mockOctokitGetReleaseByTag(contractReleases);
 
-    const release = await getReleaseByTag('contract', '3');
+    const release = await getReleaseByTag('contract', '2.0.1-0b08045');
 
     expect(release.id).toEqual(3);
   });
@@ -148,7 +148,7 @@ describe('hasAssetForChainType', () => {
    */
   it('should return `true` if a release has asset for a specific chain type', () => {
     const hasAssetForMainNet = hasAssetForChainType('mainnet')(
-      mainNetPrereleaseRelease as any
+      mainNetPrereleaseRelease as any,
     );
 
     expect(hasAssetForMainNet).toEqual(true);
@@ -165,7 +165,7 @@ describe('hasAssetForChainType', () => {
    */
   it('should return `false` if a release does not have asset for a specific chain type', () => {
     const hasAssetForMainNet = hasAssetForChainType('mainnet')(
-      testNetPrereleaseRelease as any
+      testNetPrereleaseRelease as any,
     );
 
     expect(hasAssetForMainNet).toEqual(false);
@@ -184,7 +184,7 @@ describe('isStableReleaseForChainType', () => {
    */
   it('should return `true` if a release is stable (that is, non-prerelease) and has asset for a specific chain type', () => {
     const isMatchingRelease = isStableReleaseForChainType('mainnet')(
-      mainNetStableRelease as any
+      mainNetStableRelease as any,
     );
 
     expect(isMatchingRelease).toEqual(true);
@@ -201,7 +201,7 @@ describe('isStableReleaseForChainType', () => {
    */
   it('should return `false` if a release has asset for a specific chain type but is prerelease', () => {
     const isMatchingRelease = isStableReleaseForChainType('mainnet')(
-      mainNetPrereleaseRelease as any
+      mainNetPrereleaseRelease as any,
     );
 
     expect(isMatchingRelease).toEqual(false);
@@ -219,7 +219,7 @@ describe('isStableReleaseForChainType', () => {
    */
   it('should return `false` if a release is stable (that is, non-prerelease) but does not have asset for a specific chain type', () => {
     const isMatchingRelease = isStableReleaseForChainType('mainnet')(
-      testNetStableRelease as any
+      testNetStableRelease as any,
     );
 
     expect(isMatchingRelease).toEqual(false);
@@ -239,7 +239,7 @@ describe('hasMatchedTagPrefix', () => {
    */
   it('should return `true` if a release has asset using a prefix tag', () => {
     const isMatchingRelease = hasMatchedTagPrefix('tss-api-')(
-      tssTag3PreRelease as any
+      tssTag3PreRelease as any,
     );
 
     expect(isMatchingRelease).toEqual(true);
@@ -275,7 +275,7 @@ describe('isStableReleaseForRegexTagType', () => {
    */
   it('should return `true` if a release is stable and has asset using a prefix tag', () => {
     const isMatchingRelease = isStableReleaseForRegexTagType('tss-api-')(
-      tssTag2 as any
+      tssTag2 as any,
     );
 
     expect(isMatchingRelease).toEqual(true);
@@ -293,7 +293,7 @@ describe('isStableReleaseForRegexTagType', () => {
    */
   it('should return `false` if a release has asset for a prefix tag but is prerelease', () => {
     const isMatchingRelease = isStableReleaseForRegexTagType('tss-api')(
-      tssTag3PreRelease as any
+      tssTag3PreRelease as any,
     );
 
     expect(isMatchingRelease).toEqual(false);
@@ -311,7 +311,7 @@ describe('isStableReleaseForRegexTagType', () => {
    */
   it('should return `false` if a release is stable but does not have prefix tag', () => {
     const isMatchingRelease = isStableReleaseForRegexTagType('no-tag')(
-      tssTag1 as any
+      tssTag1 as any,
     );
 
     expect(isMatchingRelease).toEqual(false);
@@ -377,7 +377,7 @@ describe('findLatestReleaseByPrefixTag', () => {
 
     const latestTss = await findLatestReleaseByPrefixTag(
       'sign-protocols',
-      'tss-api'
+      'tss-api',
     );
 
     expect(latestTss?.id).toEqual(tssTag3PreRelease.id);
@@ -401,7 +401,7 @@ describe('findLatestStableReleaseByPrefixTag', () => {
 
     const latestTss = await findLatestStableReleaseByPrefixTag(
       'sign-protocols',
-      'tss-api'
+      'tss-api',
     );
 
     expect(latestTss?.id).toEqual(tssTag2.id);

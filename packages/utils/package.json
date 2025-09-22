@@ -1,29 +1,36 @@
 {
   "name": "@rosen-bridge/utils",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "description": "Misc utility functions used inside Rosen bridge projects",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rosen-bridge/utils.git"
+  },
+  "license": "MIT",
+  "author": "Rosen Team",
+  "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "type": "module",
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
   "scripts": {
-    "prettify": "prettier --write . --ignore-path .gitignore",
+    "prettify": "prettier --write . --ignore-path ../../.gitignore",
+    "prettify:check": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint --fix . && npm run prettify",
+    "lint:check": "eslint . && npm run prettify:check",
     "build": "tsc --build tsconfig.build.json",
     "type-check": "tsc --noEmit",
     "test": "jest --runInBand",
     "coverage": "jest --coverage --runInBand",
     "release": "npm run test && npm run build && npm publish --access public"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/rosen-bridge/utils.git"
-  },
-  "license": "MIT",
   "devDependencies": {
     "@babel/preset-env": "^7.19.0",
     "@types/download": "^8.0.2",
     "@types/jest": "^29.1.2",
-    "@types/node": "^20.11.0",
+    "@types/node": "^22.18.0",
     "jest": "^29.2.0",
     "ts-jest": "^29.0.3",
     "typescript": "^5.8.3"
@@ -38,5 +45,8 @@
   "dependencies": {
     "download": "^8.0.0",
     "octokit": "^2.0.14"
+  },
+  "engines": {
+    "node": ">=22.18.0"
   }
 }

@@ -1,5 +1,5 @@
 import { Dependency, ServiceStatus } from '../../lib';
-import { TestAbstractService } from '../TestAbstractService';
+import { TestAbstractService } from '../testAbstractService';
 
 export class X2A extends TestAbstractService {
   name = 'X2A';
@@ -33,7 +33,7 @@ export class X2B extends TestAbstractService {
 
   start = (): Promise<boolean> => this.startAfter();
   stop = (): Promise<boolean> =>
-    new Promise<boolean>((resolve, reject) => {
+    new Promise<boolean>((resolve) => {
       setTimeout(() => {
         resolve(false);
       }, 500);
@@ -54,7 +54,7 @@ export class X2C extends TestAbstractService {
   ];
 
   start = (): Promise<boolean> =>
-    new Promise<boolean>((resolve, reject) => {
+    new Promise<boolean>((resolve) => {
       setTimeout(() => {
         resolve(false);
       }, 500);

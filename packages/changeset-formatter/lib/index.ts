@@ -20,14 +20,14 @@ const getReleaseLine = async (changeset: NewChangesetWithCommit) => {
 
 const getDependencyReleaseLine = async (
   changesets: NewChangesetWithCommit[],
-  dependenciesUpdated: ModCompWithPackage[]
+  dependenciesUpdated: ModCompWithPackage[],
 ) => {
   if (dependenciesUpdated.length === 0) return '';
 
   const changesetLinks = changesets.map(() => '- Update dependencies');
 
   const updatedDependenciesList = dependenciesUpdated.map(
-    (dependency) => `  - ${dependency.name}@${dependency.newVersion}`
+    (dependency) => `  - ${dependency.name}@${dependency.newVersion}`,
   );
 
   return [...changesetLinks, ...updatedDependenciesList].join('\n');

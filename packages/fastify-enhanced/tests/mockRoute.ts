@@ -26,7 +26,7 @@ export const mockRoutes = (server: FastifyWithZod) => {
       } catch (error: any) {
         reply.status(500).send({ message: error.message });
       }
-    }
+    },
   );
 
   server.post(
@@ -59,7 +59,7 @@ export const mockRoutes = (server: FastifyWithZod) => {
       } catch (error: any) {
         reply.status(500).send({ message: error.message });
       }
-    }
+    },
   );
 };
 

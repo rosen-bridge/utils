@@ -18,12 +18,12 @@ export const createPermit = (
   rwt: string,
   rwtCount: bigint,
   value: bigint,
-  permitAddress: string
+  permitAddress: string,
 ): ergoLib.ErgoBoxCandidate => {
   const boxBuilder = new ergoLib.ErgoBoxCandidateBuilder(
     ergoLib.BoxValue.from_i64(ergoLib.I64.from_str(value.toString())),
     ergoLib.Contract.pay_to_address(ergoLib.Address.from_base58(permitAddress)),
-    height
+    height,
   );
 
   if (rwtCount <= 0) {
@@ -31,16 +31,16 @@ export const createPermit = (
   }
   boxBuilder.add_token(
     ergoLib.TokenId.from_str(rwt),
-    ergoLib.TokenAmount.from_i64(ergoLib.I64.from_str(rwtCount.toString()))
+    ergoLib.TokenAmount.from_i64(ergoLib.I64.from_str(rwtCount.toString())),
   );
 
   boxBuilder.set_register_value(
     4,
-    ergoLib.Constant.from_coll_coll_byte([hexToUint8Array(wid)])
+    ergoLib.Constant.from_coll_coll_byte([hexToUint8Array(wid)]),
   );
   boxBuilder.set_register_value(
     5,
-    ergoLib.Constant.from_coll_coll_byte([hexToUint8Array('00')])
+    ergoLib.Constant.from_coll_coll_byte([hexToUint8Array('00')]),
   );
 
   return boxBuilder.build();

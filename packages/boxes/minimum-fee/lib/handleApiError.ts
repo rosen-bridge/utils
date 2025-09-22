@@ -15,7 +15,7 @@ interface ErrorHandler<HandlerReturnType> {
 const handleApiError = <
   RespondedStateHandlerReturnType = never,
   NotRespondedStateHandlerReturnType = never,
-  UnknownStateHandlerReturnType = never
+  UnknownStateHandlerReturnType = never,
 >(
   error: any,
   baseMessage: string,
@@ -23,7 +23,7 @@ const handleApiError = <
     handleRespondedState?: ErrorHandler<RespondedStateHandlerReturnType>;
     handleNotRespondedState?: ErrorHandler<NotRespondedStateHandlerReturnType>;
     handleUnknownState?: ErrorHandler<UnknownStateHandlerReturnType>;
-  }
+  },
 ):
   | RespondedStateHandlerReturnType
   | NotRespondedStateHandlerReturnType
@@ -33,17 +33,17 @@ const handleApiError = <
 
   const handleRespondedState =
     overrideHandlers?.handleRespondedState ??
-    ((error: any) => {
+    (() => {
       throw new FailedError(generateErrorMessage(error.response.data.reason));
     });
   const handleNotRespondedState =
     overrideHandlers?.handleNotRespondedState ??
-    ((error: any) => {
+    (() => {
       throw new NetworkError(generateErrorMessage(error.message));
     });
   const handleUnknownState =
     overrideHandlers?.handleUnknownState ??
-    ((error: any) => {
+    (() => {
       throw new UnexpectedApiError(generateErrorMessage(error.message));
     });
 

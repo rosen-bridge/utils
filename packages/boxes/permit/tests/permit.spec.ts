@@ -25,28 +25,28 @@ describe('createPermit', () => {
       testData.permitParams.rwt,
       rwtCount,
       value,
-      testData.permitParams.permitAddress
+      testData.permitParams.permitAddress,
     );
 
     expect(permitBox.value().as_i64().to_str()).toEqual(value.toString());
 
     expect(
       ergoLib.Address.recreate_from_ergo_tree(permitBox.ergo_tree()).to_base58(
-        ergoLib.NetworkPrefix.Mainnet
-      )
+        ergoLib.NetworkPrefix.Mainnet,
+      ),
     ).toEqual(testData.permitParams.permitAddress);
 
     expect(permitBox.creation_height()).toEqual(height);
 
     expect(permitBox.tokens().get(0).id().to_str()).toEqual(
-      testData.permitParams.rwt
+      testData.permitParams.rwt,
     );
     expect(permitBox.tokens().get(0).amount().as_i64().to_str()).toEqual(
-      rwtCount.toString()
+      rwtCount.toString(),
     );
 
     expect(permitBox.register_value(4)?.to_coll_coll_byte()[0]).toEqual(
-      hexToUint8Array(testData.permitParams.wid)
+      hexToUint8Array(testData.permitParams.wid),
     );
   });
 
@@ -73,8 +73,8 @@ describe('createPermit', () => {
         testData.permitParams.rwt,
         rwtCount,
         value,
-        testData.permitParams.permitAddress
-      )
+        testData.permitParams.permitAddress,
+      ),
     ).toThrow('rwtCount should be greater than zero');
   });
 });

@@ -43,7 +43,7 @@ describe('downloadTssBinary', () => {
 
     expect(download).toHaveBeenCalledWith(
       tssTag1.assets[2].browser_download_url,
-      'bin'
+      'bin',
     );
   });
 
@@ -69,7 +69,7 @@ describe('downloadTssBinary', () => {
 
     expect(download).toHaveBeenCalledWith(
       tssTag2.assets[0].browser_download_url,
-      'bin'
+      'bin',
     );
   });
 
@@ -96,7 +96,7 @@ describe('downloadTssBinary', () => {
 
     expect(download).toHaveBeenCalledWith(
       tssTag3PreRelease.assets[0].browser_download_url,
-      'bin'
+      'bin',
     );
   });
 
