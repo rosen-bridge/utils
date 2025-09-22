@@ -3,6 +3,7 @@ import * as testData from './testData';
 import TestUtils from '../testUtils';
 import JsonBigInt from '@rosen-bridge/json-bigint';
 import { TokenMap } from '@rosen-bridge/tokens';
+import { ERGO_CHAIN } from '../../../lib/getRosenData/const';
 
 describe('BitcoinRunesRosenExtractor', () => {
   const tokenMap = new TokenMap();
@@ -59,8 +60,8 @@ describe('BitcoinRunesRosenExtractor', () => {
     });
 
     /**
-     * @target `BitcoinRunesRosenExtractor.get` should return undefined when
-     * the utxos are unorganized
+     * @target `BitcoinRunesRosenExtractor.get` should extract rosenData from
+     * Runes lock tx successfully when the utxos are unorganized
      * @dependencies
      * @scenario
      * - mock a tx with incorrectly ordered utxos
@@ -69,7 +70,7 @@ describe('BitcoinRunesRosenExtractor', () => {
      * @expected
      * - it should return expected rosenData object
      */
-    it('should return undefined when the utxos are unorganized', () => {
+    it('should extract rosenData from Runes lock tx successfully when the utxos are unorganized', () => {
       const unorderedTx = JsonBigInt.stringify(testData.txs.unorderedTx);
 
       const extractor = new BitcoinRunesRosenExtractor(
@@ -78,7 +79,7 @@ describe('BitcoinRunesRosenExtractor', () => {
       );
       const result = extractor.get(unorderedTx);
 
-      expect(result).toBeUndefined();
+      expect(result).toStrictEqual(testData.rosenData);
     });
 
     /**
@@ -124,6 +125,88 @@ describe('BitcoinRunesRosenExtractor', () => {
       );
       const result = extractor.get(invalidTx);
 
+      expect(result).toBeUndefined();
+    });
+  });
+
+  describe('getAssetTransformation', () => {
+    const toChain = ERGO_CHAIN;
+
+    /**
+     * @target: BitcoinRunesRosenExtractor.getAssetTransformation should extract asset transformation
+     * from token locked UTxO successfully
+     * @dependencies:
+     * @scenario
+     * - mock a UTxO with valid asset transformation
+     * - run the test
+     * - check returned value
+     * @expected
+     * - asset transformation should be extracted correctly
+     */
+    it('should extract asset transformation from token locked UTxO successfully', () => {
+      // mock a UTxO with valid asset transformation
+      const utxo = testData.lockUtxo.valid;
+
+      // run the test
+      const extractor = new BitcoinRunesRosenExtractor(
+        testData.mockLockAddress,
+        tokenMap,
+      );
+      const result = extractor.getAssetTransformation(utxo, toChain);
+
+      // check returned value
+      expect(result).toStrictEqual(testData.rosenAssetTransformations);
+    });
+
+    /**
+     * @target: BitcoinRunesRosenExtractor.getAssetTransformation should return undefined
+     * when there is no Runes in the UTxO
+     * @dependencies:
+     * @scenario
+     * - mock a UTxO without any Runes
+     * - run the test
+     * - check returned value
+     * @expected
+     * - it should return undefined
+     */
+    it('should return undefined when there is no Runes in the UTxO', () => {
+      // mock a UTxO without any Runes
+      const utxo = testData.lockUtxo.noRune;
+
+      // run the test
+      const extractor = new BitcoinRunesRosenExtractor(
+        testData.mockLockAddress,
+        tokenMap,
+      );
+      const result = extractor.getAssetTransformation(utxo, toChain);
+
+      // check returned value
+      expect(result).toBeUndefined();
+    });
+
+    /**
+     * @target: BitcoinRunesRosenExtractor.getAssetTransformation should return undefined
+     * when none of locked Runes is supported
+     * @dependencies:
+     * @scenario
+     * - mock a UTxO with unsupported Runes
+     * - run the test
+     * - check returned value
+     * @expected
+     * - it should return undefined
+     */
+    it('should return undefined when none of locked Runes is supported', () => {
+      // mock a UTxO with unsupported Runes
+      const utxo = testData.lockUtxo.noSupportedRune;
+
+      // run the test
+      const extractor = new BitcoinRunesRosenExtractor(
+        testData.mockLockAddress,
+        tokenMap,
+      );
+      const result = extractor.getAssetTransformation(utxo, toChain);
+
+      // check returned value
       expect(result).toBeUndefined();
     });
   });
