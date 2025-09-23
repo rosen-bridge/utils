@@ -59,8 +59,8 @@ describe('BitcoinRunesRpcRosenExtractor', () => {
     });
 
     /**
-     * @target `BitcoinRunesRpcRosenExtractor.get` should return undefined when
-     * the utxos are unorganized
+     * @target `BitcoinRunesRpcRosenExtractor.get` should extract rosenData from
+     * Runes lock tx successfully when the utxos are unorganized
      * @dependencies
      * @scenario
      * - mock a tx with incorrectly ordered utxos
@@ -69,16 +69,16 @@ describe('BitcoinRunesRpcRosenExtractor', () => {
      * @expected
      * - it should return expected rosenData object
      */
-    it('should return undefined when the utxos are unorganized', () => {
-      const invalidTx = testData.txs.unorderedTx;
+    it('should extract rosenData from Runes lock tx successfully when the utxos are unorganized', () => {
+      const unorderedTx = testData.txs.unorderedTx;
 
       const extractor = new BitcoinRunesRpcRosenExtractor(
         testData.mockLockAddress,
         tokenMap,
       );
-      const result = extractor.get(invalidTx as BitcoinRpcTransaction);
+      const result = extractor.get(unorderedTx as BitcoinRpcTransaction);
 
-      expect(result).toBeUndefined();
+      expect(result).toStrictEqual(testData.rosenData);
     });
 
     /**
