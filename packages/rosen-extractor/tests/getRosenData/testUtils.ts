@@ -1,5 +1,8 @@
-import { ETHEREUM_CHAIN } from './../../lib/getRosenData/const';
 import { RosenTokens } from '@rosen-bridge/tokens';
+import {
+  BITCOIN_RUNES_CHAIN,
+  ETHEREUM_CHAIN,
+} from './../../lib/getRosenData/const';
 import {
   BITCOIN_CHAIN,
   BITCOIN_NATIVE_TOKEN,
@@ -151,6 +154,37 @@ export default class TestUtils {
         type: 'EIP-004',
         residency: 'wrapped',
         extra: {},
+      },
+    },
+    {
+      [BITCOIN_RUNES_CHAIN]: {
+        tokenId: '880887:3052',
+        name: 'ROSEN•POC•RUNE',
+        decimals: 3,
+        type: 'Runes',
+        residency: 'native',
+        extra: {},
+      },
+      [ERGO_CHAIN]: {
+        tokenId:
+          '8b35fd2dabc9bdf2b69aa9c25eb7e7818297add61b2dd3b5ab039439e100e487',
+        name: 'rpnRPOCR',
+        decimals: 3,
+        type: 'EIP-004',
+        residency: 'wrapped',
+        extra: {},
+      },
+      [CARDANO_CHAIN]: {
+        tokenId:
+          'e8699f09f993366363e2354a7520770ded59d23f5aeaad6717e73614.72706e52504f4352',
+        name: 'rpnRPOCR',
+        decimals: 3,
+        type: 'CIP26',
+        residency: 'wrapped',
+        extra: {
+          policyId: 'e8699f09f993366363e2354a7520770ded59d23f5aeaad6717e73614',
+          assetName: '72706e52504f4352',
+        },
       },
     },
   ];

@@ -1,15 +1,14 @@
-import { RosenData } from '../abstract/types';
+import { address } from 'bitcoinjs-lib';
+import { AbstractLogger } from '@rosen-bridge/abstract-logger';
+import { TokenMap } from '@rosen-bridge/tokens';
+import JsonBigInt from '@rosen-bridge/json-bigint';
+import { RosenData, TokenTransformation } from '../abstract/types';
 import AbstractRosenDataExtractor from '../abstract/abstractRosenDataExtractor';
 import { BITCOIN_RUNES_CHAIN } from '../const';
-import { BitcoinTxOutput, BitcoinTx } from '../bitcoin/types';
-import { TokenMap } from '@rosen-bridge/tokens';
-import { AbstractLogger } from '@rosen-bridge/abstract-logger';
-import { address } from 'bitcoinjs-lib';
-import { parseAggregatedData } from './utils';
-import JsonBigInt from '@rosen-bridge/json-bigint';
-import { LockDataChunk } from './types';
 import { MinimalOnChainRosenData } from '../../types';
 import { minUtxoValue } from './constants';
+import { BitcoinRunesTxOutput, BitcoinRunesTx, LockDataChunk } from './types';
+import { parseAggregatedData } from './utils';
 
 export class BitcoinRunesRosenExtractor extends AbstractRosenDataExtractor<string> {
   readonly chain = BITCOIN_RUNES_CHAIN;
@@ -21,16 +20,16 @@ export class BitcoinRunesRosenExtractor extends AbstractRosenDataExtractor<strin
   }
 
   /**
-   * extracts RosenData from given lock transaction in BitcoinTx format
-   * @param serializedTransaction stringified transaction in BitcoinTx format
+   * extracts RosenData from given lock transaction in BitcoinRunesTx format
+   * @param serializedTransaction stringified transaction in BitcoinRunesTx format
    */
   extractRawData = (serializedTransaction: string): RosenData | undefined => {
-    let transaction: BitcoinTx;
+    let transaction: BitcoinRunesTx;
     try {
       transaction = JsonBigInt.parse(serializedTransaction);
     } catch (e) {
       throw new Error(
-        `Failed to parse transaction json to BitcoinTx format while extracting rosen data: ${e}`,
+        `Failed to parse transaction json to BitcoinRunesTx format while extracting rosen data: ${e}`,
       );
     }
     const baseError = `No rosen data is found for tx [${transaction.id}]`;
@@ -39,13 +38,6 @@ export class BitcoinRunesRosenExtractor extends AbstractRosenDataExtractor<strin
       const outputs = transaction.outputs;
       if (outputs.length < 5) {
         this.logger.debug(baseError + `: Insufficient number of boxes`);
-        return undefined;
-      }
-
-      // validate lock conditions
-      const validLock = this.validateLock(outputs);
-      if (!validLock) {
-        this.logger.debug(baseError + `: Failed to find rosen lock utxo`);
         return undefined;
       }
 
@@ -60,6 +52,28 @@ export class BitcoinRunesRosenExtractor extends AbstractRosenDataExtractor<strin
         return undefined;
       }
 
+      // validate lock conditions
+      let validLock = false;
+      let assetTransformation: TokenTransformation | undefined;
+      for (let i = 0; i < outputs.length; i++) {
+        if (outputs[i].scriptPubKey === this.lockScriptPubKey) {
+          assetTransformation = this.getAssetTransformation(
+            outputs[i],
+            lockData.toChain,
+          );
+          if (assetTransformation) {
+            validLock = true;
+            break;
+          }
+        }
+      }
+      if (!validLock || !assetTransformation) {
+        this.logger.debug(
+          baseError + `: Failed to find rosen asset transformation`,
+        );
+        return undefined;
+      }
+
       const fromAddress = `box:${transaction.inputs[0].txId}.${transaction.inputs[0].index}`;
       return {
         toChain: lockData.toChain,
@@ -67,14 +81,14 @@ export class BitcoinRunesRosenExtractor extends AbstractRosenDataExtractor<strin
         bridgeFee: lockData.bridgeFee,
         networkFee: lockData.networkFee,
         fromAddress: fromAddress,
-        sourceChainTokenId: '',
-        amount: '',
-        targetChainTokenId: '',
+        sourceChainTokenId: assetTransformation.from,
+        amount: assetTransformation.amount,
+        targetChainTokenId: assetTransformation.to,
         sourceTxId: transaction.id,
       };
     } catch (e) {
       this.logger.debug(
-        `An error occurred while getting Runes rosen data from BitcoinTx: ${e}`,
+        `An error occurred while getting Runes rosen data from BitcoinRunesTx: ${e}`,
       );
       if (e instanceof Error && e.stack) {
         this.logger.debug(e.stack);
@@ -89,7 +103,7 @@ export class BitcoinRunesRosenExtractor extends AbstractRosenDataExtractor<strin
    * @return array of LockDataChunk
    */
   protected getLockDataChunks = (
-    outputs: BitcoinTxOutput[],
+    outputs: BitcoinRunesTxOutput[],
   ): LockDataChunk[] => {
     const lockDataChunks: LockDataChunk[] = [];
 
@@ -138,16 +152,26 @@ export class BitcoinRunesRosenExtractor extends AbstractRosenDataExtractor<strin
   };
 
   /**
-   * check lock box exists in the tx outputs
-   * @param outputs
-   * @return boolean
+   * extracts and builds token transformation from UTXO and tokenMap
+   * @param box transaction output
+   * @param toChain event target chain
    */
-  protected validateLock = (outputs: BitcoinTxOutput[]): boolean => {
-    for (let i = 0; i < outputs.length; i++) {
-      if (outputs[i].scriptPubKey === this.lockScriptPubKey) {
-        return true;
-      }
+  getAssetTransformation = (
+    box: BitcoinRunesTxOutput,
+    toChain: string,
+  ): TokenTransformation | undefined => {
+    // try to build transformation using locked assets
+    for (const asset of box.runes) {
+      const token = this.tokens.search(BITCOIN_RUNES_CHAIN, {
+        tokenId: asset.runeId,
+      });
+      if (token.length > 0 && Object.hasOwn(token[0], toChain))
+        return {
+          from: this.tokens.getID(token[0], BITCOIN_RUNES_CHAIN),
+          to: this.tokens.getID(token[0], toChain),
+          amount: asset.quantity.toString(),
+        };
     }
-    return false;
+    return undefined;
   };
 }
