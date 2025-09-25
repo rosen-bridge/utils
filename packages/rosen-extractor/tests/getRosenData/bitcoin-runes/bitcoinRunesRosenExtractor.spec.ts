@@ -36,7 +36,9 @@ describe('BitcoinRunesRosenExtractor', () => {
       expect(result).toStrictEqual(testData.rosenData);
       // validate data by rawData
       const parsedRawData = extractor['lockDataFromChunks'](
-        extractor['getLockDataChunks'](JSON.parse(testData.rosenData.rawData)),
+        extractor['getLockDataChunks'](
+          JsonBigInt.parse(testData.rosenData.rawData),
+        ),
       );
       expect(testData.rosenData).toMatchObject(parsedRawData);
     });
