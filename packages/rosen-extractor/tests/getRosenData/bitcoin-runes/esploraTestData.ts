@@ -183,6 +183,13 @@ export const txUtxos = {
         value: 3793,
       },
       {
+        scriptpubkey: '6a5d0c160100f7e135ec1790a10f00',
+        scriptpubkey_asm: 'OP_RETURN OP_13 160100f7e135ec1790a10f00',
+        scriptpubkey_type: 'OP_RETURN',
+        scriptpubkey_address: '',
+        value: 0,
+      },
+      {
         scriptpubkey_asm: 'OP_0 82639073e4b9827cba6224d854f00de94428ff00',
         scriptpubkey: '001482639073e4b9827cba6224d854f00de94428ff00',
         scriptpubkey_type: 'V0_P2WPKH',
@@ -195,13 +202,6 @@ export const txUtxos = {
         scriptpubkey_type: 'V0_P2WPKH',
         scriptpubkey_address: 'bc1qqyqqqqqqqqqp8zqqqqqqqqqqpzvrjqgmvkrl7x',
         value: 294,
-      },
-      {
-        scriptpubkey: '6a5d0c160100f7e135ec1790a10f00',
-        scriptpubkey_asm: 'OP_RETURN OP_13 160100f7e135ec1790a10f00',
-        scriptpubkey_type: 'OP_RETURN',
-        scriptpubkey_address: '',
-        value: 0,
       },
       {
         scriptpubkey_asm: 'OP_0 2eff6f19da9c786a5be52986e4fa888754f48fdc',

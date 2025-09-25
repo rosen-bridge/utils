@@ -30,7 +30,7 @@ export const makeSerializerCompiler =
  * resolve the right schema to be used
  */
 const resolveSchema = (
-  maybeSchema: ZodAny | { properties: ZodAny }
+  maybeSchema: ZodAny | { properties: ZodAny },
 ): Pick<ZodAny, 'safeParse'> => {
   if (hasOwnProperty(maybeSchema, 'safeParse')) {
     return maybeSchema;

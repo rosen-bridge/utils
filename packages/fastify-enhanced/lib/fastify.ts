@@ -29,7 +29,7 @@ export const makeFastify = async (
     alwaysParseAsBig: false,
     useNativeBigInt: true,
     storeAsString: true,
-  })
+  }),
 ): Promise<FastifyWithZod> => {
   const fastify =
     Fastify(opts).withTypeProvider<FastifyZodOpenApiTypeProvider>();
@@ -44,7 +44,7 @@ export const makeFastify = async (
   fastify.addContentTypeParser<string>(
     'application/json',
     { parseAs: 'string' },
-    makeJsonParser(jsonHandler)
+    makeJsonParser(jsonHandler),
   );
 
   await registerSwagger(fastify, swaggerOpts);

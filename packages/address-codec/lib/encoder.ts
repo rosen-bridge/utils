@@ -24,12 +24,12 @@ export const encodeAddress = (chain: string, address: string): string => {
   switch (chain) {
     case ERGO_CHAIN:
       encoded = Buffer.from(
-        ergoLib.Address.from_base58(address).content_bytes()
+        ergoLib.Address.from_base58(address).content_bytes(),
       ).toString('hex');
       break;
     case CARDANO_CHAIN:
       encoded = Buffer.from(
-        cardanoLib.Address.from_bech32(address).to_bytes()
+        cardanoLib.Address.from_bech32(address).to_bytes(),
       ).toString('hex');
       break;
     case RUNES_CHAIN:

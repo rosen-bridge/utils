@@ -79,7 +79,7 @@ describe('encodeAddress', () => {
    * @expected
    * - it should throw UnsupportedAddress error
    */
-  it('should encode Ethereum address successfully', () => {
+  it('should throw error when Ethereum address is not 40 bytes', () => {
     expect(() => {
       encodeAddress(ETHEREUM_CHAIN, testData.invalidEthereumAddressLength);
     }).toThrow(UnsupportedAddressError);

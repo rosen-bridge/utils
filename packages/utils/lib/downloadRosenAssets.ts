@@ -24,7 +24,7 @@ const downloadRosenAssets = async (
     includePrereleases?: boolean;
     nameSuffix?: string;
     tag?: string;
-  }
+  },
 ) => {
   const getRelease = () => {
     if (config?.tag) return getReleaseByTag(repo, config.tag);
@@ -45,22 +45,22 @@ const downloadRosenAssets = async (
                   asset.name,
                   chainType,
                   release.tag_name,
-                  config?.nameSuffix
+                  config?.nameSuffix,
                 ),
-              })
+              }),
             )),
       ]);
     } else {
       console.error(`No release found for [${chainType}] chain type.`);
       if (!config?.includePrereleases) {
         console.error(
-          'Please note that `includePrereleases` is set to false. There may be some matching releases in prereleases.'
+          'Please note that `includePrereleases` is set to false. There may be some matching releases in prereleases.',
         );
       }
     }
   } catch (error) {
     console.error(
-      `An error occurred while trying to download Rosen assets: ${error}`
+      `An error occurred while trying to download Rosen assets: ${error}`,
     );
     if (error instanceof Error) {
       console.error(error.stack);

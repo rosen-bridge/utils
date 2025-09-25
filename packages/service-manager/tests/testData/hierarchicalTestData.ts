@@ -1,5 +1,5 @@
 import { Dependency, ServiceStatus } from '../../lib';
-import { TestAbstractService } from '../TestAbstractService';
+import { TestAbstractService } from '../testAbstractService';
 
 export class X0A extends TestAbstractService {
   name = 'X0A';

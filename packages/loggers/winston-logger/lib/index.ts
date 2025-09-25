@@ -1,3 +1,3 @@
-export { default } from './WinstonLogger';
+export { default } from './winstonLogger';
 
 export * from './types';

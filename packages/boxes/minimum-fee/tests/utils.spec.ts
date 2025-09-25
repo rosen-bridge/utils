@@ -38,8 +38,8 @@ describe('feeToRegisterValues', () => {
     const expectedChains = ['binance', 'cardano', 'ergo'];
     expect(
       result.R4.to_coll_coll_byte().map((element) =>
-        Buffer.from(element).toString()
-      )
+        Buffer.from(element).toString(),
+      ),
     ).toEqual(expectedChains);
     const expectedHeights = [
       [666, 444444, 11111],

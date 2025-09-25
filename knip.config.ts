@@ -3,7 +3,7 @@ import type { KnipConfig } from 'knip';
 
 const packages = path.join(
   path.dirname(import.meta.filename),
-  'packages/**/{lib,src,bin}/*.{js,ts}'
+  'packages/**/{lib,src,bin}/*.{js,ts}',
 );
 
 const config: KnipConfig = {
@@ -15,12 +15,14 @@ const config: KnipConfig = {
     '**/vitest.config.ts.timestamp-.+',
   ],
   ignoreDependencies: [
+    '@babel/preset-env',
+    '@babel/preset-env',
+    '@eslint/js',
+    'extensionless',
+    'globals',
     'ts-node',
     'tsx',
-    'extensionless',
-    '@babel/preset-env',
     'vite-plugin-wasm',
-    '@babel/preset-env',
   ],
   entry: [packages],
 };

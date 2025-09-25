@@ -21,23 +21,23 @@ import * as bitcoinLib from 'bitcoinjs-lib';
  */
 export const decodeAddress = (
   chain: string,
-  encodedAddress: string
+  encodedAddress: string,
 ): string => {
   if (encodedAddress.length > 60 * 2)
     throw new UnsupportedAddressError(chain, encodedAddress);
   switch (chain) {
     case ERGO_CHAIN:
       return ergoLib.Address.from_public_key(
-        Uint8Array.from(Buffer.from(encodedAddress, 'hex'))
+        Uint8Array.from(Buffer.from(encodedAddress, 'hex')),
       ).to_base58(ergoLib.NetworkPrefix.Mainnet);
     case CARDANO_CHAIN:
       return cardanoLib.Address.from_bytes(
-        Uint8Array.from(Buffer.from(encodedAddress, 'hex'))
+        Uint8Array.from(Buffer.from(encodedAddress, 'hex')),
       ).to_bech32();
     case RUNES_CHAIN:
     case BITCOIN_CHAIN:
       return bitcoinLib.address.fromOutputScript(
-        Buffer.from(encodedAddress, 'hex')
+        Buffer.from(encodedAddress, 'hex'),
       );
     case BINANCE_CHAIN:
     case ETHEREUM_CHAIN:
@@ -49,7 +49,7 @@ export const decodeAddress = (
     case DOGE_CHAIN:
       return bitcoinLib.address.fromOutputScript(
         Buffer.from(encodedAddress, 'hex'),
-        DOGE_NETWORK
+        DOGE_NETWORK,
       );
     default:
       throw new UnsupportedChainError(chain);

@@ -6,7 +6,7 @@ import { MinimalOnChainRosenData } from '../../types';
  * @param scriptPubKeyHex
  */
 export const parseOpReturn = (
-  scriptPubKeyHex: string
+  scriptPubKeyHex: string,
 ): MinimalOnChainRosenData => {
   // check OP_RETURN opcode
   if (scriptPubKeyHex.slice(0, 2) !== '6a')
@@ -18,7 +18,7 @@ export const parseOpReturn = (
     throw Error(
       `script length is unexpected [${parseInt(dataLength, 16) + 3} !== ${
         scriptPubKeyHex.length / 2
-      }]`
+      }]`,
     );
 
   const remainingData = scriptPubKeyHex.slice(4);

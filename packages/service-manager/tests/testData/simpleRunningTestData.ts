@@ -1,5 +1,5 @@
 import { Dependency, ServiceStatus } from '../../lib';
-import { TestAbstractService } from '../TestAbstractService';
+import { TestAbstractService } from '../testAbstractService';
 
 export class R1A extends TestAbstractService {
   name = 'R1A';
@@ -27,7 +27,7 @@ export class R1B extends TestAbstractService {
   protected dependencies: Dependency[] = [];
 
   start = (): Promise<boolean> =>
-    new Promise<boolean>((resolve, reject) => {
+    new Promise<boolean>((resolve) => {
       setTimeout(() => {
         this.setStatus(ServiceStatus.started);
         resolve(true);

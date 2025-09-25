@@ -33,6 +33,7 @@ export class ChainMinimumFee implements ChainFee {
 
 export enum ErgoNetworkType {
   explorer = 'explorer',
+
   node = 'node',
 }
 
