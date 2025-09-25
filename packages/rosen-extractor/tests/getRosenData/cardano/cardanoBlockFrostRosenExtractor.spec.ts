@@ -3,6 +3,8 @@ import * as testData from './blockFrostTestData';
 import TestUtils from '../testUtils';
 import { ERGO_CHAIN } from '../../../lib/getRosenData/const';
 import { TokenMap } from '@rosen-bridge/tokens';
+import JsonBigInt from '@rosen-bridge/json-bigint';
+import { parseRosenData } from '../../../lib/getRosenData/cardano/utils';
 
 describe('BlockFrostRosenExtractor', () => {
   const tokenMap = new TokenMap();
@@ -21,7 +23,8 @@ describe('BlockFrostRosenExtractor', () => {
      *  run test
      *  check return value
      * Expected:
-     *  function returns rosenData object
+     * - function returns rosenData object
+     * - it should contains all parsed data from rawData
      */
     it('should extract rosenData from token locking tx successfully', () => {
       // generate a transaction with valid rosen data (locking token)
@@ -36,6 +39,20 @@ describe('BlockFrostRosenExtractor', () => {
 
       // check return value
       expect(result).toStrictEqual(testData.blockFrostRosenData.validTokenLock);
+      // validate data by rawData
+      const parsedRawData = parseRosenData(
+        JsonBigInt.parse(
+          testData.blockFrostRosenData.validTokenLock.rawData,
+        ).find(
+          (d: {
+            label: string;
+            json_metadata: string | { [key: string]: unknown };
+          }) => d.label === '0',
+        )?.json_metadata,
+      );
+      expect(testData.blockFrostRosenData.validTokenLock).toMatchObject(
+        parsedRawData!,
+      );
     });
 
     /**

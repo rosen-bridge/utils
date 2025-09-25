@@ -54,6 +54,7 @@ export class CardanoKoiosRosenExtractor extends AbstractRosenDataExtractor<Koios
                 amount: assetTransformation.amount,
                 targetChainTokenId: assetTransformation.to,
                 sourceTxId: transaction.tx_hash,
+                rawData: JsonBigInt.stringify(metadata),
               };
             }
           }

@@ -4,6 +4,7 @@ import TestUtils from '../testUtils';
 import { ERGO_CHAIN, CARDANO_CHAIN } from '../../../lib/getRosenData/const';
 import { TokenMap } from '@rosen-bridge/tokens';
 import { DogeRpcTransaction } from '../../../lib/getRosenData/doge/types';
+import { parseRosenData } from '../../../lib/getRosenData/doge/utils';
 
 describe('DogeRpcRosenExtractor', () => {
   const tokenMap = new TokenMap();
@@ -23,6 +24,7 @@ describe('DogeRpcRosenExtractor', () => {
      * - check returned value
      * @expected
      * - it should return expected rosenData object
+     * - it should contains all parsed data from rawData
      */
     it('should extract rosenData from DOGE locking tx successfully', () => {
       const validLockTx = testData.txs.lockTx;
@@ -34,6 +36,9 @@ describe('DogeRpcRosenExtractor', () => {
       const result = extractor.get(validLockTx as DogeRpcTransaction);
 
       expect(result).toStrictEqual(testData.rosenData);
+      // validate data by rawData
+      const parsedRawData = parseRosenData(testData.rosenData.rawData);
+      expect(testData.rosenData).toMatchObject(parsedRawData);
     });
 
     /**

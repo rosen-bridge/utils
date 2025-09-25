@@ -5,6 +5,7 @@ import { Transaction } from '@cardano-ogmios/schema';
 import { ERGO_CHAIN } from '../../../lib/getRosenData/const';
 import JsonBigInt from '@rosen-bridge/json-bigint';
 import { TokenMap } from '@rosen-bridge/tokens';
+import { parseRosenData } from '../../../lib/getRosenData/cardano/utils';
 
 describe('OgmiosRosenExtractor', () => {
   const tokenMap = new TokenMap();
@@ -52,7 +53,8 @@ describe('OgmiosRosenExtractor', () => {
      *  run test
      *  check return value
      * Expected:
-     *  function returns rosenData object
+     * - function returns rosenData object
+     * - it should contains all parsed data from rawData
      */
     it('should extract rosenData from ADA locking tx successfully', () => {
       // generate a transaction with valid rosen data (locking ADA)
@@ -69,6 +71,14 @@ describe('OgmiosRosenExtractor', () => {
       // check return value
       expect(result).toStrictEqual(
         CardanoTestData.ogmiosRosenData.validAdaLock,
+      );
+      // validate data by rawData
+      const parsedRawData = parseRosenData(
+        JsonBigInt.parse(CardanoTestData.ogmiosRosenData.validAdaLock.rawData)
+          .labels['0'].json,
+      );
+      expect(CardanoTestData.ogmiosRosenData.validAdaLock).toMatchObject(
+        parsedRawData!,
       );
     });
 

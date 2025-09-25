@@ -40,6 +40,7 @@ export class CardanoRosenExtractor extends AbstractRosenDataExtractor<string> {
               amount: assetTransformation.amount,
               targetChainTokenId: assetTransformation.to,
               sourceTxId: transaction.id,
+              rawData: JsonBigInt.stringify(data),
             };
           }
         }

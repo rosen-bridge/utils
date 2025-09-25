@@ -3,6 +3,7 @@ import * as testData from './testData';
 import TestUtils from '../testUtils';
 import { JsonRpcProvider, TransactionResponse } from 'ethers';
 import { TokenMap } from '@rosen-bridge/tokens';
+import { parseCallData } from '../../../lib/getRosenData/evm/utils';
 
 describe('EvmEthersRosenExtractor', () => {
   describe('constructor', () => {
@@ -72,6 +73,7 @@ describe('EvmEthersRosenExtractor', () => {
      * @expected
      * - it should return expected rosenData object
      * - extractRawData of rpcExtractor should be called
+     * - it should contains all parsed data from rawData
      */
     it('should extract rosenData from EVM locking native-asset transfer tx successfully', () => {
       const validLockTx = testData.validNativeLockTx;
@@ -81,6 +83,9 @@ describe('EvmEthersRosenExtractor', () => {
 
       expect(result).toStrictEqual(testData.rosenDataNative);
       expect(rpcExtractorMock).toHaveBeenCalled();
+      // validate data by rawData
+      const parsedRawData = parseCallData(testData.rosenDataNative.rawData);
+      expect(testData.rosenDataNative).toMatchObject(parsedRawData);
     });
 
     /**

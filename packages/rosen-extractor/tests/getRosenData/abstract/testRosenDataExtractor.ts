@@ -28,6 +28,7 @@ export class TestRosenDataExtractor extends AbstractRosenDataExtractor<string> {
         'ace7bcc2ce705679149746620de3a84660ce57573df54b5a096e39a2.7369676d61',
       sourceTxId:
         'd04fc93dc15a28a1f0e50b0fffc94f360037dcedddaf8a2e25905a892cd48378',
+      rawData: '',
     };
   };
 }

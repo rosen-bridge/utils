@@ -22,6 +22,7 @@ describe('BitcoinRunesEsploraRosenExtractor', () => {
      * - check returned value
      * @expected
      * - it should return expected rosenData object
+     * - it should contains all parsed data from rawData
      */
     it('should extract rosenData from Runes lock tx successfully', () => {
       const validLockTx = testData.txs.lockTx;
@@ -29,10 +30,15 @@ describe('BitcoinRunesEsploraRosenExtractor', () => {
       const extractor = new BitcoinRunesEsploraRosenExtractor(
         testData.mockLockAddress,
         tokenMap,
-      );
+      ) as any;
       const result = extractor.get(validLockTx as BitcoinEsploraTransaction);
 
       expect(result).toStrictEqual(testData.rosenData);
+      // validate data by rawData
+      const parsedRawData = extractor['lockDataFromChunks'](
+        extractor['getLockDataChunks'](JSON.parse(testData.rosenData.rawData)),
+      );
+      expect(testData.rosenData).toMatchObject(parsedRawData);
     });
 
     /**

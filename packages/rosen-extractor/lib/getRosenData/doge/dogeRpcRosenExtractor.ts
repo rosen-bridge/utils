@@ -33,12 +33,14 @@ export class DogeRpcRosenExtractor extends AbstractRosenDataExtractor<DogeRpcTra
 
       // parse rosen data from OP_RETURN box
       let opReturnData: OpReturnData | undefined;
+      let rawData: string = '';
       for (let i = 0; i < outputs.length; i++) {
         const output = outputs[i];
         if (output.scriptPubKey.hex.slice(0, 2) !== '6a') continue; // not an OP_RETURN utxo
 
         try {
           opReturnData = parseRosenData(output.scriptPubKey.hex);
+          rawData = output.scriptPubKey.hex;
           validData = true;
           break;
         } catch (e) {
@@ -86,6 +88,7 @@ export class DogeRpcRosenExtractor extends AbstractRosenDataExtractor<DogeRpcTra
         amount: assetTransformation.amount,
         targetChainTokenId: assetTransformation.to,
         sourceTxId: transaction.txid,
+        rawData,
       };
     } catch (e) {
       this.logger.debug(

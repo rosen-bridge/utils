@@ -4,6 +4,7 @@ import TestUtils from '../testUtils';
 import { NodeTransaction } from '../../../lib/getRosenData/ergo/types';
 import { CARDANO_CHAIN } from '../../../lib/getRosenData/const';
 import { TokenMap } from '@rosen-bridge/tokens';
+import { Constant } from 'ergo-lib-wasm-nodejs';
 
 describe('ErgoNodeRosenExtractor', () => {
   const tokenMap = new TokenMap();
@@ -50,7 +51,8 @@ describe('ErgoNodeRosenExtractor', () => {
      *  run test
      *  check return value
      * Expected:
-     *  function returns rosenData object
+     * - function returns rosenData object
+     * - it should contains all parsed data from rawData
      */
     it('should extract rosenData from Erg locking tx successfully', () => {
       // generate a transaction with valid rosen data (locking Erg)
@@ -67,6 +69,19 @@ describe('ErgoNodeRosenExtractor', () => {
 
       // check return value
       expect(result).toStrictEqual(ErgoTestData.nodeRosenData.validErgLock);
+      // validate data by rawData
+      const R4 = Constant.decode_from_base16(
+        ErgoTestData.nodeRosenData.validErgLock.rawData,
+      ).to_coll_coll_byte();
+      const parsedRawData = {
+        toAddress: Buffer.from(R4[1]).toString(),
+        bridgeFee: Buffer.from(R4[3]).toString(),
+        networkFee: Buffer.from(R4[2]).toString(),
+        fromAddress: Buffer.from(R4[4]).toString(),
+      };
+      expect(ErgoTestData.nodeRosenData.validErgLock).toMatchObject(
+        parsedRawData,
+      );
     });
 
     /**

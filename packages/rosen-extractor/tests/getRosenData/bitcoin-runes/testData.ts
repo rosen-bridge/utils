@@ -211,6 +211,8 @@ export const rosenData = {
   targetChainTokenId: '',
   sourceTxId:
     'ac16759cc66ad1f4b9fe49e068d979728302ed6fb566d94665c76a654a93eeb2',
+  rawData:
+    '[{"scriptPubKey":"512033fadad0034bb0a7912d2bbf2c9163627ba5ec7833341418595418c33deb0fb7","value":500},{"scriptPubKey":"51206049cdebe640d23d7a8e11d8591aca96c0cd96626fc850ab1b65e7d75fef5b17","value":3793},{"scriptPubKey":"6a5d0c160100f7e135ec1790a10f00","value":0},{"scriptPubKey":"0014010000000000001388000000000000089839011b","value":294},{"scriptPubKey":"00142eff6f19da9c786a5be52986e4fa888754f48fdc","value":295},{"scriptPubKey":"001482639073e4b9827cba6224d854f00de94428ff00","value":296},{"scriptPubKey":"001424e297ad5ab773a19ed6fac80c40de0000000000","value":297}]',
 };
 
 export const opReturnScripts = {

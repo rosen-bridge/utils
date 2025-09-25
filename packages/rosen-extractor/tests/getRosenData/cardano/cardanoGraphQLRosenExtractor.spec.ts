@@ -3,6 +3,8 @@ import * as testData from './graphQLTestData';
 import TestUtils from '../testUtils';
 import { ERGO_CHAIN } from '../../../lib/getRosenData/const';
 import { TokenMap } from '@rosen-bridge/tokens';
+import JsonBigInt from '@rosen-bridge/json-bigint';
+import { parseRosenData } from '../../../lib/getRosenData/cardano/utils';
 
 describe('GraphQLRosenExtractor', () => {
   const tokenMap = new TokenMap();
@@ -47,7 +49,8 @@ describe('GraphQLRosenExtractor', () => {
      *  run test
      *  check return value
      * Expected:
-     *  function returns rosenData object
+     * - function returns rosenData object
+     * - it should contains all parsed data from rawData
      */
     it('should extract rosenData from ADA locking tx successfully', () => {
       // generate a transaction with valid rosen data (locking ADA)
@@ -62,6 +65,15 @@ describe('GraphQLRosenExtractor', () => {
 
       // check return value
       expect(result).toStrictEqual(testData.graphQLRosenData.validAdaLock);
+      // validate data by rawData
+      const parsedRawData = parseRosenData(
+        JsonBigInt.parse(testData.graphQLRosenData.validAdaLock.rawData).find(
+          (data: { [key: string]: string }) => data?.key === '0',
+        )?.value,
+      );
+      expect(testData.graphQLRosenData.validAdaLock).toMatchObject(
+        parsedRawData!,
+      );
     });
 
     /**

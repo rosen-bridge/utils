@@ -44,6 +44,7 @@ export class CardanoGraphQLRosenExtractor extends AbstractRosenDataExtractor<Gra
                 amount: assetTransformation.amount,
                 targetChainTokenId: assetTransformation.to,
                 sourceTxId: transaction.hash,
+                rawData: JsonBigInt.stringify(metadata),
               };
             } else
               this.logger.debug(

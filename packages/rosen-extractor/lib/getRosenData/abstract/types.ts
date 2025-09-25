@@ -8,6 +8,7 @@ interface RosenData {
   amount: string;
   targetChainTokenId: string;
   sourceTxId: string;
+  rawData: string;
 }
 
 interface TokenTransformation {

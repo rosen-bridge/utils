@@ -3,6 +3,14 @@ import CardanoTestData from './cardanoTestData';
 import TestUtils from '../testUtils';
 import { ERGO_CHAIN } from '../../../lib/getRosenData/const';
 import { TokenMap } from '@rosen-bridge/tokens';
+import JsonBigInt from '@rosen-bridge/json-bigint';
+import { parseRosenData } from '../../../lib/getRosenData/cardano/utils';
+import {
+  BigNum,
+  decode_metadatum_to_json_str,
+  GeneralTransactionMetadata,
+  MetadataJsonSchema,
+} from '@emurgo/cardano-serialization-lib-nodejs';
 
 describe('KoiosRosenExtractor', () => {
   const tokenMap = new TokenMap();
@@ -49,7 +57,8 @@ describe('KoiosRosenExtractor', () => {
      *  run test
      *  check return value
      * Expected:
-     *  function returns rosenData object
+     * - function returns rosenData object
+     * - it should contains all parsed data from rawData
      */
     it('should extract rosenData from ADA locking tx successfully', () => {
       // generate a transaction with valid rosen data (locking ADA)
@@ -64,6 +73,23 @@ describe('KoiosRosenExtractor', () => {
 
       // check return value
       expect(result).toStrictEqual(CardanoTestData.koiosRosenData.validAdaLock);
+      // validate data by rawData
+      const metadataObject = GeneralTransactionMetadata.from_json(
+        JsonBigInt.stringify(
+          JsonBigInt.parse(CardanoTestData.koiosRosenData.validAdaLock.rawData),
+        ),
+      );
+      const parsedRawData = parseRosenData(
+        JsonBigInt.parse(
+          decode_metadatum_to_json_str(
+            metadataObject.get(BigNum.from_str('0'))!,
+            MetadataJsonSchema.NoConversions,
+          ),
+        ),
+      );
+      expect(CardanoTestData.koiosRosenData.validAdaLock).toMatchObject(
+        parsedRawData!,
+      );
     });
 
     /**

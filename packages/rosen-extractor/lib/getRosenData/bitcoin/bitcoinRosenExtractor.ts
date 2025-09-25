@@ -43,12 +43,14 @@ export class BitcoinRosenExtractor extends AbstractRosenDataExtractor<string> {
 
       // parse rosen data from OP_RETURN box
       let opReturnData: OpReturnData | undefined;
+      let rawData: string = '';
       for (let i = 0; i < outputs.length; i++) {
         const output = outputs[i];
         if (output.scriptPubKey.slice(0, 2) !== '6a') continue; // not an OP_RETURN utxo
 
         try {
           opReturnData = parseOpReturn(output.scriptPubKey);
+          rawData = output.scriptPubKey;
           validData = true;
           break;
         } catch (e) {
@@ -96,6 +98,7 @@ export class BitcoinRosenExtractor extends AbstractRosenDataExtractor<string> {
         amount: assetTransformation.amount,
         targetChainTokenId: assetTransformation.to,
         sourceTxId: transaction.id,
+        rawData,
       };
     } catch (e) {
       this.logger.debug(
