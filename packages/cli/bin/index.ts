@@ -9,7 +9,7 @@ import * as zxcvbnCommonPackage from '@zxcvbn-ts/language-common';
 import * as zxcvbnEnPackage from '@zxcvbn-ts/language-en';
 
 import { downloadRosenAssets, downloadTssBinary } from '@rosen-bridge/utils';
-import { ECDSA, EdDSA } from '@rosen-bridge/tss';
+import { ECDSA, EdDSA } from '@rosen-bridge/encryption';
 import { blake2b } from 'blakejs';
 import { randomBytes } from 'crypto';
 
