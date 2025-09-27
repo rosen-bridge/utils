@@ -1,5 +1,11 @@
 # @rosen-bridge/changeset-formatter
 
+## 2.0.0
+
+### Major Changes
+
+- Update node version to 22.18
+
 ## 1.1.0
 
 ### Minor Changes
