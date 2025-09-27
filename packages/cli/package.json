@@ -31,7 +31,7 @@
     "rosen"
   ],
   "dependencies": {
-    "@rosen-bridge/tss": "^3.0.0",
+    "@rosen-bridge/encryption": "^0.1.2",
     "@rosen-bridge/utils": "^1.0.0",
     "@zxcvbn-ts/core": "^3.0.4",
     "@zxcvbn-ts/language-common": "^3.0.4",
