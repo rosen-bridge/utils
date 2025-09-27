@@ -1,5 +1,19 @@
 # @rosen-bridge/rwt-repo
 
+## 3.0.0
+
+### Major Changes
+
+- Update node version to 22.18
+- Refactored RWTRepo to accept boxes as constructor input instead of fetching them internally
+- Updated related tests
+- Removed @rosen-clients/ergo-explorer and @rosen-clients/ergo-node from dependencies
+
+### Patch Changes
+
+- Update dependencies
+  - @rosen-bridge/abstract-logger@3.0.0
+
 ## 2.1.0
 
 ### Minor Changes

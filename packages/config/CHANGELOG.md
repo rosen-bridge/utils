@@ -1,5 +1,11 @@
 # @rosen-bridge/config
 
+## 1.0.0
+
+### Major Changes
+
+- Update node version to 22.18
+
 ## 0.4.0
 
 ### Minor Changes

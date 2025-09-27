@@ -1,5 +1,11 @@
 # @rosen-bridge/fastify-enhanced
 
+## 2.0.0
+
+### Major Changes
+
+- Update node version to 22.18
+
 ## 1.0.0
 
 ### Major Changes

@@ -1,5 +1,11 @@
 # @rosen-bridge/address-codec
 
+## 1.0.0
+
+### Major Changes
+
+- Update node version to 22.18
+
 ## 0.7.0
 
 ### Minor Changes

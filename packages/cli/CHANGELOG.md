@@ -1,5 +1,17 @@
 # @rosen-bridge/cli
 
+## 2.0.0
+
+### Major Changes
+
+- Update node version to 22.18
+
+### Patch Changes
+
+- Migrated from @rosen-bridge/tss to @rosen-bridge/encryption package
+- Update dependencies
+  - @rosen-bridge/utils@2.0.0
+
 ## 1.1.1
 
 ### Patch Changes

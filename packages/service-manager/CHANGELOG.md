@@ -1,5 +1,20 @@
 # @rosen-bridge/service-manager
 
+## 1.0.0
+
+### Major Changes
+
+- Update node version to 22.18
+
+### Minor Changes
+
+- Remove taskName from periodicTask service and export Task type
+
+### Patch Changes
+
+- Update dependencies
+  - @rosen-bridge/abstract-logger@3.0.0
+
 ## 0.3.0
 
 ### Minor Changes

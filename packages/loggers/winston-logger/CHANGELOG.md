@@ -1,5 +1,17 @@
 # @rosen-bridge/winston-logger
 
+## 2.0.0
+
+### Major Changes
+
+- Update node version to 22.18
+
+### Patch Changes
+
+- Update dependencies
+  - @rosen-bridge/abstract-logger@3.0.0
+  - @rosen-bridge/json-bigint@1.0.0
+
 ## 1.1.0
 
 ### Minor Changes
