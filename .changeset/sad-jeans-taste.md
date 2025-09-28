@@ -4,4 +4,4 @@
 '@rosen-bridge/cli': patch
 ---
 
-Updated dependency list after added Knip dependencies check
+Fix dependencies
