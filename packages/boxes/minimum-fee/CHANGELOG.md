@@ -1,5 +1,19 @@
 # @rosen-bridge/minimum-fee
 
+## 3.0.0
+
+### Major Changes
+
+- Update node version to 22.18
+
+### Patch Changes
+
+- Update dependencies
+  - @rosen-clients/ergo-explorer@2.0.0
+  - @rosen-clients/ergo-node@3.0.0
+  - @rosen-bridge/abstract-logger@3.0.0
+  - @rosen-bridge/json-bigint@1.0.0
+
 ## 2.3.0
 
 ### Minor Changes

@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/rwt-repo",
-  "version": "2.1.0",
+  "version": "3.0.0",
   "description": "a package to manage RWT Repo box",
   "repository": {
     "type": "git",
@@ -35,9 +35,7 @@
     "vitest": "^3.1.4"
   },
   "dependencies": {
-    "@rosen-bridge/abstract-logger": "^2.1.0",
-    "@rosen-clients/ergo-explorer": "^1.1.5",
-    "@rosen-clients/ergo-node": "^1.2.3",
+    "@rosen-bridge/abstract-logger": "^3.0.0",
     "ergo-lib-wasm-nodejs": "^0.24.0",
     "json-bigint": "^1.0.0"
   },

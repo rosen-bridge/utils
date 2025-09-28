@@ -1,5 +1,21 @@
 # @rosen-bridge/rosen-extractor
 
+## 10.0.0
+
+### Major Changes
+
+- Update node version to 22.18
+
+### Patch Changes
+
+- Fix Bitcoin Runes extractors for unordered transactions
+- Fix BitcoinRunesRosenExtractor to fully extract RosenData
+- Update dependencies
+  - @rosen-bridge/abstract-logger@3.0.0
+  - @rosen-bridge/address-codec@1.0.0
+  - @rosen-bridge/json-bigint@1.0.0
+  - @rosen-bridge/tokens@4.0.0
+
 ## 9.0.0
 
 ### Major Changes

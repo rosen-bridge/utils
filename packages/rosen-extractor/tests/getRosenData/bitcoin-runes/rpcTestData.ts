@@ -58,7 +58,7 @@ export const txUtxos = {
       },
       {
         value: 0.00000294,
-        n: 3,
+        n: 5,
         scriptPubKey: {
           asm: 'OP_0 010000000000001388000000000000089839011b',
           hex: '0014010000000000001388000000000000089839011b',
@@ -76,7 +76,7 @@ export const txUtxos = {
       },
       {
         value: 0.00000296,
-        n: 5,
+        n: 3,
         scriptPubKey: {
           asm: 'OP_0 82639073e4b9827cba6224d854f00de94428ff00',
           hex: '001482639073e4b9827cba6224d854f00de94428ff00',
@@ -183,6 +183,15 @@ export const txUtxos = {
         },
       },
       {
+        value: 0,
+        n: 2,
+        scriptPubKey: {
+          asm: 'OP_RETURN OP_13 160100f7e135ec1790a10f00',
+          hex: '6a5d0c160100f7e135ec1790a10f00',
+          type: 'OP_RETURN',
+        },
+      },
+      {
         value: 0.00000296,
         n: 5,
         scriptPubKey: {
@@ -198,15 +207,6 @@ export const txUtxos = {
           asm: 'OP_0 2eff6f19da9c786a5be52986e4fa888754f48fdc',
           hex: '00142eff6f19da9c786a5be52986e4fa888754f48fdc',
           type: 'V0_P2WPKH',
-        },
-      },
-      {
-        value: 0,
-        n: 2,
-        scriptPubKey: {
-          asm: 'OP_RETURN OP_13 160100f7e135ec1790a10f00',
-          hex: '6a5d0c160100f7e135ec1790a10f00',
-          type: 'OP_RETURN',
         },
       },
       {

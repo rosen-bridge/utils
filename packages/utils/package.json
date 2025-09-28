@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/utils",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Misc utility functions used inside Rosen bridge projects",
   "repository": {
     "type": "git",

@@ -1,5 +1,16 @@
 # @rosen-bridge/callback-logger
 
+## 1.0.0
+
+### Major Changes
+
+- Update node version to 22.18
+
+### Patch Changes
+
+- Update dependencies
+  - @rosen-bridge/abstract-logger@3.0.0
+
 ## 0.2.0
 
 ### Minor Changes
