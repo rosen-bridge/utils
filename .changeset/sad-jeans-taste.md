@@ -1,8 +1,7 @@
 ---
 '@rosen-bridge/rosen-extractor': patch
-'@rosen-bridge/service-manager': patch
-'@rosen-bridge/utils': patch
+'@rosen-bridge/tx-pot': patch
 '@rosen-bridge/cli': patch
 ---
 
-Added Knip dependencies check
+Updated dependency list after added Knip dependencies check
