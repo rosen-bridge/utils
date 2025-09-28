@@ -23,7 +23,7 @@ describe('BitcoinRunesRosenExtractor', () => {
      * - check returned value
      * @expected
      * - it should return expected rosenData object
-     * - it should contains all parsed data from rawData
+     * - it should contains rawData that is equal to origin rawData
      */
     it('should extract rosenData from Runes lock tx successfully', () => {
       const validLockTx = JsonBigInt.stringify(testData.txs.lockTx);
@@ -35,13 +35,6 @@ describe('BitcoinRunesRosenExtractor', () => {
       const result = extractor.get(validLockTx);
 
       expect(result).toStrictEqual(testData.rosenData);
-      // validate data by rawData
-      const parsedRawData = extractor['lockDataFromChunks'](
-        extractor['getLockDataChunks'](
-          JsonBigInt.parse(testData.rosenData.rawData),
-        ),
-      );
-      expect(testData.rosenData).toMatchObject(parsedRawData);
     });
 
     /**

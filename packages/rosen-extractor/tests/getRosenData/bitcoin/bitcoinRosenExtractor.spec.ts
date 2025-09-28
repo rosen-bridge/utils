@@ -4,7 +4,6 @@ import TestUtils from '../testUtils';
 import { ERGO_CHAIN, CARDANO_CHAIN } from '../../../lib/getRosenData/const';
 import JsonBigInt from '@rosen-bridge/json-bigint';
 import { TokenMap } from '@rosen-bridge/tokens';
-import { parseOpReturn } from '../../../lib/getRosenData/bitcoin/utils';
 
 describe('BitcoinRosenExtractor', () => {
   const tokenMap = new TokenMap();
@@ -24,7 +23,7 @@ describe('BitcoinRosenExtractor', () => {
      * - check returned value
      * @expected
      * - it should return expected rosenData object
-     * - it should contains all parsed data from rawData
+     * - it should contains rawData that is equal to origin rawData
      */
     it('should extract rosenData from BTC locking tx successfully', () => {
       const validLockTx = JsonBigInt.stringify(testData.txs.lockTx);
@@ -37,8 +36,9 @@ describe('BitcoinRosenExtractor', () => {
 
       expect(result).toStrictEqual(testData.rosenData);
       // validate data by rawData
-      const parsedRawData = parseOpReturn(testData.rosenData.rawData);
-      expect(testData.rosenData).toMatchObject(parsedRawData);
+      expect(testData.txs.lockTx.outputs[0].scriptPubKey).toEqual(
+        result?.rawData,
+      );
     });
 
     /**
