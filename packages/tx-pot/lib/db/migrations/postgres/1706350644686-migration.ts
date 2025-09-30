@@ -1,5 +1,8 @@
 /* eslint-disable check-file/filename-naming-convention */
-import { MigrationInterface, QueryRunner } from 'typeorm';
+import {
+  MigrationInterface,
+  QueryRunner,
+} from '@rosen-bridge/extended-typeorm';
 
 export class Migration1706350644686 implements MigrationInterface {
   name = 'Migration1706350644686';
