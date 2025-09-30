@@ -14,16 +14,7 @@ const config: KnipConfig = {
     '**/vite.config.ts.timestamp-.+',
     '**/vitest.config.ts.timestamp-.+',
   ],
-  ignoreDependencies: [
-    '@babel/preset-env',
-    '@babel/preset-env',
-    '@eslint/js',
-    'extensionless',
-    'globals',
-    'ts-node',
-    'tsx',
-    'vite-plugin-wasm',
-  ],
+  ignoreDependencies: ['@babel/preset-env', '@eslint/js', 'globals', 'tsx'],
   entry: [packages],
 };
 
