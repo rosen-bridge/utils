@@ -1,4 +1,4 @@
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, Repository } from '@rosen-bridge/extended-typeorm';
 import { TransactionEntity } from '../db/entities/transactionEntity';
 import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
 import {

@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm';
+import { Repository } from '@rosen-bridge/extended-typeorm';
 import { mockDataSource } from '../db/dataSource.mock';
 import {
   CallbackFunction,
