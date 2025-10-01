@@ -23,7 +23,6 @@ describe('DogeRpcRosenExtractor', () => {
      * - check returned value
      * @expected
      * - it should return expected rosenData object
-     * - it should contains rawData that is equal to origin rawData
      */
     it('should extract rosenData from DOGE locking tx successfully', () => {
       const validLockTx = testData.txs.lockTx;
@@ -35,8 +34,6 @@ describe('DogeRpcRosenExtractor', () => {
       const result = extractor.get(validLockTx as DogeRpcTransaction);
 
       expect(result).toStrictEqual(testData.rosenData);
-      // validate data by rawData
-      expect(testData.rosenData.rawData).toEqual(result?.rawData);
     });
 
     /**

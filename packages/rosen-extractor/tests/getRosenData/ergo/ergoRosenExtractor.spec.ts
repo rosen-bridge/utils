@@ -24,7 +24,6 @@ describe('ErgoRosenExtractor', () => {
      * - check return value
      * Expected:
      * - function returns rosenData object
-     * - it should contains rawData that is equal to origin rawData
      */
     it('should extract rosenData from locking tx successfully', () => {
       // generate a transaction with valid rosen data
@@ -36,11 +35,6 @@ describe('ErgoRosenExtractor', () => {
 
       // check return value
       expect(result).toStrictEqual(ErgoTestData.ergoRosenData.lockTx);
-
-      // validate data by rawData
-      expect(ErgoTestData.ergoRosenData.lockTx.rawData).toStrictEqual(
-        result?.rawData,
-      );
     });
 
     /**

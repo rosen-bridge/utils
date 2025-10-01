@@ -50,7 +50,6 @@ describe('KoiosRosenExtractor', () => {
      *  check return value
      * Expected:
      * - function returns rosenData object
-     * - it should contains rawData that is equal to origin rawData
      */
     it('should extract rosenData from ADA locking tx successfully', () => {
       // generate a transaction with valid rosen data (locking ADA)
@@ -65,10 +64,6 @@ describe('KoiosRosenExtractor', () => {
 
       // check return value
       expect(result).toStrictEqual(CardanoTestData.koiosRosenData.validAdaLock);
-      // validate data by rawData
-      expect(CardanoTestData.koiosRosenData.validAdaLock.rawData).toEqual(
-        result?.rawData,
-      );
     });
 
     /**

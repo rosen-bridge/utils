@@ -23,7 +23,6 @@ describe('DogeRosenExtractor', () => {
      * - check returned value
      * @expected
      * - it should return expected rosenData object
-     * - it should contains rawData that is equal to origin rawData
      */
     it('should extract rosenData from DOGE locking tx successfully', () => {
       const validLockTx = JsonBigInt.stringify(testData.txs.lockTx);
@@ -32,8 +31,6 @@ describe('DogeRosenExtractor', () => {
       const result = extractor.get(validLockTx);
 
       expect(result).toStrictEqual(testData.rosenData);
-      // validate data by rawData
-      expect(testData.rosenData.rawData).toEqual(result?.rawData);
     });
 
     /**

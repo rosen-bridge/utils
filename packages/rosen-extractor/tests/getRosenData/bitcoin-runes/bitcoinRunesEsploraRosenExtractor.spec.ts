@@ -29,7 +29,7 @@ describe('BitcoinRunesEsploraRosenExtractor', () => {
       const extractor = new BitcoinRunesEsploraRosenExtractor(
         testData.mockLockAddress,
         tokenMap,
-      ) as any;
+      );
       const result = extractor.get(validLockTx as BitcoinEsploraTransaction);
 
       expect(result).toStrictEqual(testData.rosenData);

@@ -40,7 +40,7 @@ export class CardanoOgmiosRosenExtractor extends AbstractRosenDataExtractor<Tran
                   amount: assetTransformation.amount,
                   targetChainTokenId: assetTransformation.to,
                   sourceTxId: transaction.id,
-                  rawData: JsonBigInt.stringify(metadata),
+                  rawData: JsonBigInt.stringify(data),
                 };
               }
             }

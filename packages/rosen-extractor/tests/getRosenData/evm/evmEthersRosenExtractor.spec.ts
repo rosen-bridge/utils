@@ -72,7 +72,6 @@ describe('EvmEthersRosenExtractor', () => {
      * @expected
      * - it should return expected rosenData object
      * - extractRawData of rpcExtractor should be called
-     * - it should contains rawData that is equal to origin rawData
      */
     it('should extract rosenData from EVM locking native-asset transfer tx successfully', () => {
       const validLockTx = testData.validNativeLockTx;
@@ -82,10 +81,6 @@ describe('EvmEthersRosenExtractor', () => {
 
       expect(result).toStrictEqual(testData.rosenDataNative);
       expect(rpcExtractorMock).toHaveBeenCalled();
-      // validate data by rawData
-      expect(testData.validNativeLockTx.data?.substring(2)).toStrictEqual(
-        result?.rawData,
-      );
     });
 
     /**

@@ -23,7 +23,6 @@ describe('BitcoinEsploraRosenExtractor', () => {
      * - check returned value
      * @expected
      * - it should return expected rosenData object
-     * - it should contains rawData that is equal to origin rawData
      */
     it('should extract rosenData from BTC locking tx successfully', () => {
       const validLockTx = testData.txs.lockTx;
@@ -35,8 +34,6 @@ describe('BitcoinEsploraRosenExtractor', () => {
       const result = extractor.get(validLockTx as BitcoinEsploraTransaction);
 
       expect(result).toStrictEqual(testData.rosenData);
-      // validate data by rawData
-      expect(validLockTx.vout[0].scriptpubkey).toEqual(result?.rawData);
     });
 
     /**

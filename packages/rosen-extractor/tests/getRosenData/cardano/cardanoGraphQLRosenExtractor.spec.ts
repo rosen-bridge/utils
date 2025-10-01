@@ -48,7 +48,6 @@ describe('GraphQLRosenExtractor', () => {
      *  check return value
      * Expected:
      * - function returns rosenData object
-     * - it should contains rawData that is equal to origin rawData
      */
     it('should extract rosenData from ADA locking tx successfully', () => {
       // generate a transaction with valid rosen data (locking ADA)
@@ -63,10 +62,6 @@ describe('GraphQLRosenExtractor', () => {
 
       // check return value
       expect(result).toStrictEqual(testData.graphQLRosenData.validAdaLock);
-      // validate data by rawData
-      expect(testData.graphQLRosenData.validAdaLock.rawData).toEqual(
-        result?.rawData,
-      );
     });
 
     /**
