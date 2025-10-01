@@ -66,7 +66,7 @@ export class BitcoinRunesRpcRosenExtractor extends AbstractRosenDataExtractor<Bi
         amount: '',
         targetChainTokenId: '',
         sourceTxId: transaction.txid,
-        rawData: '',
+        rawData: lockDataChunks.map((chunk) => chunk.data).join(''),
       };
     } catch (e) {
       this.logger.debug(
