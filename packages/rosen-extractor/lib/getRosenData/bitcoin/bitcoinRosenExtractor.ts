@@ -50,7 +50,7 @@ export class BitcoinRosenExtractor extends AbstractRosenDataExtractor<string> {
 
         try {
           opReturnData = parseOpReturn(output.scriptPubKey);
-          rawData = output.scriptPubKey;
+          rawData = output.scriptPubKey.slice(4);
           validData = true;
           break;
         } catch (e) {
