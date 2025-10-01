@@ -136,7 +136,7 @@ export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<Transaction
         amount: amount,
         targetChainTokenId: targetTokenId,
         sourceTxId: transaction.hash,
-        rawData: callData,
+        rawData: rosenDataRaw,
       };
     } catch (e) {
       this.logger.debug(

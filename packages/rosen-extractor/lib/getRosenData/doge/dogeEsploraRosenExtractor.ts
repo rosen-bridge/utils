@@ -42,7 +42,7 @@ export class DogeEsploraRosenExtractor extends AbstractRosenDataExtractor<DogeEs
 
         try {
           opReturnData = parseRosenData(output.scriptpubkey);
-          rawData = output.scriptpubkey;
+          rawData = output.scriptpubkey.slice(4);
           validData = true;
           break;
         } catch (e) {
