@@ -38,10 +38,7 @@ describe('ErgoNodeRosenExtractor', () => {
       );
 
       // check return value
-      expect(
-        ErgoTestData.nodeTransactions.validTokenLock.outputs[0]
-          .additionalRegisters.R4,
-      ).toStrictEqual(result?.rawData);
+      expect(result).toStrictEqual(ErgoTestData.nodeRosenData.validTokenLock);
     });
 
     /**
