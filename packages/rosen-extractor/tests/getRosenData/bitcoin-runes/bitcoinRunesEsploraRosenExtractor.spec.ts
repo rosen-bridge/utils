@@ -78,7 +78,7 @@ describe('BitcoinRunesEsploraRosenExtractor', () => {
       );
       const result = extractor.get(unorderedTx as BitcoinEsploraTransaction);
 
-      expect(result).toStrictEqual(testData.rosenData);
+      expect(result).toStrictEqual(testData.rosenData2);
     });
 
     /**

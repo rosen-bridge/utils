@@ -47,7 +47,7 @@ export class BitcoinRpcRosenExtractor extends AbstractRosenDataExtractor<Bitcoin
 
         try {
           opReturnData = parseOpReturn(output.scriptPubKey.hex);
-          rawData = output.scriptPubKey.hex.slice(4);
+          rawData = output.scriptPubKey.hex;
           validData = true;
           break;
         } catch (e) {

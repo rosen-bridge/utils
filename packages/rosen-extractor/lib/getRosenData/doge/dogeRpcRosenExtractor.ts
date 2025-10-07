@@ -40,7 +40,7 @@ export class DogeRpcRosenExtractor extends AbstractRosenDataExtractor<DogeRpcTra
 
         try {
           opReturnData = parseRosenData(output.scriptPubKey.hex);
-          rawData = output.scriptPubKey.hex.slice(4);
+          rawData = output.scriptPubKey.hex;
           validData = true;
           break;
         } catch (e) {

@@ -47,7 +47,7 @@ export class BitcoinEsploraRosenExtractor extends AbstractRosenDataExtractor<Bit
 
         try {
           opReturnData = parseOpReturn(output.scriptpubkey);
-          rawData = output.scriptpubkey.slice(4);
+          rawData = output.scriptpubkey;
           validData = true;
           break;
         } catch (e) {

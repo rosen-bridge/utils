@@ -44,6 +44,7 @@ export class CardanoGraphQLRosenExtractor extends AbstractRosenDataExtractor<Gra
                 amount: assetTransformation.amount,
                 targetChainTokenId: assetTransformation.to,
                 sourceTxId: transaction.hash,
+                // To DO: save rawData format as CBOR
                 rawData: JsonBigInt.stringify(data),
               };
             } else

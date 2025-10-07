@@ -41,6 +41,7 @@ export class CardanoBlockFrostRosenExtractor extends AbstractRosenDataExtractor<
               amount: assetTransformation.amount,
               targetChainTokenId: assetTransformation.to,
               sourceTxId: transaction.utxos.hash,
+              // To DO: save rawData format as CBOR
               rawData: JsonBigInt.stringify(data),
             };
           } else

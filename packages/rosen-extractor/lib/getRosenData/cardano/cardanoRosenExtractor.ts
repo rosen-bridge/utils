@@ -40,6 +40,7 @@ export class CardanoRosenExtractor extends AbstractRosenDataExtractor<string> {
               amount: assetTransformation.amount,
               targetChainTokenId: assetTransformation.to,
               sourceTxId: transaction.id,
+              // To DO: save rawData format as CBOR
               rawData: JsonBigInt.stringify(data),
             };
           }
