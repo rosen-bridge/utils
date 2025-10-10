@@ -40,7 +40,7 @@ export class CardanoOgmiosRosenExtractor extends AbstractRosenDataExtractor<Tran
                   amount: assetTransformation.amount,
                   targetChainTokenId: assetTransformation.to,
                   sourceTxId: transaction.id,
-                  // To DO: save rawData format as CBOR
+                  // TODO: save rawData in CBOR (local:ergo/rosen-bridge/utils#293)
                   rawData: JsonBigInt.stringify(data),
                 };
               }
