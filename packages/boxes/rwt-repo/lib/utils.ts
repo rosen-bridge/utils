@@ -1,10 +1,3 @@
-import JSONbigint from 'json-bigint';
-
-export const jsonBigInt = JSONbigint({
-  useNativeBigInt: true,
-  alwaysParseAsBig: true,
-});
-
 /**
  * returns min of the bigints passed as arguements
  *

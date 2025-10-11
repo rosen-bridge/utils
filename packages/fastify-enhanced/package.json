@@ -28,7 +28,6 @@
     "type-check": "tsc --noEmit"
   },
   "devDependencies": {
-    "@types/json-bigint": "^1.0.1",
     "@vitest/coverage-istanbul": "^3.1.4",
     "tsx": "^4.20.5",
     "vitest": "^3.1.4"
@@ -36,9 +35,9 @@
   "dependencies": {
     "@fastify/swagger": "^9.5.1",
     "@fastify/swagger-ui": "^5.2.3",
+    "@rosen-bridge/json-bigint": "^1.0.0",
     "fastify": "^5.3.3",
     "fastify-zod-openapi": "^4.1.2",
-    "json-bigint": "^1.0.0",
     "zod": "^3.25.56",
     "zod-openapi": "^4.2.4"
   },

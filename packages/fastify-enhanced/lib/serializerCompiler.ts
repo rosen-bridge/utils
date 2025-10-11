@@ -1,9 +1,9 @@
 import { FastifySerializerCompiler } from 'fastify/types/schema';
 import { ZodAny } from 'zod';
-import JsonBigIntFactory from 'json-bigint';
 
 import { ResponseValidationError } from './error';
 import { hasOwnProperty } from './utils';
+import { JsonBigIntFactory } from '@rosen-bridge/json-bigint';
 
 type SerType = FastifySerializerCompiler<ZodAny | { properties: ZodAny }>;
 type JsonHandler = ReturnType<typeof JsonBigIntFactory>;

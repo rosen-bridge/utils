@@ -1,7 +1,6 @@
 import { IConfig, IConfigSource } from 'config';
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
-import JsonBigIntFactory from 'json-bigint';
 import path from 'path';
 import {
   propertyValidators,
@@ -11,6 +10,7 @@ import { ConfigField, ConfigSchema } from './schema/types/fields';
 import { When } from './schema/types/validations';
 import { getSourceName, getValueFromConfigSources } from './utils';
 import { valueValidations, valueValidators } from './value/validators';
+import JsonBigInt from '@rosen-bridge/json-bigint';
 
 export class ConfigValidator {
   constructor(private schema: ConfigSchema) {
@@ -692,10 +692,6 @@ export class ConfigValidator {
     let ext = '';
     switch (format) {
       case 'json': {
-        const JsonBigInt = JsonBigIntFactory({
-          alwaysParseAsBig: false,
-          useNativeBigInt: true,
-        });
         output = JsonBigInt.stringify(configObj);
         ext = 'json';
         break;

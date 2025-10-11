@@ -6,8 +6,8 @@ import chalk from 'chalk';
 import ora from 'ora';
 import { ConfigValidator } from './index';
 import * as fs from 'fs';
-import JsonBigIntFactory from 'json-bigint';
 import * as yaml from 'js-yaml';
+import { JsonBigIntFactory } from '@rosen-bridge/json-bigint';
 
 const JsonBigInt = JsonBigIntFactory({
   alwaysParseAsBig: false,
