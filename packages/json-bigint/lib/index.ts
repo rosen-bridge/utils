@@ -5,4 +5,5 @@ const JsonBigInt = JsonBigIntFactory({
   useNativeBigInt: true,
 });
 
+export { JsonBigIntFactory };
 export default JsonBigInt;
