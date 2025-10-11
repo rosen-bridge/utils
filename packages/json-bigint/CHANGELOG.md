@@ -1,5 +1,15 @@
 # @rosen-bridge/json-bigint
 
+## 1.1.0
+
+### Minor Changes
+
+- export JsonBigIntFactory
+
+### Patch Changes
+
+- fix package-lock and move typescript and types/node into root
+
 ## 1.0.0
 
 ### Major Changes

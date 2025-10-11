@@ -1,5 +1,17 @@
 # @rosen-bridge/rwt-repo
 
+## 3.1.0
+
+### Minor Changes
+
+- Replace json-bigint dependency with @rosen-bridge/json-bigint
+
+### Patch Changes
+
+- fix package-lock and move typescript and types/node into root
+- Update dependencies
+  - @rosen-bridge/abstract-logger@3.0.1
+
 ## 3.0.0
 
 ### Major Changes

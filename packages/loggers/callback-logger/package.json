@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/callback-logger",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A new logger with callback method on each levels",
   "repository": {
     "type": "git",
@@ -28,7 +28,7 @@
     "tsx": "^4.20.5"
   },
   "dependencies": {
-    "@rosen-bridge/abstract-logger": "^3.0.0"
+    "@rosen-bridge/abstract-logger": "^3.0.1"
   },
   "engines": {
     "node": ">=22.18.0"

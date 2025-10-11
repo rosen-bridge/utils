@@ -1,5 +1,18 @@
 # @rosen-bridge/config
 
+## 1.1.0
+
+### Minor Changes
+
+- Replace json-bigint dependency with @rosen-bridge/json-bigint
+
+### Patch Changes
+
+- fix package-lock and move typescript and types/node into root
+- Update dependencies
+- Update dependencies
+  - @rosen-bridge/json-bigint@1.1.0
+
 ## 1.0.0
 
 ### Major Changes

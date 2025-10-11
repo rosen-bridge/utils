@@ -1,5 +1,14 @@
 # @rosen-bridge/fastify-enhanced
 
+## 2.0.1
+
+### Patch Changes
+
+- fix package-lock and move typescript and types/node into root
+- Update dependencies
+- Update dependencies
+  - @rosen-bridge/json-bigint@1.1.0
+
 ## 2.0.0
 
 ### Major Changes

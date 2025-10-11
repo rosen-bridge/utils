@@ -1,5 +1,14 @@
 # @rosen-bridge/tx-pot
 
+## 2.0.2
+
+### Patch Changes
+
+- fix package-lock and move typescript and types/node into root
+- Update dependencies
+  - @rosen-bridge/abstract-logger@3.0.1
+  - @rosen-bridge/extended-typeorm@1.0.1
+
 ## 2.0.1
 
 ### Patch Changes
