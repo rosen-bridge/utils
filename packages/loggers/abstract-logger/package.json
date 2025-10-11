@@ -25,9 +25,7 @@
     "release": "npm run test && npm run build && npm publish --access public"
   },
   "devDependencies": {
-    "@types/node": "^22.18.0",
-    "tsx": "^4.20.5",
-    "typescript": "^5.8.3"
+    "tsx": "^4.20.5"
   },
   "directories": {
     "lib": "lib"
