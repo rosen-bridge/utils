@@ -26,9 +26,7 @@
   },
   "devDependencies": {
     "@changesets/types": "^6.0.0",
-    "@types/node": "^22.18.0",
-    "tsx": "^4.20.5",
-    "typescript": "^5.8.3"
+    "tsx": "^4.20.5"
   },
   "engines": {
     "node": ">=22.18.0"

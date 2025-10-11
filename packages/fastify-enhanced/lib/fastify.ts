@@ -6,12 +6,12 @@ import {
   validatorCompiler,
 } from 'fastify-zod-openapi';
 import Fastify from 'fastify';
-import JsonBigIntFactory from 'json-bigint';
 
 import { FastifyWithZod, SwaggerOpts } from './types';
 import { registerSwagger } from './swagger';
 import { makeJsonParser } from './jsonParser';
 import { makeSerializerCompiler } from './serializerCompiler';
+import { JsonBigIntFactory } from '@rosen-bridge/json-bigint';
 
 /**
  * creates an instance of Fastify with Zod validation library as validator and

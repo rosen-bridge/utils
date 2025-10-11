@@ -2,8 +2,8 @@ import { ERGO_CHAIN } from '../../../lib/getRosenData/const';
 import CardanoTestData from './cardanoTestData';
 import { CardanoRosenExtractor } from '../../../lib';
 import TestUtils from '../testUtils';
-import * as JSONBigInt from 'json-bigint';
 import { TokenMap } from '@rosen-bridge/tokens';
+import JsonBigInt from '@rosen-bridge/json-bigint';
 
 describe('CardanoRosenExtractor', () => {
   const tokenMap = new TokenMap();
@@ -32,7 +32,7 @@ describe('CardanoRosenExtractor', () => {
         CardanoTestData.lockAddress,
         tokenMap,
       );
-      const result = extractor.get(JSONBigInt.stringify(validTokenLockTx));
+      const result = extractor.get(JsonBigInt.stringify(validTokenLockTx));
 
       // check returned value
       expect(result).toStrictEqual(
@@ -59,7 +59,7 @@ describe('CardanoRosenExtractor', () => {
         CardanoTestData.lockAddress,
         tokenMap,
       );
-      const result = extractor.get(JSONBigInt.stringify(validADALockTx));
+      const result = extractor.get(JsonBigInt.stringify(validADALockTx));
 
       // check returned value
       expect(result).toStrictEqual(CardanoTestData.rosenRosenData.validADALock);
@@ -84,7 +84,7 @@ describe('CardanoRosenExtractor', () => {
         CardanoTestData.lockAddress,
         tokenMap,
       );
-      const result = extractor.get(JSONBigInt.stringify(noLockTx));
+      const result = extractor.get(JsonBigInt.stringify(noLockTx));
 
       // check returned value
       expect(result).toBeUndefined();
@@ -113,7 +113,7 @@ describe('CardanoRosenExtractor', () => {
         CardanoTestData.lockAddress,
         tokenMap,
       );
-      const result = extractor.get(JSONBigInt.stringify(noMetadataTx));
+      const result = extractor.get(JsonBigInt.stringify(noMetadataTx));
 
       // check returned value
       expect(result).toBeUndefined();
@@ -144,7 +144,7 @@ describe('CardanoRosenExtractor', () => {
         CardanoTestData.lockAddress,
         tokenMap,
       );
-      const result = extractor.get(JSONBigInt.stringify(invalidMetadataTx));
+      const result = extractor.get(JsonBigInt.stringify(invalidMetadataTx));
 
       // check returned value
       expect(result).toBeUndefined();
@@ -164,7 +164,7 @@ describe('CardanoRosenExtractor', () => {
       'should return undefined when tx metadata does NOT contain %p',
       (key) => {
         // mock a transaction with missing property from metadata
-        const invalidTx = JSONBigInt.stringify(
+        const invalidTx = JsonBigInt.stringify(
           CardanoTestData.rosenTransactions.validTokenLock,
         ).replace(key, key + 'Fake');
 
@@ -200,7 +200,7 @@ describe('CardanoRosenExtractor', () => {
         CardanoTestData.lockAddress,
         tokenMap,
       );
-      const result = extractor.get(JSONBigInt.stringify(validTokenLockTx));
+      const result = extractor.get(JsonBigInt.stringify(validTokenLockTx));
 
       // check returned value
       expect(result).toBeUndefined();
@@ -225,7 +225,7 @@ describe('CardanoRosenExtractor', () => {
         CardanoTestData.lockAddress,
         tokenMap,
       );
-      const result = extractor.get(JSONBigInt.stringify(validTokenLockTx));
+      const result = extractor.get(JsonBigInt.stringify(validTokenLockTx));
 
       // check returned value
       expect(result).toBeUndefined();

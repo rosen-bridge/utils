@@ -2,14 +2,14 @@ import * as ergoLib from 'ergo-lib-wasm-nodejs';
 import { Constant } from 'ergo-lib-wasm-nodejs';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { RWTRepo, RWTRepoBuilder } from '../lib';
-import { jsonBigInt } from '../lib/utils';
 import { repoAddress, repoNft, boxInfo1, boxInfo2 } from './rwtRepoTestData';
+import JsonBigInt from '@rosen-bridge/json-bigint';
 
 describe('RWTRepo', () => {
   let rwtRepoWithExplorer: any;
   beforeEach(() => {
     rwtRepoWithExplorer = new RWTRepo(
-      ergoLib.ErgoBox.from_json(jsonBigInt.stringify(boxInfo1)),
+      ergoLib.ErgoBox.from_json(JsonBigInt.stringify(boxInfo1)),
       repoAddress,
       repoNft,
       '',
@@ -30,7 +30,7 @@ describe('RWTRepo', () => {
      */
     it(`should return a bigint with the value stored in R6[4] of this.box`, async () => {
       expect(rwtRepoWithExplorer.getErgCollateral()).toEqual(
-        jsonBigInt.parse(boxInfo1.additionalRegisters.R6.renderedValue)[4],
+        JsonBigInt.parse(boxInfo1.additionalRegisters.R6.renderedValue)[4],
       );
     });
   });
@@ -49,7 +49,7 @@ describe('RWTRepo', () => {
      */
     it(`should return a bigint with the value stored in R6[5] of this.box`, async () => {
       expect(rwtRepoWithExplorer.getRsnCollateral()).toEqual(
-        jsonBigInt.parse(boxInfo1.additionalRegisters.R6.renderedValue)[5],
+        JsonBigInt.parse(boxInfo1.additionalRegisters.R6.renderedValue)[5],
       );
     });
   });
@@ -71,7 +71,7 @@ describe('RWTRepo', () => {
     than R6[3]`, async () => {
       const boxInfo = boxInfo2;
       const rwtRepo = new RWTRepo(
-        ergoLib.ErgoBox.from_json(jsonBigInt.stringify(boxInfo2)),
+        ergoLib.ErgoBox.from_json(JsonBigInt.stringify(boxInfo2)),
         repoAddress,
         repoNft,
         '',

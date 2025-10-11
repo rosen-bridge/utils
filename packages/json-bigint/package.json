@@ -28,10 +28,8 @@
   },
   "devDependencies": {
     "@types/json-bigint": "^1.0.2",
-    "@types/node": "^22.18.0",
     "@vitest/coverage-istanbul": "^3.1.4",
     "tsx": "^4.20.5",
-    "typescript": "^5.8.3",
     "vitest": "^3.1.4"
   },
   "dependencies": {
