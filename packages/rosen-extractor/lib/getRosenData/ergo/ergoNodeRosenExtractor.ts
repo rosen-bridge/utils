@@ -49,6 +49,7 @@ export class ErgoNodeRosenExtractor extends AbstractRosenDataExtractor<NodeTrans
                   amount: assetTransformation.amount,
                   targetChainTokenId: assetTransformation.to,
                   sourceTxId: transaction.id,
+                  rawData: box.additionalRegisters.R4,
                 };
               }
             } else

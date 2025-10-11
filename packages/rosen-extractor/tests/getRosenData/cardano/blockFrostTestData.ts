@@ -493,6 +493,8 @@ export const blockFrostRosenData = {
     targetChainTokenId: 'erg',
     sourceTxId:
       '9f00d372e930d685c3b410a10f2bd035cd9a927c4fd8ef8e419c79b210af7ba6',
+    rawData:
+      '{"to":"ergo","bridgeFee":"1968503938","toAddress":"9hZxV3YNSfbCqS6GEses7DhAVSatvaoNtdsiNvkimPGG2c8fzkG","networkFee":"9842520","fromAddress":["addr_test1vzg07d2qp3xje0w77f982zkhqey50gjxrsdqh89yx8r7nasu97hr0",""]}',
   },
   validAdaLock: {
     toChain: 'ergo',
@@ -507,6 +509,8 @@ export const blockFrostRosenData = {
       'f6a69529b12a7e2326acffee8383e0c44408f87a872886fadf410fe8498006d3',
     sourceTxId:
       '9f00d372e930d685c3b410a10f2bd035cd9a927c4fd8ef8e419c79b210af7ba7',
+    rawData:
+      '{"to":"ergo","bridgeFee":"10000000","toAddress":"9hZxV3YNSfbCqS6GEses7DhAVSatvaoNtdsiNvkimPGG2c8fzkG","networkFee":"4000000","fromAddress":["addr_test1vzg07d2qp3xje0w77f982zkhqey50gjxrsdqh89yx8r7nasu97hr0",""]}',
   },
 };
 

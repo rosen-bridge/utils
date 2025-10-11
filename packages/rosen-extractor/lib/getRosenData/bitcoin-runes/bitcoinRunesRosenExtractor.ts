@@ -85,6 +85,9 @@ export class BitcoinRunesRosenExtractor extends AbstractRosenDataExtractor<strin
         amount: assetTransformation.amount,
         targetChainTokenId: assetTransformation.to,
         sourceTxId: transaction.id,
+        rawData: outputs
+          .map((output) => `${output.scriptPubKey}:${output.value}`)
+          .join(','),
       };
     } catch (e) {
       this.logger.debug(

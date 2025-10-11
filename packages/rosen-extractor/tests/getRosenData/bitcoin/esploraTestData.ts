@@ -167,6 +167,8 @@ export const rosenData = {
     'dcbda15f1361f5eeba416dd63e059fce34f0c57499e9afe733ea0fd59cf63f48',
   sourceTxId:
     '6a1b9e7a755afb5d82ecaa5f432d51bd23e452ee1031fc99066e92788a075a84',
+  rawData:
+    '6a3300000000007554fc820000000000962f582103f999da8e6e42660e4464d17d29e63bc006734a6710a24eb489b466323d3a9339',
 };
 
 export const lockUtxo = {
