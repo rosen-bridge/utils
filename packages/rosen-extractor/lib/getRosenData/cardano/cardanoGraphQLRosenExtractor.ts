@@ -1,10 +1,14 @@
+import JsonBigInt from '@rosen-bridge/json-bigint';
 import { isPlainObject } from 'lodash-es';
 import { RosenData, TokenTransformation } from '../abstract/types';
 import AbstractRosenDataExtractor from '../abstract/abstractRosenDataExtractor';
 import { CARDANO_CHAIN, CARDANO_NATIVE_TOKEN } from '../const';
 import { GraphQLTransaction, GraphQLTxOutput } from './types';
-import JsonBigInt from '@rosen-bridge/json-bigint';
-import { getCardanoTokenId, parseRosenData } from './utils';
+import {
+  convertToCborBase64,
+  getCardanoTokenId,
+  parseRosenData,
+} from './utils';
 
 export class CardanoGraphQLRosenExtractor extends AbstractRosenDataExtractor<GraphQLTransaction> {
   readonly chain = CARDANO_CHAIN;
@@ -44,8 +48,7 @@ export class CardanoGraphQLRosenExtractor extends AbstractRosenDataExtractor<Gra
                 amount: assetTransformation.amount,
                 targetChainTokenId: assetTransformation.to,
                 sourceTxId: transaction.hash,
-                // TODO: save rawData in CBOR (local:ergo/rosen-bridge/utils#293)
-                rawData: JsonBigInt.stringify(data),
+                rawData: convertToCborBase64(data),
               };
             } else
               this.logger.debug(

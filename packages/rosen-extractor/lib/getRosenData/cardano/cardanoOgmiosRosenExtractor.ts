@@ -1,13 +1,17 @@
-import { RosenData, TokenTransformation } from '../abstract/types';
-import AbstractRosenDataExtractor from '../abstract/abstractRosenDataExtractor';
-import { CARDANO_CHAIN, CARDANO_NATIVE_TOKEN } from '../const';
 import {
   ObjectNoSchema,
   Transaction,
   TransactionOutput,
 } from '@cardano-ogmios/schema';
 import JsonBigInt from '@rosen-bridge/json-bigint';
-import { getCardanoTokenId, parseRosenData } from './utils';
+import { RosenData, TokenTransformation } from '../abstract/types';
+import AbstractRosenDataExtractor from '../abstract/abstractRosenDataExtractor';
+import { CARDANO_CHAIN, CARDANO_NATIVE_TOKEN } from '../const';
+import {
+  convertToCborBase64,
+  getCardanoTokenId,
+  parseRosenData,
+} from './utils';
 
 export class CardanoOgmiosRosenExtractor extends AbstractRosenDataExtractor<Transaction> {
   readonly chain = CARDANO_CHAIN;
@@ -40,8 +44,7 @@ export class CardanoOgmiosRosenExtractor extends AbstractRosenDataExtractor<Tran
                   amount: assetTransformation.amount,
                   targetChainTokenId: assetTransformation.to,
                   sourceTxId: transaction.id,
-                  // TODO: save rawData in CBOR (local:ergo/rosen-bridge/utils#293)
-                  rawData: JsonBigInt.stringify(data),
+                  rawData: convertToCborBase64(data),
                 };
               }
             }

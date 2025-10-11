@@ -585,7 +585,7 @@ export const graphQLRosenData = {
     sourceTxId:
       '9f00d372e930d685c3b410a10f2bd035cd9a927c4fd8ef8e419c79b210af7ba6',
     rawData:
-      '{"to":"ergo","bridgeFee":"1968503938","toAddress":"9hZxV3YNSfbCqS6GEses7DhAVSatvaoNtdsiNvkimPGG2c8fzkG","networkFee":"9842520","fromAddress":["addr_test1vzg07d2qp3xje0w77f982zkhqey50gjxrsdqh89yx8r7nasu97hr0",""]}',
+      'pWJ0b2RlcmdvaWJyaWRnZUZlZWoxOTY4NTAzOTM4aXRvQWRkcmVzc3gzOWhaeFYzWU5TZmJDcVM2R0VzZXM3RGhBVlNhdHZhb050ZHNpTnZraW1QR0cyYzhmemtHam5ldHdvcmtGZWVnOTg0MjUyMGtmcm9tQWRkcmVzc4J4P2FkZHJfdGVzdDF2emcwN2QycXAzeGplMHc3N2Y5ODJ6a2hxZXk1MGdqeHJzZHFoODl5eDhyN25hc3U5N2hyMGA=',
   },
   validAdaLock: {
     toChain: 'ergo',
@@ -601,7 +601,7 @@ export const graphQLRosenData = {
     sourceTxId:
       '9f00d372e930d685c3b410a10f2bd035cd9a927c4fd8ef8e419c79b210af7ba7',
     rawData:
-      '{"to":"ergo","bridgeFee":"10000000","toAddress":"9hZxV3YNSfbCqS6GEses7DhAVSatvaoNtdsiNvkimPGG2c8fzkG","networkFee":"4000000","fromAddress":["addr_test1vzg07d2qp3xje0w77f982zkhqey50gjxrsdqh89yx8r7nasu97hr0",""]}',
+      'pWJ0b2RlcmdvaWJyaWRnZUZlZWgxMDAwMDAwMGl0b0FkZHJlc3N4MzloWnhWM1lOU2ZiQ3FTNkdFc2VzN0RoQVZTYXR2YW9OdGRzaU52a2ltUEdHMmM4ZnprR2puZXR3b3JrRmVlZzQwMDAwMDBrZnJvbUFkZHJlc3OCeD9hZGRyX3Rlc3QxdnpnMDdkMnFwM3hqZTB3NzdmOTgyemtocWV5NTBnanhyc2RxaDg5eXg4cjduYXN1OTdocjBg',
   },
 };
 

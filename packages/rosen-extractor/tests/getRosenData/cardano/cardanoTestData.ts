@@ -461,7 +461,7 @@ export default class CardanoTestData {
       sourceTxId:
         '9f00d372e930d685c3b410a10f2bd035cd9a927c4fd8ef8e419c79b210af7ba6',
       rawData:
-        '{"bridgeFee":"10376749","fromAddress":["addr1qytsk73jatycajqksafza5z90cw3zj2exhtdqx226r2l6dphvyt647kn7zl","3svpnzjmuty2sfsr28cmf3aaa263hazqqxwdedk"],"networkFee":"3829872","to":"ergo","toAddress":"9hZxV3YNSfbCqS6GEses7DhAVSatvaoNtdsiNvkimPGG2c8fzkG"}',
+        'pWJ0b2RlcmdvaWJyaWRnZUZlZWgxMDM3Njc0OWl0b0FkZHJlc3N4MzloWnhWM1lOU2ZiQ3FTNkdFc2VzN0RoQVZTYXR2YW9OdGRzaU52a2ltUEdHMmM4ZnprR2puZXR3b3JrRmVlZzM4Mjk4NzJrZnJvbUFkZHJlc3OCeEBhZGRyMXF5dHNrNzNqYXR5Y2FqcWtzYWZ6YTV6OTBjdzN6ajJleGh0ZHF4MjI2cjJsNmRwaHZ5dDY0N2tuN3pseCczc3ZwbnpqbXV0eTJzZnNyMjhjbWYzYWFhMjYzaGF6cXF4d2RlZGs=',
     },
     validAdaLock: {
       toChain: 'ergo',
@@ -477,7 +477,7 @@ export default class CardanoTestData {
       sourceTxId:
         '9f00d372e930d685c3b410a10f2bd035cd9a927c4fd8ef8e419c79b210af7ba7',
       rawData:
-        '{"bridgeFee":"10000","fromAddress":["addr_test1vzg07d2qp3xje0w77f982zkhqey50gjxrsdqh89yx8r7nasu97hr0"],"networkFee":"10000","to":"ergo","toAddress":"9hZxV3YNSfbCqS6GEses7DhAVSatvaoNtdsiNvkimPGG2c8fzkG"}',
+        'pWJ0b2RlcmdvaWJyaWRnZUZlZWUxMDAwMGl0b0FkZHJlc3N4MzloWnhWM1lOU2ZiQ3FTNkdFc2VzN0RoQVZTYXR2YW9OdGRzaU52a2ltUEdHMmM4ZnprR2puZXR3b3JrRmVlZTEwMDAwa2Zyb21BZGRyZXNzgXg/YWRkcl90ZXN0MXZ6ZzA3ZDJxcDN4amUwdzc3Zjk4MnpraHFleTUwZ2p4cnNkcWg4OXl4OHI3bmFzdTk3aHIw',
     },
   };
 
@@ -754,7 +754,7 @@ export default class CardanoTestData {
       sourceTxId:
         '55ec4f12b1a8656e07bc5e4281af3c12bf7b63bf39811eb5762a2f522be2600f',
       rawData:
-        '{"to":"ergo","bridgeFee":"3000","networkFee":"300","toAddress":"9hZxV3YNSfbCqS6GEses7DhAVSatvaoNtdsiNvkimPGG2c8fzkG","fromAddress":["addr1q8hmp5zjzvv7s7pmgemz3mvrkd2nu7609hwgsqa0auf6h7h3r6x6jn2zrt8",""]}',
+        'pWJ0b2RlcmdvaWJyaWRnZUZlZWQzMDAwaXRvQWRkcmVzc3gzOWhaeFYzWU5TZmJDcVM2R0VzZXM3RGhBVlNhdHZhb050ZHNpTnZraW1QR0cyYzhmemtHam5ldHdvcmtGZWVjMzAwa2Zyb21BZGRyZXNzgnhAYWRkcjFxOGhtcDV6anp2djdzN3BtZ2VtejNtdnJrZDJudTc2MDlod2dzcWEwYXVmNmg3aDNyNng2am4yenJ0OGA=',
     },
     validAdaLock: {
       toChain: 'ergo',
@@ -770,7 +770,7 @@ export default class CardanoTestData {
       sourceTxId:
         '55ec4f12b1a8656e07bc5e4281af3c12bf7b63bf39811eb5762a2f522be2600f',
       rawData:
-        '{"to":"ergo","bridgeFee":"3000","networkFee":"300","toAddress":"9hZxV3YNSfbCqS6GEses7DhAVSatvaoNtdsiNvkimPGG2c8fzkG","fromAddress":["addr1q8hmp5zjzvv7s7pmgemz3mvrkd2nu7609hwgsqa0auf6h7h3r6x6jn2zrt8",""]}',
+        'pWJ0b2RlcmdvaWJyaWRnZUZlZWQzMDAwaXRvQWRkcmVzc3gzOWhaeFYzWU5TZmJDcVM2R0VzZXM3RGhBVlNhdHZhb050ZHNpTnZraW1QR0cyYzhmemtHam5ldHdvcmtGZWVjMzAwa2Zyb21BZGRyZXNzgnhAYWRkcjFxOGhtcDV6anp2djdzN3BtZ2VtejNtdnJrZDJudTc2MDlod2dzcWEwYXVmNmg3aDNyNng2am4yenJ0OGA=',
     },
   };
 
@@ -1063,7 +1063,7 @@ export default class CardanoTestData {
       sourceTxId:
         'c5afb967619ee64e0d724a56d27670fee6fe698df1375692d9868cb9792467c8',
       rawData:
-        '{"to":"ergo","bridgeFee":"165000000","toAddress":"9g7mqqQAnUG4gWi6pFmic65ZfUrrWiVkMnbsg2hXUx6aVbBSTJ4","networkFee":"175000","fromAddress":["addr1q9jperhqputlfnfqhteu6eu2xhjwxa9keph08vgrqjg357tthg3xm3n4r6p","w85a5p6gdqv9v5zd6vmqdpxvl0jrql2aszjgvaj"]}',
+        'pWJ0b2RlcmdvaWJyaWRnZUZlZWkxNjUwMDAwMDBpdG9BZGRyZXNzeDM5ZzdtcXFRQW5VRzRnV2k2cEZtaWM2NVpmVXJyV2lWa01uYnNnMmhYVXg2YVZiQlNUSjRqbmV0d29ya0ZlZWYxNzUwMDBrZnJvbUFkZHJlc3OCeEBhZGRyMXE5anBlcmhxcHV0bGZuZnFodGV1NmV1Mnhoand4YTlrZXBoMDh2Z3JxamczNTd0dGhnM3htM240cjZweCd3ODVhNXA2Z2Rxdjl2NXpkNnZtcWRweHZsMGpycWwyYXN6amd2YWo=',
     },
     validADALock: {
       toChain: 'ergo',
@@ -1079,7 +1079,7 @@ export default class CardanoTestData {
       sourceTxId:
         '9aafc88a1342be4899a4a44cc509a74df0aafa2bb5f04ae5ef425edde9a2617c',
       rawData:
-        '{"to":"ergo","bridgeFee":"8500000","toAddress":"9gh2VssYZWZNFwhbC4VhKytiGDbCdwqYfdorQ6US6Ftj3n74rTX","networkFee":"9000","fromAddress":["addr1qyhuv6w60yf5twtv9dky7pgxkayxzcygkqfygje2kwqj5ung67rta7rlkn5","g0a73c43efpcpznk9j8uhaukpdr9ye3xqk2kgam"]}',
+        'pWJ0b2RlcmdvaWJyaWRnZUZlZWc4NTAwMDAwaXRvQWRkcmVzc3gzOWdoMlZzc1laV1pORndoYkM0VmhLeXRpR0RiQ2R3cVlmZG9yUTZVUzZGdGozbjc0clRYam5ldHdvcmtGZWVkOTAwMGtmcm9tQWRkcmVzc4J4QGFkZHIxcXlodXY2dzYweWY1dHd0djlka3k3cGd4a2F5eHpjeWdrcWZ5Z2plMmt3cWo1dW5nNjdydGE3cmxrbjV4J2cwYTczYzQzZWZwY3B6bms5ajh1aGF1a3Bkcjl5ZTN4cWsya2dhbQ==',
     },
   };
 

@@ -1,4 +1,5 @@
 import { isArray, isString, isPlainObject } from 'lodash-es';
+import cbor from 'cbor';
 
 /**
  * Parse and validate Rosen data encoded in transaction metadata
@@ -34,3 +35,16 @@ export const parseRosenData = (data: any) => {
  */
 export const getCardanoTokenId = (policyId: string, assetName: string) =>
   `${policyId}.${assetName}`;
+
+/**
+ * @param data
+ * @returns cbor base64 string
+ */
+export const convertToCborBase64 = (data: string | Object | undefined) => {
+  return cbor
+    .encodeCanonical(
+      // reparse data to fix JsonBigint behavior
+      JSON.parse(JSON.stringify(data)),
+    )
+    .toString('base64');
+};
