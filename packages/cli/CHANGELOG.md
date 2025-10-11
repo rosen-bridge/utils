@@ -1,5 +1,11 @@
 # @rosen-bridge/cli
 
+## 2.0.1
+
+### Patch Changes
+
+- Remove unused dependencies and install missed dependencies
+
 ## 2.0.0
 
 ### Major Changes

@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/cli",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "The official Rosen bridge cli, providing helpers for the tasks related to Rosen bridge",
   "repository": {
     "type": "git",

@@ -1,5 +1,15 @@
 # @rosen-bridge/rosen-extractor
 
+## 10.1.0
+
+### Minor Changes
+
+- Add rawData value to The RosenData interface
+
+### Patch Changes
+
+- Remove unused dependencies and install missed dependencies
+
 ## 10.0.0
 
 ### Major Changes
