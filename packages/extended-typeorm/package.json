@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/extended-typeorm",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "An extended typeorm datasource with run some queries better",
   "repository": {
     "type": "git",

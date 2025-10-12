@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/fastify-enhanced",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "a wrapper around fastify web framework to make it even better",
   "repository": {
     "type": "git",
@@ -22,7 +22,7 @@
     "lint:check": "eslint . && npm run prettify:check",
     "prettify": "prettier --write . --ignore-path ../../.gitignore",
     "prettify:check": "prettier --check . --ignore-path ../../.gitignore",
-    "release": "npm run build && npm publish --access public",
+    "release": "npm run test -- --run && npm run build && npm publish --access public",
     "test": "NODE_OPTIONS='--import tsx' vitest",
     "test:bin": "tsx tests/bin.ts",
     "type-check": "tsc --noEmit"
@@ -35,7 +35,7 @@
   "dependencies": {
     "@fastify/swagger": "^9.5.1",
     "@fastify/swagger-ui": "^5.2.3",
-    "@rosen-bridge/json-bigint": "^1.0.0",
+    "@rosen-bridge/json-bigint": "^1.1.0",
     "fastify": "^5.3.3",
     "fastify-zod-openapi": "^4.1.2",
     "zod": "^3.25.56",

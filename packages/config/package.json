@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/config",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "a package to manage configs of rosen bridge projects",
   "repository": {
     "type": "git",
@@ -38,7 +38,7 @@
     "vitest": "^3.1.4"
   },
   "dependencies": {
-    "@rosen-bridge/json-bigint": "^1.0.0",
+    "@rosen-bridge/json-bigint": "^1.1.0",
     "chalk": "^5.3.0",
     "config": "^3.3.10",
     "js-yaml": "^4.1.0",
