@@ -1,5 +1,11 @@
 # @rosen-bridge/changeset-formatter
 
+## 2.0.1
+
+### Patch Changes
+
+- Fix package-lock and move typescript and types/node into root
+
 ## 2.0.0
 
 ### Major Changes

@@ -1,5 +1,11 @@
 # @rosen-bridge/abstract-logger
 
+## 3.0.1
+
+### Patch Changes
+
+- Fix package-lock and move typescript and types/node into root
+
 ## 3.0.0
 
 ### Major Changes

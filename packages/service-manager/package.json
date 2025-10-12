@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/service-manager",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "is a Typescript package to simplify auto-start and auto-stop service management in a hierarchical structure, ensuring proper startup order and dependency handling",
   "repository": {
     "type": "git",
@@ -22,7 +22,7 @@
     "lint:check": "eslint . && npm run prettify:check",
     "prettify": "prettier --write . --ignore-path ../../.gitignore",
     "prettify:check": "prettier --check . --ignore-path ../../.gitignore",
-    "release": "npm run build && npm publish --access public",
+    "release": "npm run test -- --run && npm run build && npm publish --access public",
     "test": "NODE_OPTIONS='--import tsx' vitest",
     "type-check": "tsc --noEmit"
   },
@@ -32,7 +32,7 @@
     "vitest": "^3.1.4"
   },
   "dependencies": {
-    "@rosen-bridge/abstract-logger": "^3.0.0",
+    "@rosen-bridge/abstract-logger": "^3.0.1",
     "await-semaphore": "^0.1.3"
   },
   "engines": {

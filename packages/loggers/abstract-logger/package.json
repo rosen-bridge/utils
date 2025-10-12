@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/abstract-logger",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Rosen Bridge abstract logger class, the base type for loggers used in all Rosen packages",
   "repository": {
     "type": "git",
@@ -22,7 +22,7 @@
     "lint:check": "eslint . && npm run prettify:check",
     "build": "tsc --build tsconfig.build.json",
     "type-check": "tsc --noEmit",
-    "release": "npm run test && npm run build && npm publish --access public"
+    "release": "npm run build && npm publish --access public"
   },
   "devDependencies": {
     "tsx": "^4.20.5"
