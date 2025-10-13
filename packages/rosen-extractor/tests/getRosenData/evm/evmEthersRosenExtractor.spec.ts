@@ -1,3 +1,4 @@
+import { beforeAll, beforeEach, expect, vi, it, describe } from 'vitest';
 import { EvmEthersRosenExtractor } from '../../../lib';
 import * as testData from './testData';
 import TestUtils from '../testUtils';
@@ -48,7 +49,7 @@ describe('EvmEthersRosenExtractor', () => {
       chainName,
       nativeToken,
     );
-    const rpcExtractorMock = jest.spyOn(
+    const rpcExtractorMock = vi.spyOn(
       (extractor as any).rpcExtractor,
       'extractRawData',
     );

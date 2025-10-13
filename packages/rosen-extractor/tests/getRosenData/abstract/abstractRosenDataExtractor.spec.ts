@@ -1,15 +1,16 @@
+import { beforeAll, expect, vi, it, describe } from 'vitest';
 import TestUtils from '../testUtils';
 import * as addressCodec from '@rosen-bridge/address-codec';
 import { TestRosenDataExtractor } from './testRosenDataExtractor';
 import { TokenMap } from '@rosen-bridge/tokens';
 
-jest.mock('@rosen-bridge/address-codec', () => {
+vi.mock('@rosen-bridge/address-codec', async () => {
+  const actual = await vi.importActual('@rosen-bridge/address-codec');
   return {
     __esModule: true,
-    ...jest.requireActual('@rosen-bridge/address-codec'),
+    ...actual,
   };
 });
-
 describe('AbstractRosenDataExtractor', () => {
   const tokenMap = new TokenMap();
 
@@ -46,7 +47,7 @@ describe('AbstractRosenDataExtractor', () => {
    * - to return undefined
    */
   it('should return undefined when validateAddress throws error', () => {
-    jest.spyOn(addressCodec, 'validateAddress').mockImplementation(() => {
+    vi.spyOn(addressCodec, 'validateAddress').mockImplementation(() => {
       throw addressCodec.UnsupportedAddressError;
     });
     const extractor = new TestRosenDataExtractor('', tokenMap);

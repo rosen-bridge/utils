@@ -1,3 +1,4 @@
+import { beforeAll, expect, it, describe } from 'vitest';
 import { BitcoinRpcRosenExtractor } from '../../../lib';
 import * as testData from './rpcTestData';
 import TestUtils from '../testUtils';

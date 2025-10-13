@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { parseRosenData } from '../lib/utils';
 import * as testData from './testData';
 

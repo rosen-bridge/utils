@@ -1,3 +1,4 @@
+import { beforeEach, expect, it, describe, vi } from 'vitest';
 import download from 'download';
 
 import downloadRosenAssets from '../lib/downloadRosenAssets';
@@ -12,7 +13,7 @@ import {
 
 import { mockOctokit, mockOctokitGetReleaseByTag } from './mocks/octokit.mock';
 
-jest.mock('download');
+vi.mock('download');
 
 describe('downloadRosenAssets', () => {
   beforeEach(() => {
@@ -72,7 +73,7 @@ describe('downloadRosenAssets', () => {
    *    corresponding truncated asset name
    */
   it('should download Rosen assets correctly when including prereleases', async () => {
-    jest.mocked(download).mockClear();
+    vi.mocked(download).mockClear();
     await downloadRosenAssets('mainnet', 'rosen', {
       includePrereleases: true,
     });
@@ -170,7 +171,7 @@ describe('downloadRosenAssets', () => {
    * - `download` function should not get called
    */
   it('should not call `download` function when no matching release is found', async () => {
-    jest.mocked(download).mockClear();
+    vi.mocked(download).mockClear();
 
     await downloadRosenAssets('no-release-net', 'rosen');
 
@@ -191,7 +192,7 @@ describe('downloadRosenAssets', () => {
    * - `download` function should throw `RosenAssetsDownloadError`
    */
   it('should throw an error when an error happens', async () => {
-    jest.mocked(download).mockRejectedValue(new Error('Bad!'));
+    vi.mocked(download).mockRejectedValue(new Error('Bad!'));
 
     const downloadPromise = downloadRosenAssets('mainnet', 'rosen');
 
