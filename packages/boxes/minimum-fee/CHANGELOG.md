@@ -1,5 +1,11 @@
 # @rosen-bridge/minimum-fee
 
+## 3.1.0
+
+### Minor Changes
+
+- Update rosen clients
+
 ## 3.0.1
 
 ### Patch Changes
