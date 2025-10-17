@@ -1,5 +1,6 @@
 ---
-'@rosen-bridge/rosen-extractor': minor
+'@rosen-bridge/rosen-extractor': major
 ---
 
-save cardano rawData in CBOR(base64) format
+- save Cardano rawData in CBOR format
+- remove Cardano GraphQL module (no longer maintained)

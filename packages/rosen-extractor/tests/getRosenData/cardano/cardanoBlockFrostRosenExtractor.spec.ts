@@ -78,7 +78,6 @@ describe('BlockFrostRosenExtractor', () => {
     it('should return undefined when tx locks nothing', () => {
       // generate a transaction with no lock box
       const noLock = testData.blockFrostTransactions.noLock;
-
       // run test
       const extractor = new CardanoBlockFrostRosenExtractor(
         testData.lockAddress,

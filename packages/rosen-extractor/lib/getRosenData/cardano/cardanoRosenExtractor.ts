@@ -3,11 +3,7 @@ import AbstractRosenDataExtractor from '../abstract/abstractRosenDataExtractor';
 import { RosenData, TokenTransformation } from '../abstract/types';
 import { CardanoBoxCandidate, CardanoTx } from './types';
 import { CARDANO_CHAIN, CARDANO_NATIVE_TOKEN } from '../const';
-import {
-  convertToCborBase64,
-  getCardanoTokenId,
-  parseRosenData,
-} from './utils';
+import { getCardanoTokenId, parseRosenData } from './utils';
 
 export class CardanoRosenExtractor extends AbstractRosenDataExtractor<string> {
   readonly chain = CARDANO_CHAIN;
@@ -26,7 +22,7 @@ export class CardanoRosenExtractor extends AbstractRosenDataExtractor<string> {
     }
     try {
       const baseError = `No rosen data found for tx [${transaction.id}]`;
-      const data = transaction.metadata?.['0'];
+      const data = transaction.metadata?.parsedJson?.['0'];
       const rosenData = parseRosenData(data);
       if (rosenData) {
         const lockOutputs = transaction.outputs.filter(
@@ -44,7 +40,7 @@ export class CardanoRosenExtractor extends AbstractRosenDataExtractor<string> {
               amount: assetTransformation.amount,
               targetChainTokenId: assetTransformation.to,
               sourceTxId: transaction.id,
-              rawData: convertToCborBase64(data),
+              rawData: transaction.metadata!.cbor,
             };
           }
         }

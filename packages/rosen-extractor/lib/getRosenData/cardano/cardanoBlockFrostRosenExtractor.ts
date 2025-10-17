@@ -4,11 +4,7 @@ import { RosenData, TokenTransformation } from '../abstract/types';
 import AbstractRosenDataExtractor from '../abstract/abstractRosenDataExtractor';
 import { CARDANO_CHAIN, CARDANO_NATIVE_TOKEN } from '../const';
 import { BlockFrostOutputBox, BlockFrostTransaction } from './types';
-import {
-  convertToCborBase64,
-  getCardanoTokenId,
-  parseRosenData,
-} from './utils';
+import { getCardanoTokenId, parseRosenData } from './utils';
 
 export class CardanoBlockFrostRosenExtractor extends AbstractRosenDataExtractor<BlockFrostTransaction> {
   readonly chain = CARDANO_CHAIN;
@@ -20,13 +16,15 @@ export class CardanoBlockFrostRosenExtractor extends AbstractRosenDataExtractor<
     transaction: BlockFrostTransaction,
   ): RosenData | undefined => {
     const baseError = `No rosen data found for tx [${transaction.utxos.hash}]`;
-    const metadata = transaction.metadata;
+    const metadata = transaction.metadataCbor;
     try {
       if (metadata.length === 0) {
         this.logger.debug(baseError + `: No metadata`);
         return undefined;
       }
-      const data = metadata.find((data) => data.label === '0')?.json_metadata;
+      const data = JsonBigInt.parse(
+        metadata.find((data) => data.label === '0')?.metadata!,
+      );
       const rosenData = parseRosenData(data);
       if (rosenData) {
         const lockOutputs = transaction.utxos.outputs.filter(
@@ -45,7 +43,9 @@ export class CardanoBlockFrostRosenExtractor extends AbstractRosenDataExtractor<
               amount: assetTransformation.amount,
               targetChainTokenId: assetTransformation.to,
               sourceTxId: transaction.utxos.hash,
-              rawData: convertToCborBase64(data),
+              rawData:
+                metadata.find((data) => data.label === '0')?.cbor_metadata ??
+                '',
             };
           } else
             this.logger.debug(

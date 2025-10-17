@@ -46,7 +46,10 @@ interface CardanoBoxCandidate {
   assets: Array<CardanoAsset>;
 }
 
-type CardanoMetadata = Record<string, string | Record<string, any>>;
+type CardanoMetadata = {
+  parsedJson: Record<string, string | Record<string, any>>;
+  cbor: string;
+};
 
 interface CardanoTx {
   id: string;
@@ -58,7 +61,7 @@ interface CardanoTx {
 
 interface BlockFrostTransaction {
   utxos: components['schemas']['tx_content_utxo'];
-  metadata: components['schemas']['tx_content_metadata'];
+  metadataCbor: components['schemas']['tx_content_metadata_cbor'];
 }
 
 type BlockFrostOutputBox =

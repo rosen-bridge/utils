@@ -4,11 +4,7 @@ import { RosenData, TokenTransformation } from '../abstract/types';
 import AbstractRosenDataExtractor from '../abstract/abstractRosenDataExtractor';
 import { CARDANO_CHAIN, CARDANO_NATIVE_TOKEN } from '../const';
 import { KoiosCborTransaction } from './types';
-import {
-  convertToCborBase64,
-  getCardanoTokenId,
-  parseRosenData,
-} from './utils';
+import { getCardanoTokenId, parseRosenData } from './utils';
 import {
   TransactionOutputJSON,
   decode_metadatum_to_json_str,
@@ -58,7 +54,7 @@ export class CardanoKoiosRosenExtractor extends AbstractRosenDataExtractor<Koios
                 amount: assetTransformation.amount,
                 targetChainTokenId: assetTransformation.to,
                 sourceTxId: transaction.tx_hash,
-                rawData: convertToCborBase64(data),
+                rawData: transaction.cbor,
               };
             }
           }
