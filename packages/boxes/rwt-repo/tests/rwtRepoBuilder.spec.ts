@@ -1,5 +1,4 @@
 import * as ergoLib from 'ergo-lib-wasm-nodejs';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { RWTRepoBuilder } from '../lib';
 import {
   boxInfo1,

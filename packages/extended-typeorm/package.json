@@ -33,7 +33,7 @@
     "build": "tsc --build tsconfig.build.json",
     "type-check": "tsc --noEmit",
     "test": "NODE_OPTIONS='--import tsx' vitest",
-    "coverage": "npm run test -- --coverage --pass-with-no-tests",
+    "coverage": "npm run test -- --coverage",
     "release": "npm run test && npm run build && npm publish --access public"
   },
   "devDependencies": {

@@ -1,4 +1,3 @@
-import { beforeEach, expect, it, describe } from 'vitest';
 import {
   fetchReleasesPage,
   findLatestRelease,

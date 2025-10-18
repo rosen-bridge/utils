@@ -2,6 +2,9 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
+    globals: true,
+    inspect: true,
+    fileParallelism: false,
     reporters: ['default', 'verbose'],
     environment: 'node',
     deps: {

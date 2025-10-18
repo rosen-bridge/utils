@@ -1,4 +1,3 @@
-import { expect, vi, it, describe } from 'vitest';
 import { ErgoBox } from 'ergo-lib-wasm-nodejs';
 import {
   ChainMinimumFee,

@@ -1,4 +1,3 @@
-import { beforeAll, expect, it, describe } from 'vitest';
 import { ErgoNodeRosenExtractor } from '../../../lib';
 import ErgoTestData from './ergoTestData';
 import TestUtils from '../testUtils';

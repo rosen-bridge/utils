@@ -1,4 +1,3 @@
-import { beforeEach, expect, it, describe, vi } from 'vitest';
 import download from 'download';
 
 import downloadRosenAssets from '../lib/downloadRosenAssets';

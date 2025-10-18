@@ -1,4 +1,3 @@
-import { beforeAll, expect, it, describe } from 'vitest';
 import { ERGO_CHAIN } from '../../../lib/getRosenData/const';
 import CardanoTestData from './cardanoTestData';
 import { CardanoRosenExtractor } from '../../../lib';

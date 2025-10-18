@@ -1,4 +1,3 @@
-import { beforeAll, expect, vi, it, describe } from 'vitest';
 import TestUtils from '../testUtils';
 import * as addressCodec from '@rosen-bridge/address-codec';
 import { TestRosenDataExtractor } from './testRosenDataExtractor';

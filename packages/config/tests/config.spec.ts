@@ -2,7 +2,6 @@ import { configDir } from './configEnvSetup';
 import config from 'config';
 import fs from 'fs';
 import path from 'path';
-import { afterAll, beforeEach, describe, expect, it } from 'vitest';
 import { ConfigValidator } from '../lib';
 import { ConfigSchema } from '../lib/schema/types/fields';
 import * as testData from './configTestData';

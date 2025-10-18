@@ -1,4 +1,3 @@
-import { beforeAll, expect, it, describe } from 'vitest';
 import { BitcoinRunesEsploraRosenExtractor } from '../../../lib';
 import * as testData from './esploraTestData';
 import TestUtils from '../testUtils';

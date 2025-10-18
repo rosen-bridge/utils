@@ -1,4 +1,3 @@
-import { expect, it, describe } from 'vitest';
 import { createAndInitializeDataSource } from './customQueryRunnerTestUtils';
 
 describe('CustomQueryRunner', () => {

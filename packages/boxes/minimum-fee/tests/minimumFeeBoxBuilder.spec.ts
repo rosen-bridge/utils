@@ -1,4 +1,3 @@
-import { expect, it, describe } from 'vitest';
 import { Address } from 'ergo-lib-wasm-nodejs';
 import { InvalidConfig, MinimumFeeBoxBuilder, MinimumFeeConfig } from '../lib';
 import * as testData from './testData';

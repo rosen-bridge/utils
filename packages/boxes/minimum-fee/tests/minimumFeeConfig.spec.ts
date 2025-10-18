@@ -1,4 +1,3 @@
-import { expect, it, describe } from 'vitest';
 import { ChainFee, MinimumFeeConfig } from '../lib';
 
 describe('MinimumFeeConfig', () => {

@@ -1,4 +1,3 @@
-import { expect, it, describe } from 'vitest';
 import { parseOpReturn } from '../../../lib/getRosenData/bitcoin/utils';
 import * as testData from './testData';
 

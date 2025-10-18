@@ -1,4 +1,3 @@
-import { beforeAll, beforeEach, expect, vi, it, describe } from 'vitest';
 import { EvmEthersRosenExtractor } from '../../../lib';
 import * as testData from './testData';
 import TestUtils from '../testUtils';
