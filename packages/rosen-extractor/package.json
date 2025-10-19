@@ -41,7 +41,6 @@
     "lodash-es": "^4.17.21"
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.19.0",
     "@types/lodash-es": "^4.17.6",
     "@vitest/coverage-istanbul": "^3.1.4",
     "vitest": "^3.1.4"

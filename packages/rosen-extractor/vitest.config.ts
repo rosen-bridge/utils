@@ -3,17 +3,12 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   test: {
     globals: true,
-    inspect: true,
-    fileParallelism: false,
-    reporters: ['default', 'verbose'],
-    environment: 'node',
-    deps: {
-      inline: [/@rosen-bridge\//, /lodash-es/],
-    },
     coverage: {
+      all: true,
       provider: 'istanbul',
-      reporter: ['lcov', 'cobertura', 'text', 'text-summary'],
+      reporter: 'cobertura',
     },
+    passWithNoTests: true,
     sequence: {
       concurrent: false,
     },

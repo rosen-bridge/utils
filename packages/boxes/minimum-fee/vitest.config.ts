@@ -4,10 +4,7 @@ export default defineConfig({
   test: {
     globals: true,
     reporters: ['default', 'verbose'],
-    environment: 'node',
-    deps: {
-      inline: [/@rosen-clients\//, /@rosen-bridge\//],
-    },
+    setupFiles: ['./tests/setup.ts'],
     poolOptions: {
       threads: {
         singleThread: true,

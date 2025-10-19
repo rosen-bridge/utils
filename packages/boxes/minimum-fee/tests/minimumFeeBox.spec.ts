@@ -12,9 +12,6 @@ import ergoExplorerClientFactory from '@rosen-clients/ergo-explorer';
 import ergoNodeClientFactory from '@rosen-clients/ergo-node';
 import JsonBigInt from '@rosen-bridge/json-bigint';
 
-vi.mock('@rosen-clients/ergo-explorer');
-vi.mock('@rosen-clients/ergo-node');
-
 describe('MinimumFeeBox', () => {
   const nativeTokenId = 'erg';
   const tokenId =
