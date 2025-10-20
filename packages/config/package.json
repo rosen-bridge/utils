@@ -31,11 +31,9 @@
     "@types/config": "^3.3.3",
     "@types/js-yaml": "^4.0.9",
     "@types/lodash-es": "^4.17.12",
-    "@vitest/coverage-istanbul": "^3.1.4",
     "lodash-es": "^4.17.21",
     "tsx": "^4.20.5",
-    "uuid": "^11.1.0",
-    "vitest": "^3.1.4"
+    "uuid": "^11.1.0"
   },
   "dependencies": {
     "@rosen-bridge/json-bigint": "^1.1.0",

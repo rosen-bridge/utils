@@ -27,9 +27,7 @@
     "release": "npm run test -- --run && npm run build && npm publish --access public"
   },
   "devDependencies": {
-    "@vitest/coverage-istanbul": "^3.1.4",
-    "tsx": "^4.20.5",
-    "vitest": "^3.1.4"
+    "tsx": "^4.20.5"
   },
   "dependencies": {
     "@rosen-bridge/abstract-logger": "^3.0.1",

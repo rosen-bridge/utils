@@ -27,9 +27,7 @@
     "release": "npm run test && npm run build && npm publish --access public"
   },
   "devDependencies": {
-    "@types/download": "^8.0.2",
-    "@vitest/coverage-istanbul": "^3.1.4",
-    "vitest": "^3.1.4"
+    "@types/download": "^8.0.2"
   },
   "directories": {
     "lib": "lib",

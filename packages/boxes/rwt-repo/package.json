@@ -28,9 +28,7 @@
   },
   "devDependencies": {
     "@rosen-bridge/json-bigint": "^1.1.0",
-    "@vitest/coverage-istanbul": "^3.1.4",
-    "tsx": "^4.20.5",
-    "vitest": "^3.1.4"
+    "tsx": "^4.20.5"
   },
   "dependencies": {
     "@rosen-bridge/abstract-logger": "^3.0.1",
