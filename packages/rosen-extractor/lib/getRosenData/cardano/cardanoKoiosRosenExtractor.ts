@@ -11,6 +11,7 @@ import {
   BigNum,
   GeneralTransactionMetadata,
   MetadataJsonSchema,
+  Transaction,
 } from '@emurgo/cardano-serialization-lib-nodejs';
 
 export class CardanoKoiosRosenExtractor extends AbstractRosenDataExtractor<KoiosCborTransaction> {
@@ -54,7 +55,10 @@ export class CardanoKoiosRosenExtractor extends AbstractRosenDataExtractor<Koios
                 amount: assetTransformation.amount,
                 targetChainTokenId: assetTransformation.to,
                 sourceTxId: transaction.tx_hash,
-                rawData: transaction.cbor,
+                rawData:
+                  Transaction.from_hex(transaction.cbor)
+                    .auxiliary_data()
+                    ?.to_hex() ?? '',
               };
             }
           }

@@ -3,6 +3,7 @@ import * as testData from './blockFrostTestData';
 import TestUtils from '../testUtils';
 import { ERGO_CHAIN } from '../../../lib/getRosenData/const';
 import { TokenMap } from '@rosen-bridge/tokens';
+import { CardanoTestUtility } from './cardanoTestUtils';
 
 describe('BlockFrostRosenExtractor', () => {
   const tokenMap = new TokenMap();
@@ -104,11 +105,18 @@ describe('BlockFrostRosenExtractor', () => {
       'should return undefined when tx metadata does NOT contain %p',
       (key) => {
         // generate a transaction with invalid rosen data (missing a key)
-        const invalidTx = JSON.parse(
-          JSON.stringify(
-            testData.blockFrostTransactions.validTokenLock,
-          ).replace(key, key + 'Fake'),
+        const invalidMetaData = JSON.parse(
+          JSON.stringify(testData.validTokenLockMetadata).replace(
+            key,
+            key + 'Fake',
+          ),
         );
+        const invalidTx = JSON.parse(
+          JSON.stringify(testData.blockFrostTransactions.validTokenLock),
+        );
+        invalidTx.metadataCbor[0].metadata =
+          CardanoTestUtility.buildCborHexFromMetadataJson(invalidMetaData);
+        invalidTx.metadataCbor[0].cbor_metadata = `\\x${invalidTx.metadataCbor[0].metadata}`;
 
         // run test
         const extractor = new CardanoBlockFrostRosenExtractor(

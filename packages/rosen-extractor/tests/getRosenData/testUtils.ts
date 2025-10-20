@@ -13,16 +13,6 @@ import {
   DOGE_CHAIN,
   DOGE_NATIVE_TOKEN,
 } from '../../lib/getRosenData/const';
-import * as wasm from '@emurgo/cardano-serialization-lib-nodejs';
-import { BlockFrostTransaction } from '../../lib/getRosenData/cardano/types';
-
-function toHex(bytes: Uint8Array) {
-  return Buffer.from(bytes).toString('hex');
-}
-
-function fromHex(hex: string) {
-  return Buffer.from(hex, 'hex');
-}
 
 export default class TestUtils {
   static tokens: RosenTokens = [
@@ -249,100 +239,4 @@ export default class TestUtils {
       },
     },
   ];
-
-  /**
-   * Convert a list of amounts (ADA + tokens) to wasm.Value
-   */
-  static parseAmountListToValue = (
-    amountList: { unit: string; quantity: string }[],
-  ) => {
-    let adaBig = wasm.BigNum.from_str('0');
-    let multiasset: wasm.MultiAsset | null = null;
-
-    for (const { unit, quantity } of amountList) {
-      if (unit === 'lovelace') {
-        adaBig = wasm.BigNum.from_str(quantity);
-      } else {
-        let unitHex = unit.startsWith('f') ? unit.slice(1) : unit;
-        const POLICY_ID_LEN = 56;
-        const policyIdHex = unitHex.slice(0, POLICY_ID_LEN);
-        const assetNameHex = unitHex.slice(POLICY_ID_LEN);
-
-        if (policyIdHex.length === 0) {
-          throw new Error('invalid unit (no policyId): ' + unit);
-        }
-
-        if (!multiasset) multiasset = wasm.MultiAsset.new();
-
-        const scriptHash = wasm.ScriptHash.from_bytes(fromHex(policyIdHex));
-        let assets = multiasset.get(scriptHash);
-        if (!assets) assets = wasm.Assets.new();
-
-        const assetNameBytes = assetNameHex
-          ? fromHex(assetNameHex)
-          : Buffer.from([]);
-        const assetName = wasm.AssetName.new(assetNameBytes);
-        assets.insert(assetName, wasm.BigNum.from_str(quantity));
-        multiasset.insert(scriptHash, assets);
-      }
-    }
-
-    const value = wasm.Value.new(adaBig);
-    if (multiasset) value.set_multiasset(multiasset);
-    return value;
-  };
-
-  /**
-   * Build an unsigned transaction CBOR hex from BlockFrost structured data
-   */
-  static buildUnsignedTxHexFromBlockFrostTx = (data: BlockFrostTransaction) => {
-    // Build inputs
-    const inputs = wasm.TransactionInputs.new();
-    for (const inp of data.utxos.inputs) {
-      const txHash = wasm.TransactionHash.from_bytes(fromHex(inp.tx_hash));
-      const input = wasm.TransactionInput.new(txHash, inp.output_index ?? 0);
-      inputs.add(input);
-    }
-
-    // Build outputs
-    const outputs = wasm.TransactionOutputs.new();
-    for (const out of data.utxos.outputs) {
-      const addr = wasm.Address.from_bech32(out.address);
-      const value = TestUtils.parseAmountListToValue(out.amount);
-      const txOut = wasm.TransactionOutput.new(addr, value);
-      outputs.add(txOut);
-    }
-
-    // Build metadata if available
-    let aux: wasm.AuxiliaryData | null = wasm.AuxiliaryData.new();
-    if (Array.isArray(data.metadataCbor) && data.metadataCbor.length > 0) {
-      const general = wasm.GeneralTransactionMetadata.new();
-      for (const mdItem of data.metadataCbor) {
-        const metadatum = wasm.encode_json_str_to_metadatum(
-          `[${mdItem.metadata}]`,
-          wasm.MetadataJsonSchema.NoConversions,
-        );
-        general.insert(wasm.BigNum.from_str(mdItem.label), metadatum);
-        mdItem.cbor_metadata = toHex(metadatum.to_bytes());
-      }
-      aux.set_metadata(general);
-    }
-
-    // Fee & TTL
-    const fee = wasm.BigNum.from_str('170000');
-    const ttl = 3600;
-
-    // Build TransactionBody
-    const txBody = wasm.TransactionBody.new(inputs, outputs, fee, ttl);
-
-    // Build unsigned transaction
-    const witnessSet = wasm.TransactionWitnessSet.new();
-    const tx = aux
-      ? wasm.Transaction.new(txBody, witnessSet, aux)
-      : wasm.Transaction.new(txBody, witnessSet);
-
-    tx.auxiliary_data;
-
-    return toHex(tx.to_bytes());
-  };
 }

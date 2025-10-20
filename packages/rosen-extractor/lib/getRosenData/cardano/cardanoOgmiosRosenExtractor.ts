@@ -4,6 +4,7 @@ import {
   TransactionOutput,
 } from '@cardano-ogmios/schema';
 import JsonBigInt from '@rosen-bridge/json-bigint';
+import * as wasm from '@emurgo/cardano-serialization-lib-nodejs';
 import { RosenData, TokenTransformation } from '../abstract/types';
 import AbstractRosenDataExtractor from '../abstract/abstractRosenDataExtractor';
 import { CARDANO_CHAIN, CARDANO_NATIVE_TOKEN } from '../const';
@@ -46,7 +47,10 @@ export class CardanoOgmiosRosenExtractor extends AbstractRosenDataExtractor<Tran
                   amount: assetTransformation.amount,
                   targetChainTokenId: assetTransformation.to,
                   sourceTxId: transaction.id,
-                  rawData: transaction.cbor!,
+                  rawData:
+                    wasm.Transaction.from_hex(transaction.cbor)
+                      .auxiliary_data()
+                      ?.to_hex() ?? '',
                 };
               }
             }
