@@ -49,16 +49,21 @@ export class CardanoKoiosRosenExtractor extends AbstractRosenDataExtractor<Koios
               rosenData.toChain,
             );
             if (assetTransformation) {
+              const metadataCbor = Transaction.from_hex(transaction.cbor)
+                .auxiliary_data()
+                ?.metadata()
+                ?.to_hex();
+              if (!metadataCbor)
+                throw new Error(
+                  `ImpossibleBehavior: Rosen data is successfully extracted but failed to get metadata from transaction CBOR`,
+                );
               return {
                 ...rosenData,
                 sourceChainTokenId: assetTransformation.from,
                 amount: assetTransformation.amount,
                 targetChainTokenId: assetTransformation.to,
                 sourceTxId: transaction.tx_hash,
-                rawData:
-                  Transaction.from_hex(transaction.cbor)
-                    .auxiliary_data()
-                    ?.to_hex() ?? '',
+                rawData: metadataCbor,
               };
             }
           }

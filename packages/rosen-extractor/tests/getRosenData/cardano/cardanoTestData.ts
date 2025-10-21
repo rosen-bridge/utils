@@ -1,5 +1,4 @@
 import { CardanoTx } from '../../../lib/getRosenData/cardano/types';
-import { CardanoTestUtility } from './cardanoTestUtils';
 
 export default class CardanoTestData {
   static lockAddress =
@@ -877,7 +876,7 @@ export default class CardanoTestData {
   };
 
   static rosenTransactions: Record<string, CardanoTx> = {
-    validTokenLock: CardanoTestUtility.AddCborHexToTxJson({
+    validTokenLock: {
       id: 'c5afb967619ee64e0d724a56d27670fee6fe698df1375692d9868cb9792467c8',
       inputs: [
         {
@@ -909,10 +908,10 @@ export default class CardanoTestData {
       fee: 268757n,
       metadata: {
         parsedJson: CardanoTestData.metaData1,
-        cbor: '',
+        cbor: 'A100A562746F646572676F69627269646765466565693136353030303030306A6E6574776F726B4665656631373530303069746F4164647265737378333967376D717151416E5547346757693670466D696336355A665572725769566B4D6E6273673268585578366156624253544A346B66726F6D41646472657373827840616464723171396A70657268717075746C666E6671687465753665753278686A777861396B6570683038766772716A673335377474686733786D336E34723670782777383561357036676471763976357A6436766D71647078766C306A72716C3261737A6A6776616A',
       },
-    }),
-    validAdaLock: CardanoTestUtility.AddCborHexToTxJson({
+    },
+    validAdaLock: {
       id: '9aafc88a1342be4899a4a44cc509a74df0aafa2bb5f04ae5ef425edde9a2617c',
       inputs: [
         {
@@ -941,10 +940,10 @@ export default class CardanoTestData {
       fee: 268405n,
       metadata: {
         parsedJson: CardanoTestData.metaData2,
-        cbor: '',
+        cbor: 'A100A562746F646572676F6962726964676546656567383530303030306A6E6574776F726B466565643930303069746F41646472657373783339676832567373595A575A4E46776862433456684B797469474462436477715966646F72513655533646746A336E37347254586B66726F6D4164647265737382784061646472317179687576367736307966357477747639646B79377067786B6179787A6379676B716679676A65326B77716A35756E67363772746137726C6B6E357827673061373363343365667063707A6E6B396A38756861756B7064723979653378716B326B67616D',
       },
-    }),
-    noLock: CardanoTestUtility.AddCborHexToTxJson({
+    },
+    noLock: {
       id: 'abcfb5be7e0cbc1eda89924e31b917b984a8e1f747ee5973fc4d8bce2aeab83f',
       inputs: [
         {
@@ -990,58 +989,55 @@ export default class CardanoTestData {
             ],
           },
         },
-        cbor: '',
+        cbor: 'A100A562746F646572676F6962726964676546656567383530303030306A6E6574776F726B466565643930303069746F41646472657373783339676832567373595A575A4E46776862433456684B797469474462436477715966646F72513655533646746A336E37347254586B66726F6D4164647265737382784061646472317179687576367736307966357477747639646B79377067786B6179787A6379676B716679676A65326B77716A35756E67363772746137726C6B6E357827673061373363343365667063707A6E6B396A38756861756B7064723979653378716B326B67616D',
       },
-    }),
-    noZeroKeyMetadata: CardanoTestUtility.AddCborHexToTxJson(
-      {
-        id: 'c5afb967619ee64e0d724a56d27670fee6fe698df1375692d9868cb9792467c8',
-        inputs: [
-          {
-            txId: 'faf9346ebeaf65c2720464eb9126e43dfd7b40742e337370b67b84ae0f03dc2b',
-            index: 0,
-          },
-        ],
-        outputs: [
-          {
-            address:
-              'addr1q9jperhqputlfnfqhteu6eu2xhjwxa9keph08vgrqjg357tthg3xm3n4r6pw85a5p6gdqv9v5zd6vmqdpxvl0jrql2aszjgvaj',
-            value: 1386445n,
-            assets: [],
-          },
-          {
-            address:
-              'addr_test1vze7yqqlg8cjlyhz7jzvsg0f3fhxpuu6m3llxrajfzqecggw704re',
-            value: 1344798n,
-            assets: [
-              {
-                policyId:
-                  'a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235',
-                assetName: '484f534b59',
-                quantity: '184272501',
-              },
+    },
+    noZeroKeyMetadata: {
+      id: 'c5afb967619ee64e0d724a56d27670fee6fe698df1375692d9868cb9792467c8',
+      inputs: [
+        {
+          txId: 'faf9346ebeaf65c2720464eb9126e43dfd7b40742e337370b67b84ae0f03dc2b',
+          index: 0,
+        },
+      ],
+      outputs: [
+        {
+          address:
+            'addr1q9jperhqputlfnfqhteu6eu2xhjwxa9keph08vgrqjg357tthg3xm3n4r6pw85a5p6gdqv9v5zd6vmqdpxvl0jrql2aszjgvaj',
+          value: 1386445n,
+          assets: [],
+        },
+        {
+          address:
+            'addr_test1vze7yqqlg8cjlyhz7jzvsg0f3fhxpuu6m3llxrajfzqecggw704re',
+          value: 1344798n,
+          assets: [
+            {
+              policyId:
+                'a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235',
+              assetName: '484f534b59',
+              quantity: '184272501',
+            },
+          ],
+        },
+      ],
+      fee: 268757n,
+      metadata: {
+        parsedJson: {
+          '1': {
+            to: 'ergo',
+            bridgeFee: '165000000',
+            toAddress: '9g7mqqQAnUG4gWi6pFmic65ZfUrrWiVkMnbsg2hXUx6aVbBSTJ4',
+            networkFee: '175000',
+            fromAddress: [
+              'addr1q9jperhqputlfnfqhteu6eu2xhjwxa9keph08vgrqjg357tthg3xm3n4r6p',
+              'w85a5p6gdqv9v5zd6vmqdpxvl0jrql2aszjgvaj',
             ],
           },
-        ],
-        fee: 268757n,
-        metadata: {
-          parsedJson: {
-            '1': {
-              to: 'ergo',
-              bridgeFee: '165000000',
-              toAddress: '9g7mqqQAnUG4gWi6pFmic65ZfUrrWiVkMnbsg2hXUx6aVbBSTJ4',
-              networkFee: '175000',
-              fromAddress: [
-                'addr1q9jperhqputlfnfqhteu6eu2xhjwxa9keph08vgrqjg357tthg3xm3n4r6p',
-                'w85a5p6gdqv9v5zd6vmqdpxvl0jrql2aszjgvaj',
-              ],
-            },
-          },
-          cbor: '',
         },
+        cbor: 'A101A562746F646572676F69627269646765466565693136353030303030306A6E6574776F726B4665656631373530303069746F4164647265737378333967376D717151416E5547346757693670466D696336355A665572725769566B4D6E6273673268585578366156624253544A346B66726F6D41646472657373827840616464723171396A70657268717075746C666E6671687465753665753278686A777861396B6570683038766772716A673335377474686733786D336E34723670782777383561357036676471763976357A6436766D71647078766C306A72716C3261737A6A6776616A',
       },
-      '1',
-    ),
+    },
     noMetadata: {
       id: 'c5afb967619ee64e0d724a56d27670fee6fe698df1375692d9868cb9792467c9',
       inputs: [
@@ -1090,9 +1086,8 @@ export default class CardanoTestData {
         'b37bfa41c2d9e61b4e478ddfc459a03d25b658a2305ffb428fbc47ad6abbeeaa',
       sourceTxId:
         'c5afb967619ee64e0d724a56d27670fee6fe698df1375692d9868cb9792467c8',
-      rawData: CardanoTestUtility.buildCborHexFromMetadataJson([
-        CardanoTestData.metaData1['0'],
-      ]),
+      rawData:
+        'A100A562746F646572676F69627269646765466565693136353030303030306A6E6574776F726B4665656631373530303069746F4164647265737378333967376D717151416E5547346757693670466D696336355A665572725769566B4D6E6273673268585578366156624253544A346B66726F6D41646472657373827840616464723171396A70657268717075746C666E6671687465753665753278686A777861396B6570683038766772716A673335377474686733786D336E34723670782777383561357036676471763976357A6436766D71647078766C306A72716C3261737A6A6776616A',
     },
     validADALock: {
       toChain: 'ergo',
@@ -1107,9 +1102,8 @@ export default class CardanoTestData {
         'f6a69529b12a7e2326acffee8383e0c44408f87a872886fadf410fe8498006d3',
       sourceTxId:
         '9aafc88a1342be4899a4a44cc509a74df0aafa2bb5f04ae5ef425edde9a2617c',
-      rawData: CardanoTestUtility.buildCborHexFromMetadataJson([
-        CardanoTestData.metaData2['0'],
-      ]),
+      rawData:
+        'A100A562746F646572676F6962726964676546656567383530303030306A6E6574776F726B466565643930303069746F41646472657373783339676832567373595A575A4E46776862433456684B797469474462436477715966646F72513655533646746A336E37347254586B66726F6D4164647265737382784061646472317179687576367736307966357477747639646B79377067786B6179787A6379676B716679676A65326B77716A35756E67363772746137726C6B6E357827673061373363343365667063707A6E6B396A38756861756B7064723979653378716B326B67616D',
     },
   };
 

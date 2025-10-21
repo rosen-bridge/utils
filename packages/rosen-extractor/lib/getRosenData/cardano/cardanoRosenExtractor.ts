@@ -4,7 +4,6 @@ import { RosenData, TokenTransformation } from '../abstract/types';
 import { CardanoBoxCandidate, CardanoTx } from './types';
 import { CARDANO_CHAIN, CARDANO_NATIVE_TOKEN } from '../const';
 import { getCardanoTokenId, parseRosenData } from './utils';
-import { Transaction } from '@emurgo/cardano-serialization-lib-nodejs';
 
 export class CardanoRosenExtractor extends AbstractRosenDataExtractor<string> {
   readonly chain = CARDANO_CHAIN;
@@ -41,10 +40,7 @@ export class CardanoRosenExtractor extends AbstractRosenDataExtractor<string> {
               amount: assetTransformation.amount,
               targetChainTokenId: assetTransformation.to,
               sourceTxId: transaction.id,
-              rawData:
-                Transaction.from_hex(transaction.metadata!.cbor)
-                  .auxiliary_data()
-                  ?.to_hex() ?? '',
+              rawData: transaction.metadata!.cbor,
             };
           }
         }

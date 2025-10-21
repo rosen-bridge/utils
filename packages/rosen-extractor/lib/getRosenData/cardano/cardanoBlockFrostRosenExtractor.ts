@@ -27,12 +27,20 @@ export class CardanoBlockFrostRosenExtractor extends AbstractRosenDataExtractor<
         (data) => data.label === '0',
       )?.metadata;
       if (!metaDataCbor) return undefined;
+      const wasmMetadatumObject = wasm.GeneralTransactionMetadata.from_hex(
+        metaDataCbor,
+      ).get(wasm.BigNum.from_str('0'));
+      if (!wasmMetadatumObject)
+        throw new Error(
+          `ImpossibleBehavior: Found metadata with label "0" but failed to read it from CSL object`,
+        );
+
       const data = JSON.parse(
         wasm.decode_metadatum_to_json_str(
-          wasm.TransactionMetadatum.from_hex(metaDataCbor),
-          wasm.MetadataJsonSchema.BasicConversions,
+          wasmMetadatumObject,
+          wasm.MetadataJsonSchema.NoConversions,
         ),
-      )['0'];
+      );
       const rosenData = parseRosenData(data);
       if (rosenData) {
         const lockOutputs = transaction.utxos.outputs.filter(
