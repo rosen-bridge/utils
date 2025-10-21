@@ -9,12 +9,9 @@ export default defineConfig({
       reporter: 'cobertura',
     },
     passWithNoTests: true,
-    sequence: {
-      concurrent: false,
-    },
     poolOptions: {
-      threads: {
-        singleThread: true,
+      forks: {
+        singleFork: true,
       },
     },
   },

@@ -3,20 +3,17 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   test: {
     globals: true,
-    reporters: ['default', 'verbose'],
     setupFiles: ['./tests/setup.ts'],
-    poolOptions: {
-      threads: {
-        singleThread: true,
-      },
-    },
     coverage: {
+      all: true,
       provider: 'istanbul',
-      reporter: ['lcov', 'cobertura', 'text', 'text-summary'],
-      reportsDirectory: './coverage',
+      reporter: 'cobertura',
     },
-    sequence: {
-      concurrent: false,
+    passWithNoTests: true,
+    poolOptions: {
+      forks: {
+        singleFork: true,
+      },
     },
   },
 });

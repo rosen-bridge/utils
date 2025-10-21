@@ -22,7 +22,7 @@
     "lint:check": "eslint . && npm run prettify:check",
     "build": "tsc --build tsconfig.build.json",
     "type-check": "tsc --noEmit",
-    "test": "vitest",
+    "test": "NODE_OPTIONS='--import tsx' vitest",
     "coverage": "npm run test -- --coverage",
     "release": "npm run test && npm run build && npm publish --access public"
   },

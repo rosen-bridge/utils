@@ -15,8 +15,5 @@ export default defineConfig({
         singleFork: true,
       },
     },
-    sequence: {
-      concurrent: false,
-    },
   },
 });
