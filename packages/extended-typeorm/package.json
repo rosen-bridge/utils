@@ -37,7 +37,9 @@
     "release": "npm run test && npm run build && npm publish --access public"
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.19.0"
+    "@babel/preset-env": "^7.19.0",
+    "@vitest/coverage-istanbul": "^3.1.4",
+    "vitest": "^3.1.4"
   },
   "directories": {
     "lib": "lib",

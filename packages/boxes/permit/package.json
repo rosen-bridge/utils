@@ -27,7 +27,9 @@
     "type-check": "tsc --noEmit"
   },
   "devDependencies": {
-    "tsx": "^4.20.5"
+    "@vitest/coverage-istanbul": "^3.1.4",
+    "tsx": "^4.20.5",
+    "vitest": "^3.1.4"
   },
   "dependencies": {
     "ergo-lib-wasm-nodejs": "^0.24.1"

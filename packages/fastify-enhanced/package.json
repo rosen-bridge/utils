@@ -28,7 +28,9 @@
     "type-check": "tsc --noEmit"
   },
   "devDependencies": {
-    "tsx": "^4.20.5"
+    "tsx": "^4.20.5",
+    "@vitest/coverage-istanbul": "^3.1.4",
+    "vitest": "^3.1.4"
   },
   "dependencies": {
     "@fastify/swagger": "^9.5.1",
