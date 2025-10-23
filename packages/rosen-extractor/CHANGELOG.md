@@ -1,5 +1,12 @@
 # @rosen-bridge/rosen-extractor
 
+## 11.0.0
+
+### Major Changes
+
+- - Save Cardano rawData in CBOR format
+  - Remove Cardano GraphQL module (no longer maintained)
+
 ## 10.1.1
 
 ### Patch Changes
