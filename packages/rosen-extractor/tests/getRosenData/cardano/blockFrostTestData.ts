@@ -1,6 +1,21 @@
 export const lockAddress =
   'addr_test1vze7yqqlg8cjlyhz7jzvsg0f3fhxpuu6m3llxrajfzqecggw704re';
 
+export const cborKeyHex: Record<string, string> = {
+  to: '746f',
+  bridgeFee: '627269646765466565',
+  networkFee: '6e6574776f726b466565',
+  toAddress: '746f41646472657373',
+  fromAddress: '66726f6d41646472657373',
+  Fake: '46616b65',
+};
+export const validTokenLockMetadataCbor =
+  'a100a562746f646572676f696272696467654665656a313936383530333933386a6e6574776f726b466565673938343235323069746f41646472657373783339685a785633594e536662437153364745736573374468415653617476616f4e746473694e766b696d504747326338667a6b476b66726f6d4164647265737382783f616464725f7465737431767a6730376432717033786a6530773737663938327a6b687165793530676a787273647168383979783872376e617375393768723060';
+const validAdaLockMetaDataCbor =
+  'a100a562746f646572676f696272696467654665656831303030303030306a6e6574776f726b466565673430303030303069746f41646472657373783339685a785633594e536662437153364745736573374468415653617476616f4e746473694e766b696d504747326338667a6b476b66726f6d4164647265737382783f616464725f7465737431767a6730376432717033786a6530773737663938327a6b687165793530676a787273647168383979783872376e617375393768723060';
+const noLockMetaDataCbor =
+  'a100a562746f646572676f696272696467654665656a313936383530333933386a6e6574776f726b466565673938343235323069746f416464726573737833396564524b476a707a4b6a634a4b454a45426631665736316461475333457872344b79687866346a4b547272626272774232396b66726f6d4164647265737382784061646472317138686d70357a6a7a7676377337706d67656d7a336d76726b64326e7537363039687767737161306175663668376833723678366a6e327a72743860';
+
 export const blockFrostTransactions = {
   validTokenLock: {
     utxos: {
@@ -86,19 +101,11 @@ export const blockFrostTransactions = {
         },
       ],
     },
-    metadata: [
+    metadataCbor: [
       {
         label: '0',
-        json_metadata: {
-          to: 'ergo',
-          bridgeFee: '1968503938',
-          toAddress: '9hZxV3YNSfbCqS6GEses7DhAVSatvaoNtdsiNvkimPGG2c8fzkG',
-          networkFee: '9842520',
-          fromAddress: [
-            'addr_test1vzg07d2qp3xje0w77f982zkhqey50gjxrsdqh89yx8r7nasu97hr0',
-            '',
-          ],
-        },
+        cbor_metadata: `\\x${validTokenLockMetadataCbor}`,
+        metadata: validTokenLockMetadataCbor,
       },
     ],
   },
@@ -182,19 +189,11 @@ export const blockFrostTransactions = {
         },
       ],
     },
-    metadata: [
+    metadataCbor: [
       {
         label: '0',
-        json_metadata: {
-          to: 'ergo',
-          bridgeFee: '10000000',
-          toAddress: '9hZxV3YNSfbCqS6GEses7DhAVSatvaoNtdsiNvkimPGG2c8fzkG',
-          networkFee: '4000000',
-          fromAddress: [
-            'addr_test1vzg07d2qp3xje0w77f982zkhqey50gjxrsdqh89yx8r7nasu97hr0',
-            '',
-          ],
-        },
+        cbor_metadata: `\\x${validAdaLockMetaDataCbor}`,
+        metadata: validAdaLockMetaDataCbor,
       },
     ],
   },
@@ -281,19 +280,11 @@ export const blockFrostTransactions = {
         },
       ],
     },
-    metadata: [
+    metadataCbor: [
       {
         label: '0',
-        json_metadata: {
-          to: 'ergo',
-          bridgeFee: '1968503938',
-          toAddress: '9edRKGjpzKjcJKEJEBf1fW61daGS3Exr4Kyhxf4jKTrrbbrwB29',
-          networkFee: '9842520',
-          fromAddress: [
-            'addr1q8hmp5zjzvv7s7pmgemz3mvrkd2nu7609hwgsqa0auf6h7h3r6x6jn2zrt8',
-            '',
-          ],
-        },
+        cbor_metadata: `\\x${noLockMetaDataCbor}`,
+        metadata: noLockMetaDataCbor,
       },
     ],
   },
@@ -350,7 +341,7 @@ export const blockFrostTransactions = {
         },
       ],
     },
-    metadata: [],
+    metadataCbor: [],
   },
   noZeroKeyMetadata: {
     utxos: {
@@ -405,15 +396,13 @@ export const blockFrostTransactions = {
         },
       ],
     },
-    metadata: [
+    metadataCbor: [
       {
         label: '674',
-        json_metadata: {
-          msg: [
-            'Mutant Labs Raffle',
-            'Buy 5 tickets for Raffle 64625b85e66d67ce15babf40',
-          ],
-        },
+        cbor_metadata:
+          '\\xA11902A2A1636D736782724D7574616E74204C61627320526166666C6578314275792035207469636B65747320666F7220526166666C6520363436323562383565363664363763653135626162663430',
+        metadata:
+          'A11902A2A1636D736782724D7574616E74204C61627320526166666C6578314275792035207469636B65747320666F7220526166666C6520363436323562383565363664363763653135626162663430',
       },
     ],
   },
@@ -470,10 +459,11 @@ export const blockFrostTransactions = {
         },
       ],
     },
-    metadata: [
+    metadataCbor: [
       {
         label: '0',
-        json_metadata: 'myData',
+        cbor_metadata: '\\xA11902A2666D7944617461',
+        metadata: 'A11902A2666D7944617461',
       },
     ],
   },
@@ -494,7 +484,7 @@ export const blockFrostRosenData = {
     sourceTxId:
       '9f00d372e930d685c3b410a10f2bd035cd9a927c4fd8ef8e419c79b210af7ba6',
     rawData:
-      '{"to":"ergo","bridgeFee":"1968503938","toAddress":"9hZxV3YNSfbCqS6GEses7DhAVSatvaoNtdsiNvkimPGG2c8fzkG","networkFee":"9842520","fromAddress":["addr_test1vzg07d2qp3xje0w77f982zkhqey50gjxrsdqh89yx8r7nasu97hr0",""]}',
+      'a100a562746f646572676f696272696467654665656a313936383530333933386a6e6574776f726b466565673938343235323069746f41646472657373783339685a785633594e536662437153364745736573374468415653617476616f4e746473694e766b696d504747326338667a6b476b66726f6d4164647265737382783f616464725f7465737431767a6730376432717033786a6530773737663938327a6b687165793530676a787273647168383979783872376e617375393768723060',
   },
   validAdaLock: {
     toChain: 'ergo',
@@ -510,7 +500,7 @@ export const blockFrostRosenData = {
     sourceTxId:
       '9f00d372e930d685c3b410a10f2bd035cd9a927c4fd8ef8e419c79b210af7ba7',
     rawData:
-      '{"to":"ergo","bridgeFee":"10000000","toAddress":"9hZxV3YNSfbCqS6GEses7DhAVSatvaoNtdsiNvkimPGG2c8fzkG","networkFee":"4000000","fromAddress":["addr_test1vzg07d2qp3xje0w77f982zkhqey50gjxrsdqh89yx8r7nasu97hr0",""]}',
+      'a100a562746f646572676f696272696467654665656831303030303030306a6e6574776f726b466565673430303030303069746f41646472657373783339685a785633594e536662437153364745736573374468415653617476616f4e746473694e766b696d504747326338667a6b476b66726f6d4164647265737382783f616464725f7465737431767a6730376432717033786a6530773737663938327a6b687165793530676a787273647168383979783872376e617375393768723060',
   },
 };
 

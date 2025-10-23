@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/rosen-extractor",
-  "version": "10.1.1",
+  "version": "11.0.0",
   "description": "this project contains methods to get rosen data from blockchain",
   "repository": {
     "type": "git",

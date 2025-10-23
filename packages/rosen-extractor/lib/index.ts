@@ -14,7 +14,6 @@ export { CardanoKoiosRosenExtractor } from './getRosenData/cardano/cardanoKoiosR
 export { CardanoOgmiosRosenExtractor } from './getRosenData/cardano/cardanoOgmiosRosenExtractor';
 export { CardanoRosenExtractor } from './getRosenData/cardano/cardanoRosenExtractor';
 export { CardanoBlockFrostRosenExtractor } from './getRosenData/cardano/cardanoBlockFrostRosenExtractor';
-export { CardanoGraphQLRosenExtractor } from './getRosenData/cardano/cardanoGraphQLRosenExtractor';
 export { ErgoRosenExtractor } from './getRosenData/ergo/ergoRosenExtractor';
 export { ErgoNodeRosenExtractor } from './getRosenData/ergo/ergoNodeRosenExtractor';
 export { RosenData, TokenTransformation } from './getRosenData/abstract/types';
