@@ -39,6 +39,7 @@
   "devDependencies": {
     "@babel/preset-env": "^7.19.0",
     "@vitest/coverage-istanbul": "^3.1.4",
+    "tsx": "^4.20.5",
     "vitest": "^3.1.4"
   },
   "directories": {
