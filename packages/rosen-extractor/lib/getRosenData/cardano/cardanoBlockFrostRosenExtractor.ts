@@ -1,9 +1,10 @@
+import JsonBigInt from '@rosen-bridge/json-bigint';
 import { isPlainObject } from 'lodash-es';
+import * as wasm from '@emurgo/cardano-serialization-lib-nodejs';
 import { RosenData, TokenTransformation } from '../abstract/types';
 import AbstractRosenDataExtractor from '../abstract/abstractRosenDataExtractor';
 import { CARDANO_CHAIN, CARDANO_NATIVE_TOKEN } from '../const';
 import { BlockFrostOutputBox, BlockFrostTransaction } from './types';
-import JsonBigInt from '@rosen-bridge/json-bigint';
 import { getCardanoTokenId, parseRosenData } from './utils';
 
 export class CardanoBlockFrostRosenExtractor extends AbstractRosenDataExtractor<BlockFrostTransaction> {
@@ -16,13 +17,30 @@ export class CardanoBlockFrostRosenExtractor extends AbstractRosenDataExtractor<
     transaction: BlockFrostTransaction,
   ): RosenData | undefined => {
     const baseError = `No rosen data found for tx [${transaction.utxos.hash}]`;
-    const metadata = transaction.metadata;
+    const metadata = transaction.metadataCbor;
     try {
       if (metadata.length === 0) {
         this.logger.debug(baseError + `: No metadata`);
         return undefined;
       }
-      const data = metadata.find((data) => data.label === '0')?.json_metadata;
+      const metaDataCbor = metadata.find(
+        (data) => data.label === '0',
+      )?.metadata;
+      if (!metaDataCbor) return undefined;
+      const wasmMetadatumObject = wasm.GeneralTransactionMetadata.from_hex(
+        metaDataCbor,
+      ).get(wasm.BigNum.from_str('0'));
+      if (!wasmMetadatumObject)
+        throw new Error(
+          `ImpossibleBehavior: Found metadata with label "0" in tx [${transaction.utxos.hash}] but failed to read it from CSL object`,
+        );
+
+      const data = JSON.parse(
+        wasm.decode_metadatum_to_json_str(
+          wasmMetadatumObject,
+          wasm.MetadataJsonSchema.NoConversions,
+        ),
+      );
       const rosenData = parseRosenData(data);
       if (rosenData) {
         const lockOutputs = transaction.utxos.outputs.filter(
@@ -41,8 +59,7 @@ export class CardanoBlockFrostRosenExtractor extends AbstractRosenDataExtractor<
               amount: assetTransformation.amount,
               targetChainTokenId: assetTransformation.to,
               sourceTxId: transaction.utxos.hash,
-              // TODO: save rawData in CBOR (local:ergo/rosen-bridge/utils#293)
-              rawData: JsonBigInt.stringify(data),
+              rawData: metaDataCbor,
             };
           } else
             this.logger.debug(

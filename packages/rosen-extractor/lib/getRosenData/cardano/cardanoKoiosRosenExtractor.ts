@@ -1,9 +1,9 @@
+import JsonBigInt from '@rosen-bridge/json-bigint';
 import { isPlainObject } from 'lodash-es';
 import { RosenData, TokenTransformation } from '../abstract/types';
 import AbstractRosenDataExtractor from '../abstract/abstractRosenDataExtractor';
 import { CARDANO_CHAIN, CARDANO_NATIVE_TOKEN } from '../const';
 import { KoiosCborTransaction } from './types';
-import JsonBigInt from '@rosen-bridge/json-bigint';
 import { getCardanoTokenId, parseRosenData } from './utils';
 import {
   TransactionOutputJSON,
@@ -11,6 +11,7 @@ import {
   BigNum,
   GeneralTransactionMetadata,
   MetadataJsonSchema,
+  Transaction,
 } from '@emurgo/cardano-serialization-lib-nodejs';
 
 export class CardanoKoiosRosenExtractor extends AbstractRosenDataExtractor<KoiosCborTransaction> {
@@ -48,14 +49,21 @@ export class CardanoKoiosRosenExtractor extends AbstractRosenDataExtractor<Koios
               rosenData.toChain,
             );
             if (assetTransformation) {
+              const metadataCbor = Transaction.from_hex(transaction.cbor)
+                .auxiliary_data()
+                ?.metadata()
+                ?.to_hex();
+              if (!metadataCbor)
+                throw new Error(
+                  `ImpossibleBehavior: Rosen data is successfully extracted for tx [${transaction.tx_hash}] but failed to get metadata from transaction CBOR`,
+                );
               return {
                 ...rosenData,
                 sourceChainTokenId: assetTransformation.from,
                 amount: assetTransformation.amount,
                 targetChainTokenId: assetTransformation.to,
                 sourceTxId: transaction.tx_hash,
-                // TODO: save rawData in CBOR (local:ergo/rosen-bridge/utils#293)
-                rawData: JsonBigInt.stringify(data),
+                rawData: metadataCbor,
               };
             }
           }

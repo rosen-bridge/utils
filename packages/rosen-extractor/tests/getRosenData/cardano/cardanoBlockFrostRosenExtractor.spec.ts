@@ -78,7 +78,6 @@ describe('BlockFrostRosenExtractor', () => {
     it('should return undefined when tx locks nothing', () => {
       // generate a transaction with no lock box
       const noLock = testData.blockFrostTransactions.noLock;
-
       // run test
       const extractor = new CardanoBlockFrostRosenExtractor(
         testData.lockAddress,
@@ -105,11 +104,34 @@ describe('BlockFrostRosenExtractor', () => {
       'should return undefined when tx metadata does NOT contain %p',
       (key) => {
         // generate a transaction with invalid rosen data (missing a key)
-        const invalidTx = JSON.parse(
-          JSON.stringify(
-            testData.blockFrostTransactions.validTokenLock,
-          ).replace(key, key + 'Fake'),
+        const keyIndex = testData.validTokenLockMetadataCbor.indexOf(
+          testData.cborKeyHex[key],
         );
+        const invalidMetaData =
+          testData.validTokenLockMetadataCbor.slice(0, keyIndex - 2) + // all data before the specified key and it's length (without any change)
+          (
+            Number(
+              '0x' +
+                testData.validTokenLockMetadataCbor.slice(
+                  keyIndex - 2,
+                  keyIndex,
+                ),
+            ) + 4
+          ).toString(16) + // increase the length by 4
+          testData.validTokenLockMetadataCbor.slice(
+            keyIndex,
+            keyIndex + testData.cborKeyHex[key].length,
+          ) + // the specified key
+          testData.cborKeyHex['Fake'] + // adding 'Fake' to key
+          testData.validTokenLockMetadataCbor.slice(
+            keyIndex + testData.cborKeyHex[key].length,
+          ); // all data after the specified key (without any change)
+
+        const invalidTx = JSON.parse(
+          JSON.stringify(testData.blockFrostTransactions.validTokenLock),
+        );
+        invalidTx.metadataCbor[0].metadata = invalidMetaData;
+        invalidTx.metadataCbor[0].cbor_metadata = `\\x${invalidMetaData}`;
 
         // run test
         const extractor = new CardanoBlockFrostRosenExtractor(
