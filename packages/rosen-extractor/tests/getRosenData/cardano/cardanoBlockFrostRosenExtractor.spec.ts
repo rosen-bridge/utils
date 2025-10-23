@@ -31,7 +31,6 @@ describe('BlockFrostRosenExtractor', () => {
       const extractor = new CardanoBlockFrostRosenExtractor(
         testData.lockAddress,
         tokenMap,
-        console,
       );
       const result = extractor.get(validTokenLockTx);
 

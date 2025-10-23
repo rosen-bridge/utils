@@ -55,7 +55,7 @@ export class CardanoKoiosRosenExtractor extends AbstractRosenDataExtractor<Koios
                 ?.to_hex();
               if (!metadataCbor)
                 throw new Error(
-                  `ImpossibleBehavior: Rosen data is successfully extracted but failed to get metadata from transaction CBOR`,
+                  `ImpossibleBehavior: Rosen data is successfully extracted for tx [${transaction.tx_hash}] but failed to get metadata from transaction CBOR`,
                 );
               return {
                 ...rosenData,

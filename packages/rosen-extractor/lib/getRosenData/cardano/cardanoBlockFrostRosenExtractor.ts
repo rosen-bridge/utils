@@ -32,7 +32,7 @@ export class CardanoBlockFrostRosenExtractor extends AbstractRosenDataExtractor<
       ).get(wasm.BigNum.from_str('0'));
       if (!wasmMetadatumObject)
         throw new Error(
-          `ImpossibleBehavior: Found metadata with label "0" but failed to read it from CSL object`,
+          `ImpossibleBehavior: Found metadata with label "0" in tx [${transaction.utxos.hash}] but failed to read it from CSL object`,
         );
 
       const data = JSON.parse(
