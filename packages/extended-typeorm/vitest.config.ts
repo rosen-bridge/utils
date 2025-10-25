@@ -9,8 +9,10 @@ export default defineConfig({
       reporter: 'cobertura',
     },
     passWithNoTests: true,
-    sequence: {
-      concurrent: false,
+    poolOptions: {
+      forks: {
+        singleFork: true,
+      },
     },
   },
 });

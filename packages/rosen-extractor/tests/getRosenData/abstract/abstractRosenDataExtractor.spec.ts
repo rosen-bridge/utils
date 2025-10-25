@@ -6,7 +6,6 @@ import { TokenMap } from '@rosen-bridge/tokens';
 vi.mock('@rosen-bridge/address-codec', async () => {
   const actual = await vi.importActual('@rosen-bridge/address-codec');
   return {
-    __esModule: true,
     ...actual,
   };
 });

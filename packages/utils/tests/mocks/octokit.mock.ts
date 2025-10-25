@@ -1,4 +1,3 @@
-import { vi } from 'vitest';
 import { Octokit } from 'octokit';
 
 import { PartialReleases } from '../data/octokit.data';
