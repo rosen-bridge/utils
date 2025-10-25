@@ -1,5 +1,4 @@
 import * as ergoLib from 'ergo-lib-wasm-nodejs';
-import { describe, expect, it } from 'vitest';
 import * as testData from './permitTestData';
 import { createPermit } from '../lib';
 import { hexToUint8Array } from '../lib/utils';

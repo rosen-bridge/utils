@@ -5,10 +5,10 @@ export default defineConfig({
     globals: true,
     coverage: {
       all: true,
-      reporter: ['cobertura', 'lcov', 'text', 'text-summary'],
       provider: 'istanbul',
-      include: ['src'],
+      reporter: 'cobertura',
     },
+    passWithNoTests: true,
     poolOptions: {
       forks: {
         singleFork: true,

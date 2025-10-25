@@ -48,7 +48,7 @@ describe('EvmEthersRosenExtractor', () => {
       chainName,
       nativeToken,
     );
-    const rpcExtractorMock = jest.spyOn(
+    const rpcExtractorMock = vi.spyOn(
       (extractor as any).rpcExtractor,
       'extractRawData',
     );

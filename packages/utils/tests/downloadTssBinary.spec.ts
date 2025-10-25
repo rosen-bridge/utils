@@ -12,7 +12,7 @@ import {
 
 import { mockOctokit, mockOctokitGetReleaseByTag } from './mocks/octokit.mock';
 
-jest.mock('download');
+vi.mock('download');
 
 describe('downloadTssBinary', () => {
   beforeEach(() => {
@@ -115,7 +115,7 @@ describe('downloadTssBinary', () => {
    * - `download` function should not get called
    */
   it('should not call `download` function when no matching release is found', async () => {
-    jest.mocked(download).mockClear();
+    vi.mocked(download).mockClear();
 
     await downloadTssBinary('bin', {
       osName: 'linux',
@@ -140,7 +140,7 @@ describe('downloadTssBinary', () => {
    * - `download` function should throw `RosenAssetsDownloadError`
    */
   it('should throw an error when an error happens', async () => {
-    jest.mocked(download).mockRejectedValue(new Error('Bad!'));
+    vi.mocked(download).mockRejectedValue(new Error('Bad!'));
 
     const downloadPromise = downloadTssBinary('bin', {
       osName: 'linux',
