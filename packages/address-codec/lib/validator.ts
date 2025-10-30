@@ -6,6 +6,8 @@ import {
   DOGE_NETWORK,
   ERGO_CHAIN,
   ETHEREUM_CHAIN,
+  HANDSHAKE_CHAIN,
+  HANDSHAKE_NETWORK,
   RUNES_CHAIN,
 } from './const';
 import { UnsupportedAddressError, UnsupportedChainError } from './types';
@@ -49,6 +51,13 @@ export const validateAddress = (chain: string, address: string): boolean => {
         bitcoinLib.address.toOutputScript(address);
         if (address.slice(0, 4) != 'bc1p')
           throw new UnsupportedAddressError(chain, address);
+      } catch {
+        throw new UnsupportedAddressError(chain, address);
+      }
+      return true;
+    case HANDSHAKE_CHAIN:
+      try {
+        bitcoinLib.address.toOutputScript(address, HANDSHAKE_NETWORK);
       } catch {
         throw new UnsupportedAddressError(chain, address);
       }

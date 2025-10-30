@@ -10,6 +10,7 @@ import {
   DOGE_CHAIN,
   ERGO_CHAIN,
   ETHEREUM_CHAIN,
+  HANDSHAKE_CHAIN,
   RUNES_CHAIN,
 } from '../lib/const';
 
@@ -127,5 +128,22 @@ describe('decodeAddress', () => {
       testData.encodedTaprootBitcoinAddress,
     );
     expect(res).toEqual(testData.taprootBitcoinAddress);
+  });
+
+  /**
+   * @target `decodeAddress` should decode Handshake address successfully
+   * @dependencies
+   * @scenario
+   * - run test
+   * - check returned value
+   * @expected
+   * - it should be address in bech32 format with hs prefix
+   */
+  it('should decode Handshake address successfully', () => {
+    const res = decodeAddress(
+      HANDSHAKE_CHAIN,
+      testData.encodedHandshakeAddress,
+    );
+    expect(res).toEqual(testData.handshakeAddress);
   });
 });

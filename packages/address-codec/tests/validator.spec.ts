@@ -10,6 +10,7 @@ import {
   DOGE_CHAIN,
   ERGO_CHAIN,
   ETHEREUM_CHAIN,
+  HANDSHAKE_CHAIN,
   RUNES_CHAIN,
 } from '../lib/const';
 
@@ -229,6 +230,33 @@ describe('validateAddress', () => {
   it('should throw error for wrong Runes address', () => {
     expect(() => {
       validateAddress(RUNES_CHAIN, testData.bitcoinAddress);
+    }).toThrow(UnsupportedAddressError);
+  });
+
+  /**
+   * @target `validateAddress` should validate Handshake address successfully
+   * @dependencies
+   * @scenario
+   * - run test
+   * @expected
+   * - to validate correct Handshake address
+   */
+  it('should validate Handshake address successfully', () => {
+    const res = validateAddress(HANDSHAKE_CHAIN, testData.handshakeAddress);
+    expect(res).toEqual(true);
+  });
+
+  /**
+   * @target `validateAddress` should throw error for wrong Handshake address
+   * @dependencies
+   * @scenario
+   * - run test
+   * @expected
+   * - to throw error for wrong Handshake address
+   */
+  it('should throw error for wrong Handshake address', () => {
+    expect(() => {
+      validateAddress(HANDSHAKE_CHAIN, testData.invalidHandshakeAddress);
     }).toThrow(UnsupportedAddressError);
   });
 });
