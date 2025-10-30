@@ -24,4 +24,6 @@ export { DogeRpcRosenExtractor } from './getRosenData/doge/dogeRpcRosenExtractor
 export { BitcoinRunesEsploraRosenExtractor } from './getRosenData/bitcoin-runes/bitcoinRunesEsploraRosenExtractor';
 export { BitcoinRunesRosenExtractor } from './getRosenData/bitcoin-runes/bitcoinRunesRosenExtractor';
 export { BitcoinRunesRpcRosenExtractor } from './getRosenData/bitcoin-runes/bitcoinRunesRpcRosenExtractor';
+export { HandshakeRosenExtractor } from './getRosenData/handshake/handshakeRosenExtractor';
+export { HandshakeRpcRosenExtractor } from './getRosenData/handshake/handshakeRpcRosenExtractor';
 export { parseRosenData } from './utils';

@@ -9,6 +9,8 @@ export const ERGO_CHAIN = 'ergo';
 export const DOGE_CHAIN = 'doge';
 export const DOGE_NATIVE_TOKEN = 'doge';
 export const BITCOIN_RUNES_CHAIN = 'bitcoin-runes';
+export const HANDSHAKE_CHAIN = 'handshake';
+export const HANDSHAKE_NATIVE_TOKEN = 'hns';
 export const SUPPORTED_CHAINS = [
   ERGO_CHAIN,
   CARDANO_CHAIN,
@@ -17,4 +19,5 @@ export const SUPPORTED_CHAINS = [
   BINANCE_CHAIN,
   DOGE_CHAIN,
   BITCOIN_RUNES_CHAIN,
+  HANDSHAKE_CHAIN,
 ];

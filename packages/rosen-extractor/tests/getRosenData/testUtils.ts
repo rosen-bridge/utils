@@ -12,6 +12,8 @@ import {
   ERGO_NATIVE_TOKEN,
   DOGE_CHAIN,
   DOGE_NATIVE_TOKEN,
+  HANDSHAKE_CHAIN,
+  HANDSHAKE_NATIVE_TOKEN,
 } from '../../lib/getRosenData/const';
 
 export default class TestUtils {
@@ -185,6 +187,25 @@ export default class TestUtils {
           policyId: 'e8699f09f993366363e2354a7520770ded59d23f5aeaad6717e73614',
           assetName: '72706e52504f4352',
         },
+      },
+    },
+    {
+      [HANDSHAKE_CHAIN]: {
+        tokenId: HANDSHAKE_NATIVE_TOKEN,
+        name: HANDSHAKE_NATIVE_TOKEN,
+        decimals: 8,
+        type: 'tokenType',
+        residency: 'tokenResidency',
+        extra: {},
+      },
+      [ERGO_CHAIN]: {
+        tokenId:
+          'dcbda15f1361f5eeba416dd63e059fce34f0c57499e9afe733ea0fd59cf63f48',
+        name: 'rsHNS',
+        decimals: 8,
+        type: 'EIP-004',
+        residency: 'wrapped',
+        extra: {},
       },
     },
   ];
