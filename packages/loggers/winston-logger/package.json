@@ -24,9 +24,6 @@
     "release": "npm run build && npm publish --access public",
     "type-check": "tsc --noEmit"
   },
-  "devDependencies": {
-    "tsx": "^4.20.5"
-  },
   "dependencies": {
     "@rosen-bridge/abstract-logger": "^3.0.1",
     "@rosen-bridge/json-bigint": "^1.1.0",

@@ -24,9 +24,6 @@
     "type-check": "tsc --noEmit",
     "release": "npm run build && npm publish --access public"
   },
-  "devDependencies": {
-    "tsx": "^4.20.5"
-  },
   "directories": {
     "lib": "lib"
   },
