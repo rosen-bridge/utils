@@ -1,0 +1,12 @@
+{
+  "$schema": "https://unpkg.com/knip/schema.json",
+  "workspaces": {
+    "packages/cli": {
+      "entry": ["bin/{index,cli,main}.{js,cjs,mjs,jsx,ts,cts,mts,tsx}"],
+      "ignoreDependencies": ["tsx"]
+    },
+    "packages/**": {
+      "entry": ["lib/{index,cli,main}.{js,cjs,mjs,jsx,ts,cts,mts,tsx}"]
+    }
+  }
+}

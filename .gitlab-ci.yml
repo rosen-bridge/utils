@@ -30,7 +30,7 @@ knip:
       - packages/**/node_modules
       - packages/**/dist
   script:
-    - npm run knip
+    - npx knip --dependencies
 
 build:
   stage: build
