@@ -1,5 +1,11 @@
 # @rosen-bridge/rosen-extractor
 
+## 11.1.0
+
+### Minor Changes
+
+- Add optional `storeRawData` parameter to control whether raw transaction data should exist in RosenData object
+
 ## 11.0.0
 
 ### Major Changes
