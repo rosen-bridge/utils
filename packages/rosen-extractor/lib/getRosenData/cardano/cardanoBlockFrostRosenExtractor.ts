@@ -13,9 +13,7 @@ export class CardanoBlockFrostRosenExtractor extends AbstractRosenDataExtractor<
    * extracts RosenData from given lock transaction in blockfrost format
    * @param transaction the lock transaction in blockfrost format
    */
-  extractRawData = (
-    transaction: BlockFrostTransaction,
-  ): RosenData | undefined => {
+  extractData = (transaction: BlockFrostTransaction): RosenData | undefined => {
     const baseError = `No rosen data found for tx [${transaction.utxos.hash}]`;
     const metadata = transaction.metadataCbor;
     try {

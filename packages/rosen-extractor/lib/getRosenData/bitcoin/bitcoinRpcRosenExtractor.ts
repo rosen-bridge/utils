@@ -15,8 +15,13 @@ export class BitcoinRpcRosenExtractor extends AbstractRosenDataExtractor<Bitcoin
   readonly chain = BITCOIN_CHAIN;
   protected lockScriptPubKey: string;
 
-  constructor(lockAddress: string, tokens: TokenMap, logger?: AbstractLogger) {
-    super(lockAddress, tokens, logger);
+  constructor(
+    lockAddress: string,
+    tokens: TokenMap,
+    logger?: AbstractLogger,
+    storeRawData = true,
+  ) {
+    super(lockAddress, tokens, logger, storeRawData);
     this.lockScriptPubKey = address.toOutputScript(lockAddress).toString('hex');
   }
 
@@ -24,9 +29,7 @@ export class BitcoinRpcRosenExtractor extends AbstractRosenDataExtractor<Bitcoin
    * extracts RosenData from given lock transaction in Rpc format
    * @param transaction the lock transaction in Rpc format
    */
-  extractRawData = (
-    transaction: BitcoinRpcTransaction,
-  ): RosenData | undefined => {
+  extractData = (transaction: BitcoinRpcTransaction): RosenData | undefined => {
     const baseError = `No rosen data found for tx [${transaction.txid}]`;
     try {
       const outputs = transaction.vout;

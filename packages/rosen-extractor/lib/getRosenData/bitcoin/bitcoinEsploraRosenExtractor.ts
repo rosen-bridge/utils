@@ -15,8 +15,13 @@ export class BitcoinEsploraRosenExtractor extends AbstractRosenDataExtractor<Bit
   readonly chain = BITCOIN_CHAIN;
   protected lockScriptPubKey: string;
 
-  constructor(lockAddress: string, tokens: TokenMap, logger?: AbstractLogger) {
-    super(lockAddress, tokens, logger);
+  constructor(
+    lockAddress: string,
+    tokens: TokenMap,
+    logger?: AbstractLogger,
+    storeRawData = true,
+  ) {
+    super(lockAddress, tokens, logger, storeRawData);
     this.lockScriptPubKey = address.toOutputScript(lockAddress).toString('hex');
   }
 
@@ -24,7 +29,7 @@ export class BitcoinEsploraRosenExtractor extends AbstractRosenDataExtractor<Bit
    * extracts RosenData from given lock transaction in Esplora format
    * @param transaction the lock transaction in Esplora format
    */
-  extractRawData = (
+  extractData = (
     transaction: BitcoinEsploraTransaction,
   ): RosenData | undefined => {
     const baseError = `No rosen data found for tx [${transaction.txid}]`;
