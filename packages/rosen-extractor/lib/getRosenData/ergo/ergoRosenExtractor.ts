@@ -12,12 +12,18 @@ export class ErgoRosenExtractor extends AbstractRosenDataExtractor<string> {
   readonly chain = ERGO_CHAIN;
   private nodeExtractor: ErgoNodeRosenExtractor;
 
-  constructor(lockAddress: string, tokens: TokenMap, logger?: AbstractLogger) {
-    super(lockAddress, tokens, logger);
+  constructor(
+    lockAddress: string,
+    tokens: TokenMap,
+    logger?: AbstractLogger,
+    storeRawData = true,
+  ) {
+    super(lockAddress, tokens, logger, storeRawData);
     this.nodeExtractor = new ErgoNodeRosenExtractor(
       lockAddress,
       tokens,
       logger,
+      storeRawData,
     );
   }
 
@@ -25,7 +31,7 @@ export class ErgoRosenExtractor extends AbstractRosenDataExtractor<string> {
    * extracts RosenData from given lock transaction in wasm sigma serialized bytes
    * @param serializedTransaction the sigma serialized bytes of transaction
    */
-  extractRawData = (serializedTransaction: string): RosenData | undefined => {
+  extractData = (serializedTransaction: string): RosenData | undefined => {
     let transaction: Transaction;
     try {
       transaction = Transaction.sigma_parse_bytes(
@@ -41,6 +47,6 @@ export class ErgoRosenExtractor extends AbstractRosenDataExtractor<string> {
       return undefined;
     }
     const nodeTx = JsonBigInt.parse(transaction.to_json()) as NodeTransaction;
-    return this.nodeExtractor.extractRawData(nodeTx);
+    return this.nodeExtractor.extractData(nodeTx);
   };
 }

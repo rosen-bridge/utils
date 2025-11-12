@@ -6,8 +6,13 @@ import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 export class TestRosenDataExtractor extends AbstractRosenDataExtractor<string> {
   readonly chain = ERGO_CHAIN;
 
-  constructor(lockAddress: string, tokens: TokenMap, logger?: AbstractLogger) {
-    super(lockAddress, tokens, logger);
+  constructor(
+    lockAddress: string,
+    tokens: TokenMap,
+    logger?: AbstractLogger,
+    storeRawData = true,
+  ) {
+    super(lockAddress, tokens, logger, storeRawData);
   }
 
   /**
@@ -15,7 +20,7 @@ export class TestRosenDataExtractor extends AbstractRosenDataExtractor<string> {
    * @param transaction the lock transaction in Esplora format
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  extractRawData = (transaction: string): RosenData | undefined => {
+  extractData = (transaction: string): RosenData | undefined => {
     return {
       toChain: 'cardano',
       toAddress: 'addr1v83t6pz7yhz3y2qu0ffe5kc0frl6wrud8l3aehs9axz35dgfl8z2x',

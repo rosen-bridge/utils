@@ -12,8 +12,13 @@ export class BitcoinRosenExtractor extends AbstractRosenDataExtractor<string> {
   readonly chain = BITCOIN_CHAIN;
   protected lockScriptPubKey: string;
 
-  constructor(lockAddress: string, tokens: TokenMap, logger?: AbstractLogger) {
-    super(lockAddress, tokens, logger);
+  constructor(
+    lockAddress: string,
+    tokens: TokenMap,
+    logger?: AbstractLogger,
+    storeRawData = true,
+  ) {
+    super(lockAddress, tokens, logger, storeRawData);
     this.lockScriptPubKey = address.toOutputScript(lockAddress).toString('hex');
   }
 
@@ -21,7 +26,7 @@ export class BitcoinRosenExtractor extends AbstractRosenDataExtractor<string> {
    * extracts RosenData from given lock transaction in BitcoinTx format
    * @param serializedTransaction stringified transaction in BitcoinTx format
    */
-  extractRawData = (serializedTransaction: string): RosenData | undefined => {
+  extractData = (serializedTransaction: string): RosenData | undefined => {
     let transaction: BitcoinTx;
     try {
       transaction = JsonBigInt.parse(serializedTransaction);

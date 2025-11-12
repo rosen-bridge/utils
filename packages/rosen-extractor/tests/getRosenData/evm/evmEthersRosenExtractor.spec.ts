@@ -50,7 +50,7 @@ describe('EvmEthersRosenExtractor', () => {
     );
     const rpcExtractorMock = vi.spyOn(
       (extractor as any).rpcExtractor,
-      'extractRawData',
+      'extractData',
     );
 
     beforeAll(async () => {
@@ -71,7 +71,7 @@ describe('EvmEthersRosenExtractor', () => {
      * - check returned value
      * @expected
      * - it should return expected rosenData object
-     * - extractRawData of rpcExtractor should be called
+     * - extractData of rpcExtractor should be called
      */
     it('should extract rosenData from EVM locking native-asset transfer tx successfully', () => {
       const validLockTx = testData.validNativeLockTx;
@@ -93,7 +93,7 @@ describe('EvmEthersRosenExtractor', () => {
      * - check returned value
      * @expected
      * - it should return undefined
-     * - extractRawData of rpcExtractor should be called
+     * - extractData of rpcExtractor should be called
      */
     it('should return undefined when recipient is a supported token but call data does not start with `transfer` signature', () => {
       const invalidTx = testData.noLockNoTransfer;
@@ -114,7 +114,7 @@ describe('EvmEthersRosenExtractor', () => {
      * - check returned value
      * @expected
      * - it should return undefined
-     * - extractRawData of rpcExtractor should not be called
+     * - extractData of rpcExtractor should not be called
      */
     it('should return undefined when to is not lock address nor supported token', () => {
       const invalidTx = testData.invalidLockTxUnsupportedToken;

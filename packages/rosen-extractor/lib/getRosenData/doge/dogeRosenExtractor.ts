@@ -11,8 +11,13 @@ export class DogeRosenExtractor extends AbstractRosenDataExtractor<string> {
   readonly chain = DOGE_CHAIN;
   protected lockScriptPubKey: string;
 
-  constructor(lockAddress: string, tokens: TokenMap, logger?: AbstractLogger) {
-    super(lockAddress, tokens, logger);
+  constructor(
+    lockAddress: string,
+    tokens: TokenMap,
+    logger?: AbstractLogger,
+    storeRawData = true,
+  ) {
+    super(lockAddress, tokens, logger, storeRawData);
     this.lockScriptPubKey = addressToOutputScript(lockAddress);
   }
 
@@ -20,7 +25,7 @@ export class DogeRosenExtractor extends AbstractRosenDataExtractor<string> {
    * extracts RosenData from given lock transaction in DogeTx format
    * @param serializedTransaction stringified transaction in DogeTx format
    */
-  extractRawData = (serializedTransaction: string): RosenData | undefined => {
+  extractData = (serializedTransaction: string): RosenData | undefined => {
     let transaction: DogeTx;
     try {
       transaction = JsonBigInt.parse(serializedTransaction);

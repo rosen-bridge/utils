@@ -15,8 +15,9 @@ export class EvmRosenExtractor extends AbstractRosenDataExtractor<string> {
     chain: string,
     nativeToken: string,
     logger?: AbstractLogger,
+    storeRawData = true,
   ) {
-    super(lockAddress, tokens, logger);
+    super(lockAddress, tokens, logger, storeRawData);
     this.chain = chain;
     this.rpcExtractor = new EvmRpcRosenExtractor(
       lockAddress,
@@ -24,6 +25,7 @@ export class EvmRosenExtractor extends AbstractRosenDataExtractor<string> {
       chain,
       nativeToken,
       logger,
+      storeRawData,
     );
   }
 
@@ -31,7 +33,7 @@ export class EvmRosenExtractor extends AbstractRosenDataExtractor<string> {
    * extracts RosenData from given lock transaction in ethers Transaction format
    * @param serializedTransaction signed serialized transaction in ethers Transaction format
    */
-  extractRawData = (serializedTransaction: string): RosenData | undefined => {
+  extractData = (serializedTransaction: string): RosenData | undefined => {
     let transaction: Transaction;
     try {
       transaction = Transaction.from('0x' + serializedTransaction);
@@ -44,6 +46,6 @@ export class EvmRosenExtractor extends AbstractRosenDataExtractor<string> {
       }
       return undefined;
     }
-    return this.rpcExtractor.extractRawData(transaction);
+    return this.rpcExtractor.extractData(transaction);
   };
 }
