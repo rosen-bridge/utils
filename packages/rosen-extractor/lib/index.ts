@@ -12,6 +12,7 @@ export { EvmRpcRosenExtractor } from './getRosenData/evm/evmRpcRosenExtractor';
 export { EvmRosenExtractor } from './getRosenData/evm/evmRosenExtractor';
 export { CardanoKoiosRosenExtractor } from './getRosenData/cardano/cardanoKoiosRosenExtractor';
 export { CardanoOgmiosRosenExtractor } from './getRosenData/cardano/cardanoOgmiosRosenExtractor';
+export { OmgiosNoCborError } from './getRosenData/cardano/errors';
 export { CardanoRosenExtractor } from './getRosenData/cardano/cardanoRosenExtractor';
 export { CardanoBlockFrostRosenExtractor } from './getRosenData/cardano/cardanoBlockFrostRosenExtractor';
 export { ErgoRosenExtractor } from './getRosenData/ergo/ergoRosenExtractor';

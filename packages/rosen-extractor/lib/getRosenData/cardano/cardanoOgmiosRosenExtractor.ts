@@ -9,6 +9,7 @@ import { RosenData, TokenTransformation } from '../abstract/types';
 import AbstractRosenDataExtractor from '../abstract/abstractRosenDataExtractor';
 import { CARDANO_CHAIN, CARDANO_NATIVE_TOKEN } from '../const';
 import { getCardanoTokenId, parseRosenData } from './utils';
+import { OmgiosNoCborError } from './errors';
 
 export class CardanoOgmiosRosenExtractor extends AbstractRosenDataExtractor<Transaction> {
   readonly chain = CARDANO_CHAIN;
@@ -38,9 +39,7 @@ export class CardanoOgmiosRosenExtractor extends AbstractRosenDataExtractor<Tran
                 let rawData: string | undefined = '';
                 if (this.storeRawData) {
                   if (!transaction.cbor) {
-                    throw Error(
-                      'Unable to extract raw-data, enable the transaction cbor in ogmios client (--include-cbor or --include-transaction-cbor) or turn off the raw data extraction',
-                    );
+                    throw new OmgiosNoCborError();
                   }
                   rawData = wasm.Transaction.from_hex(transaction.cbor)
                     .auxiliary_data()
@@ -79,6 +78,7 @@ export class CardanoOgmiosRosenExtractor extends AbstractRosenDataExtractor<Tran
           baseError + `: Invalid metadata: ${JsonBigInt.stringify(metadata)}`,
         );
     } catch (e) {
+      if (e instanceof OmgiosNoCborError) throw e;
       this.logger.debug(
         `An error occurred while getting Cardano rosen data from Ogmios: ${e}`,
       );
