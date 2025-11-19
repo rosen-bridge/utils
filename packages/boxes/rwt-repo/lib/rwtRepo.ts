@@ -50,7 +50,7 @@ export class RWTRepo {
       ?.slice(1)
       .map((wid) => Buffer.from(wid).toString('hex'))
       .map((wid) => {
-        return { wid, rwtCount: this.getPermitCount(wid) };
+        return { wid, rwtCount: 1n };
       });
 
     if (
@@ -70,7 +70,7 @@ export class RWTRepo {
         this.repoAddress
       }], repoNft=[${this.repoNft}], rwt=[${
         this.rwt
-      }], rwtCount=[${rwtCount}], rsn=[${rsn}], rsnCount=[${rsnCount}], chainId=[${chainId}], commitmentRwtCount=[${this.getCommitmentRwtCount()}], quorumPercentage=[${quorumPercentage}], approvalOffset=[${approvalOffset}], maximumApproval=[${maximumApproval}], ergCollateral=[${this.getErgCollateral()}], rsnCollateral=[${this.getRsnCollateral()}], widPermits=[${widPermits}]`,
+      }], rwtCount=[${rwtCount}], rsn=[${rsn}], rsnCount=[${rsnCount}], chainId=[${chainId}], quorumPercentage=[${quorumPercentage}], approvalOffset=[${approvalOffset}], maximumApproval=[${maximumApproval}], ergCollateral=[${this.getErgCollateral()}], rsnCollateral=[${this.getRsnCollateral()}], widPermits=[${widPermits}]`,
     );
 
     return new RWTRepoBuilder(
@@ -81,7 +81,6 @@ export class RWTRepo {
       rsn,
       rsnCount,
       chainId,
-      this.getCommitmentRwtCount(),
       quorumPercentage,
       approvalOffset,
       maximumApproval,
@@ -182,103 +181,6 @@ export class RWTRepo {
     );
 
     return requiredCommitmentCount;
-  };
-
-  /**
-   * returns value of commitmentRwtCount for this.box. If this.box is undefined
-   * an exception is thrown.
-   *
-   * @return {bigint}
-   */
-  getCommitmentRwtCount = () => {
-    if (!this.box) {
-      throw new Error(
-        `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`,
-      );
-    }
-
-    const commitmentRwtCount = this.r6At(0);
-
-    if (!commitmentRwtCount) {
-      throw new Error(
-        `could not extract commitmentRwtCount from R6[0]: ${this.rwtRepoLogDescription} `,
-      );
-    }
-
-    this.logger.debug(
-      `commitmentRwtCount in R6[0] register value: ${commitmentRwtCount}`,
-    );
-
-    return commitmentRwtCount;
-  };
-
-  /**
-   * finds the index of wid in R4 register of this.box. returns -1 if not found.
-   *
-   * @param {string} wid - watcher id in hex format
-   * @return {number}
-   */
-  getWidIndex = (wid: string) => {
-    if (!this.box) {
-      throw new Error(
-        `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`,
-      );
-    }
-
-    const r4Hex = this.r4?.map((bytes) => Buffer.from(bytes).toString('hex'));
-
-    if (!r4Hex) {
-      throw new Error(
-        `could not extract widIndex for wid=[${wid}] from R4: ${this.rwtRepoLogDescription} `,
-      );
-    }
-
-    let widIndex = r4Hex.slice(1).indexOf(wid);
-    widIndex = widIndex === -1 ? widIndex : widIndex + 1;
-
-    if (widIndex !== -1) {
-      this.logger.debug(
-        `index of wid=[${wid}] found in R4: index=[${widIndex}], R4[${widIndex}]=[${r4Hex[widIndex]}]`,
-      );
-    } else {
-      this.logger.debug(`index of wid=[${wid}] not found in R4`);
-    }
-
-    return widIndex;
-  };
-
-  /**
-   * returns permitCount for passed wid
-   *
-   * @param {string} wid
-   * @return {bigint}
-   */
-  getPermitCount = (wid: string) => {
-    if (!this.box) {
-      throw new Error(
-        `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`,
-      );
-    }
-
-    const widIndex = this.getWidIndex(wid);
-
-    if (widIndex === -1) {
-      return 0n;
-    }
-
-    const permitCount = this.r5?.at(widIndex);
-
-    if (permitCount == undefined) {
-      throw new Error(
-        `could not extract permitCount for wid=[${wid}] and widIndex=[${widIndex}] from R5: ${this.rwtRepoLogDescription} `,
-      );
-    }
-
-    this.logger.debug(
-      `permitCount for wid=[${wid}] in R5: permitCount=${permitCount}, widIndex=${widIndex}`,
-    );
-
-    return permitCount;
   };
 
   /**

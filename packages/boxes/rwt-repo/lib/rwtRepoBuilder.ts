@@ -21,8 +21,6 @@ export class RWTRepoBuilder {
 
     private chainId: string,
 
-    private commitmentRwtCount: bigint,
-
     private quorumPercentage: number,
 
     private approvalOffset: number,
@@ -86,17 +84,6 @@ export class RWTRepoBuilder {
     this.logger.debug(`removed user with wid=[${wid}]`);
     this.lastModifiedWidIndex = widIndex;
 
-    return this;
-  };
-
-  /**
-   * sets value of this.commitmentRwtCount
-   *
-   * @param {bigint} commitmentRwtCount
-   * @return {RWTRepoBuilder}
-   */
-  setCommitmentRwtCount = (commitmentRwtCount: bigint): RWTRepoBuilder => {
-    this.commitmentRwtCount = commitmentRwtCount;
     return this;
   };
 
@@ -235,7 +222,6 @@ export class RWTRepoBuilder {
 
     const r6 = ergoLib.Constant.from_i64_str_array(
       [
-        this.commitmentRwtCount,
         this.quorumPercentage,
         this.approvalOffset,
         this.maximumApproval,
