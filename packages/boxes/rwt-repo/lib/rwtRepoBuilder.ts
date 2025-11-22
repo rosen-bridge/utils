@@ -4,7 +4,6 @@ import * as ergoLib from 'ergo-lib-wasm-nodejs';
 export class RWTRepoBuilder {
   private value?: bigint;
   private height?: number;
-  private lastModifiedWidIndex?: number;
 
   constructor(
     private repoAddress: string,
@@ -20,16 +19,6 @@ export class RWTRepoBuilder {
     private rsnCount: bigint,
 
     private chainId: string,
-
-    private quorumPercentage: number,
-
-    private approvalOffset: number,
-
-    private maximumApproval: number,
-
-    private ergCollateral: bigint,
-
-    private rsnCollateral: bigint,
 
     private widPermits: Array<{ wid: string; rwtCount: bigint }>,
 
@@ -82,65 +71,6 @@ export class RWTRepoBuilder {
     this.rsnCount -= rwtCount;
 
     this.logger.debug(`removed user with wid=[${wid}]`);
-    this.lastModifiedWidIndex = widIndex;
-
-    return this;
-  };
-
-  /**
-   * sets value of this.quorumPercentage
-   *
-   * @param {number} watcherQuorumPercentage
-   * @return {RWTRepoBuilder}
-   */
-  setWatcherQuorumPercentage = (
-    watcherQuorumPercentage: number,
-  ): RWTRepoBuilder => {
-    this.quorumPercentage = watcherQuorumPercentage;
-    return this;
-  };
-
-  /**
-   * sets value of this.approvalOffset
-   *
-   * @param {number} approvalOffset
-   * @return {RWTRepoBuilder}
-   */
-  setApprovalOffset = (approvalOffset: number): RWTRepoBuilder => {
-    this.approvalOffset = approvalOffset;
-    return this;
-  };
-
-  /**
-   * sets value of this.maximumApproval
-   *
-   * @param {number} maximumApproval
-   * @return {RWTRepoBuilder}
-   */
-  setMaximumApproval = (maximumApproval: number): RWTRepoBuilder => {
-    this.maximumApproval = maximumApproval;
-    return this;
-  };
-
-  /**
-   * sets value of this.ergCollateral
-   *
-   * @param {bigint} ergCollateral
-   * @return {RWTRepoBuilder}
-   */
-  setErgCollateral = (ergCollateral: bigint): RWTRepoBuilder => {
-    this.ergCollateral = ergCollateral;
-    return this;
-  };
-
-  /**
-   * sets value of this.rsnCollateral
-   *
-   * @param {bigint} rsnCollateral
-   * @return {RWTRepoBuilder}
-   */
-  setRsnCollateral = (rsnCollateral: bigint): RWTRepoBuilder => {
-    this.rsnCollateral = rsnCollateral;
     return this;
   };
 
@@ -159,7 +89,6 @@ export class RWTRepoBuilder {
     this.widPermits[index].rwtCount -= rwtCount;
     this.rwtCount += rwtCount;
     this.rsnCount -= rwtCount;
-    this.lastModifiedWidIndex = index;
     return this;
   };
 
@@ -178,7 +107,6 @@ export class RWTRepoBuilder {
     this.widPermits[index].rwtCount += rwtCount;
     this.rwtCount -= rwtCount;
     this.rsnCount += rwtCount;
-    this.lastModifiedWidIndex = index;
     return this;
   };
 
@@ -206,35 +134,16 @@ export class RWTRepoBuilder {
       `using following permits in R4 to build the box: [${this.widPermits}]`,
     );
     const r4 = ergoLib.Constant.from_coll_coll_byte(
-      [this.chainId, ...this.widPermits.map((permit) => permit.wid)].map(
-        (item, index) =>
-          Uint8Array.from(Buffer.from(item, index === 0 ? undefined : 'hex')),
+      [this.chainId].map((item, index) =>
+        Uint8Array.from(Buffer.from(item, index === 0 ? undefined : 'hex')),
       ),
     );
     boxBuilder.set_register_value(4, r4);
 
     const r5 = ergoLib.Constant.from_i64_str_array(
-      [0n, ...this.widPermits.map((permit) => permit.rwtCount)].map((item) =>
-        item.toString(),
-      ),
+      [this.indexOfWid].map((item) => item.toString()),
     );
     boxBuilder.set_register_value(5, r5);
-
-    const r6 = ergoLib.Constant.from_i64_str_array(
-      [
-        this.quorumPercentage,
-        this.approvalOffset,
-        this.maximumApproval,
-        this.ergCollateral,
-        this.rsnCollateral,
-      ].map((item) => item.toString()),
-    );
-    boxBuilder.set_register_value(6, r6);
-
-    if (this.lastModifiedWidIndex != undefined) {
-      const r7 = ergoLib.Constant.from_i32(this.lastModifiedWidIndex);
-      boxBuilder.set_register_value(7, r7);
-    }
 
     boxBuilder.add_token(
       ergoLib.TokenId.from_str(this.repoNft),
