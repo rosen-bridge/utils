@@ -1,7 +1,7 @@
 import * as ergoLib from 'ergo-lib-wasm-nodejs';
 import { Constant } from 'ergo-lib-wasm-nodejs';
 import { RWTRepo, RWTRepoBuilder } from '../lib';
-import { repoAddress, repoNft, boxInfo1, boxInfo2 } from './rwtRepoTestData';
+import { repoAddress, repoNft, boxInfo1 } from './rwtRepoTestData';
 import JsonBigInt from '@rosen-bridge/json-bigint';
 
 describe('RWTRepo', () => {
@@ -13,127 +13,6 @@ describe('RWTRepo', () => {
       repoNft,
       '',
     );
-  });
-
-  describe('getErgCollateral', () => {
-    /**
-     * @target should return a bigint with the value stored in R6[4] of this.box
-     * @dependencies
-     * - ErgoExplorerClientFactory
-     * @scenario
-     * - create an instance of RWTRepo
-     * - mock this.explorerClient
-     * - check this.getErgCollateral() to return the correct value
-     * @expected
-     * - this.getErgCollateral() should return the correct value
-     */
-    it(`should return a bigint with the value stored in R6[4] of this.box`, async () => {
-      expect(rwtRepoWithExplorer.getErgCollateral()).toEqual(
-        JsonBigInt.parse(boxInfo1.additionalRegisters.R6.renderedValue)[4],
-      );
-    });
-  });
-
-  describe('getRsnCollateral', () => {
-    /**
-     * @target should return a bigint with the value stored in R6[5] of this.box
-     * @dependencies
-     * - ErgoExplorerClientFactory
-     * @scenario
-     * - create an instance of RWTRepo
-     * - mock this.explorerClient
-     * - check this.getRsnCollateral() to return the correct value
-     * @expected
-     * - this.getRsnCollateral() should return the correct value
-     */
-    it(`should return a bigint with the value stored in R6[5] of this.box`, async () => {
-      expect(rwtRepoWithExplorer.getRsnCollateral()).toEqual(
-        JsonBigInt.parse(boxInfo1.additionalRegisters.R6.renderedValue)[5],
-      );
-    });
-  });
-
-  describe('getRequiredCommitmentCount', () => {
-    /**
-     * @target should return (R6[1] * (len(R4) - 1) / 100 + R6[2]), when it is
-     * less than R6[3]
-     * @dependencies
-     * - ErgoExplorerClientFactory
-     * @scenario
-     * - create an instance of RWTRepo
-     * - mock this.explorerClient
-     * - check this.getRequiredCommitmentCount() to return the correct value
-     * @expected
-     * - this.getRequiredCommitmentCount() should return the correct value
-     */
-    it(`should return (R6[1] * (len(R4) - 1) / 100 + R6[2]), when it is less
-    than R6[3]`, async () => {
-      const boxInfo = boxInfo2;
-      const rwtRepo = new RWTRepo(
-        ergoLib.ErgoBox.from_json(JsonBigInt.stringify(boxInfo2)),
-        repoAddress,
-        repoNft,
-        '',
-      );
-
-      const r6 = Constant.decode_from_base16(boxInfo.additionalRegisters.R6)
-        .to_i64_str_array()
-        .map(BigInt);
-      const r4 = Constant.decode_from_base16(
-        boxInfo.additionalRegisters.R4,
-      ).to_coll_coll_byte();
-
-      expect(rwtRepo.getRequiredCommitmentCount()).toEqual(
-        (r6[1] * BigInt(r4.length - 1)) / 100n + r6[2],
-      );
-    });
-
-    /**
-     * @target RWTRepo.getRequiredCommitmentCount should return R6[3], when
-     * R6[3] is less than (R6[1] * (len(R4) - 1) / 100 + R6[2])
-     * @dependencies
-     * - ErgoExplorerClientFactory
-     * @scenario
-     * - create an instance of RWTRepo
-     * - mock this.explorerClient
-     * - check this.getRequiredCommitmentCount() to return the correct value
-     * @expected
-     * - this.getRequiredCommitmentCount() should return the correct value
-     */
-    it(`RWTRepo.getRequiredCommitmentCount should return R6[3], when R6[3] is
-    less than (R6[1] * (len(R4) - 1) / 100 + R6[2])`, async () => {
-      const boxInfo = boxInfo1;
-      const r6 = Constant.decode_from_base16(
-        boxInfo.additionalRegisters.R6.serializedValue,
-      )
-        .to_i64_str_array()
-        .map(BigInt);
-
-      expect(rwtRepoWithExplorer.getRequiredCommitmentCount()).toEqual(r6[3]);
-    });
-  });
-
-  describe('getCommitmentRwtCount', () => {
-    /**
-     * @target should return a bigint with the value stored in R6[0] of this.box
-     * @dependencies
-     * - ErgoExplorerClientFactory
-     * @scenario
-     * - create an instance of RWTRepo
-     * - mock RWTRepo.explorerClient
-     * - check this.getCommitmentRwtCount() to return the correct value
-     * @expected
-     * - this.getCommitmentRwtCount() should return the correct value
-     */
-    it(`should return a bigint with the value stored in R6[0] of this.box`, async () => {
-      const r6 = Constant.decode_from_base16(
-        boxInfo1.additionalRegisters.R6.serializedValue,
-      )
-        .to_i64_str_array()
-        .map(BigInt);
-
-      expect(rwtRepoWithExplorer.getCommitmentRwtCount()).toEqual(r6.at(0));
-    });
   });
 
   describe('getWidIndex', () => {

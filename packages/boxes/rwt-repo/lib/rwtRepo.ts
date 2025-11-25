@@ -35,32 +35,17 @@ export class RWTRepo {
     const rsnCount = BigInt(
       this.box.tokens().get(2).amount().as_i64().to_str(),
     );
-
-    const chainIdBytes = this.r4?.at(0);
-    const chainId =
-      chainIdBytes != undefined
-        ? Buffer.from(chainIdBytes).toString()
-        : undefined;
-    const widPermits = this.r4
-      ?.slice(1)
-      .map((wid) => Buffer.from(wid).toString('hex'))
-      .map((wid) => {
-        return { wid, rwtCount: 1n };
-      });
-
-    if (!chainId || !widPermits) {
-      throw new Error(
-        `could not create RWTRepoBuilder because one of [chainId=${chainId}, widPermits=${widPermits}] could not be calculated: ${this.rwtRepoLogDescription} `,
-      );
+    const chainIdBytes = this.r4;
+    if (!chainIdBytes) {
+      throw new Error(`chainId missing: ${this.rwtRepoLogDescription}`);
     }
+    const chainId = Buffer.from(chainIdBytes).toString();
 
-    this.logger.debug(
-      `creating new RWTRepoBuilder instance with following arguments: repoAddress=[${
-        this.repoAddress
-      }], repoNft=[${this.repoNft}], rwt=[${
-        this.rwt
-      }], rwtCount=[${rwtCount}], rsn=[${rsn}], rsnCount=[${rsnCount}], chainId=[${chainId}], widPermits=[${widPermits}]`,
-    );
+    const r5val = this.box.register_value(5)?.to_i64();
+    if (!r5val) {
+      throw new Error(`R5 missing: ${this.rwtRepoLogDescription}`);
+    }
+    const totalWatchers = Number(r5val.to_str());
 
     return new RWTRepoBuilder(
       this.repoAddress,
@@ -70,7 +55,7 @@ export class RWTRepo {
       rsn,
       rsnCount,
       chainId,
-      widPermits,
+      totalWatchers,
       this.logger,
     );
   };
@@ -81,8 +66,8 @@ export class RWTRepo {
    * @readonly
    * @type {(Uint8Array[] | undefined)}
    */
-  get r4(): Uint8Array[] | undefined {
-    return this.box?.register_value(4)?.to_coll_coll_byte();
+  get r4(): Uint8Array | undefined {
+    return this.box?.register_value(4)?.to_byte_array();
   }
 
   /**
@@ -91,10 +76,10 @@ export class RWTRepo {
    * @readonly
    * @type {(bigint[] | undefined)}
    */
-  get r5(): bigint[] | undefined {
-    return (
-      this.box?.register_value(5)?.to_i64_str_array() as string[] | undefined
-    )?.map(BigInt);
+  get r5(): number | undefined {
+    const val = this.box?.register_value(5)?.to_i64();
+    if (!val) throw new Error('R5 missing');
+    return Number(val.to_str());
   }
 
   /**

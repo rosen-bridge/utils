@@ -18,12 +18,6 @@ describe('RWTRepoBuilder', () => {
       boxInfo1.assets[2].tokenId,
       BigInt(boxInfo1.assets[2].amount),
       Buffer.from(boxInfo1Properties.r4[0]).toString(),
-      boxInfo1Properties.r6[0],
-      Number(boxInfo1Properties.r6[1]),
-      Number(boxInfo1Properties.r6[2]),
-      Number(boxInfo1Properties.r6[3]),
-      boxInfo1Properties.r6[4],
-      boxInfo1Properties.r6[5],
       boxInfo1Properties.widPermits,
     );
   });
@@ -201,122 +195,6 @@ describe('RWTRepoBuilder', () => {
     });
   });
 
-  describe('setWatcherQuorumPercentage', () => {
-    /**
-     * @target should set value of this.quorumPercentage and return this
-     * @dependencies
-     * @scenario
-     * - call this.setWatcherQuorumPercentage
-     * - check return value of this.setWatcherQuorumPercentage to be the current
-     *   instance of RWTRepoBuilder
-     * - check this.quorumPercentage to have been set to the correct value
-     * @expected
-     * - return value of this.setWatcherQuorumPercentage should be the current
-     *   instance of RWTRepoBuilder
-     * - this.quorumPercentage should have been set to the correct value
-     */
-    it(`should set value of this.quorumPercentage and return this`, async () => {
-      const newQuorumPercentage = 83;
-      const returnValue =
-        rwtRepoBuilder.setWatcherQuorumPercentage(newQuorumPercentage);
-
-      expect(returnValue).toBe(rwtRepoBuilder);
-      expect(rwtRepoBuilder['quorumPercentage']).toEqual(newQuorumPercentage);
-    });
-  });
-
-  describe('setApprovalOffset', () => {
-    /**
-     * @target should set value of this.approvalOffset and return this
-     * @dependencies
-     * @scenario
-     * - call this.setApprovalOffset
-     * - check return value of this.setApprovalOffset to be the current instance
-     *   of RWTRepoBuilder
-     * - check this.approvalOffset to have been set correctly
-     * @expected
-     * - return value of this.setApprovalOffset should be the current instance
-     *   of RWTRepoBuilder
-     * - this.approvalOffset should have been set correctly
-     */
-    it(`should set value of this.approvalOffset and return this`, async () => {
-      const newApprovalOffset = 5;
-      const returnValue = rwtRepoBuilder.setApprovalOffset(newApprovalOffset);
-
-      expect(returnValue).toBe(rwtRepoBuilder);
-      expect(rwtRepoBuilder['approvalOffset']).toEqual(newApprovalOffset);
-    });
-  });
-
-  describe('setMaximumApproval', () => {
-    /**
-     * @target should set value of this.maximumApproval and return this
-     * @dependencies
-     * @scenario
-     * - call this.setMaximumApproval
-     * - check return value of this.setMaximumApproval to be the current
-     *   instance of RWTRepoBuilder
-     * - check this.maximumApproval to have been set correctly
-     * @expected
-     * - return value of this.setMaximumApproval should be the current instance
-     *   of RWTRepoBuilder
-     * - this.maximumApproval should have been set correctly
-     */
-    it(`should set value of this.maximumApproval and return this`, async () => {
-      const newMaximumApproval = 14;
-      const returnValue = rwtRepoBuilder.setMaximumApproval(newMaximumApproval);
-
-      expect(returnValue).toBe(rwtRepoBuilder);
-      expect(rwtRepoBuilder['maximumApproval']).toEqual(newMaximumApproval);
-    });
-  });
-
-  describe('setErgCollateral', () => {
-    /**
-     * @target should set value of this.ergCollateral and return this
-     * @dependencies
-     * @scenario
-     * - call this.setErgCollateral
-     * - check return value of this.setErgCollateral to be the current instance
-     *   of RWTRepoBuilder
-     * - check this.ergCollateral to have been set correctly
-     * @expected
-     * - return value of this.setErgCollateral should be the current instance of
-     *   RWTRepoBuilder
-     * - this.ergCollateral should have been set to the correctly
-     */
-    it(`should set value of this.ergCollateral and return this`, async () => {
-      const newErgCollateral = 23n;
-      const returnValue = rwtRepoBuilder.setErgCollateral(newErgCollateral);
-
-      expect(returnValue).toBe(rwtRepoBuilder);
-      expect(rwtRepoBuilder['ergCollateral']).toEqual(newErgCollateral);
-    });
-  });
-
-  describe('setRsnCollateral', () => {
-    /**
-     * @target should set value of this.rsnCollateral and return this
-     * @dependencies
-     * @scenario
-     * - call this.setRsnCollateral
-     * - check return value of this.setRsnCollateral to be the current instance
-     *   of RWTRepoBuilder
-     * - check this.rsnCollateral to have been set correctly
-     * @expected
-     * - return value of this.setRsnCollateral should be the current instance of
-     *   RWTRepoBuilder
-     * - this.rsnCollateral should have been correctly
-     */
-    it(`should set value of this.rsnCollateral and return this`, async () => {
-      const newRsnCollateral = 34n;
-      const returnValue = rwtRepoBuilder.setRsnCollateral(newRsnCollateral);
-
-      expect(returnValue).toBe(rwtRepoBuilder);
-      expect(rwtRepoBuilder['rsnCollateral']).toEqual(newRsnCollateral);
-    });
-  });
-
   describe('decrementPermits', () => {
     /**
      * @target should decrement rwtCount by passed amount for a specific watcher
@@ -434,8 +312,6 @@ describe('RWTRepoBuilder', () => {
 
       const r5Serialized = boxInfo1.additionalRegisters.R5.serializedValue;
 
-      const r6Serialized = boxInfo1.additionalRegisters.R6.serializedValue;
-
       expect(
         ergoLib.Address.recreate_from_ergo_tree(
           candidateBox.ergo_tree(),
@@ -451,12 +327,6 @@ describe('RWTRepoBuilder', () => {
       );
       expect(candidateBox.register_value(5)?.encode_to_base16()).toEqual(
         r5Serialized,
-      );
-      expect(candidateBox.register_value(6)?.encode_to_base16()).toEqual(
-        r6Serialized,
-      );
-      expect(candidateBox.register_value(7)?.to_js()).toEqual(
-        lastModifiedWidIndex,
       );
 
       expect(candidateBox.tokens().get(0).id().to_str()).toEqual(repoNft);

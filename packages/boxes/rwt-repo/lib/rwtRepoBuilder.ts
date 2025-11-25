@@ -20,7 +20,7 @@ export class RWTRepoBuilder {
 
     private chainId: string,
 
-    private widPermits: Array<{ wid: string; rwtCount: bigint }>,
+    private watcherCount: number,
 
     private logger: AbstractLogger = new DummyLogger(),
   ) {}
@@ -28,85 +28,55 @@ export class RWTRepoBuilder {
   /**
    * adds a new user for the passed wid and rwt amount
    *
-   * @param {string} wid
-   * @param {bigint} rwtCount
    * @return {RWTRepoBuilder}
    */
-  addNewUser = (wid: string, rwtCount: bigint): RWTRepoBuilder => {
-    const widExists = this.widPermits.map((permit) => permit.wid).includes(wid);
-    if (widExists) {
-      throw new Error(`cannot add user: wid already exists in widPermits`);
-    }
-    this.widPermits.push({ wid, rwtCount });
-
-    if (this.rwtCount < rwtCount) {
-      throw new Error(
-        `available RWT count [${this.rwtCount}] is less than required rwt count[${rwtCount}]`,
-      );
-    }
-    this.rwtCount -= rwtCount;
-    this.rsnCount += rwtCount;
-
-    this.logger.debug(
-      `added new user with wid=[${wid}] and rwtCount=[${rwtCount}]`,
-    );
-
+  addNewUser = (): RWTRepoBuilder => {
+    this.watcherCount += 1;
+    this.logger.debug(`added watcher, watcherCount=${this.watcherCount}`);
     return this;
   };
 
   /**
    * removes the user corresponding to the passed wid
    *
-   * @param {string} wid
    * @return {RWTRepoBuilder}
    */
-  removeUser = (wid: string): RWTRepoBuilder => {
-    const widIndex = this.indexOfWid(wid);
-
-    if (widIndex === -1) {
-      throw new Error(`cannot remove user: wid doesn't exist in widPermits`);
-    }
-    const { rwtCount } = this.widPermits.splice(widIndex, 1)[0];
-    this.rwtCount += rwtCount;
-    this.rsnCount -= rwtCount;
-
-    this.logger.debug(`removed user with wid=[${wid}]`);
+  removeUser = (): RWTRepoBuilder => {
+    if (this.watcherCount <= 0) throw new Error('no watchers to remove');
+    this.watcherCount -= 1;
+    this.logger.debug(`removed watcher, watcherCount=${this.watcherCount}`);
     return this;
   };
 
   /**
-   * decrements rwtCount for a specific wid. throws exception if wid not found.
+   * decrements rwtCount. throws exception if wid not found.
    *
-   * @param {string} wid
-   * @param {bigint} rwtCount
+   * @param {bigint} amount
    * @return {RWTRepoBuilder}
    */
-  decrementPermits = (wid: string, rwtCount: bigint): RWTRepoBuilder => {
-    const index = this.indexOfWid(wid);
-    if (index === -1) {
-      throw new Error(`wid=[${wid}] not found in widPermits`);
-    }
-    this.widPermits[index].rwtCount -= rwtCount;
-    this.rwtCount += rwtCount;
-    this.rsnCount -= rwtCount;
+  decrementPermits = (amount: bigint): RWTRepoBuilder => {
+    if (this.rwtCount < amount)
+      throw new Error('not enough totalPermits to decrease');
+    this.rwtCount += amount;
+    this.rsnCount -= amount;
+    this.logger.debug(`decreased totalPermits by ${amount}`);
     return this;
   };
-
   /**
-   * increments rwtCount for a specific wid. throws exception if wid not found.
+   * increments rwtCount. throws exception if wid not found.
    *
-   * @param {string} wid
-   * @param {bigint} rwtCount
+   * @param {bigint} amount
    * @return {RWTRepoBuilder}
    */
-  incrementPermits = (wid: string, rwtCount: bigint): RWTRepoBuilder => {
-    const index = this.indexOfWid(wid);
-    if (index === -1) {
-      throw new Error(`wid=[${wid}] not found in widPermits`);
+  incrementPermits = (amount: bigint): RWTRepoBuilder => {
+    if (this.rwtCount < amount) {
+      throw new Error(
+        `available RWT count [${this.rwtCount}] is less than required amount[${amount}]`,
+      );
     }
-    this.widPermits[index].rwtCount += rwtCount;
-    this.rwtCount -= rwtCount;
-    this.rsnCount += rwtCount;
+    this.rwtCount -= amount;
+    this.rsnCount += amount;
+    this.logger.debug(`increased totalPermits by ${amount}`);
     return this;
   };
 
@@ -130,18 +100,12 @@ export class RWTRepoBuilder {
       this.height,
     );
 
-    this.logger.debug(
-      `using following permits in R4 to build the box: [${this.widPermits}]`,
-    );
-    const r4 = ergoLib.Constant.from_coll_coll_byte(
-      [this.chainId].map((item, index) =>
-        Uint8Array.from(Buffer.from(item, index === 0 ? undefined : 'hex')),
-      ),
+    const r4 = ergoLib.Constant.from_byte_array(
+      Uint8Array.from(Buffer.from(this.chainId)),
     );
     boxBuilder.set_register_value(4, r4);
-
-    const r5 = ergoLib.Constant.from_i64_str_array(
-      [this.indexOfWid].map((item) => item.toString()),
+    const r5 = ergoLib.Constant.from_i64(
+      ergoLib.I64.from_str(this.watcherCount.toString()),
     );
     boxBuilder.set_register_value(5, r5);
 
@@ -198,14 +162,5 @@ export class RWTRepoBuilder {
       throw new Error(`height should be a positive number`);
     }
     this.height = height;
-  };
-
-  /**
-   * finds index of passed wid in this.widPermits array
-   *
-   * @param {string} wid
-   */
-  indexOfWid = (wid: string): number => {
-    return this.widPermits.findIndex((permit) => permit.wid === wid);
   };
 }
