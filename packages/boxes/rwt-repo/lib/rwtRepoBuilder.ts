@@ -10,6 +10,10 @@ export class RWTRepoBuilder {
 
     private repoNft: string,
 
+    private AWCTokenId: string,
+
+    private AWCTokenCount: bigint,
+
     private rwt: string,
 
     private rwtCount: bigint,
@@ -20,7 +24,7 @@ export class RWTRepoBuilder {
 
     private chainId: string,
 
-    private watcherCount: number,
+    private watcherCount: number = 0,
 
     private logger: AbstractLogger = new DummyLogger(),
   ) {}
@@ -30,10 +34,11 @@ export class RWTRepoBuilder {
    *
    * @return {RWTRepoBuilder}
    */
-  addNewUser = (): RWTRepoBuilder => {
+  addNewUser = (amount: bigint): RWTRepoBuilder => {
     this.watcherCount += 1;
+    this.AWCTokenCount -= 1n;
     this.logger.debug(`added watcher, watcherCount=${this.watcherCount}`);
-    return this;
+    return this.incrementPermits(amount);
   };
 
   /**
@@ -41,11 +46,12 @@ export class RWTRepoBuilder {
    *
    * @return {RWTRepoBuilder}
    */
-  removeUser = (): RWTRepoBuilder => {
+  removeUser = (amount: bigint): RWTRepoBuilder => {
     if (this.watcherCount <= 0) throw new Error('no watchers to remove');
     this.watcherCount -= 1;
+    this.AWCTokenCount += 1n;
     this.logger.debug(`removed watcher, watcherCount=${this.watcherCount}`);
-    return this;
+    return this.decrementPermits(amount);
   };
 
   /**
@@ -123,9 +129,6 @@ export class RWTRepoBuilder {
         ergoLib.I64.from_str(this.rwtCount.toString()),
       ),
     );
-    this.logger.debug(
-      `add ${this.rwtCount} rwt tokens to the box with tokenId=[${this.rwt}]`,
-    );
 
     boxBuilder.add_token(
       ergoLib.TokenId.from_str(this.rsn),
@@ -133,8 +136,15 @@ export class RWTRepoBuilder {
         ergoLib.I64.from_str(this.rsnCount.toString()),
       ),
     );
+
+    boxBuilder.add_token(
+      ergoLib.TokenId.from_str(this.AWCTokenId),
+      ergoLib.TokenAmount.from_i64(
+        ergoLib.I64.from_str(this.AWCTokenCount.toString()),
+      ),
+    );
     this.logger.debug(
-      `add ${this.rsn} rsn tokens to the box with tokenId=[${this.rsn}]`,
+      `add ${this.rwtCount} rwt tokens to the box with tokenId=[${this.rwt}]`,
     );
 
     return boxBuilder.build();

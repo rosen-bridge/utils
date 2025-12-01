@@ -30,11 +30,16 @@ export class RWTRepo {
     const rwtCount = BigInt(
       this.box.tokens().get(1).amount().as_i64().to_str(),
     );
-
     const rsn = this.box.tokens().get(2).id().to_str();
     const rsnCount = BigInt(
       this.box.tokens().get(2).amount().as_i64().to_str(),
     );
+
+    const AWCTokenId = this.box.tokens().get(3).id().to_str();
+    const AWCTokenCount = BigInt(
+      this.box.tokens().get(3).amount().as_i64().to_str(),
+    );
+
     const chainIdBytes = this.r4;
     if (!chainIdBytes) {
       throw new Error(`chainId missing: ${this.rwtRepoLogDescription}`);
@@ -50,6 +55,8 @@ export class RWTRepo {
     return new RWTRepoBuilder(
       this.repoAddress,
       this.repoNft,
+      AWCTokenId,
+      AWCTokenCount,
       this.rwt,
       rwtCount,
       rsn,
