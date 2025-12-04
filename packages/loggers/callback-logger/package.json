@@ -28,6 +28,7 @@
     "@rosen-bridge/abstract-logger": "^3.0.1"
   },
   "engines": {
-    "node": ">=22.18.0"
+    "node": ">=22.18.0",
+    "npm": "11.6.2"
   }
 }

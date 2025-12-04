@@ -2,6 +2,9 @@
   "name": "@rosen-bridge/abstract-logger",
   "version": "3.0.1",
   "description": "Rosen Bridge abstract logger class, the base type for loggers used in all Rosen packages",
+  "keywords": [
+    "rosen"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rosen-bridge/utils.git"
@@ -11,25 +14,22 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "directories": {
+    "lib": "lib"
+  },
   "files": [
     "dist",
     "CHANGELOG.md"
   ],
   "scripts": {
-    "prettify": "prettier --write . --ignore-path ../../../.gitignore",
-    "prettify:check": "prettier --check . --ignore-path ../../../.gitignore",
+    "build": "tsc --build tsconfig.build.json",
     "lint": "eslint --fix . && npm run prettify",
     "lint:check": "eslint . && npm run prettify:check",
-    "build": "tsc --build tsconfig.build.json",
-    "type-check": "tsc --noEmit",
-    "release": "npm run build && npm publish --access public"
+    "prettify": "prettier --write . --ignore-path ../../../.gitignore",
+    "prettify:check": "prettier --check . --ignore-path ../../../.gitignore",
+    "release": "npm run build && npm publish --access public",
+    "type-check": "tsc --noEmit"
   },
-  "directories": {
-    "lib": "lib"
-  },
-  "keywords": [
-    "rosen"
-  ],
   "engines": {
     "node": ">=22.18.0",
     "npm": "11.6.2"
