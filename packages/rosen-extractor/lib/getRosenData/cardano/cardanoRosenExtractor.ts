@@ -11,7 +11,9 @@ export class CardanoRosenExtractor extends AbstractRosenDataExtractor<string> {
    * extracts RosenData from given lock transaction in CardanoTx format
    * @param serializedTransaction stringified transaction in CardanoTx format
    */
-  extractData = (serializedTransaction: string): RosenData | undefined => {
+  protected extractData = (
+    serializedTransaction: string,
+  ): RosenData | undefined => {
     let transaction: CardanoTx;
     try {
       transaction = JsonBigInt.parse(serializedTransaction);

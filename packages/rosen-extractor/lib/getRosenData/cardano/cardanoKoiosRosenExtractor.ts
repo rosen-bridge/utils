@@ -21,7 +21,9 @@ export class CardanoKoiosRosenExtractor extends AbstractRosenDataExtractor<Koios
    * extracts RosenData from given lock transaction in Koios format
    * @param transaction the lock transaction in Koios format
    */
-  extractData = (transaction: KoiosCborTransaction): RosenData | undefined => {
+  protected extractData = (
+    transaction: KoiosCborTransaction,
+  ): RosenData | undefined => {
     const baseError = `No rosen data found for tx [${transaction.tx_hash}]`;
     if (!transaction.auxiliary_data) return undefined;
     const metadata = transaction.auxiliary_data.metadata;

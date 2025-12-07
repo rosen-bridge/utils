@@ -24,7 +24,9 @@ export class DogeRpcRosenExtractor extends AbstractRosenDataExtractor<DogeRpcTra
    * extracts RosenData from given lock transaction in Rpc format
    * @param transaction the lock transaction in Rpc format
    */
-  extractData = (transaction: DogeRpcTransaction): RosenData | undefined => {
+  protected extractData = (
+    transaction: DogeRpcTransaction,
+  ): RosenData | undefined => {
     const baseError = `No rosen data found for tx [${transaction.txid}]`;
     try {
       const outputs = transaction.vout;

@@ -17,7 +17,7 @@ export class CardanoOgmiosRosenExtractor extends AbstractRosenDataExtractor<Tran
    * extracts RosenData from given lock transaction in Ogmios format
    * @param transaction the lock transaction in Koios format
    */
-  extractData = (transaction: Transaction): RosenData | undefined => {
+  protected extractData = (transaction: Transaction): RosenData | undefined => {
     const baseError = `No rosen data found for tx [${transaction.id}]`;
     const metadata = transaction.metadata;
     try {

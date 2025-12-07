@@ -25,7 +25,9 @@ export class DogeRosenExtractor extends AbstractRosenDataExtractor<string> {
    * extracts RosenData from given lock transaction in DogeTx format
    * @param serializedTransaction stringified transaction in DogeTx format
    */
-  extractData = (serializedTransaction: string): RosenData | undefined => {
+  protected extractData = (
+    serializedTransaction: string,
+  ): RosenData | undefined => {
     let transaction: DogeTx;
     try {
       transaction = JsonBigInt.parse(serializedTransaction);

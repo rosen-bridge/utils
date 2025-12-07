@@ -29,7 +29,9 @@ export class BitcoinRpcRosenExtractor extends AbstractRosenDataExtractor<Bitcoin
    * extracts RosenData from given lock transaction in Rpc format
    * @param transaction the lock transaction in Rpc format
    */
-  extractData = (transaction: BitcoinRpcTransaction): RosenData | undefined => {
+  protected extractData = (
+    transaction: BitcoinRpcTransaction,
+  ): RosenData | undefined => {
     const baseError = `No rosen data found for tx [${transaction.txid}]`;
     try {
       const outputs = transaction.vout;

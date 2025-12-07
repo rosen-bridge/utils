@@ -28,7 +28,9 @@ export class BitcoinRunesRosenExtractor extends AbstractRosenDataExtractor<strin
    * extracts RosenData from given lock transaction in BitcoinRunesTx format
    * @param serializedTransaction stringified transaction in BitcoinRunesTx format
    */
-  extractData = (serializedTransaction: string): RosenData | undefined => {
+  protected extractData = (
+    serializedTransaction: string,
+  ): RosenData | undefined => {
     let transaction: BitcoinRunesTx;
     try {
       transaction = JsonBigInt.parse(serializedTransaction);

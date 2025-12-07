@@ -33,7 +33,9 @@ export class EvmRosenExtractor extends AbstractRosenDataExtractor<string> {
    * extracts RosenData from given lock transaction in ethers Transaction format
    * @param serializedTransaction signed serialized transaction in ethers Transaction format
    */
-  extractData = (serializedTransaction: string): RosenData | undefined => {
+  protected extractData = (
+    serializedTransaction: string,
+  ): RosenData | undefined => {
     let transaction: Transaction;
     try {
       transaction = Transaction.from('0x' + serializedTransaction);

@@ -36,7 +36,9 @@ export class EvmEthersRosenExtractor extends AbstractRosenDataExtractor<Transact
    * extracts RosenData from given lock transaction in ethers TransactionResponse format
    * @param txRes the lock transaction in ethers TransactionResponse format
    */
-  extractData = (txRes: TransactionResponse): RosenData | undefined => {
+  protected extractData = (
+    txRes: TransactionResponse,
+  ): RosenData | undefined => {
     let transaction: Transaction;
     try {
       const toAddress = txRes.to?.toLowerCase();

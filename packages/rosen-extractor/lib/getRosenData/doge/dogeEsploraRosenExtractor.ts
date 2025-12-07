@@ -24,7 +24,7 @@ export class DogeEsploraRosenExtractor extends AbstractRosenDataExtractor<DogeEs
    * extracts RosenData from given lock transaction in Esplora format
    * @param transaction the lock transaction in Esplora format
    */
-  extractData = (
+  protected extractData = (
     transaction: DogeEsploraTransaction,
   ): RosenData | undefined => {
     const baseError = `No rosen data found for tx [${transaction.txid}]`;
