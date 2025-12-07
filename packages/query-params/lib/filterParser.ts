@@ -1,6 +1,5 @@
 import deepmerge from 'deepmerge';
 import * as zod from 'zod';
-import { ZodError, ZodNumber, ZodType } from 'zod';
 
 import {
   FILTER_CONFIG_DEFAULT,
@@ -21,7 +20,7 @@ import {
 export class FilterParser {
   private config: FilterConfig;
 
-  private schema: ZodType<Filter>;
+  private schema: zod.ZodType<Filter>;
 
   constructor(config?: FilterConfig) {
     this.config = deepmerge(FILTER_CONFIG_DEFAULT, config || {});
@@ -33,7 +32,9 @@ export class FilterParser {
    * @param field The filter field configuration.
    * @returns A Zod schema for the given field.
    */
-  private createFieldSchema(field: FilterFieldConfig): ZodType<FilterField> {
+  private createFieldSchema(
+    field: FilterFieldConfig,
+  ): zod.ZodType<FilterField> {
     const operatorParams = {
       error: `Invalid operator for the '${field.key}' field`,
     };
@@ -84,7 +85,7 @@ export class FilterParser {
    * Builds the schema for all filter fields based on the configured field list.
    * @returns A Zod schema representing all possible filter fields.
    */
-  private createFieldsSchema(): ZodType<Filter['fields']> {
+  private createFieldsSchema(): zod.ZodType<Filter['fields']> {
     if (!this.config.fields?.enable) {
       return zod.undefined({
         error: 'Filtering is disabled',
@@ -122,7 +123,7 @@ export class FilterParser {
    * Creates a Zod schema for pagination.
    * @returns A Zod schema for pagination configuration.
    */
-  private createPaginationSchema(): ZodType<Filter['pagination']> {
+  private createPaginationSchema(): zod.ZodType<Filter['pagination']> {
     if (!this.config.pagination?.enable) {
       return zod.undefined({
         error: 'Pagination is disabled',
@@ -148,7 +149,7 @@ export class FilterParser {
     if (this.config.pagination?.limit?.default !== undefined) {
       limit = limit.default(
         this.config.pagination.limit.default,
-      ) as unknown as ZodNumber;
+      ) as unknown as zod.ZodNumber;
     }
 
     let offset = zod.number({
@@ -170,7 +171,7 @@ export class FilterParser {
     if (this.config.pagination?.offset?.default !== undefined) {
       offset = offset.default(
         this.config.pagination.offset.default,
-      ) as unknown as ZodNumber;
+      ) as unknown as zod.ZodNumber;
     }
 
     const schema = zod
@@ -189,7 +190,7 @@ export class FilterParser {
    * @param sort The sort configuration.
    * @returns A Zod schema for the given sort field.
    */
-  private createSortSchema(sort: FilterSortConfig): ZodType<FilterSort> {
+  private createSortSchema(sort: FilterSortConfig): zod.ZodType<FilterSort> {
     const key = zod.literal(sort.key);
 
     let order = zod
@@ -210,7 +211,7 @@ export class FilterParser {
    * Creates a Zod schema for all sort configurations.
    * @returns A Zod schema for the sorts configuration.
    */
-  private createSortsSchema(): ZodType<Filter['sorts']> {
+  private createSortsSchema(): zod.ZodType<Filter['sorts']> {
     if (!this.config.sorts?.enable) {
       return zod.undefined({
         error: 'Sorting is disabled',
@@ -248,7 +249,7 @@ export class FilterParser {
    * Creates the main Zod schema for the filter object.
    * @returns A Zod schema for the full filter.
    */
-  private createFilterSchema(): ZodType<Filter> {
+  private createFilterSchema(): zod.ZodType<Filter> {
     return zod.object({
       fields: this.createFieldsSchema(),
       pagination: this.createPaginationSchema(),
@@ -354,7 +355,7 @@ export class FilterParser {
     } catch (error) {
       let message: string | undefined;
 
-      if (error instanceof ZodError) {
+      if (error instanceof zod.ZodError) {
         message = error.issues.at(0)?.message;
       }
 

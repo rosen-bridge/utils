@@ -1,16 +1,34 @@
 import { describe, expect, it } from 'vitest';
 import { FilterParser, FILTER_CONFIG_DEFAULT } from '../lib';
 
-describe('Filter', () => {
-  it('should return an empty filter for URL without parameters', () => {
-    const filterParser = new FilterParser();
+describe('FilterParser', () => {
+  describe('parse', () => {
+    /**
+     * @target FilterParser.parse should return an empty filter for URL without parameters
+     * @dependencies
+     * @scenario
+     * - run test
+     * - check returned value
+     * @expected
+     * - it should return expected filter object
+     */
+    it('should return an empty filter for URL without parameters', () => {
+      const filterParser = new FilterParser();
 
-    const filter = filterParser.parse('http://localhost');
+      const filter = filterParser.parse('http://localhost');
 
-    expect(Object.keys(filter)).toEqual([]);
-  });
+      expect(Object.keys(filter)).toEqual([]);
+    });
 
-  describe('Fields', () => {
+    /**
+     * @target FilterParser.parse should throw error when filtering is disabled
+     * @dependencies
+     * @scenario
+     * - run test
+     * - check returned value
+     * @expected
+     * - it should return expected filter object
+     */
     it('should throw error when filtering is disabled', () => {
       const filterParser = new FilterParser();
 
@@ -18,9 +36,16 @@ describe('Filter', () => {
         'Filtering is disabled',
       );
     });
-  });
 
-  describe('Pagination', () => {
+    /**
+     * @target FilterParser.parse should throw error when pagination is disabled
+     * @dependencies
+     * @scenario
+     * - run test
+     * - check returned value
+     * @expected
+     * - it should return expected filter object
+     */
     it('should throw error when pagination is disabled', () => {
       const filterParser = new FilterParser();
 
@@ -33,6 +58,15 @@ describe('Filter', () => {
       );
     });
 
+    /**
+     * @target FilterParser.parse should return default pagination values when enabled
+     * @dependencies
+     * @scenario
+     * - run test
+     * - check returned value
+     * @expected
+     * - it should return expected filter object
+     */
     it('should return default pagination values when enabled', () => {
       const filterParser = new FilterParser({
         pagination: {
@@ -51,6 +85,15 @@ describe('Filter', () => {
       );
     });
 
+    /**
+     * @target FilterParser.parse should use custom default pagination values
+     * @dependencies
+     * @scenario
+     * - run test
+     * - check returned value
+     * @expected
+     * - it should return expected filter object
+     */
     it('should use custom default pagination values', () => {
       const LIMIT_DEFAULT = 20;
 
@@ -75,6 +118,15 @@ describe('Filter', () => {
       expect(filter.pagination?.offset).toBe(OFFSET_DEFAULT);
     });
 
+    /**
+     * @target FilterParser.parse should parse pagination values from URL
+     * @dependencies
+     * @scenario
+     * - run test
+     * - check returned value
+     * @expected
+     * - it should return expected filter object
+     */
     it('should parse pagination values from URL', () => {
       const LIMIT = 20;
 
@@ -95,6 +147,15 @@ describe('Filter', () => {
       expect(filter.pagination?.offset).toBe(OFFSET);
     });
 
+    /**
+     * @target FilterParser.parse should throw if pagination values are below minimum
+     * @dependencies
+     * @scenario
+     * - run test
+     * - check returned value
+     * @expected
+     * - it should return expected filter object
+     */
     it('should throw if pagination values are below minimum', () => {
       const filterParser = new FilterParser({
         pagination: {
@@ -119,6 +180,15 @@ describe('Filter', () => {
       );
     });
 
+    /**
+     * @target FilterParser.parse should throw if pagination values are above maximum
+     * @dependencies
+     * @scenario
+     * - run test
+     * - check returned value
+     * @expected
+     * - it should return expected filter object
+     */
     it('should throw if pagination values are above maximum', () => {
       const OFFSET_MAX = 1000;
 
@@ -146,6 +216,15 @@ describe('Filter', () => {
       ).toThrow(`Offset cannot be greater than ${OFFSET_MAX}`);
     });
 
+    /**
+     * @target FilterParser.parse should respect custom minimum values
+     * @dependencies
+     * @scenario
+     * - run test
+     * - check returned value
+     * @expected
+     * - it should return expected filter object
+     */
     it('should respect custom minimum values', () => {
       const LIMIT_MIN = 30;
 
@@ -172,6 +251,15 @@ describe('Filter', () => {
       ).toThrow(`Offset cannot be smaller than ${OFFSET_MIN}`);
     });
 
+    /**
+     * @target FilterParser.parse should respect custom maximum values
+     * @dependencies
+     * @scenario
+     * - run test
+     * - check returned value
+     * @expected
+     * - it should return expected filter object
+     */
     it('should respect custom maximum values', () => {
       const LIMIT_MAX = 30;
 
@@ -197,9 +285,16 @@ describe('Filter', () => {
         filterParser.parse(`http://localhost?offset=${OFFSET_MAX + 1}`),
       ).toThrow(`Offset cannot be greater than ${OFFSET_MAX}`);
     });
-  });
 
-  describe('Sorts', () => {
+    /**
+     * @target FilterParser.parse should throw error when sorting is disabled
+     * @dependencies
+     * @scenario
+     * - run test
+     * - check returned value
+     * @expected
+     * - it should return expected filter object
+     */
     it('should throw error when sorting is disabled', () => {
       const filterParser = new FilterParser();
 
@@ -208,6 +303,15 @@ describe('Filter', () => {
       );
     });
 
+    /**
+     * @target FilterParser.parse should throw error if sort key is not in config
+     * @dependencies
+     * @scenario
+     * - run test
+     * - check returned value
+     * @expected
+     * - it should return expected filter object
+     */
     it('should throw error if sort key is not in config', () => {
       const key = 'key';
 
@@ -222,6 +326,15 @@ describe('Filter', () => {
       );
     });
 
+    /**
+     * @target FilterParser.parse should parse multiple sort keys
+     * @dependencies
+     * @scenario
+     * - run test
+     * - check returned value
+     * @expected
+     * - it should return expected filter object
+     */
     it('should parse multiple sort keys', () => {
       const key1 = 'key1';
       const key2 = 'key2';
@@ -240,6 +353,15 @@ describe('Filter', () => {
       expect(filter.sorts).toEqual([{ key: key1 }, { key: key2 }]);
     });
 
+    /**
+     * @target FilterParser.parse should parse a sort key with explicit order
+     * @dependencies
+     * @scenario
+     * - run test
+     * - check returned value
+     * @expected
+     * - it should return expected filter object
+     */
     it('should parse a sort key with explicit order', () => {
       const key = 'key';
       const order = 'ASC';
@@ -258,6 +380,15 @@ describe('Filter', () => {
       expect(filter.sorts).toEqual([{ key, order }]);
     });
 
+    /**
+     * @target FilterParser.parse should throw error if sort list is empty
+     * @dependencies
+     * @scenario
+     * - run test
+     * - check returned value
+     * @expected
+     * - it should return expected filter object
+     */
     it('should throw error if sort list is empty', () => {
       const key = 'key';
 
@@ -273,6 +404,15 @@ describe('Filter', () => {
       );
     });
 
+    /**
+     * @target FilterParser.parse should apply default order when defined in config
+     * @dependencies
+     * @scenario
+     * - run test
+     * - check returned value
+     * @expected
+     * - it should return expected filter object
+     */
     it('should apply default order when defined in config', () => {
       const key = 'key';
       const order = 'ASC';
@@ -294,6 +434,15 @@ describe('Filter', () => {
       expect(filter.sorts).toEqual([{ key, order }]);
     });
 
+    /**
+     * @target FilterParser.parse should handle mixed explicit and default orders
+     * @dependencies
+     * @scenario
+     * - run test
+     * - check returned value
+     * @expected
+     * - it should return expected filter object
+     */
     it('should handle mixed explicit and default orders', () => {
       const key1 = 'key1';
       const order1 = 'ASC';
