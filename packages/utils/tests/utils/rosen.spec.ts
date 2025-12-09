@@ -17,7 +17,7 @@ describe('isValidAssetName', () => {
    * - result should be true
    */
   it('should return `true` if an address file name matches a chain type', () => {
-    const matchAssetName = 'contracts-awesome-chain-main-net-1.json';
+    const matchAssetName = 'contracts-main-net-1.json';
     const isMatchingAssetName = isValidAssetName('main-net')(matchAssetName);
 
     expect(isMatchingAssetName).toEqual(true);
@@ -35,7 +35,7 @@ describe('isValidAssetName', () => {
    * - result should be false
    */
   it('should return `false` if an address file name does not match a chain type', () => {
-    const notMatchAssetName = 'contracts-awesomechain-testnet-1.json';
+    const notMatchAssetName = 'contracts-testnet-1.json';
     const isMatchingAssetName = isValidAssetName('mainnet')(notMatchAssetName);
 
     expect(isMatchingAssetName).toEqual(false);
@@ -107,15 +107,14 @@ describe('truncateAssetName', () => {
    * - result should be truncated name
    */
   it('should truncate contract file names correctly', () => {
-    const addressAssetName =
-      'contracts-awesome-chain-main-net-2.0.1-0b08041.json';
+    const addressAssetName = 'contracts-chain-main-net-2.0.1-0b08041.json';
     const truncatedName = truncateAssetName(
       addressAssetName,
       'main-net',
       '2.0.1-0b08041',
     );
 
-    expect(truncatedName).toEqual('contracts-awesome-chain.json');
+    expect(truncatedName).toEqual('contracts-chain.json');
   });
 
   /**
@@ -148,7 +147,7 @@ describe('truncateAssetName', () => {
    * - result should be truncated name with suffix
    */
   it('should truncate asset name and append suffix correctly', () => {
-    const assetName = 'contracts-awesome-chain-mainnet-2.0.1-0b08041.json';
+    const assetName = 'contracts-chain-mainnet-2.0.1-0b08041.json';
     const truncatedNameWithSuffix = truncateAssetName(
       assetName,
       'mainnet',
@@ -156,9 +155,7 @@ describe('truncateAssetName', () => {
       'suffix',
     );
 
-    expect(truncatedNameWithSuffix).toEqual(
-      'contracts-awesome-chain-suffix.json',
-    );
+    expect(truncatedNameWithSuffix).toEqual('contracts-chain-suffix.json');
   });
 });
 
