@@ -12,8 +12,8 @@ import { GithubRelease, SupportedRepo } from '../types';
 /**
  * Fetch a page of releases from Github Api in each iteration until there are no
  * more releases.
- * @param repoName
- * @param pageSize
+ * @param repoName GitHub repository name to fetch releases from
+ * @param pageSize number of releases fetched per page
  */
 async function* fetchReleasesPage(
   repoName: SupportedRepo,
@@ -43,8 +43,8 @@ async function* fetchReleasesPage(
 /**
  * Find the last release matching the predicate. If all releases are iterated and
  * no matching release is found, return null.
- * @param repoName
- * @param predicate
+ * @param repoName GitHub repository name to search in
+ * @param predicate custom function to determine release matching
  */
 const findLastRelease = async (
   repoName: SupportedRepo,
@@ -65,8 +65,8 @@ const findLastRelease = async (
 
 /**
  * get a GitHub release by its tag
- * @param repoName
- * @param tag
+ * @param repoName GitHub repository name
+ * @param tag exact tag of the release to fetch
  */
 const getReleaseByTag = async (repoName: SupportedRepo, tag: string) => {
   const octokit = new Octokit();
@@ -82,8 +82,8 @@ const getReleaseByTag = async (repoName: SupportedRepo, tag: string) => {
 /**
  * Return a function which checks if a release has at least one asset for a
  * specific chain type
- * @param chainType
- * @param release
+ * @param chainType chain type used to validate asset names
+ * @param release GitHub release whose assets will be checked
  */
 const hasAssetForChainType = (chainType: string) => (release: GithubRelease) =>
   release.assets.map((asset) => asset.name).some(isValidAssetName(chainType));
@@ -91,7 +91,7 @@ const hasAssetForChainType = (chainType: string) => (release: GithubRelease) =>
 /**
  * Return a function which checks if a release is a stable (that is, non-prerelease)
  * and has some asset matching a specific chain type
- * @param chainType
+ * @param chainType chain type to validate assets against
  */
 const isStableReleaseForChainType =
   (chainType: string) => (release: GithubRelease) =>
@@ -99,7 +99,7 @@ const isStableReleaseForChainType =
 
 /**
  * Return a function which checks if tagPrefix is matched with release tag_name
- * @param tagPrefix
+ * @param tagPrefix prefix used to filter release tags
  */
 const hasMatchedTagPrefix = (tagPrefix: string) => (release: GithubRelease) => {
   const regex = new RegExp(`^${tagPrefix}`);
@@ -109,7 +109,7 @@ const hasMatchedTagPrefix = (tagPrefix: string) => (release: GithubRelease) => {
 /**
  * Return a function which checks if a release is a stable (that is, non-prerelease),
  * and tagPrefix is matched with release tag_name
- * @param tagPrefix
+ * @param tagPrefix tag prefix used for matching
  */
 const isStableReleaseForRegexTagType =
   (tagPrefix: string) => (release: GithubRelease) =>
@@ -118,8 +118,8 @@ const isStableReleaseForRegexTagType =
 /**
  * Find latest release (prerelease or non-prerelease) having some asset matching
  * a specific chain type
- * @param repoName
- * @param chainType
+ * @param repoName GitHub repository name
+ * @param chainType chain type to filter by
  */
 const findLatestRelease = async (repoName: SupportedRepo, chainType: string) =>
   findLastRelease(repoName, hasAssetForChainType(chainType));
@@ -127,8 +127,8 @@ const findLatestRelease = async (repoName: SupportedRepo, chainType: string) =>
 /**
  * Find latest stable (that is, non-prerelease) release having some asset matching
  * a specific chain type
- * @param repoName
- * @param chainType
+ * @param repoName GitHub repository name
+ * @param chainType chain type to filter by
  */
 const findLatestStableRelease = async (
   repoName: SupportedRepo,
@@ -137,8 +137,8 @@ const findLatestStableRelease = async (
 
 /**
  * Find the latest stable (that is, non-prerelease) release that tagPrefix is matched with release tag_name
- * @param repoName
- * @param tagPrefix
+ * @param repoName GitHub repository name
+ * @param chainType chain type to filter by
  */
 const findLatestStableReleaseByPrefixTag = async (
   repoName: SupportedRepo,
@@ -147,8 +147,8 @@ const findLatestStableReleaseByPrefixTag = async (
 
 /**
  * Find the latest release that tagPrefix is matched with release tag_name
- * @param repoName
- * @param tagPrefix
+ * @param repoName GitHub repository name
+ * @param tagPrefix prefix used for matching tag names
  */
 const findLatestReleaseByPrefixTag = async (
   repoName: SupportedRepo,
