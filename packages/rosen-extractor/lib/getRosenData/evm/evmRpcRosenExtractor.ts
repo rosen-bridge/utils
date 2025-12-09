@@ -15,8 +15,9 @@ export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<Transaction
     chain: string,
     nativeToken: string,
     logger?: AbstractLogger,
+    storeRawData = true,
   ) {
-    super(lockAddress, tokens, logger);
+    super(lockAddress, tokens, logger, storeRawData);
     this.chain = chain;
     this.nativeToken = nativeToken;
   }
@@ -35,7 +36,7 @@ export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<Transaction
    *         5. bytes after 69 must represent a valid CallDataRosenData
    * @param transaction the lock transaction in ethers Transaction object
    */
-  extractRawData = (transaction: Transaction): RosenData | undefined => {
+  extractData = (transaction: Transaction): RosenData | undefined => {
     const baseError = `No rosen data found for tx [${transaction.hash}]`;
     try {
       if (transaction.from == null || transaction.hash == null) {

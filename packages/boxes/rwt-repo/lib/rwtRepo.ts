@@ -3,104 +3,144 @@ import * as ergoLib from 'ergo-lib-wasm-nodejs';
 import { RWTRepoBuilder } from './rwtRepoBuilder';
 
 export class RWTRepo {
+  private readonly chainId: string;
+  private readonly totalWatchers: number;
   constructor(
     protected box: ergoLib.ErgoBox,
-    private repoAddress: string,
-    private repoNft: string,
-    private rwt: string,
     private logger: AbstractLogger = new DummyLogger(),
   ) {
-    this.logger.debug(
-      `RWTRepo instance created with repo-address=[${this.repoAddress}] and repo-nft=[${this.repoNft}]`,
-    );
+    try {
+      if (this.box.tokens().len() < 4) {
+        throw new Error(
+          'Invalid RWTRepo box: expected at least 4 tokens (NFT, RWT, RSN, AWC)',
+        );
+      }
+
+      const chainIdReg = this.box.register_value(4);
+      if (!chainIdReg) {
+        throw new Error('Invalid RWTRepo box: missing R4 register (chainId)');
+      }
+      this.chainId = Buffer.from(chainIdReg.to_byte_array()).toString('utf8');
+
+      const totalWatchersReg = this.box.register_value(5);
+      if (!totalWatchersReg) {
+        throw new Error(
+          'Invalid RWTRepo box: missing R5 register (totalWatchers)',
+        );
+      }
+      this.totalWatchers = Number(totalWatchersReg.to_i64().to_str());
+
+      this.logger.debug(
+        `RWTRepo created repoNft=[${this.getRepoNftId()}] chainId=[${this.chainId}] watchers=[${this.totalWatchers}]`,
+      );
+    } catch (e) {
+      throw Error(`Failed to create RWTRepo: ${e}`);
+    }
   }
 
   /**
-   * creates an instance of RWTRepoBuilder using current instance's properties
+   * Creates an instance of RWTRepoBuilder using current instance's properties
    *
    * @return {RWTRepoBuilder}
    */
-  toBuilder = () => {
-    if (!this.box) {
-      throw new Error(
-        `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`,
-      );
-    }
-
-    const rwtCount = BigInt(
-      this.box.tokens().get(1).amount().as_i64().to_str(),
-    );
-    const rsn = this.box.tokens().get(2).id().to_str();
-    const rsnCount = BigInt(
-      this.box.tokens().get(2).amount().as_i64().to_str(),
-    );
-
-    const AWCTokenId = this.box.tokens().get(3).id().to_str();
-    const AWCTokenCount = BigInt(
-      this.box.tokens().get(3).amount().as_i64().to_str(),
-    );
-
-    const chainIdBytes = this.r4;
-    if (!chainIdBytes) {
-      throw new Error(`chainId missing: ${this.rwtRepoLogDescription}`);
-    }
-    const chainId = Buffer.from(chainIdBytes).toString();
-
-    const r5val = this.box.register_value(5)?.to_i64();
-    if (!r5val) {
-      throw new Error(`R5 missing: ${this.rwtRepoLogDescription}`);
-    }
-    const totalWatchers = Number(r5val.to_str());
-
+  toBuilder = (): RWTRepoBuilder => {
     return new RWTRepoBuilder(
-      this.repoAddress,
-      this.repoNft,
-      AWCTokenId,
-      AWCTokenCount,
-      this.rwt,
-      rwtCount,
-      rsn,
-      rsnCount,
-      chainId,
-      totalWatchers,
+      this.getRepoErgoTree(),
+      this.getRepoNftId(),
+      this.getAwcId(),
+      this.getAwcCount(),
+      this.getRwtId(),
+      this.getRwtCount(),
+      this.getRsnId(),
+      this.getRsnCount(),
+      this.chainId,
+      this.totalWatchers,
       this.logger,
     );
   };
 
   /**
-   * returns value of R4 register for this.box
+   * Return the name of the chain
    *
-   * @readonly
-   * @type {(Uint8Array[] | undefined)}
+   * @returns {string} chainId
    */
-  get r4(): Uint8Array | undefined {
-    return this.box?.register_value(4)?.to_byte_array();
-  }
+  getChainName = (): string => {
+    return this.chainId;
+  };
 
   /**
-   * returns value of R5 register for this.box
+   * Return the count of the total watchers
    *
-   * @readonly
-   * @type {(bigint[] | undefined)}
+   * @returns {number} totalWatchers
    */
-  get r5(): number | undefined {
-    const val = this.box?.register_value(5)?.to_i64();
-    if (!val) throw new Error('R5 missing');
-    return Number(val.to_str());
-  }
+  getTotalWatcherCount = (): number => {
+    return this.totalWatchers;
+  };
+
+  getRepoErgoTree = (): string => {
+    return this.box.ergo_tree().to_base16_bytes();
+  };
 
   /**
-   * returns a string description of this instance that can be used in logs.
+   * Reads the id of the RepoNft token (index 0) from the box.
    *
-   * @readonly
-   * @private
-   * @type {string}
+   * @returns {string} RWT token amount as bigint
    */
-  private get rwtRepoLogDescription(): string {
-    if (this.box) {
-      return `boxId=[${this.box?.box_id().to_str()}]`;
-    } else {
-      return `no boxes stored yet!`;
-    }
-  }
+  getRepoNftId = (): string => {
+    return this.box.tokens().get(0).id().to_str();
+  };
+
+  /**
+   * Reads the id of the RWT token (index 1) from the box.
+   *
+   * @returns {string} RWT token amount as bigint
+   */
+  getRwtId = (): string => {
+    return this.box.tokens().get(1).id().to_str();
+  };
+
+  /**
+   * Reads the amount of the RWT token (index 1) from the box.
+   *
+   * @returns {bigint} RWT token amount as bigint
+   */
+  getRwtCount = (): bigint => {
+    return BigInt(this.box.tokens().get(1).amount().as_i64().to_str());
+  };
+
+  /**
+   * Reads the RSN token ID (index 2) from the box.
+   *
+   * @returns {string} RSN token ID as a string
+   */
+  getRsnId = (): string => {
+    return this.box.tokens().get(2).id().to_str();
+  };
+
+  /**
+   * Reads the amount of the RSN token (index 2) from the box.
+   *
+   * @returns {bigint} RSN token amount as bigint
+   */
+  getRsnCount = (): bigint => {
+    return BigInt(this.box.tokens().get(2).amount().as_i64().to_str());
+  };
+
+  /**
+   * Reads the AWC token ID (index 3) from the box.
+   *
+   * @returns {string} AWC token ID as a string
+   */
+  getAwcId = (): string => {
+    return this.box.tokens().get(3).id().to_str();
+  };
+
+  /**
+   * Reads the amount of the AWC token (index 3) from the box.
+   *
+   * @returns {bigint} AWC token amount as bigint
+   */
+  getAwcCount = (): bigint => {
+    return BigInt(this.box.tokens().get(3).amount().as_i64().to_str());
+  };
 }

@@ -1,17 +1,12 @@
-import * as ergoLib from 'ergo-lib-wasm-nodejs';
 import { RWTRepoBuilder } from '../lib';
-import {
-  boxInfo1,
-  boxInfo1Properties,
-  repoAddress,
-  repoNft,
-} from './rwtRepoTestData';
+import * as ergoLib from 'ergo-lib-wasm-nodejs';
+import { boxInfo1, boxInfo1Properties, repoNft } from './rwtRepoTestData';
 
 describe('RWTRepoBuilder', () => {
   let rwtRepoBuilder: RWTRepoBuilder;
   beforeEach(() => {
     rwtRepoBuilder = new RWTRepoBuilder(
-      repoAddress,
+      boxInfo1.ergoTree,
       repoNft,
       boxInfo1.assets[3].tokenId,
       BigInt(boxInfo1.assets[3].amount),
@@ -27,184 +22,173 @@ describe('RWTRepoBuilder', () => {
 
   describe('addNewUser', () => {
     /**
-     * @target should increase watcher count and decrease AWCTokenCount, and set base of amount of
-     * permits, rsn for the new user.
+     * @target should add a new watcher and update AWC, RWT, and RSN counts accordingly
      * @scenario
-     * - create an instance of RWTRepoBuilder
-     * - call this.addNewUser(amount)
-     * - ensure watcherCount increases by 1
-     * - ensure AWCTokenCount decreases by 1n
-     * - call this.incrementPermits with amount for complete Initial permit transaction
+     * - call this.addNewUser with a permit amount
      * @expected
-     * - watcherCount should be oldWatcherCount + 1
-     * - AWCTokenCount should be oldAWCTokenCount - 1n
-     * - rwtCount should be oldRwtCount - amount
-     * - rsnCount should be oldRsnCount + amount
+     * - watcherCount should increase by 1
+     * - AWCTokenCount should decrease by 1
+     * - rwtCount should decrease by the given amount
+     * - rsnCount should increase by the given amount
      */
-    it(`should increase watcher count and decrease AWCTokenCount, and set base of amount of permits, rsn for the new user`, async () => {
-      rwtRepoBuilder.addNewUser(10n);
-      expect(rwtRepoBuilder['AWCTokenCount']).toEqual(
-        BigInt(boxInfo1.assets[3].amount) - 1n,
-      );
-      expect(rwtRepoBuilder['rwtCount']).toEqual(
-        BigInt(boxInfo1.assets[1].amount) - 10n,
-      );
-      expect(rwtRepoBuilder['rsnCount']).toEqual(
-        BigInt(boxInfo1.assets[2].amount) + 10n,
-      );
-      expect(rwtRepoBuilder['watcherCount']).toEqual(
-        Number(boxInfo1Properties.r5.to_str()) + 1,
-      );
+    it('should add a new watcher and update AWC, RWT, and RSN counts accordingly', () => {
+      const rwtBefore = rwtRepoBuilder['rwtCount'];
+      const rsnBefore = rwtRepoBuilder['rsnCount'];
+      const awcBefore = rwtRepoBuilder['awcTokenCount'];
+      const watchersBefore = rwtRepoBuilder['watcherCount'];
+
+      const amount = 10n;
+      rwtRepoBuilder.addNewUser(amount);
+
+      expect(rwtRepoBuilder['rwtCount']).toEqual(rwtBefore - amount);
+      expect(rwtRepoBuilder['rsnCount']).toEqual(rsnBefore + amount);
+      expect(rwtRepoBuilder['awcTokenCount']).toEqual(awcBefore - 1n);
+      expect(rwtRepoBuilder['watcherCount']).toEqual(watchersBefore + 1);
     });
   });
 
   describe('removeUser', () => {
     /**
-     * @target should decrease watcher count and increase AWC token count and set
-     * base of amount of permits, rsn for the removed user.
-     * @dependencies
+     * @target should remove a watcher and update AWC, RWT, and RSN counts accordingly
      * @scenario
-     * - call this.removeUser
-     * - ensure watcherCount decreases by 1
-     * - ensure AWCTokenCount increases by 1n
-     * - call this.decrementPermits with amount for complete remove permit transaction
+     * - call this.removeUser with a permit amount
      * @expected
-     * - watcherCount should be oldWatcherCount - 1
-     * - AWCTokenCount should be oldAWCTokenCount + 1n
-     * - rwtCount should be oldRwtCount + amount
-     * - rsnCount should be oldRsnCount - amount
+     * - watcherCount should decrease by 1
+     * - AWCTokenCount should increase by 1
+     * - rwtCount should increase by the given amount
+     * - rsnCount should decrease by the given amount
      */
+    it('should remove a watcher and update AWC, RWT, and RSN counts accordingly', () => {
+      const rwtBefore = rwtRepoBuilder['rwtCount'];
+      const rsnBefore = rwtRepoBuilder['rsnCount'];
+      const awcBefore = rwtRepoBuilder['awcTokenCount'];
+      const watchersBefore = rwtRepoBuilder['watcherCount'];
 
-    it(`should decrease watcher count and increase AWC token count and set base of amount of permits, rsn for the removed user.`, async () => {
-      rwtRepoBuilder.removeUser(10n);
-      expect(rwtRepoBuilder['AWCTokenCount']).toEqual(
-        BigInt(boxInfo1.assets[3].amount) + 1n,
-      );
-      expect(rwtRepoBuilder['rwtCount']).toEqual(
-        BigInt(boxInfo1.assets[1].amount) + 10n,
-      );
-      expect(rwtRepoBuilder['rsnCount']).toEqual(
-        BigInt(boxInfo1.assets[2].amount) - 10n,
-      );
-      expect(rwtRepoBuilder['watcherCount']).toEqual(
-        Number(boxInfo1Properties.r5.to_str()) - 1,
-      );
+      const amount = 10n;
+      rwtRepoBuilder.removeUser(amount);
+
+      expect(rwtRepoBuilder['rwtCount']).toEqual(rwtBefore + amount);
+      expect(rwtRepoBuilder['rsnCount']).toEqual(rsnBefore - amount);
+      expect(rwtRepoBuilder['awcTokenCount']).toEqual(awcBefore + 1n);
+      expect(rwtRepoBuilder['watcherCount']).toEqual(watchersBefore - 1);
     });
   });
 
-  describe('decrementPermits', () => {
+  describe('returnPermits', () => {
     /**
-     * @target should decrease total RWT permits and increase RSN count
-     * @dependencies
+     * @target should increase RWT and decrease RSN by the given amount
      * @scenario
      * - store current rwtCount and rsnCount
-     * - call this.decrementPermits with an amount
-     * - ensure rwtCount increases by amount
-     * - ensure rsnCount decreases by amount
+     * - call this.returnPermits with a specific amount
      * @expected
      * - returned value must equal current instance
-     * - rwtCount should be oldRwtCount + amount
-     * - rsnCount should be oldRsnCount - amount
+     * - rwtCount should increase by the given amount
+     * - rsnCount should decrease by the given amount
      */
+    it('should increase RWT and decrease RSN by the given amount', () => {
+      const rwtBefore = rwtRepoBuilder['rwtCount'];
+      const rsnBefore = rwtRepoBuilder['rsnCount'];
 
-    it(`should decrease total RWT permits and increase RSN count`, async () => {
-      const oldRwtCount = rwtRepoBuilder['rwtCount'];
-      const oldRsnCount = rwtRepoBuilder['rsnCount'];
-      const decrement = 45n;
-      const returnValue = rwtRepoBuilder.decrementPermits(decrement);
+      const amount = 45n;
+      const returnValue = rwtRepoBuilder.returnPermits(amount);
 
       expect(returnValue).toBe(rwtRepoBuilder);
-      expect(rwtRepoBuilder['rwtCount']).toEqual(oldRwtCount + decrement);
-      expect(rwtRepoBuilder['rsnCount']).toEqual(oldRsnCount - decrement);
+      expect(rwtRepoBuilder['rwtCount']).toEqual(rwtBefore + amount);
+      expect(rwtRepoBuilder['rsnCount']).toEqual(rsnBefore - amount);
     });
   });
 
-  describe('incrementPermits', () => {
+  describe('getPermits', () => {
     /**
-     * @target should increase RSN count and decrease RWT permits
-     * @dependencies
+     * @target should decrease RWT and increase RSN by the given amount
      * @scenario
      * - store current rwtCount and rsnCount
-     * - call this.incrementPermits with an amount
-     * - ensure rwtCount decreases by amount
-     * - ensure rsnCount increases by amount
-     * - ensure returned value is the same instance
+     * - call getPermits with a specific amount
      * @expected
      * - returned value must equal current instance
-     * - rwtCount should be oldRwtCount - amount
-     * - rsnCount should be oldRsnCount + amount
+     * - rwtCount should decrease by the specified amount
+     * - rsnCount should increase by the specified amount
      */
-    it(`should increase RSN count and decrease RWT permits`, async () => {
-      const oldRwtCount = rwtRepoBuilder['rwtCount'];
-      const oldRsnCount = rwtRepoBuilder['rsnCount'];
-      const increment = 56n;
-      const returnValue = rwtRepoBuilder.incrementPermits(increment);
+
+    it('should decrease RWT and increase RSN by the given amount', () => {
+      const rwtBefore = rwtRepoBuilder['rwtCount'];
+      const rsnBefore = rwtRepoBuilder['rsnCount'];
+
+      const amount = 56n;
+      const returnValue = rwtRepoBuilder.getPermits(amount);
 
       expect(returnValue).toBe(rwtRepoBuilder);
-      expect(rwtRepoBuilder['rwtCount']).toEqual(oldRwtCount - increment);
-      expect(rwtRepoBuilder['rsnCount']).toEqual(oldRsnCount + increment);
+      expect(rwtRepoBuilder['rwtCount']).toEqual(rwtBefore - amount);
+      expect(rwtRepoBuilder['rsnCount']).toEqual(rsnBefore + amount);
     });
   });
 
   describe('build', () => {
     /**
-     * @target should create an rwt repo candidate Ergo box using current instance's
-     * properties.
-     * @dependencies
+     * @target should create an rwt repo candidate Ergo box using the current instance's properties
      * @scenario
-     * - set erg value using this.setValue
-     * - set creation height using this.setHeight
-     * - call this.build
-     * - ensure output box has correct:
-     *     - address
-     *     - erg value
-     *     - creation height
-     *     - R4 and R5 registers
-     *     - repo NFT, RWT, RSN, AWC token ids and amounts
+     * - set value using `setValue`
+     * - set creation height using `setHeight`
+     * - call `build` to create the ErgoBoxCandidate
      * @expected
-     * - returned ErgoBoxCandidate should contain:
-     *     - repoAddress as contract address
-     *     - correct erg value and height
-     *     - R4 = chainId
-     *     - R5 = watcherCount
-     *     - token list = [repoNft(1), rwt(rwtCount), rsn(rsnCount), AWC(AWCTokenCount)]
+     * - contract address should equal `repoErgoTree`
+     * - value should equal set value
+     * - creation height should equal set height
+     * - R4 register should equal `chainId`
+     * - R5 register should equal `watcherCount`
+     * - tokens list should include:
+     *     - repoNft with amount 1
+     *     - RWT with amount `rwtCount`
+     *     - RSN with amount `rsnCount`
+     *     - AWC with amount `awcTokenCount`
      */
-    it(`should create an rwt repo candidate Ergo box using current instance's
-    properties.`, async () => {
+    it(`should create an rwt repo candidate Ergo box using the current instance's properties`, () => {
       const ergValue = 7000000n;
       const height = 5000;
+
       rwtRepoBuilder.setValue(ergValue);
       rwtRepoBuilder.setHeight(height);
+      const r4Expected = ergoLib.Constant.from_byte_array(
+        Uint8Array.from(Buffer.from(rwtRepoBuilder['chainId'])),
+      );
+      const r5Expected = ergoLib.Constant.from_i64(
+        ergoLib.I64.from_str(rwtRepoBuilder['watcherCount'].toString()),
+      );
+
       const candidateBox = rwtRepoBuilder.build();
-
-      const r4Serialized = boxInfo1.additionalRegisters.R4.serializedValue;
-
-      const r5Serialized = boxInfo1.additionalRegisters.R5.serializedValue;
-
-      expect(
-        ergoLib.Address.recreate_from_ergo_tree(
-          candidateBox.ergo_tree(),
-        ).to_base58(ergoLib.NetworkPrefix.Mainnet),
-      ).toEqual(repoAddress);
+      expect(candidateBox.ergo_tree().to_base16_bytes()).toEqual(
+        rwtRepoBuilder['repoErgoTree'],
+      );
       expect(candidateBox.value().as_i64().to_str()).toEqual(
         ergValue.toString(),
       );
       expect(candidateBox.creation_height()).toEqual(height);
 
       expect(candidateBox.register_value(4)?.encode_to_base16()).toEqual(
-        r4Serialized,
+        r4Expected.encode_to_base16(),
       );
+
       expect(candidateBox.register_value(5)?.encode_to_base16()).toEqual(
-        r5Serialized,
+        r5Expected.encode_to_base16(),
       );
 
-      expect(candidateBox.tokens().get(0).id().to_str()).toEqual(repoNft);
-      expect(candidateBox.tokens().get(0).amount().as_i64().to_str()).toEqual(
-        '1',
+      const tokens = candidateBox.tokens();
+      expect(tokens.get(0).id().to_str()).toEqual(rwtRepoBuilder['repoNftId']);
+      expect(tokens.get(0).amount().as_i64().to_str()).toEqual('1');
+
+      expect(tokens.get(1).id().to_str()).toEqual(rwtRepoBuilder['rwt']);
+      expect(tokens.get(1).amount().as_i64().to_str()).toEqual(
+        rwtRepoBuilder['rwtCount'].toString(),
       );
 
-      expect(candidateBox.tokens().get(1).id().to_str()).toEqual(
-        boxInfo1.assets[1].tokenId,
+      expect(tokens.get(2).id().to_str()).toEqual(rwtRepoBuilder['rsn']);
+      expect(tokens.get(2).amount().as_i64().to_str()).toEqual(
+        rwtRepoBuilder['rsnCount'].toString(),
+      );
+
+      expect(tokens.get(3).id().to_str()).toEqual(rwtRepoBuilder['awcTokenId']);
+      expect(tokens.get(3).amount().as_i64().to_str()).toEqual(
+        rwtRepoBuilder['awcTokenCount'].toString(),
       );
     });
   });

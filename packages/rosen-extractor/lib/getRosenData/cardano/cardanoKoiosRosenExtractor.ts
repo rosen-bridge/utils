@@ -21,9 +21,7 @@ export class CardanoKoiosRosenExtractor extends AbstractRosenDataExtractor<Koios
    * extracts RosenData from given lock transaction in Koios format
    * @param transaction the lock transaction in Koios format
    */
-  extractRawData = (
-    transaction: KoiosCborTransaction,
-  ): RosenData | undefined => {
+  extractData = (transaction: KoiosCborTransaction): RosenData | undefined => {
     const baseError = `No rosen data found for tx [${transaction.tx_hash}]`;
     if (!transaction.auxiliary_data) return undefined;
     const metadata = transaction.auxiliary_data.metadata;
@@ -49,21 +47,24 @@ export class CardanoKoiosRosenExtractor extends AbstractRosenDataExtractor<Koios
               rosenData.toChain,
             );
             if (assetTransformation) {
-              const metadataCbor = Transaction.from_hex(transaction.cbor)
-                .auxiliary_data()
-                ?.metadata()
-                ?.to_hex();
-              if (!metadataCbor)
-                throw new Error(
-                  `ImpossibleBehavior: Rosen data is successfully extracted for tx [${transaction.tx_hash}] but failed to get metadata from transaction CBOR`,
-                );
+              let rawData: string | undefined = '';
+              if (this.storeRawData) {
+                rawData = Transaction.from_hex(transaction.cbor)
+                  .auxiliary_data()
+                  ?.metadata()
+                  ?.to_hex();
+                if (!rawData)
+                  throw new Error(
+                    `ImpossibleBehavior: Rosen data is successfully extracted for tx [${transaction.tx_hash}] but failed to get metadata from transaction CBOR`,
+                  );
+              }
               return {
                 ...rosenData,
                 sourceChainTokenId: assetTransformation.from,
                 amount: assetTransformation.amount,
                 targetChainTokenId: assetTransformation.to,
                 sourceTxId: transaction.tx_hash,
-                rawData: metadataCbor,
+                rawData: rawData,
               };
             }
           }

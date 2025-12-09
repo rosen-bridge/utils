@@ -9,6 +9,7 @@ import { RosenData, TokenTransformation } from '../abstract/types';
 import AbstractRosenDataExtractor from '../abstract/abstractRosenDataExtractor';
 import { CARDANO_CHAIN, CARDANO_NATIVE_TOKEN } from '../const';
 import { getCardanoTokenId, parseRosenData } from './utils';
+import { OmgiosNoCborError } from './errors';
 
 export class CardanoOgmiosRosenExtractor extends AbstractRosenDataExtractor<Transaction> {
   readonly chain = CARDANO_CHAIN;
@@ -16,17 +17,11 @@ export class CardanoOgmiosRosenExtractor extends AbstractRosenDataExtractor<Tran
    * extracts RosenData from given lock transaction in Ogmios format
    * @param transaction the lock transaction in Koios format
    */
-  extractRawData = (transaction: Transaction): RosenData | undefined => {
+  extractData = (transaction: Transaction): RosenData | undefined => {
     const baseError = `No rosen data found for tx [${transaction.id}]`;
     const metadata = transaction.metadata;
     try {
       if (metadata) {
-        if (!transaction.cbor) {
-          this.logger.debug(
-            baseError + `: CBOR data is empty: "${transaction.cbor}"`,
-          );
-          return undefined;
-        }
         const blob = metadata.labels;
         if (blob && blob['0'] && blob['0'].json) {
           const data = blob['0'].json as ObjectNoSchema;
@@ -41,21 +36,28 @@ export class CardanoOgmiosRosenExtractor extends AbstractRosenDataExtractor<Tran
                 rosenData.toChain,
               );
               if (assetTransformation) {
-                const metadataCbor = wasm.Transaction.from_hex(transaction.cbor)
-                  .auxiliary_data()
-                  ?.metadata()
-                  ?.to_hex();
-                if (!metadataCbor)
-                  throw new Error(
-                    `ImpossibleBehavior: Rosen data is successfully extracted for tx [${transaction.id}] but failed to get metadata from transaction CBOR`,
-                  );
+                let rawData: string | undefined = '';
+                if (this.storeRawData) {
+                  if (!transaction.cbor) {
+                    throw new OmgiosNoCborError();
+                  }
+                  rawData = wasm.Transaction.from_hex(transaction.cbor)
+                    .auxiliary_data()
+                    ?.metadata()
+                    ?.to_hex();
+                  if (!rawData)
+                    throw new Error(
+                      `ImpossibleBehavior: Rosen data is successfully extracted for tx [${transaction.id}] but failed to get metadata from transaction CBOR`,
+                    );
+                }
+
                 return {
                   ...rosenData,
                   sourceChainTokenId: assetTransformation.from,
                   amount: assetTransformation.amount,
                   targetChainTokenId: assetTransformation.to,
                   sourceTxId: transaction.id,
-                  rawData: metadataCbor,
+                  rawData: rawData,
                 };
               }
             }
@@ -76,6 +78,7 @@ export class CardanoOgmiosRosenExtractor extends AbstractRosenDataExtractor<Tran
           baseError + `: Invalid metadata: ${JsonBigInt.stringify(metadata)}`,
         );
     } catch (e) {
+      if (e instanceof OmgiosNoCborError) throw e;
       this.logger.debug(
         `An error occurred while getting Cardano rosen data from Ogmios: ${e}`,
       );
