@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { FilterParser, FILTER_CONFIG_DEFAULT } from '../lib';
+import { FilterParser, FILTER_CONFIG_DEFAULT, FilterField } from '../lib';
 
 describe('FilterParser', () => {
   describe('parse', () => {
@@ -27,7 +27,7 @@ describe('FilterParser', () => {
      * - run test
      * - check returned value
      * @expected
-     * - it should return expected filter object
+     * - Error should be thrown
      */
     it('should throw error when filtering is disabled', () => {
       const filterParser = new FilterParser();
@@ -38,13 +38,468 @@ describe('FilterParser', () => {
     });
 
     /**
-     * @target FilterParser.parse should throw error when pagination is disabled
+     * @target FilterParser.parse should throw error if fields list is empty
+     * @dependencies
+     * @scenario
+     * - run test
+     * - check returned value
+     * @expected
+     * - Error should be thrown
+     */
+    it('should throw error if fields list is empty', () => {
+      const key = 'age';
+
+      const filterParser = new FilterParser({
+        fields: {
+          enable: true,
+          items: [],
+        },
+      });
+
+      expect(() => filterParser.parse(`http://localhost?${key}`)).toThrow(
+        `The filter '${key}' is not valid`,
+      );
+    });
+
+    /**
+     * @target FilterParser.parse should parse a numeric filter
      * @dependencies
      * @scenario
      * - run test
      * - check returned value
      * @expected
      * - it should return expected filter object
+     */
+    it('should parse a numeric filter', () => {
+      const field: FilterField = {
+        key: 'age',
+        type: 'number',
+        operator: 'greaterThanOrEqual',
+        value: 30,
+      };
+
+      const filterParser = new FilterParser({
+        fields: {
+          enable: true,
+          items: [
+            {
+              key: field.key,
+              type: field.type,
+            },
+          ],
+        },
+      });
+
+      const filter = filterParser.parse(
+        `http://localhost?${field.key}>=${field.value}`,
+      );
+
+      expect(filter.fields).toEqual([field]);
+    });
+
+    /**
+     * @target FilterParser.parse should throw error for invalid number filter key
+     * @dependencies
+     * @scenario
+     * - run test
+     * - check returned value
+     * @expected
+     * - Error should be thrown
+     */
+    it('should throw error for invalid number filter key', () => {
+      const invalidKey = 'key';
+
+      const field: FilterField = {
+        key: 'age',
+        type: 'number',
+        operator: 'greaterThanOrEqual',
+        value: 30,
+      };
+
+      const filterParser = new FilterParser({
+        fields: {
+          enable: true,
+          items: [
+            {
+              key: field.key,
+              type: field.type,
+            },
+          ],
+        },
+      });
+
+      expect(() =>
+        filterParser.parse(`http://localhost?${invalidKey}>=${field.value}`),
+      ).toThrow(`The filter '${invalidKey}' is not valid`);
+    });
+
+    /**
+     * @target FilterParser.parse should throw error when operator is not allowed for a number field
+     * @dependencies
+     * @scenario
+     * - run test
+     * - check returned value
+     * @expected
+     * - Error should be thrown
+     */
+    it('should throw error when operator is not allowed for a number field', () => {
+      const field: FilterField = {
+        key: 'age',
+        type: 'number',
+        operator: 'greaterThanOrEqual',
+        value: 30,
+      };
+
+      const filterParser = new FilterParser({
+        fields: {
+          enable: true,
+          items: [
+            {
+              key: field.key,
+              type: field.type,
+              operators: ['lessThanOrEqual'],
+            },
+          ],
+        },
+      });
+
+      expect(() =>
+        filterParser.parse(`http://localhost?${field.key}>=${field.value}`),
+      ).toThrow(`Invalid operator for the '${field.key}' field`);
+    });
+
+    /**
+     * @target FilterParser.parse should throw error for invalid numeric value
+     * @dependencies
+     * @scenario
+     * - run test
+     * - check returned value
+     * @expected
+     * - Error should be thrown
+     */
+    it('should throw error for invalid numeric value', () => {
+      const field: FilterField = {
+        key: 'age',
+        type: 'number',
+        operator: 'greaterThanOrEqual',
+        value: 30,
+      };
+
+      const filterParser = new FilterParser({
+        fields: {
+          enable: true,
+          items: [
+            {
+              key: field.key,
+              type: field.type,
+            },
+          ],
+        },
+      });
+
+      expect(() =>
+        filterParser.parse(`http://localhost?${field.key}>=hi`),
+      ).toThrow(`Invalid value for the '${field.key}' field`);
+    });
+
+    /**
+     * @target FilterParser.parse should parse a string filter
+     * @dependencies
+     * @scenario
+     * - run test
+     * - check returned value
+     * @expected
+     * - it should return expected filter object
+     */
+    it('should parse a string filter', () => {
+      const field: FilterField = {
+        key: 'status',
+        type: 'string',
+        operator: 'equal',
+        value: 'pending',
+      };
+
+      const filterParser = new FilterParser({
+        fields: {
+          enable: true,
+          items: [
+            {
+              key: field.key,
+              type: field.type,
+            },
+          ],
+        },
+      });
+
+      const filter = filterParser.parse(
+        `http://localhost?${field.key}=${field.value}`,
+      );
+
+      expect(filter.fields).toEqual([field]);
+    });
+
+    /**
+     * @target FilterParser.parse should throw error for invalid string filter key
+     * @dependencies
+     * @scenario
+     * - run test
+     * - check returned value
+     * @expected
+     * - Error should be thrown
+     */
+    it('should throw error for invalid string filter key', () => {
+      const invalidKey = 'key';
+
+      const field: FilterField = {
+        key: 'status',
+        type: 'string',
+        operator: 'equal',
+        value: 'pending',
+      };
+
+      const filterParser = new FilterParser({
+        fields: {
+          enable: true,
+          items: [
+            {
+              key: field.key,
+              type: field.type,
+            },
+          ],
+        },
+      });
+
+      expect(() =>
+        filterParser.parse(`http://localhost?${invalidKey}=${field.value}`),
+      ).toThrow(`The filter '${invalidKey}' is not valid`);
+    });
+
+    /**
+     * @target FilterParser.parse should throw error when operator is not allowed for a string field
+     * @dependencies
+     * @scenario
+     * - run test
+     * - check returned value
+     * @expected
+     * - Error should be thrown
+     */
+    it('should throw error when operator is not allowed for a string field', () => {
+      const field: FilterField = {
+        key: 'status',
+        type: 'string',
+        operator: 'equal',
+        value: 'pending',
+      };
+
+      const filterParser = new FilterParser({
+        fields: {
+          enable: true,
+          items: [
+            {
+              key: field.key,
+              type: field.type,
+              operators: ['startsWith'],
+            },
+          ],
+        },
+      });
+
+      expect(() =>
+        filterParser.parse(`http://localhost?${field.key}>=${field.value}`),
+      ).toThrow(`Invalid operator for the '${field.key}' field`);
+    });
+
+    /**
+     * @target FilterParser.parse should throw error for invalid string value
+     * @dependencies
+     * @scenario
+     * - run test
+     * - check returned value
+     * @expected
+     * - Error should be thrown
+     */
+    it('should throw error for invalid string value', () => {
+      const field: FilterField = {
+        key: 'status',
+        type: 'string',
+        operator: 'equal',
+        value: 'pending',
+      };
+
+      const filterParser = new FilterParser({
+        fields: {
+          enable: true,
+          items: [
+            {
+              key: field.key,
+              type: field.type,
+              values: ['done'],
+            },
+          ],
+        },
+      });
+
+      expect(() =>
+        filterParser.parse(`http://localhost?${field.key}=${field.value}`),
+      ).toThrow(`Invalid value for the '${field.key}' field`);
+    });
+
+    /**
+     * @target FilterParser.parse should parse a stringArray filter
+     * @dependencies
+     * @scenario
+     * - run test
+     * - check returned value
+     * @expected
+     * - it should return expected filter object
+     */
+    it('should parse a stringArray filter', () => {
+      const field: FilterField = {
+        key: 'tags',
+        type: 'stringArray',
+        operator: 'includes',
+        values: ['js', 'ts'],
+      };
+
+      const filterParser = new FilterParser({
+        fields: {
+          enable: true,
+          items: [
+            {
+              key: field.key,
+              type: field.type,
+            },
+          ],
+        },
+      });
+
+      const filter = filterParser.parse(
+        `http://localhost?${field.key}[]=${field.values.join(',')}`,
+      );
+
+      expect(filter.fields).toEqual([field]);
+    });
+
+    /**
+     * @target FilterParser.parse should throw error for invalid stringArray filter key
+     * @dependencies
+     * @scenario
+     * - run test
+     * - check returned value
+     * @expected
+     * - Error should be thrown
+     */
+    it('should throw error for invalid stringArray filter key', () => {
+      const invalidKey = 'key';
+
+      const field: FilterField = {
+        key: 'tags',
+        type: 'stringArray',
+        operator: 'includes',
+        values: ['js', 'ts'],
+      };
+
+      const filterParser = new FilterParser({
+        fields: {
+          enable: true,
+          items: [
+            {
+              key: field.key,
+              type: field.type,
+            },
+          ],
+        },
+      });
+
+      expect(() =>
+        filterParser.parse(
+          `http://localhost?${invalidKey}[]=${field.values.join(',')}`,
+        ),
+      ).toThrow(`The filter '${invalidKey}' is not valid`);
+    });
+
+    /**
+     * @target FilterParser.parse should throw error when operator is not allowed for a stringArray field
+     * @dependencies
+     * @scenario
+     * - run test
+     * - check returned value
+     * @expected
+     * - Error should be thrown
+     */
+    it('should throw error when operator is not allowed for a stringArray field', () => {
+      const field: FilterField = {
+        key: 'tags',
+        type: 'stringArray',
+        operator: 'excludes',
+        values: ['js', 'ts'],
+      };
+
+      const filterParser = new FilterParser({
+        fields: {
+          enable: true,
+          items: [
+            {
+              key: field.key,
+              type: field.type,
+              operators: ['includes'],
+            },
+          ],
+        },
+      });
+
+      expect(() =>
+        filterParser.parse(
+          `http://localhost?${field.key}[]!=${field.values.join(',')}`,
+        ),
+      ).toThrow(`Invalid operator for the '${field.key}' field`);
+    });
+
+    /**
+     * @target FilterParser.parse should throw error for invalid stringArray value
+     * @dependencies
+     * @scenario
+     * - run test
+     * - check returned value
+     * @expected
+     * - Error should be thrown
+     */
+    it('should throw error for invalid stringArray value', () => {
+      const field: FilterField = {
+        key: 'tags',
+        type: 'stringArray',
+        operator: 'includes',
+        values: ['js', 'ts'],
+      };
+
+      const filterParser = new FilterParser({
+        fields: {
+          enable: true,
+          items: [
+            {
+              key: field.key,
+              type: field.type,
+              values: ['js'],
+            },
+          ],
+        },
+      });
+
+      expect(() =>
+        filterParser.parse(
+          `http://localhost?${field.key}[]=${field.values.join(',')}`,
+        ),
+      ).toThrow(`Invalid value for the '${field.key}' field`);
+    });
+
+    /**
+     * @target FilterParser.parse should throw error when pagination is disabled
+     * @dependencies
+     * @scenario
+     * - run test
+     * - check returned value
+     * @expected
+     * - Error should be thrown
      */
     it('should throw error when pagination is disabled', () => {
       const filterParser = new FilterParser();
@@ -154,7 +609,7 @@ describe('FilterParser', () => {
      * - run test
      * - check returned value
      * @expected
-     * - it should return expected filter object
+     * - Error should be thrown
      */
     it('should throw if pagination values are below minimum', () => {
       const filterParser = new FilterParser({
@@ -187,7 +642,7 @@ describe('FilterParser', () => {
      * - run test
      * - check returned value
      * @expected
-     * - it should return expected filter object
+     * - Error should be thrown
      */
     it('should throw if pagination values are above maximum', () => {
       const OFFSET_MAX = 1000;
@@ -223,7 +678,7 @@ describe('FilterParser', () => {
      * - run test
      * - check returned value
      * @expected
-     * - it should return expected filter object
+     * - Error should be thrown
      */
     it('should respect custom minimum values', () => {
       const LIMIT_MIN = 30;
@@ -258,7 +713,7 @@ describe('FilterParser', () => {
      * - run test
      * - check returned value
      * @expected
-     * - it should return expected filter object
+     * - Error should be thrown
      */
     it('should respect custom maximum values', () => {
       const LIMIT_MAX = 30;
@@ -293,7 +748,7 @@ describe('FilterParser', () => {
      * - run test
      * - check returned value
      * @expected
-     * - it should return expected filter object
+     * - Error should be thrown
      */
     it('should throw error when sorting is disabled', () => {
       const filterParser = new FilterParser();
@@ -310,7 +765,7 @@ describe('FilterParser', () => {
      * - run test
      * - check returned value
      * @expected
-     * - it should return expected filter object
+     * - Error should be thrown
      */
     it('should throw error if sort key is not in config', () => {
       const key = 'key';
@@ -381,13 +836,40 @@ describe('FilterParser', () => {
     });
 
     /**
+     * @target FilterParser.parse should throw error for invalid sort order
+     * @dependencies
+     * @scenario
+     * - run test
+     * - check returned value
+     * @expected
+     * - Error should be thrown
+     */
+    it('should throw error for invalid sort order', () => {
+      const key = 'key';
+      const order = 'wrong';
+
+      const filterParser = new FilterParser({
+        sorts: {
+          enable: true,
+          items: [{ key }],
+        },
+      });
+
+      expect(() =>
+        filterParser.parse(`http://localhost?sorts=${key}-${order}`),
+      ).toThrow(
+        `The value '${order}' is not a valid sort order, Only 'ASC' or 'DESC' are allowed`,
+      );
+    });
+
+    /**
      * @target FilterParser.parse should throw error if sort list is empty
      * @dependencies
      * @scenario
      * - run test
      * - check returned value
      * @expected
-     * - it should return expected filter object
+     * - Error should be thrown
      */
     it('should throw error if sort list is empty', () => {
       const key = 'key';
@@ -402,6 +884,31 @@ describe('FilterParser', () => {
       expect(() => filterParser.parse(`http://localhost?sorts=${key}`)).toThrow(
         `The sort '${key}' is not valid`,
       );
+    });
+
+    /**
+     * @target FilterParser.parse should throw error when sort key is not defined in config items
+     * @dependencies
+     * @scenario
+     * - run test
+     * - check returned value
+     * @expected
+     * - Error should be thrown
+     */
+    it('should throw error when sort key is not defined in config items', () => {
+      const key1 = 'key1';
+      const key2 = 'key2';
+
+      const filterParser = new FilterParser({
+        sorts: {
+          enable: true,
+          items: [{ key: key1 }],
+        },
+      });
+
+      expect(() =>
+        filterParser.parse(`http://localhost?sorts=${key2}`),
+      ).toThrow(`The sort '${key2}' is not valid`);
     });
 
     /**
