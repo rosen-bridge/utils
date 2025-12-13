@@ -37,6 +37,15 @@ export class DefaultLogger extends AbstractLogger {
   };
 
   /**
+   * Gets the underlying logger instance that was passed to init().
+   * Useful when direct access to the wrapped logger is needed.
+   * @returns The underlying AbstractLogger instance
+   */
+  getLoggerInstance = () => {
+    return this.logger;
+  };
+
+  /**
    * Logs a trace-level message.
    * @param message - The message to log
    * @param context - Optional additional context to include with the log

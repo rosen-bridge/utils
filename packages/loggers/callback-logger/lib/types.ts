@@ -1,11 +1,3 @@
-import { AbstractLogger } from '@rosen-bridge/abstract-logger';
-
-/**
- * Represents the available log levels, derived from AbstractLogger method names.
- * Excludes 'child' as it's not a logging level.
- */
-export type LogLevel = Exclude<keyof AbstractLogger, 'child'>;
-
 /**
  * Callback function type for log events.
  * @param message - The log message

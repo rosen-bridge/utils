@@ -1,5 +1,5 @@
-import { AbstractLogger } from '@rosen-bridge/abstract-logger';
-import { LogCallback, LogLevel } from './types';
+import { AbstractLogger, LogLevel } from '@rosen-bridge/abstract-logger';
+import { LogCallback } from './types';
 
 /**
  * A logger wrapper that supports registering callbacks for log events.
@@ -20,7 +20,7 @@ export class CallbackLogger extends AbstractLogger {
    * @param level - The log level to register the callback for
    * @param callback - The callback function to execute when logging at this level
    */
-  registerCallback = (level: LogLevel, callback: LogCallback): void => {
+  static registerCallback = (level: LogLevel, callback: LogCallback): void => {
     const levelCallbacks =
       CallbackLogger.callbacks.get(level) ?? ([] as Array<LogCallback>);
     levelCallbacks.push(callback);
