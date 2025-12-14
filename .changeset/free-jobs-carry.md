@@ -4,4 +4,4 @@
 '@rosen-bridge/winston-logger': major
 ---
 
-Add `child` method to Logger classes and delete LoggerFactory classes
+Add `child` method to logger classes and delete the logger factory class
