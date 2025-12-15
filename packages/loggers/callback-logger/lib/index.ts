@@ -1,1 +1,1 @@
-export { CallbackLoggerFactory } from './callbackLoggerFactory';
+export { CallbackLogger as default } from './callbackLogger';

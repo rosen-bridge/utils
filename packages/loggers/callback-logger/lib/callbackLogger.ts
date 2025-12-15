@@ -1,48 +1,121 @@
-import { AbstractLogger } from '@rosen-bridge/abstract-logger';
+import { AbstractLogger, LogLevel } from '@rosen-bridge/abstract-logger';
+import { LogCallback } from './types';
 
+/**
+ * A logger wrapper that supports registering callbacks for log events.
+ * Delegates actual logging to an underlying logger while also triggering registered callbacks.
+ */
 export class CallbackLogger extends AbstractLogger {
-  constructor(
-    protected logger: AbstractLogger,
-
-    protected callback: (
-      level: keyof AbstractLogger,
-
-      message: string,
-
-      context?: unknown,
-    ) => unknown,
-  ) {
+  protected static callbacks: Map<string, Array<LogCallback>> = new Map();
+  /**
+   * Creates a new CallbackLogger instance.
+   * @param logger - The underlying logger to delegate logging to
+   */
+  constructor(protected logger: AbstractLogger) {
     super();
   }
 
   /**
-   * new log for all log levels
-   * @param level
-   * @param message
-   * @param context
+   * Registers a callback function for a specific log level.
+   * @param level - The log level to register the callback for
+   * @param callback - The callback function to execute when logging at this level
    */
-  log = (level: keyof AbstractLogger, message: string, context?: unknown) => {
+  static registerCallback = (level: LogLevel, callback: LogCallback): void => {
+    const levelCallbacks =
+      CallbackLogger.callbacks.get(level) ?? ([] as Array<LogCallback>);
+    levelCallbacks.push(callback);
+    CallbackLogger.callbacks.set(level, levelCallbacks);
+  };
+
+  /**
+   * Executes all registered callbacks for a specific log level.
+   * @param level - The log level to trigger callbacks for
+   * @param message - The log message to pass to callbacks
+   * @param context - Optional additional context to pass to callbacks
+   */
+  protected static callback = (
+    level: LogLevel,
+    message: string,
+    context?: unknown,
+  ) => {
+    const callbacks = CallbackLogger.callbacks.get(level);
+    if (callbacks) {
+      for (const callback of callbacks) {
+        callback(message, context);
+      }
+    }
+  };
+
+  /**
+   * Creates a child CallbackLogger that wraps a child of the underlying logger.
+   * The child logger shares the same static callbacks as the parent.
+   * @param path - The path to append to the underlying logger's context
+   * @returns A new CallbackLogger instance wrapping the child logger
+   */
+  child = (path: string) => {
+    return new CallbackLogger(this.logger.child(path));
+  };
+
+  /**
+   * Logs a message at the specified level, triggering callbacks and delegating to the underlying logger.
+   * @param level - The log level
+   * @param message - The message to log
+   * @param context - Optional additional context to include with the log
+   */
+  protected log = (level: LogLevel, message: string, context?: unknown) => {
     try {
-      this.callback(level, message, context);
+      CallbackLogger.callback(level, message, context);
     } catch {
       this.logger.warn('Can not execute callback function for log');
     }
     this.logger[level](message, context);
   };
 
-  debug = (message: string, context?: unknown) => {
+  /**
+   * Logs a trace-level message.
+   * @param message - The message to log
+   * @param context - Optional additional context to include with the log
+   */
+  trace = (message: string, context?: unknown) =>
+    this.log('trace', message, context);
+
+  /**
+   * Logs a debug-level message.
+   * @param message - The message to log
+   * @param context - Optional additional context to include with the log
+   */
+  debug = (message: string, context?: unknown) =>
     this.log('debug', message, context);
-  };
 
-  info = (message: string, context?: unknown) => {
+  /**
+   * Logs an info-level message.
+   * @param message - The message to log
+   * @param context - Optional additional context to include with the log
+   */
+  info = (message: string, context?: unknown) =>
     this.log('info', message, context);
-  };
 
-  warn = (message: string, context?: unknown) => {
+  /**
+   * Logs a warning-level message.
+   * @param message - The message to log
+   * @param context - Optional additional context to include with the log
+   */
+  warn = (message: string, context?: unknown) =>
     this.log('warn', message, context);
-  };
 
-  error = (message: string, context?: unknown) => {
+  /**
+   * Logs an error-level message.
+   * @param message - The message to log
+   * @param context - Optional additional context to include with the log
+   */
+  error = (message: string, context?: unknown) =>
     this.log('error', message, context);
-  };
+
+  /**
+   * Logs a critical-level message.
+   * @param message - The message to log
+   * @param context - Optional additional context to include with the log
+   */
+  critical = (message: string, context?: unknown) =>
+    this.log('critical', message, context);
 }
