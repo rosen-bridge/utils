@@ -35,10 +35,6 @@
     "@rosen-bridge/abstract-logger": "^3.0.1",
     "await-semaphore": "^0.1.3"
   },
-  "directories": {
-    "lib": "lib",
-    "test": "tests"
-  },
   "keywords": [
     "rosen"
   ],
