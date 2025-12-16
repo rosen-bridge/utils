@@ -1,5 +1,7 @@
-export class CorruptedConfigError extends Error {
+export class CorruptedConfigBoxError extends Error {
   constructor(boxId: string, msg: string) {
-    super(`CorruptedConfigError: Corrupted config in box [${boxId}]: ` + msg);
+    super(
+      `CorruptedConfigBoxError: Corrupted config in box [${boxId}]: ` + msg,
+    );
   }
 }
