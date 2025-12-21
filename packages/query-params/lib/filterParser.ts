@@ -15,8 +15,15 @@ import {
   FilterFieldConfig,
   FilterSort,
   FilterSortConfig,
+  NumberFilterField,
+  StringArrayFilterField,
+  StringFilterField,
 } from './types';
 
+/**
+ * TODO: Replace string-based validation errors with dedicated error classes
+ * local:ergo/rosen-bridge/utils#309
+ */
 export class FilterParser {
   private config: FilterConfig;
 
@@ -32,14 +39,14 @@ export class FilterParser {
    * @param field The filter field configuration.
    * @returns A Zod schema for the given field.
    */
-  private createFieldSchema(
+  private createFieldSchema = (
     field: FilterFieldConfig,
-  ): zod.ZodType<FilterField> {
-    const operatorParams = {
+  ): zod.ZodType<FilterField> => {
+    const operatorParamsError = {
       error: `Invalid operator for the '${field.key}' field`,
     };
 
-    const valueParams = {
+    const valueParamsError = {
       error: `Invalid value for the '${field.key}' field`,
     };
 
@@ -50,9 +57,9 @@ export class FilterParser {
           type: zod.literal(field.type),
           operator: zod.enum(
             field.operators || FILTER_FIELD_NUMBER_OPERATORS,
-            operatorParams,
+            operatorParamsError,
           ),
-          value: zod.number(valueParams),
+          value: zod.number(valueParamsError),
         });
       case 'string':
         return zod.object({
@@ -60,10 +67,10 @@ export class FilterParser {
           type: zod.literal(field.type),
           operator: zod.enum(
             field.operators || FILTER_FIELD_STRING_OPERATORS,
-            operatorParams,
+            operatorParamsError,
           ),
           value: field.values
-            ? zod.enum(field.values, valueParams)
+            ? zod.enum(field.values, valueParamsError)
             : zod.string(),
         });
       case 'stringArray':
@@ -72,29 +79,31 @@ export class FilterParser {
           type: zod.literal(field.type),
           operator: zod.enum(
             field.operators || FILTER_FIELD_STRING_ARRAY_OPERATORS,
-            operatorParams,
+            operatorParamsError,
           ),
           values: zod.array(
-            field.values ? zod.enum(field.values, valueParams) : zod.string(),
+            field.values
+              ? zod.enum(field.values, valueParamsError)
+              : zod.string(),
           ),
         });
     }
-  }
+  };
 
   /**
    * Builds the schema for all filter fields based on the configured field list.
    * @returns A Zod schema representing all possible filter fields.
    */
-  private createFieldsSchema(): zod.ZodType<Filter['fields']> {
+  private createFieldsSchema = (): zod.ZodType<Filter['fields']> => {
     if (!this.config.fields?.enable) {
       return zod.undefined({
         error: 'Filtering is disabled',
       });
     }
 
-    const items = (this.config.fields?.items?.map((item) =>
-      this.createFieldSchema(item),
-    ) || []) as any;
+    const items =
+      this.config.fields?.items?.map((item) => this.createFieldSchema(item)) ||
+      [];
 
     if (!items.length) {
       return zod
@@ -109,7 +118,7 @@ export class FilterParser {
 
     const schema = zod
       .array(
-        zod.discriminatedUnion('key', items, {
+        zod.discriminatedUnion('key', items as any, {
           error: (iss) =>
             `The filter '${(iss.input as FilterField).key}' is not valid`,
         }),
@@ -117,13 +126,13 @@ export class FilterParser {
       .optional();
 
     return schema;
-  }
+  };
 
   /**
    * Creates a Zod schema for pagination.
    * @returns A Zod schema for pagination configuration.
    */
-  private createPaginationSchema(): zod.ZodType<Filter['pagination']> {
+  private createPaginationSchema = (): zod.ZodType<Filter['pagination']> => {
     if (!this.config.pagination?.enable) {
       return zod.undefined({
         error: 'Pagination is disabled',
@@ -183,14 +192,16 @@ export class FilterParser {
       .optional();
 
     return schema;
-  }
+  };
 
   /**
    * Creates a Zod schema for a single sort configuration.
    * @param sort The sort configuration.
    * @returns A Zod schema for the given sort field.
    */
-  private createSortSchema(sort: FilterSortConfig): zod.ZodType<FilterSort> {
+  private createSortSchema = (
+    sort: FilterSortConfig,
+  ): zod.ZodType<FilterSort> => {
     const key = zod.literal(sort.key);
 
     let order = zod
@@ -201,26 +212,28 @@ export class FilterParser {
       .optional();
 
     if (sort.defaultOrder) {
-      order = order.default(sort.defaultOrder) as any;
+      order = order.default(sort.defaultOrder) as unknown as zod.ZodOptional<
+        zod.ZodEnum<{ ASC: 'ASC'; DESC: 'DESC' }>
+      >;
     }
 
     return zod.object({ key, order });
-  }
+  };
 
   /**
    * Creates a Zod schema for all sort configurations.
    * @returns A Zod schema for the sorts configuration.
    */
-  private createSortsSchema(): zod.ZodType<Filter['sorts']> {
+  private createSortsSchema = (): zod.ZodType<Filter['sorts']> => {
     if (!this.config.sorts?.enable) {
       return zod.undefined({
         error: 'Sorting is disabled',
       });
     }
 
-    const items = (this.config.sorts?.items?.map((item) =>
-      this.createSortSchema(item),
-    ) || []) as any;
+    const items =
+      this.config.sorts?.items?.map((item) => this.createSortSchema(item)) ||
+      [];
 
     if (!items.length) {
       return zod
@@ -235,7 +248,7 @@ export class FilterParser {
 
     const schema = zod
       .array(
-        zod.discriminatedUnion('key', items, {
+        zod.discriminatedUnion('key', items as any, {
           error: (iss) =>
             `The sort '${(iss.input as FilterSort).key}' is not valid`,
         }),
@@ -243,26 +256,26 @@ export class FilterParser {
       .optional();
 
     return schema;
-  }
+  };
 
   /**
    * Creates the main Zod schema for the filter object.
    * @returns A Zod schema for the full filter.
    */
-  private createFilterSchema(): zod.ZodType<Filter> {
+  private createFilterSchema = (): zod.ZodType<Filter> => {
     return zod.object({
       fields: this.createFieldsSchema(),
       pagination: this.createPaginationSchema(),
       sorts: this.createSortsSchema(),
     });
-  }
+  };
 
   /**
    * Parses a URL into a raw Filter object before validation.
    * @param url The URL containing query parameters.
    * @returns A raw Filter object parsed from the URL.
    */
-  private urlToFilter(url: string): Filter {
+  private urlToFilter = (url: string): Filter => {
     const { searchParams } = new URL(url);
 
     const filters: Filter = {};
@@ -318,19 +331,19 @@ export class FilterParser {
         key: name,
         type,
         operator: operator.key,
-      } as any;
+      } as FilterField;
 
       switch (type) {
         case 'number': {
-          field.value = +value;
+          (field as NumberFilterField).value = +value;
           break;
         }
         case 'string': {
-          field.value = value;
+          (field as StringFilterField).value = value;
           break;
         }
         case 'stringArray': {
-          field.values = value.split(',');
+          (field as StringArrayFilterField).values = value.split(',');
           break;
         }
       }
@@ -339,7 +352,7 @@ export class FilterParser {
     });
 
     return filters;
-  }
+  };
 
   /**
    * Parses and validates a URL into a strongly typed Filter object.
@@ -347,7 +360,7 @@ export class FilterParser {
    * @returns A validated Filter object.
    * @throws {Error} If validation fails.
    */
-  public parse(url: string): Filter {
+  public parse = (url: string): Filter => {
     const filter = this.urlToFilter(url);
 
     try {
@@ -363,5 +376,5 @@ export class FilterParser {
 
       throw new Error(message, { cause: error });
     }
-  }
+  };
 }

@@ -7,6 +7,8 @@ describe('FilterParser', () => {
      * @target FilterParser.parse should return an empty filter for URL without parameters
      * @dependencies
      * @scenario
+     * - initialize `FilterParser` with default configuration
+     * - prepare a URL without query parameters
      * - run test
      * - check returned value
      * @expected
@@ -24,6 +26,8 @@ describe('FilterParser', () => {
      * @target FilterParser.parse should throw error when filtering is disabled
      * @dependencies
      * @scenario
+     * - initialize `FilterParser` with default configuration
+     * - prepare a URL with a filter query parameter
      * - run test
      * - check returned value
      * @expected
@@ -41,6 +45,8 @@ describe('FilterParser', () => {
      * @target FilterParser.parse should throw error if fields list is empty
      * @dependencies
      * @scenario
+     * - initialize `FilterParser` with filtering enabled but empty fields list
+     * - prepare a URL with the filter key
      * - run test
      * - check returned value
      * @expected
@@ -65,6 +71,9 @@ describe('FilterParser', () => {
      * @target FilterParser.parse should parse a numeric filter
      * @dependencies
      * @scenario
+     * - define a numeric filter field configuration
+     * - initialize `FilterParser` with numeric field enabled
+     * - prepare a URL with numeric comparison operator and value
      * - run test
      * - check returned value
      * @expected
@@ -101,6 +110,9 @@ describe('FilterParser', () => {
      * @target FilterParser.parse should throw error for invalid number filter key
      * @dependencies
      * @scenario
+     * - define a valid numeric field configuration
+     * - initialize `FilterParser` with that field
+     * - prepare a URL using an invalid filter key
      * - run test
      * - check returned value
      * @expected
@@ -137,6 +149,9 @@ describe('FilterParser', () => {
      * @target FilterParser.parse should throw error when operator is not allowed for a number field
      * @dependencies
      * @scenario
+     * - define a numeric field with restricted operators
+     * - initialize `FilterParser` with that configuration
+     * - prepare a URL using a disallowed operator
      * - run test
      * - check returned value
      * @expected
@@ -172,6 +187,9 @@ describe('FilterParser', () => {
      * @target FilterParser.parse should throw error for invalid numeric value
      * @dependencies
      * @scenario
+     * - define a numeric field configuration
+     * - initialize `FilterParser` with numeric filtering enabled
+     * - prepare a URL with a non-numeric value
      * - run test
      * - check returned value
      * @expected
@@ -206,6 +224,9 @@ describe('FilterParser', () => {
      * @target FilterParser.parse should parse a string filter
      * @dependencies
      * @scenario
+     * - define a string filter field configuration
+     * - initialize `FilterParser` with string field enabled
+     * - prepare a URL with string equality operator and value
      * - run test
      * - check returned value
      * @expected
@@ -242,6 +263,9 @@ describe('FilterParser', () => {
      * @target FilterParser.parse should throw error for invalid string filter key
      * @dependencies
      * @scenario
+     * - define a valid string field configuration
+     * - initialize `FilterParser` with that field
+     * - prepare a URL using an invalid filter key
      * - run test
      * - check returned value
      * @expected
@@ -278,6 +302,9 @@ describe('FilterParser', () => {
      * @target FilterParser.parse should throw error when operator is not allowed for a string field
      * @dependencies
      * @scenario
+     * - define a string field with restricted operators
+     * - initialize `FilterParser` with that configuration
+     * - prepare a URL using an unsupported operator
      * - run test
      * - check returned value
      * @expected
@@ -313,6 +340,9 @@ describe('FilterParser', () => {
      * @target FilterParser.parse should throw error for invalid string value
      * @dependencies
      * @scenario
+     * - define a string field with restricted allowed values
+     * - initialize `FilterParser` with that configuration
+     * - prepare a URL using a value not in the allowed list
      * - run test
      * - check returned value
      * @expected
@@ -348,6 +378,9 @@ describe('FilterParser', () => {
      * @target FilterParser.parse should parse a stringArray filter
      * @dependencies
      * @scenario
+     * - define a stringArray filter field configuration
+     * - initialize `FilterParser` with stringArray field enabled
+     * - prepare a URL using a valid array filter key
      * - run test
      * - check returned value
      * @expected
@@ -384,6 +417,9 @@ describe('FilterParser', () => {
      * @target FilterParser.parse should throw error for invalid stringArray filter key
      * @dependencies
      * @scenario
+     * - define a valid stringArray field configuration
+     * - initialize `FilterParser` with that field
+     * - prepare a URL using an invalid array filter key
      * - run test
      * - check returned value
      * @expected
@@ -422,6 +458,9 @@ describe('FilterParser', () => {
      * @target FilterParser.parse should throw error when operator is not allowed for a stringArray field
      * @dependencies
      * @scenario
+     * - define a stringArray field with restricted operators
+     * - initialize `FilterParser` with that configuration
+     * - prepare a URL using a disallowed array operator
      * - run test
      * - check returned value
      * @expected
@@ -459,6 +498,9 @@ describe('FilterParser', () => {
      * @target FilterParser.parse should throw error for invalid stringArray value
      * @dependencies
      * @scenario
+     * - define a stringArray field with restricted allowed values
+     * - initialize `FilterParser` with that configuration
+     * - prepare a URL using values outside the allowed list
      * - run test
      * - check returned value
      * @expected
@@ -496,6 +538,8 @@ describe('FilterParser', () => {
      * @target FilterParser.parse should throw error when pagination is disabled
      * @dependencies
      * @scenario
+     * - initialize `FilterParser` with default configuration
+     * - prepare URLs with pagination parameters
      * - run test
      * - check returned value
      * @expected
@@ -517,6 +561,8 @@ describe('FilterParser', () => {
      * @target FilterParser.parse should return default pagination values when enabled
      * @dependencies
      * @scenario
+     * - initialize `FilterParser` with pagination enabled
+     * - prepare a URL without pagination parameters
      * - run test
      * - check returned value
      * @expected
@@ -544,6 +590,9 @@ describe('FilterParser', () => {
      * @target FilterParser.parse should use custom default pagination values
      * @dependencies
      * @scenario
+     * - define custom default limit and offset values
+     * - initialize `FilterParser` with custom pagination defaults
+     * - prepare a URL without pagination parameters
      * - run test
      * - check returned value
      * @expected
@@ -577,6 +626,8 @@ describe('FilterParser', () => {
      * @target FilterParser.parse should parse pagination values from URL
      * @dependencies
      * @scenario
+     * - initialize `FilterParser` with pagination enabled
+     * - prepare a URL with limit and offset query parameters
      * - run test
      * - check returned value
      * @expected
@@ -606,6 +657,8 @@ describe('FilterParser', () => {
      * @target FilterParser.parse should throw if pagination values are below minimum
      * @dependencies
      * @scenario
+     * - initialize `FilterParser` with pagination enabled
+     * - prepare URLs with limit and offset below minimum values
      * - run test
      * - check returned value
      * @expected
@@ -639,6 +692,8 @@ describe('FilterParser', () => {
      * @target FilterParser.parse should throw if pagination values are above maximum
      * @dependencies
      * @scenario
+     * - initialize `FilterParser` with pagination enabled and custom maximum offset
+     * - prepare URLs with limit and offset above maximum values
      * - run test
      * - check returned value
      * @expected
@@ -675,6 +730,8 @@ describe('FilterParser', () => {
      * @target FilterParser.parse should respect custom minimum values
      * @dependencies
      * @scenario
+     * - initialize `FilterParser` with pagination enabled and custom minimum limit and offset
+     * - prepare URLs with limit and offset below the custom minimums
      * - run test
      * - check returned value
      * @expected
@@ -710,6 +767,8 @@ describe('FilterParser', () => {
      * @target FilterParser.parse should respect custom maximum values
      * @dependencies
      * @scenario
+     * - initialize `FilterParser` with pagination enabled and custom maximum limit and offset
+     * - prepare URLs with limit and offset above the custom maximums
      * - run test
      * - check returned value
      * @expected
@@ -745,6 +804,8 @@ describe('FilterParser', () => {
      * @target FilterParser.parse should throw error when sorting is disabled
      * @dependencies
      * @scenario
+     * - initialize `FilterParser` with default configuration
+     * - prepare a URL with sorting parameters
      * - run test
      * - check returned value
      * @expected
@@ -762,6 +823,8 @@ describe('FilterParser', () => {
      * @target FilterParser.parse should throw error if sort key is not in config
      * @dependencies
      * @scenario
+     * - initialize `FilterParser` with sorting enabled
+     * - prepare a URL using a sort key that is not in the configuration items
      * - run test
      * - check returned value
      * @expected
@@ -785,6 +848,9 @@ describe('FilterParser', () => {
      * @target FilterParser.parse should parse multiple sort keys
      * @dependencies
      * @scenario
+     * - define multiple valid sort keys
+     * - initialize `FilterParser` with sorting enabled and multiple items
+     * - prepare a URL with multiple sort keys
      * - run test
      * - check returned value
      * @expected
@@ -812,6 +878,8 @@ describe('FilterParser', () => {
      * @target FilterParser.parse should parse a sort key with explicit order
      * @dependencies
      * @scenario
+     * - initialize `FilterParser` with sorting enabled and a valid sort key
+     * - prepare a URL with the sort key and explicit sort order
      * - run test
      * - check returned value
      * @expected
@@ -839,6 +907,8 @@ describe('FilterParser', () => {
      * @target FilterParser.parse should throw error for invalid sort order
      * @dependencies
      * @scenario
+     * - initialize `FilterParser` with sorting enabled
+     * - prepare a URL with a sort key and invalid order
      * - run test
      * - check returned value
      * @expected
@@ -866,6 +936,8 @@ describe('FilterParser', () => {
      * @target FilterParser.parse should throw error if sort list is empty
      * @dependencies
      * @scenario
+     * - initialize `FilterParser` with sorting enabled but empty items
+     * - prepare a URL with a sort key
      * - run test
      * - check returned value
      * @expected
@@ -890,6 +962,8 @@ describe('FilterParser', () => {
      * @target FilterParser.parse should throw error when sort key is not defined in config items
      * @dependencies
      * @scenario
+     * - initialize `FilterParser` with sorting enabled and only specific keys in items
+     * - prepare a URL using a sort key that is not in the allowed items list
      * - run test
      * - check returned value
      * @expected
@@ -915,6 +989,8 @@ describe('FilterParser', () => {
      * @target FilterParser.parse should apply default order when defined in config
      * @dependencies
      * @scenario
+     * - initialize `FilterParser` with sorting enabled and defaultOrder for a key
+     * - prepare a URL with that sort key without order
      * - run test
      * - check returned value
      * @expected
@@ -945,6 +1021,8 @@ describe('FilterParser', () => {
      * @target FilterParser.parse should handle mixed explicit and default orders
      * @dependencies
      * @scenario
+     * - initialize `FilterParser` with sorting enabled and multiple keys with default orders
+     * - prepare a URL with a mix of explicit and default sort orders
      * - run test
      * - check returned value
      * @expected
