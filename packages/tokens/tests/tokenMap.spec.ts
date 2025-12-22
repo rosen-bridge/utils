@@ -1,12 +1,72 @@
-import { TokenMap } from '../lib';
+import { CorruptedConfigError, TokenMap } from '../lib';
 import {
   firstToken,
   firstTokenMap,
+  firstTokenMapWithUnbridgeableTokens,
+  invalidTokenSet,
   multiDecimalTokenMap,
   secondToken,
+  unbridgeableTokens,
 } from './testData';
 
 describe('TokenMap', () => {
+  describe('updateConfigByJson', () => {
+    /**
+     * @target TokenMap.updateConfigByJson should store bridgeable and unbridgeable tokens separately
+     * @dependencies
+     * - RosenToken json
+     * @scenario
+     * - register a callback
+     * - call updateConfigByJson
+     * - check tokenMap config
+     * - check if function got called
+     * @expected
+     * - the config should contain only bridgeable tokens
+     * - the raw config should contain both bridgeable and unbridgeable tokens
+     * - mocked callback should got called
+     */
+    it('should store bridgeable and unbridgeable tokens separately', async () => {
+      const tokenMap = new TokenMap();
+      const mockedCallback = vi.fn();
+      mockedCallback.mockResolvedValue(undefined);
+      tokenMap.registerCallback(mockedCallback);
+
+      await tokenMap.updateConfigByJson(firstTokenMapWithUnbridgeableTokens);
+      const tokenConfig = tokenMap.getConfig();
+      expect(tokenConfig).toEqual(firstTokenMap);
+      const rawConfig = tokenMap.getRawConfig();
+      expect(rawConfig).toEqual([...firstTokenMap, ...unbridgeableTokens]);
+
+      expect(mockedCallback).toHaveBeenCalled();
+    });
+
+    /**
+     * @target TokenMap.updateConfigByJson should throw error when a bridgeable token without supporting Ergo is found
+     * @dependencies
+     * - RosenToken json
+     * @scenario
+     * - register a callback
+     * - run test & check thrown exception
+     * @expected
+     * - CorruptedConfigError should be thrown
+     * - mocked callback should not got called
+     */
+    it('should throw error when a bridgeable token without supporting Ergo is found', async () => {
+      const tokenMap = new TokenMap();
+      const mockedCallback = vi.fn();
+      mockedCallback.mockResolvedValue(undefined);
+      tokenMap.registerCallback(mockedCallback);
+
+      await expect(async () => {
+        await tokenMap.updateConfigByJson([
+          ...firstTokenMapWithUnbridgeableTokens,
+          invalidTokenSet,
+        ]);
+      }).rejects.toThrow(CorruptedConfigError);
+      expect(mockedCallback).not.toHaveBeenCalled();
+    });
+  });
+
   describe('search', () => {
     /**
      * @target TokenMap.search should return asset with condition on the policyId and assetName
@@ -275,6 +335,38 @@ describe('TokenMap', () => {
       const result = tokenMap.getTokenSet('not.found');
       expect(result).toBeUndefined();
     });
+
+    /**
+     * @target TokenMap.getTokenSet should return token set if unbridgeable tokens are allowed
+     * @dependencies
+     * - RosenToken json
+     * @scenario
+     * - call getTokenSet with an unbridgeable token id and including unbridgeable tokens
+     * @expected
+     * - should return the token set
+     */
+    it('should return token set if unbridgeable tokens are allowed', async function () {
+      const tokenMap = new TokenMap();
+      await tokenMap.updateConfigByJson(firstTokenMapWithUnbridgeableTokens);
+      const result = tokenMap.getTokenSet('random-token', true);
+      expect(result).toEqual(unbridgeableTokens[1]);
+    });
+
+    /**
+     * @target TokenMap.getTokenSet should return undefined when token is unbridgeable and unbridgeable tokens are not allowed
+     * @dependencies
+     * - RosenToken json
+     * @scenario
+     * - call getTokenSet with an unbridgeable token id without including unbridgeable tokens
+     * @expected
+     * - should return undefined
+     */
+    it('should return undefined when token is unbridgeable and unbridgeable tokens are not allowed', async function () {
+      const tokenMap = new TokenMap();
+      await tokenMap.updateConfigByJson(firstTokenMapWithUnbridgeableTokens);
+      const result = tokenMap.getTokenSet('random-token', false);
+      expect(result).toBeUndefined();
+    });
   });
 
   describe('wrapAmount', () => {
@@ -353,6 +445,23 @@ describe('TokenMap', () => {
       expect(result.amount).toEqual(123456789n);
       expect(result.decimals).toEqual(0);
     });
+
+    /**
+     * @target TokenMap.wrapAmount should consider unbridgeable tokens
+     * @dependencies
+     * - RosenToken json
+     * @scenario
+     * - call wrapAmount for and unbridgeable token
+     * @expected
+     * - should return amount with same digits and the token decimals
+     */
+    it('should consider unbridgeable tokens', async function () {
+      const tokenMap = new TokenMap();
+      await tokenMap.updateConfigByJson(firstTokenMapWithUnbridgeableTokens);
+      const result = tokenMap.wrapAmount('random-token', 123456789n, 'chainX');
+      expect(result.amount).toEqual(123456789n);
+      expect(result.decimals).toEqual(6);
+    });
   });
 
   describe('unwrapAmount', () => {
@@ -409,6 +518,27 @@ describe('TokenMap', () => {
       const result = tokenMap.unwrapAmount('not.supported', 123456789n, 'ergo');
       expect(result.amount).toEqual(123456789n);
       expect(result.decimals).toEqual(0);
+    });
+
+    /**
+     * @target TokenMap.unwrapAmount should consider unbridgeable tokens
+     * @dependencies
+     * - RosenToken json
+     * @scenario
+     * - call unwrapAmount for and unbridgeable token
+     * @expected
+     * - should return amount with same digits and the token decimals
+     */
+    it('should consider unbridgeable tokens', async function () {
+      const tokenMap = new TokenMap();
+      await tokenMap.updateConfigByJson(firstTokenMapWithUnbridgeableTokens);
+      const result = tokenMap.unwrapAmount(
+        'random-token',
+        123456789n,
+        'chainX',
+      );
+      expect(result.amount).toEqual(123456789n);
+      expect(result.decimals).toEqual(6);
     });
   });
 
@@ -529,31 +659,6 @@ describe('TokenMap', () => {
     it('should handle non-existent callback', () => {
       const tokenMap = new TokenMap();
       expect(() => tokenMap.unregisterCallback(999)).not.toThrow();
-    });
-  });
-
-  describe('updateConfigByJson', () => {
-    /**
-     * @target TokenMap.updateConfigByJson should update config and trigger callbacks
-     * @dependencies
-     * @scenario
-     * - create a TokenMap instance
-     * - register a callback
-     * - update config
-     * @expected
-     * - config should be updated
-     * - callback should be triggered
-     */
-    it('should update config and trigger callbacks', async () => {
-      const tokenMap = new TokenMap();
-      const mockedCallback = vi.fn();
-      mockedCallback.mockResolvedValue(undefined);
-      tokenMap.registerCallback(mockedCallback);
-
-      await tokenMap.updateConfigByJson(firstTokenMap);
-
-      expect(tokenMap.getConfig()).toEqual(firstTokenMap);
-      expect(mockedCallback).toHaveBeenCalled();
     });
   });
 });

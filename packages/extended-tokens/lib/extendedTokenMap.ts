@@ -15,7 +15,7 @@ export class ExtendedTokenMap extends TokenMap {
    * @param serializedBoxes list of sigma serialized bytes of token map config boxes
    */
   updateConfigByBoxes = async (serializedBoxes: string[]) => {
-    const tokens = parseTokenMapBoxes(serializedBoxes);
+    const tokens = parseTokenMapBoxes(serializedBoxes, this.logger);
 
     await this.updateConfigByJson(tokens);
   };

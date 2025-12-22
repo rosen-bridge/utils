@@ -89,6 +89,36 @@ export const multiDecimalTokenMap: RosenTokens = [
   },
 ];
 
+export const unbridgeableTokens: RosenTokens = [
+  {
+    base: {
+      tokenId: 'eth-base',
+      name: 'ETH (BASE)',
+      decimals: 18,
+      type: 'native',
+      residency: 'native',
+      extra: {},
+    },
+  },
+  {
+    chainX: {
+      tokenId: 'random-token',
+      name: 'Random Token',
+      decimals: 6,
+      type: 'tokenType',
+      residency: 'native',
+      extra: {
+        uniqueField: 'uniqueValue',
+      },
+    },
+  },
+];
+export const firstTokenMapWithUnbridgeableTokens: RosenTokens = [
+  unbridgeableTokens[0],
+  ...firstTokenMap,
+  ...unbridgeableTokens.slice(1),
+];
+
 export const firstToken: Record<string, RosenChainToken> = {
   ergo: {
     tokenId: '1111111111111111111111111111111111111111111111111111111111111111',
@@ -130,5 +160,29 @@ export const secondToken: Record<string, RosenChainToken> = {
     decimals: 0,
     type: 'tokenType',
     residency: 'native',
+  },
+};
+
+export const invalidTokenSet: Record<string, RosenChainToken> = {
+  cardano: {
+    tokenId: 'policyId4.assetName4',
+    extra: {
+      policyId: 'policyId4',
+      assetName: 'assetName4',
+    },
+    name: 'asset4',
+    decimals: 0,
+    type: 'tokenType',
+    residency: 'native',
+  },
+  chainX: {
+    tokenId: 'chainX-token',
+    extra: {
+      uniqueField: 'uniqueValue',
+    },
+    name: 'chainX Token',
+    decimals: 0,
+    type: 'tokenType',
+    residency: 'wrapped',
   },
 };

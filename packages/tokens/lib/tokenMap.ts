@@ -1,18 +1,20 @@
 import { Semaphore } from 'await-semaphore';
 import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
-import { NATIVE_RESIDENCY } from './constants';
+import { ERGO_CHAIN, NATIVE_RESIDENCY } from './constants';
 import {
   CallbackFunction,
   RosenAmount,
   RosenChainToken,
   RosenTokens,
 } from './types';
+import { CorruptedConfigError } from './errors';
 
 /**
  * TokenMap class searches for different assets properties in different chains
  */
 export class TokenMap {
   protected tokensConfig: RosenTokens;
+  protected unbridgeableTokens: RosenTokens;
   protected updateSemaphore: Semaphore;
   protected callbacks: Map<number, CallbackFunction>;
   protected logger: AbstractLogger;
@@ -57,8 +59,18 @@ export class TokenMap {
   /**
    * returns tokens config
    */
-  getConfig = () => {
+  getConfig = (): RosenTokens => {
     return structuredClone(this.tokensConfig);
+  };
+
+  /**
+   * returns tokens config including unbridgeable tokens
+   */
+  getRawConfig = (): RosenTokens => {
+    return [
+      ...structuredClone(this.tokensConfig),
+      ...structuredClone(this.unbridgeableTokens),
+    ];
   };
 
   /**
@@ -67,7 +79,25 @@ export class TokenMap {
    */
   updateConfigByJson = async (tokens: RosenTokens) => {
     await this.updateSemaphore.acquire().then(async (release) => {
-      this.tokensConfig = tokens;
+      const newTokenConfig: RosenTokens = [];
+      const newUnbridgeableTokens: RosenTokens = [];
+      tokens.forEach((tokenSet) => {
+        const chains = Object.keys(tokenSet);
+        if (chains.length === 0) {
+          throw new CorruptedConfigError(`Found empty token set`);
+        } else if (chains.length === 1 && chains[0] !== ERGO_CHAIN) {
+          // this is an unbridgeable token
+          newUnbridgeableTokens.push(tokenSet);
+        } else if (chains.includes(ERGO_CHAIN)) {
+          newTokenConfig.push(tokenSet);
+        } else {
+          throw new CorruptedConfigError(
+            `Found token set without chain [${ERGO_CHAIN}]`,
+          );
+        }
+      });
+      this.tokensConfig = newTokenConfig;
+      this.unbridgeableTokens = newUnbridgeableTokens;
       for (const callback of this.callbacks.values()) callback();
       release();
     });
@@ -182,11 +212,16 @@ export class TokenMap {
   /**
    * get a token set by the id of one of them
    * @param tokenId
+   * @param includeUnbridgeableTokens if true, also searches in unbridgeable tokens
    */
   getTokenSet = (
     tokenId: string,
+    includeUnbridgeableTokens = false,
   ): Record<string, RosenChainToken> | undefined => {
-    const result = this.tokensConfig.filter(
+    const tokens = includeUnbridgeableTokens
+      ? [...this.tokensConfig, ...this.unbridgeableTokens]
+      : this.tokensConfig;
+    const result = tokens.filter(
       (tokenSet) =>
         Object.keys(tokenSet).filter(
           (chain) => tokenSet[chain].tokenId === tokenId,
@@ -207,7 +242,7 @@ export class TokenMap {
     amount: bigint,
     chain: string,
   ): RosenAmount => {
-    const tokens = this.getTokenSet(tokenId);
+    const tokens = this.getTokenSet(tokenId, true);
 
     if (tokens === undefined) {
       // token is not supported, no decimals drop
@@ -243,7 +278,7 @@ export class TokenMap {
     amount: bigint,
     toChain: string,
   ): RosenAmount => {
-    const tokens = this.getTokenSet(tokenId);
+    const tokens = this.getTokenSet(tokenId, true);
 
     if (tokens === undefined) {
       // token is not supported, no decimals added
@@ -272,7 +307,7 @@ export class TokenMap {
    * @param tokenId
    */
   getSignificantDecimals = (tokenId: string): number | undefined => {
-    const tokens = this.getTokenSet(tokenId);
+    const tokens = this.getTokenSet(tokenId, true);
     if (tokens === undefined) {
       // token is not supported, no decimals added
       return undefined;

@@ -4,7 +4,7 @@ import {
   missingHeaderFieldConfigBox,
   thirdTokenMap,
 } from './testData';
-import { CorruptedConfigError, ExtendedTokenMap } from '../lib';
+import { CorruptedConfigBoxError, ExtendedTokenMap } from '../lib';
 
 describe('ExtendedTokenMap', () => {
   describe('updateConfigByBoxes', () => {
@@ -39,7 +39,7 @@ describe('ExtendedTokenMap', () => {
     });
 
     /**
-     * @target ExtendedTokenMap.updateConfigByBoxes should throw CorruptedConfigError
+     * @target ExtendedTokenMap.updateConfigByBoxes should throw CorruptedConfigBoxError
      * when it fails to parse the config
      * @dependencies
      * @scenario
@@ -47,10 +47,10 @@ describe('ExtendedTokenMap', () => {
      * - register a callback
      * - run test & check thrown exception
      * @expected
-     * - CorruptedConfigError should be thrown
+     * - CorruptedConfigBoxError should be thrown
      * - mocked callback should not got called
      */
-    it('should throw CorruptedConfigError when it fails to parse the config', async () => {
+    it('should throw CorruptedConfigBoxError when it fails to parse the config', async () => {
       const tokenMap = new ExtendedTokenMap();
       const mockedCallback = vi.fn();
       mockedCallback.mockResolvedValue(undefined);
@@ -62,7 +62,7 @@ describe('ExtendedTokenMap', () => {
 
       await expect(async () => {
         await tokenMap.updateConfigByBoxes([serializedBox]);
-      }).rejects.toThrow(CorruptedConfigError);
+      }).rejects.toThrow(CorruptedConfigBoxError);
       expect(mockedCallback).not.toHaveBeenCalled();
     });
   });
