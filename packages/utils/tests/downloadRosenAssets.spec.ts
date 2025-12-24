@@ -42,7 +42,7 @@ describe('downloadRosenAssets', () => {
       mainNetStableRelease.assets[0].browser_download_url,
       'rosen',
       {
-        filename: 'contracts-awesomechain.json',
+        filename: 'contracts.json',
       },
     );
     expect(download).toHaveBeenCalledWith(
@@ -81,7 +81,7 @@ describe('downloadRosenAssets', () => {
       mainNetPrereleaseRelease.assets[0].browser_download_url,
       'rosen',
       {
-        filename: 'contracts-awesomechain.json',
+        filename: 'contracts.json',
       },
     );
     expect(download).toHaveBeenCalledWith(
@@ -119,7 +119,7 @@ describe('downloadRosenAssets', () => {
       mainNetStableRelease.assets[0].browser_download_url,
       'rosen',
       {
-        filename: 'contracts-awesomechain-suffix.json',
+        filename: 'contracts-suffix.json',
       },
     );
     expect(download).toHaveBeenCalledWith(
@@ -150,7 +150,7 @@ describe('downloadRosenAssets', () => {
       contractReleases[2].assets[0].browser_download_url,
       'rosen',
       {
-        filename: 'contracts-awesomechain.json',
+        filename: 'contracts.json',
       },
     );
   });
