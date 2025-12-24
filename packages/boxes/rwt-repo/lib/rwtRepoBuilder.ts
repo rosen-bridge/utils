@@ -4,12 +4,15 @@ import * as ergoLib from 'ergo-lib-wasm-nodejs';
 export class RWTRepoBuilder {
   private value?: bigint;
   private height?: number;
-  private lastModifiedWidIndex?: number;
 
   constructor(
-    private repoAddress: string,
+    private repoErgoTree: string,
 
-    private repoNft: string,
+    private repoNftId: string,
+
+    private awcTokenId: string,
+
+    private awcTokenCount: bigint,
 
     private rwt: string,
 
@@ -21,177 +24,92 @@ export class RWTRepoBuilder {
 
     private chainId: string,
 
-    private commitmentRwtCount: bigint,
-
-    private quorumPercentage: number,
-
-    private approvalOffset: number,
-
-    private maximumApproval: number,
-
-    private ergCollateral: bigint,
-
-    private rsnCollateral: bigint,
-
-    private widPermits: Array<{ wid: string; rwtCount: bigint }>,
+    private watcherCount: number = 0,
 
     private logger: AbstractLogger = new DummyLogger(),
   ) {}
 
   /**
-   * adds a new user for the passed wid and rwt amount
+   * Add a new watcher and updates repository state.
    *
-   * @param {string} wid
-   * @param {bigint} rwtCount
-   * @return {RWTRepoBuilder}
+   * - Increments total watcher count by one
+   * - Decrements available AWC token count by one
+   * - Allocates rwt permits for the new watcher
+   *
+   * @param {bigint} amount rwt amount to allocate to the new watcher
+   * @returns Updated RWTRepoBuilder instance
    */
-  addNewUser = (wid: string, rwtCount: bigint): RWTRepoBuilder => {
-    const widExists = this.widPermits.map((permit) => permit.wid).includes(wid);
-    if (widExists) {
-      throw new Error(`cannot add user: wid already exists in widPermits`);
-    }
-    this.widPermits.push({ wid, rwtCount });
+  addNewUser = (amount: bigint): RWTRepoBuilder => {
+    this.watcherCount += 1;
+    this.awcTokenCount -= 1n;
+    this.logger.debug(`added watcher, watcherCount=${this.watcherCount}`);
+    return this.getPermits(amount);
+  };
 
-    if (this.rwtCount < rwtCount) {
+  /**
+   * Remove a watcher and updates repository state.
+   *
+   * - Decrements total watcher count by one
+   * - Increments available awc token count by one
+   * - Revokes the specified amount of rwt permits
+   *
+   * @param {bigint} amount rwt amount to revoke from the removed watcher
+   * @returns Updated RWTRepoBuilder instance
+   * @throws Error if no watchers are registered
+   */
+  removeUser = (amount: bigint): RWTRepoBuilder => {
+    if (this.watcherCount <= 0) throw new Error('no watchers to remove');
+    this.watcherCount -= 1;
+    this.awcTokenCount += 1n;
+    this.logger.debug(`removed watcher, watcherCount=${this.watcherCount}`);
+    return this.returnPermits(amount);
+  };
+
+  /**
+   * Returns permits from a watcher to the repository, updating token counts.
+   *
+   * Effects:
+   * - Increases rwt token count by the specified amount
+   * - Decreases rsn token count by the same amount
+   *
+   * @param {bigint} amount - Number of permits to return
+   * @returns {RWTRepoBuilder} The updated RWTRepoBuilder instance
+   * @throws {Error} If rsn count is less than the specified amount (impossible case)
+   */
+  returnPermits = (amount: bigint): RWTRepoBuilder => {
+    if (this.rsnCount < amount)
       throw new Error(
-        `available RWT count [${this.rwtCount}] is less than required rwt count[${rwtCount}]`,
+        `ImpossibleBehavior: available RSN count [${this.rsnCount}] is less than required amount [${amount}]`,
+      );
+    this.rwtCount += amount;
+    this.rsnCount -= amount;
+    this.logger.debug(
+      `decreased totalPermits by ${amount}. Current counts RWT: ${this.rwtCount}, RSN: ${this.rsnCount}`,
+    );
+    return this;
+  };
+
+  /**
+   * Gives permits to a watcher by updating token counts in the repository.
+   *
+   * - Decreases rwt token count by the specified amount
+   * - Increases rsn token count by the same amount
+   *
+   * @param {bigint} amount - Number of permits to give
+   * @returns {RWTRepoBuilder} The updated RWTRepoBuilder instance
+   * @throws {Error} If rwt count is less than the specified amount
+   */
+  getPermits = (amount: bigint): RWTRepoBuilder => {
+    if (this.rwtCount < amount) {
+      throw new Error(
+        `available RWT count [${this.rwtCount}] is less than required amount[${amount}]`,
       );
     }
-    this.rwtCount -= rwtCount;
-    this.rsnCount += rwtCount;
-
+    this.rwtCount -= amount;
+    this.rsnCount += amount;
     this.logger.debug(
-      `added new user with wid=[${wid}] and rwtCount=[${rwtCount}]`,
+      `increased totalPermits by ${amount}. Current counts RWT: ${this.rwtCount}, RSN: ${this.rsnCount}`,
     );
-
-    return this;
-  };
-
-  /**
-   * removes the user corresponding to the passed wid
-   *
-   * @param {string} wid
-   * @return {RWTRepoBuilder}
-   */
-  removeUser = (wid: string): RWTRepoBuilder => {
-    const widIndex = this.indexOfWid(wid);
-
-    if (widIndex === -1) {
-      throw new Error(`cannot remove user: wid doesn't exist in widPermits`);
-    }
-    const { rwtCount } = this.widPermits.splice(widIndex, 1)[0];
-    this.rwtCount += rwtCount;
-    this.rsnCount -= rwtCount;
-
-    this.logger.debug(`removed user with wid=[${wid}]`);
-    this.lastModifiedWidIndex = widIndex;
-
-    return this;
-  };
-
-  /**
-   * sets value of this.commitmentRwtCount
-   *
-   * @param {bigint} commitmentRwtCount
-   * @return {RWTRepoBuilder}
-   */
-  setCommitmentRwtCount = (commitmentRwtCount: bigint): RWTRepoBuilder => {
-    this.commitmentRwtCount = commitmentRwtCount;
-    return this;
-  };
-
-  /**
-   * sets value of this.quorumPercentage
-   *
-   * @param {number} watcherQuorumPercentage
-   * @return {RWTRepoBuilder}
-   */
-  setWatcherQuorumPercentage = (
-    watcherQuorumPercentage: number,
-  ): RWTRepoBuilder => {
-    this.quorumPercentage = watcherQuorumPercentage;
-    return this;
-  };
-
-  /**
-   * sets value of this.approvalOffset
-   *
-   * @param {number} approvalOffset
-   * @return {RWTRepoBuilder}
-   */
-  setApprovalOffset = (approvalOffset: number): RWTRepoBuilder => {
-    this.approvalOffset = approvalOffset;
-    return this;
-  };
-
-  /**
-   * sets value of this.maximumApproval
-   *
-   * @param {number} maximumApproval
-   * @return {RWTRepoBuilder}
-   */
-  setMaximumApproval = (maximumApproval: number): RWTRepoBuilder => {
-    this.maximumApproval = maximumApproval;
-    return this;
-  };
-
-  /**
-   * sets value of this.ergCollateral
-   *
-   * @param {bigint} ergCollateral
-   * @return {RWTRepoBuilder}
-   */
-  setErgCollateral = (ergCollateral: bigint): RWTRepoBuilder => {
-    this.ergCollateral = ergCollateral;
-    return this;
-  };
-
-  /**
-   * sets value of this.rsnCollateral
-   *
-   * @param {bigint} rsnCollateral
-   * @return {RWTRepoBuilder}
-   */
-  setRsnCollateral = (rsnCollateral: bigint): RWTRepoBuilder => {
-    this.rsnCollateral = rsnCollateral;
-    return this;
-  };
-
-  /**
-   * decrements rwtCount for a specific wid. throws exception if wid not found.
-   *
-   * @param {string} wid
-   * @param {bigint} rwtCount
-   * @return {RWTRepoBuilder}
-   */
-  decrementPermits = (wid: string, rwtCount: bigint): RWTRepoBuilder => {
-    const index = this.indexOfWid(wid);
-    if (index === -1) {
-      throw new Error(`wid=[${wid}] not found in widPermits`);
-    }
-    this.widPermits[index].rwtCount -= rwtCount;
-    this.rwtCount += rwtCount;
-    this.rsnCount -= rwtCount;
-    this.lastModifiedWidIndex = index;
-    return this;
-  };
-
-  /**
-   * increments rwtCount for a specific wid. throws exception if wid not found.
-   *
-   * @param {string} wid
-   * @param {bigint} rwtCount
-   * @return {RWTRepoBuilder}
-   */
-  incrementPermits = (wid: string, rwtCount: bigint): RWTRepoBuilder => {
-    const index = this.indexOfWid(wid);
-    if (index === -1) {
-      throw new Error(`wid=[${wid}] not found in widPermits`);
-    }
-    this.widPermits[index].rwtCount += rwtCount;
-    this.rwtCount -= rwtCount;
-    this.rsnCount += rwtCount;
-    this.lastModifiedWidIndex = index;
     return this;
   };
 
@@ -210,79 +128,43 @@ export class RWTRepoBuilder {
     const boxBuilder = new ergoLib.ErgoBoxCandidateBuilder(
       ergoLib.BoxValue.from_i64(ergoLib.I64.from_str(this.value.toString())),
       ergoLib.Contract.new(
-        ergoLib.Address.from_base58(this.repoAddress).to_ergo_tree(),
+        ergoLib.ErgoTree.from_base16_bytes(this.repoErgoTree),
       ),
       this.height,
     );
-
-    this.logger.debug(
-      `using following permits in R4 to build the box: [${this.widPermits}]`,
-    );
-    const r4 = ergoLib.Constant.from_coll_coll_byte(
-      [this.chainId, ...this.widPermits.map((permit) => permit.wid)].map(
-        (item, index) =>
-          Uint8Array.from(Buffer.from(item, index === 0 ? undefined : 'hex')),
-      ),
+    const r4 = ergoLib.Constant.from_byte_array(
+      Uint8Array.from(Buffer.from(this.chainId)),
     );
     boxBuilder.set_register_value(4, r4);
 
-    const r5 = ergoLib.Constant.from_i64_str_array(
-      [0n, ...this.widPermits.map((permit) => permit.rwtCount)].map((item) =>
-        item.toString(),
-      ),
+    const r5 = ergoLib.Constant.from_i64(
+      ergoLib.I64.from_str(this.watcherCount.toString()),
     );
     boxBuilder.set_register_value(5, r5);
+    const tokens = [
+      { id: this.repoNftId, amount: 1n },
+      { id: this.rwt, amount: this.rwtCount },
+      { id: this.rsn, amount: this.rsnCount },
+      { id: this.awcTokenId, amount: this.awcTokenCount },
+    ];
 
-    const r6 = ergoLib.Constant.from_i64_str_array(
-      [
-        this.commitmentRwtCount,
-        this.quorumPercentage,
-        this.approvalOffset,
-        this.maximumApproval,
-        this.ergCollateral,
-        this.rsnCollateral,
-      ].map((item) => item.toString()),
-    );
-    boxBuilder.set_register_value(6, r6);
-
-    if (this.lastModifiedWidIndex != undefined) {
-      const r7 = ergoLib.Constant.from_i32(this.lastModifiedWidIndex);
-      boxBuilder.set_register_value(7, r7);
+    for (const token of tokens) {
+      boxBuilder.add_token(
+        ergoLib.TokenId.from_str(token.id),
+        ergoLib.TokenAmount.from_i64(
+          ergoLib.I64.from_str(token.amount.toString()),
+        ),
+      );
+      this.logger.debug(
+        `Added token to box: tokenId=[${token.id}], amount=${token.amount}`,
+      );
     }
-
-    boxBuilder.add_token(
-      ergoLib.TokenId.from_str(this.repoNft),
-      ergoLib.TokenAmount.from_i64(ergoLib.I64.from_str('1')),
-    );
-    this.logger.debug(
-      `add 1 repoNft token to the box with tokenId=[${this.repoNft}]`,
-    );
-
-    boxBuilder.add_token(
-      ergoLib.TokenId.from_str(this.rwt),
-      ergoLib.TokenAmount.from_i64(
-        ergoLib.I64.from_str(this.rwtCount.toString()),
-      ),
-    );
-    this.logger.debug(
-      `add ${this.rwtCount} rwt tokens to the box with tokenId=[${this.rwt}]`,
-    );
-
-    boxBuilder.add_token(
-      ergoLib.TokenId.from_str(this.rsn),
-      ergoLib.TokenAmount.from_i64(
-        ergoLib.I64.from_str(this.rsnCount.toString()),
-      ),
-    );
-    this.logger.debug(
-      `add ${this.rsn} rsn tokens to the box with tokenId=[${this.rsn}]`,
-    );
 
     return boxBuilder.build();
   };
 
   /**
-   * sets value for the box that is built by this.build method
+   * Sets value for the box that is built by this.build method
    *
    * @param {bigint} value
    */
@@ -294,7 +176,7 @@ export class RWTRepoBuilder {
   };
 
   /**
-   * sets creation height for the box that is built by this.build method
+   * Sets creation height for the box that is built by this.build method
    *
    * @param {number} height
    */
@@ -303,14 +185,5 @@ export class RWTRepoBuilder {
       throw new Error(`height should be a positive number`);
     }
     this.height = height;
-  };
-
-  /**
-   * finds index of passed wid in this.widPermits array
-   *
-   * @param {string} wid
-   */
-  indexOfWid = (wid: string): number => {
-    return this.widPermits.findIndex((permit) => permit.wid === wid);
   };
 }

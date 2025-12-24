@@ -7,95 +7,84 @@ export const repoNft =
   '32ee5d947cfe8db5480157ffa566b9b7d9faf41fa145c9d00628c7c1599878f6';
 
 export const boxInfo1 = {
-  boxId: 'e95d2f7eab31c379345a5325949509789f690f90bac6f7c56c6e3c2a958869a2',
+  boxId: 'd594dbc4c6b2809ab985559adb5655b7123d338c7b5ee30f3644aa22ce460d6b',
   transactionId:
-    'c85647df07f4ea14bf4635b1650c6c313366b6ca22a28212a30f82ed658d067c',
-  blockId: '69521f157cd78e9962e7aa077cf973c2ce33dd534bec84ce35c7e6f092763519',
+    'b3b09709a6f655df85b2872b3dad692df53f5d2b1b3f12dc47704c81ab902f70',
+  blockId: 'fa6b2301673c058089f51b6973c9f5b722e69b707e7c8142ccf479855ef3b0eb',
   value: 1100000,
-  index: 1,
-  globalIndex: 31753615,
-  creationHeight: 1068081,
-  settlementHeight: 1068083,
+  index: 0,
+  globalIndex: 17454523,
+  creationHeight: 1666981,
+  settlementHeight: 1666982,
   ergoTree:
-    '102c040004000e20c691b75b137752e0fcbd590b9942ca2455f528db8e553b8632988c555eef2bc40e20793d6c566f238cd234176f7007b1e50c2e5ae4367b668351451ec6c9e9e97ca901010402040204040404040004010402040404000e20aedb01e6a2594d7dacf6f63b2f3247e3b1ecf01409960758934d2fb4c3004f070401040204020406040a040004000400040805000400010104020402040004000400040004020402040004000402040204000400040004000406d805d601b2a5730000d602db63087201d603b27202730100d6048c720301d6057302959372047303d17304d811d606db6308a7d607b27206730500d6088c720702d609b27202730600d60a8c720902d60bb27202730700d60c8c720b02d60db27206730800d60e8c720d02d60fe4c6a70611d610b27206730900d6118c720d01d6129683060193c27201c2a793e4c672010611720f9372048c721001938c7203028c721002938c7209018c720701938c720b017211d613e4c6a70511d614b17213d615e4c672010511d616b1721595917208720ad805d617e5c672010704730ad618997208720ad619b2a5730b00d61ab2a5730c00d61b96830401721293721899720c720e938cb2db63087219730d0002721893cbc27219730e95937217730fd806d61ce4c67201041ad61d9a72147310d61e9972167311d61fc5a7d620b2a5731200d621b2720f731300d196830d01721b93b1721c721d93b4721c7314721ee4c6a7041a93b2721c721e00721f937216721d93b472157315721e721393b27215721e00721893e4c67219041a83010e721f938cb2db6308721a73160001721f93cbc27220720593e4c67220040e721f92c17220b2720f731700959172217318d801d622b2db6308722073190096830201938c7222017211928c7222027221731ad803d61ce4c6a7041ad61db2721c721700d61e9a7217731bd196830801721b93721d8cb2db6308b2a4731c00731d000193e4c67201041a721c93b272157217009ab27213721700721893b47215731e7217b47213731f721793b47215721e7216b47213721e721693e4c67219041a83010e721d938cb2db6308721a73200001721dd803d617e4c672010704d61899720a7208d619b27213721700d19683040172129383010eb2e4c6a7041a721700e4c6b2a4732100041a93721899720e720c959172197218d801d61a9a72177322968304019372199ab27215721700721893e4c6a7041ae4c67201041a93b4721373237217b472157324721793b47213721a7214b47215721a7214d804d61ae4c6a7041ad61be4c67201041ad61c9a72177325d61d997214732696830601937219721893b4721a73277217b4721b7328721793b4721a721c7214b4721b7217721d93b4721373297217b47215732a721793b47213721c7214b472157217721d93cbc2b2a4732b007205',
+    '1026040004000e20569b1df978b5b57619ac0d1eeb28152a0ab4c906d97dc1220bf2a838e2370595010104020402040604060404040404000404040204000e20eae77168549514eb08e36857b4b26a9fe9f03104eed6c432e4c8331ea63e0e940502040604000400040a0502050604000e20abe839d0c874376d8317381ea98a0b9f21a6f3e0fdeb12aa69236ea43c48fbba04080400050004020101040004020404040204000402050205020400d805d601b2a5730000d602db63087201d603b27202730100d6048c720301d6057302959372047205d17303d812d606db6308a7d607b27206730400d6088c720702d609b27202730500d60a8c720902d60bb27206730600d60c8c720b02d60db27202730700d60e8c720d02d60fb27202730800d6108c720f02d611b27206730900d6128c721102d6138c720701d614b27206730a00d6158c721101d6168c720b01d6179683080193c27201c2a792c17201c1a79372048c721401938c7203028c721402938c7209017213938c720f017215938c720d01721693e4c67201040ee4c6a7040e95917208720ad805d618b2a5730b00d619b2a5730c00d61a997208720ad61bb2db63087218730d00d61c96830501721793721a9972107212938c721b02721a938c721b01721393cbc27218730e9593720e99720c730fd806d61dc5a7d61eb2db6308b2a5731000731100d61fb2db6501fe731200d620e4c6721f0411d621db63087219d622b27220731300d196830c0193e4c6720105059ae4c6a705057314721c93e4c67218040e721d938c721e01721d928c721e027315938cb2db6308721f73160001720593cbc27219731793e4c67219040e721d92c17219b2722073180093e4c672190505721a938cb2722173190001721695917222731ad801d623b27221731b0096830201938c7223017215928c7223027222731cd196830601721c93e4c67218040ee4c67219040e93720e720c93e4c672010505e4c6a70505938cb2db63087219731d00017216939ae4c6b2a4731e000505721ae4c672190505d804d618b2a4731f00d619b2a4732000d61a99720a7208d61be4c672190505d196830601721793e4c67218040ee4c67219040e938cb2db6308721873210001721393721a99721272109591721b721a9683030193720c720e93e4c672010505e4c6a705059399721b721ae4c6b2a573220005059683020193720e9a720c732393e4c67201050599e4c6a705057324938cb2db63087219732500017216',
+  ergoTreeConstants:
+    '[\n  0: SInt$ = 0,\n  1: SInt$ = 0,\n  2: Coll[SByte$] = Coll(86,-101,29,-7,120,-75,-75,118,25,-84,13,30,-21,40,21,42,10,-76,-55,6,-39,125,-63,34,11,-14,-88,56,-30,55,5,-107),\n  3: SBoolean = true,\n  4: SInt$ = 1,\n  5: SInt$ = 1,\n  6: SInt$ = 3,\n  7: SInt$ = 3,\n  8: SInt$ = 2,\n  9: SInt$ = 2,\n  10: SInt$ = 0,\n  11: SInt$ = 2,\n  12: SInt$ = 1,\n  13: SInt$ = 0,\n  14: Coll[SByte$] = Coll(-22,-25,113,104,84,-107,20,-21,8,-29,104,87,-76,-78,106,-97,-23,-16,49,4,-18,-42,-60,50,-28,-56,51,30,-90,62,14,-108),\n  15: SLong$ = 1,\n  16: SInt$ = 3,\n  17: SInt$ = 0,\n  18: SInt$ = 0,\n  19: SInt$ = 5,\n  20: SLong$ = 1,\n  21: SLong$ = 3,\n  22: SInt$ = 0,\n  23: Coll[SByte$] = Coll(-85,-24,57,-48,-56,116,55,109,-125,23,56,30,-87,-118,11,-97,33,-90,-13,-32,-3,-21,18,-86,105,35,110,-92,60,72,-5,-70),\n  24: SInt$ = 4,\n  25: SInt$ = 0,\n  26: SLong$ = 0,\n  27: SInt$ = 1,\n  28: SBoolean = true,\n  29: SInt$ = 0,\n  30: SInt$ = 1,\n  31: SInt$ = 2,\n  32: SInt$ = 1,\n  33: SInt$ = 0,\n  34: SInt$ = 1,\n  35: SLong$ = 1,\n  36: SLong$ = 1,\n  37: SInt$ = 0\n]',
+  ergoTreeScript:
+    'Right(BlockValue(WrappedArray(ValDef(1,WrappedArray(),ByIndex(Outputs$(165),ConstantPlaceholder(0,SInt$),None)), ValDef(2,WrappedArray(),MethodCall(ValUse(1,SBox),SMethod(SBox,tokens,(SBox) =\u003E Coll[(Coll[SByte$],SLong$)],8,FixedCost(15),MethodIRInfo(Some(\u003Cfunction1\u003E),None,None),Some(OperationInfo(Some(PropertyCall$(219)),Secondary tokens,ArrayBuffer(ArgInfo(this,this instance)))),None),WrappedArray(),Map())), ValDef(3,WrappedArray(),ByIndex(ValUse(2,Coll[(Coll[SByte$],SLong$)]),ConstantPlaceholder(1,SInt$),None)), ValDef(4,WrappedArray(),SelectField(ValUse(3,(Coll[SByte$],SLong$)),1)), ValDef(5,WrappedArray(),ConstantPlaceholder(2,Coll[SByte$]))),If(EQ(ValUse(4,Coll[SByte$]),ValUse(5,Coll[SByte$])),BoolToSigmaProp(ConstantPlaceholder(3,SBoolean)),BlockValue(WrappedArray(ValDef(6,WrappedArray(),MethodCall(Self$(167),SMethod(SBox,tokens,(SBox) =\u003E Coll[(Coll[SByte$],SLong$)],8,FixedCost(15),MethodIRInfo(Some(\u003Cfunction1\u003E),None,None),Some(OperationInfo(Some(PropertyCall$(219)),Secondary tokens,ArrayBuffer(ArgInfo(this,this instance)))),None),WrappedArray(),Map())), ValDef(7,WrappedArray(),ByIndex(ValUse(6,Coll[(Coll[SByte$],SLong$)]),ConstantPlaceholder(4,SInt$),None)), ValDef(8,WrappedArray(),SelectField(ValUse(7,(Coll[SByte$],SLong$)),2)), ValDef(9,WrappedArray(),ByIndex(ValUse(2,Coll[(Coll[SByte$],SLong$)]),ConstantPlaceholder(5,SInt$),None)), ValDef(10,WrappedArray(),SelectField(ValUse(9,(Coll[SByte$],SLong$)),2)), ValDef(11,WrappedArray(),ByIndex(ValUse(6,Coll[(Coll[SByte$],SLong$)]),ConstantPlaceholder(6,SInt$),None)), ValDef(12,WrappedArray(),SelectField(ValUse(11,(Coll[SByte$],SLong$)),2)), ValDef(13,WrappedArray(),ByIndex(ValUse(2,Coll[(Coll[SByte$],SLong$)]),ConstantPlaceholder(7,SInt$),None)), ValDef(14,WrappedArray(),SelectField(ValUse(13,(Coll[SByte$],SLong$)),2)), ValDef(15,WrappedArray(),ByIndex(ValUse(2,Coll[(Coll[SByte$],SLong$)]),ConstantPlaceholder(8,SInt$),None)), ValDef(16,WrappedArray(),SelectField(ValUse(15,(Coll[SByte$],SLong$)),2)), ValDef(17,WrappedArray(),ByIndex(ValUse(6,Coll[(Coll[SByte$],SLong$)]),ConstantPlaceholder(9,SInt$),None)), ValDef(18,WrappedArray(),SelectField(ValUse(17,(Coll[SByte$],SLong$)),2)), ValDef(19,WrappedArray(),SelectField(ValUse(7,(Coll[SByte$],SLong$)),1)), ValDef(20,WrappedArray(),ByIndex(ValUse(6,Coll[(Coll[SByte$],SLong$)]),ConstantPlaceholder(10,SInt$),None)), ValDef(21,WrappedArray(),SelectField(ValUse(17,(Coll[SByte$],SLong$)),1)), ValDef(22,WrappedArray(),SelectField(ValUse(11,(Coll[SByte$],SLong$)),1)), ValDef(23,WrappedArray(),AND(ConcreteCollection(WrappedArray(EQ(ExtractScriptBytes(ValUse(1,SBox)),ExtractScriptBytes(Self$(167))), GE(ExtractAmount(ValUse(1,SBox)),ExtractAmount(Self$(167))), EQ(ValUse(4,Coll[SByte$]),SelectField(ValUse(20,(Coll[SByte$],SLong$)),1)), EQ(SelectField(ValUse(3,(Coll[SByte$],SLong$)),2),SelectField(ValUse(20,(Coll[SByte$],SLong$)),2)), EQ(SelectField(ValUse(9,(Coll[SByte$],SLong$)),1),ValUse(19,Coll[SByte$])), EQ(SelectField(ValUse(15,(Coll[SByte$],SLong$)),1),ValUse(21,Coll[SByte$])), EQ(SelectField(ValUse(13,(Coll[SByte$],SLong$)),1),ValUse(22,Coll[SByte$])), EQ(ExtractRegisterAs(ValUse(1,SBox),R4,Option[Coll[SByte$]]).get,ExtractRegisterAs(Self$(167),R4,Option[Coll[SByte$]]).get)),SBoolean)))),If(GT(ValUse(8,SLong$),ValUse(10,SLong$)),BlockValue(WrappedArray(ValDef(24,WrappedArray(),ByIndex(Outputs$(165),ConstantPlaceholder(11,SInt$),None)), ValDef(25,WrappedArray(),ByIndex(Outputs$(165),ConstantPlaceholder(12,SInt$),None)), ValDef(26,WrappedArray(),Minus(ValUse(8,SLong$), ValUse(10,SLong$))), ValDef(27,WrappedArray(),ByIndex(MethodCall(ValUse(24,SBox),SMethod(SBox,tokens,(SBox) =\u003E Coll[(Coll[SByte$],SLong$)],8,FixedCost(15),MethodIRInfo(Some(\u003Cfunction1\u003E),None,None),Some(OperationInfo(Some(PropertyCall$(219)),Secondary tokens,ArrayBuffer(ArgInfo(this,this instance)))),None),WrappedArray(),Map()),ConstantPlaceholder(13,SInt$),None)), ValDef(28,WrappedArray(),AND(ConcreteCollection(WrappedArray(ValUse(23,SBoolean), EQ(ValUse(26,SLong$),Minus(ValUse(16,SLong$), ValUse(18,SLong$))), EQ(SelectField(ValUse(27,(Coll[SByte$],SLong$)),2),ValUse(26,SLong$)), EQ(SelectField(ValUse(27,(Coll[SByte$],SLong$)),1),ValUse(19,Coll[SByte$])), EQ(CalcBlake2b256(ExtractScriptBytes(ValUse(24,SBox))),ConstantPlaceholder(14,Coll[SByte$]))),SBoolean)))),If(EQ(ValUse(14,SLong$),Minus(ValUse(12,SLong$), ConstantPlaceholder(15,SLong$))),BlockValue(WrappedArray(ValDef(29,WrappedArray(),ExtractId(Self$(167))), ValDef(30,WrappedArray(),ByIndex(MethodCall(ByIndex(Outputs$(165),ConstantPlaceholder(16,SInt$),None),SMethod(SBox,tokens,(SBox) =\u003E Coll[(Coll[SByte$],SLong$)],8,FixedCost(15),MethodIRInfo(Some(\u003Cfunction1\u003E),None,None),Some(OperationInfo(Some(PropertyCall$(219)),Secondary tokens,ArrayBuffer(ArgInfo(this,this instance)))),None),WrappedArray(),Map()),ConstantPlaceholder(17,SInt$),None)), ValDef(31,WrappedArray(),ByIndex(MethodCall(Context$(254),SMethod(SContext,dataInputs,(SContext) =\u003E Coll[SBox],1,FixedCost(15),MethodIRInfo(Some(\u003Cfunction1\u003E),None,None),Some(OperationInfo(Some(PropertyCall$(219)),,ArrayBuffer(ArgInfo(this,this instance)))),None),WrappedArray(),Map()),ConstantPlaceholder(18,SInt$),None)), ValDef(32,WrappedArray(),ExtractRegisterAs(ValUse(31,SBox),R4,Option[Coll[SLong$]]).get), ValDef(33,WrappedArray(),MethodCall(ValUse(25,SBox),SMethod(SBox,tokens,(SBox) =\u003E Coll[(Coll[SByte$],SLong$)],8,FixedCost(15),MethodIRInfo(Some(\u003Cfunction1\u003E),None,None),Some(OperationInfo(Some(PropertyCall$(219)),Secondary tokens,ArrayBuffer(ArgInfo(this,this instance)))),None),WrappedArray(),Map())), ValDef(34,WrappedArray(),ByIndex(ValUse(32,Coll[SLong$]),ConstantPlaceholder(19,SInt$),None))),BoolToSigmaProp(AND(ConcreteCollection(WrappedArray(EQ(ExtractRegisterAs(ValUse(1,SBox),R5,Option[SLong$]).get,Plus(ExtractRegisterAs(Self$(167),R5,Option[SLong$]).get, ConstantPlaceholder(20,SLong$))), ValUse(28,SBoolean), EQ(ExtractRegisterAs(ValUse(24,SBox),R4,Option[Coll[SByte$]]).get,ValUse(29,Coll[SByte$])), EQ(SelectField(ValUse(30,(Coll[SByte$],SLong$)),1),ValUse(29,Coll[SByte$])), GE(SelectField(ValUse(30,(Coll[SByte$],SLong$)),2),ConstantPlaceholder(21,SLong$)), EQ(SelectField(ByIndex(MethodCall(ValUse(31,SBox),SMethod(SBox,tokens,(SBox) =\u003E Coll[(Coll[SByte$],SLong$)],8,FixedCost(15),MethodIRInfo(Some(\u003Cfunction1\u003E),None,None),Some(OperationInfo(Some(PropertyCall$(219)),Secondary tokens,ArrayBuffer(ArgInfo(this,this instance)))),None),WrappedArray(),Map()),ConstantPlaceholder(22,SInt$),None),1),ValUse(5,Coll[SByte$])), EQ(CalcBlake2b256(ExtractScriptBytes(ValUse(25,SBox))),ConstantPlaceholder(23,Coll[SByte$])), EQ(ExtractRegisterAs(ValUse(25,SBox),R4,Option[Coll[SByte$]]).get,ValUse(29,Coll[SByte$])), GE(ExtractAmount(ValUse(25,SBox)),ByIndex(ValUse(32,Coll[SLong$]),ConstantPlaceholder(24,SInt$),None)), EQ(ExtractRegisterAs(ValUse(25,SBox),R5,Option[SLong$]).get,ValUse(26,SLong$)), EQ(SelectField(ByIndex(ValUse(33,Coll[(Coll[SByte$],SLong$)]),ConstantPlaceholder(25,SInt$),None),1),ValUse(22,Coll[SByte$])), If(GT(ValUse(34,SLong$),ConstantPlaceholder(26,SLong$)),BlockValue(WrappedArray(ValDef(35,WrappedArray(),ByIndex(ValUse(33,Coll[(Coll[SByte$],SLong$)]),ConstantPlaceholder(27,SInt$),None))),AND(ConcreteCollection(WrappedArray(EQ(SelectField(ValUse(35,(Coll[SByte$],SLong$)),1),ValUse(21,Coll[SByte$])), GE(SelectField(ValUse(35,(Coll[SByte$],SLong$)),2),ValUse(34,SLong$))),SBoolean))),ConstantPlaceholder(28,SBoolean))),SBoolean)))),BoolToSigmaProp(AND(ConcreteCollection(WrappedArray(ValUse(28,SBoolean), EQ(ExtractRegisterAs(ValUse(24,SBox),R4,Option[Coll[SByte$]]).get,ExtractRegisterAs(ValUse(25,SBox),R4,Option[Coll[SByte$]]).get), EQ(ValUse(14,SLong$),ValUse(12,SLong$)), EQ(ExtractRegisterAs(ValUse(1,SBox),R5,Option[SLong$]).get,ExtractRegisterAs(Self$(167),R5,Option[SLong$]).get), EQ(SelectField(ByIndex(MethodCall(ValUse(25,SBox),SMethod(SBox,tokens,(SBox) =\u003E Coll[(Coll[SByte$],SLong$)],8,FixedCost(15),MethodIRInfo(Some(\u003Cfunction1\u003E),None,None),Some(OperationInfo(Some(PropertyCall$(219)),Secondary tokens,ArrayBuffer(ArgInfo(this,this instance)))),None),WrappedArray(),Map()),ConstantPlaceholder(29,SInt$),None),1),ValUse(22,Coll[SByte$])), EQ(Plus(ExtractRegisterAs(ByIndex(Inputs$(164),ConstantPlaceholder(30,SInt$),None),R5,Option[SLong$]).get, ValUse(26,SLong$)),ExtractRegisterAs(ValUse(25,SBox),R5,Option[SLong$]).get)),SBoolean))))),BlockValue(WrappedArray(ValDef(24,WrappedArray(),ByIndex(Inputs$(164),ConstantPlaceholder(31,SInt$),None)), ValDef(25,WrappedArray(),ByIndex(Inputs$(164),ConstantPlaceholder(32,SInt$),None)), ValDef(26,WrappedArray(),Minus(ValUse(10,SLong$), ValUse(8,SLong$))), ValDef(27,WrappedArray(),ExtractRegisterAs(ValUse(25,SBox),R5,Option[SLong$]).get)),BoolToSigmaProp(AND(ConcreteCollection(WrappedArray(ValUse(23,SBoolean), EQ(ExtractRegisterAs(ValUse(24,SBox),R4,Option[Coll[SByte$]]).get,ExtractRegisterAs(ValUse(25,SBox),R4,Option[Coll[SByte$]]).get), EQ(SelectField(ByIndex(MethodCall(ValUse(24,SBox),SMethod(SBox,tokens,(SBox) =\u003E Coll[(Coll[SByte$],SLong$)],8,FixedCost(15),MethodIRInfo(Some(\u003Cfunction1\u003E),None,None),Some(OperationInfo(Some(PropertyCall$(219)),Secondary tokens,ArrayBuffer(ArgInfo(this,this instance)))),None),WrappedArray(),Map()),ConstantPlaceholder(33,SInt$),None),1),ValUse(19,Coll[SByte$])), EQ(ValUse(26,SLong$),Minus(ValUse(18,SLong$), ValUse(16,SLong$))), If(GT(ValUse(27,SLong$),ValUse(26,SLong$)),AND(ConcreteCollection(WrappedArray(EQ(ValUse(12,SLong$),ValUse(14,SLong$)), EQ(ExtractRegisterAs(ValUse(1,SBox),R5,Option[SLong$]).get,ExtractRegisterAs(Self$(167),R5,Option[SLong$]).get), EQ(Minus(ValUse(27,SLong$), ValUse(26,SLong$)),ExtractRegisterAs(ByIndex(Outputs$(165),ConstantPlaceholder(34,SInt$),None),R5,Option[SLong$]).get)),SBoolean)),AND(ConcreteCollection(WrappedArray(EQ(ValUse(14,SLong$),Plus(ValUse(12,SLong$), ConstantPlaceholder(35,SLong$))), EQ(ExtractRegisterAs(ValUse(1,SBox),R5,Option[SLong$]).get,Minus(ExtractRegisterAs(Self$(167),R5,Option[SLong$]).get, ConstantPlaceholder(36,SLong$)))),SBoolean))), EQ(SelectField(ByIndex(MethodCall(ValUse(25,SBox),SMethod(SBox,tokens,(SBox) =\u003E Coll[(Coll[SByte$],SLong$)],8,FixedCost(15),MethodIRInfo(Some(\u003Cfunction1\u003E),None,None),Some(OperationInfo(Some(PropertyCall$(219)),Secondary tokens,ArrayBuffer(ArgInfo(this,this instance)))),None),WrappedArray(),Map()),ConstantPlaceholder(37,SInt$),None),1),ValUse(22,Coll[SByte$]))),SBoolean)))))))))',
   address:
-    '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',
+    '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',
   assets: [
     {
       tokenId:
-        '32ee5d947cfe8db5480157ffa566b9b7d9faf41fa145c9d00628c7c1599878f6',
+        'ac7bbfff7ec3852afae13153a9a5b063ac26fc43a780aa3468cec8c9cdd176b3',
       index: 0,
       amount: 1,
-      name: 'rptconfRWTRepoV1',
+      name: 'RosenRWTRepo-Pandora',
       decimals: 0,
       type: 'EIP-004',
     },
     {
       tokenId:
-        '3825b2b4acaaaba626440113153246c65ddb2e9df406c4a56418b5842c9f839a',
+        '34529f875cad2bf58c5ffb4a9056d26c590f0c35f77958a68dcdb4aa39b437aa',
       index: 1,
-      amount: 999900000000,
-      name: 'rptconfErgoRWTV1',
-      decimals: 0,
+      amount: 999999936000,
+      name: 'RosenErgoRWT-Pandora',
+      decimals: 3,
       type: 'EIP-004',
     },
     {
       tokenId:
-        'f8fe64d3d94d4eb193ea9d6304646db67bd914ed42cebd3a4f614d9d9de75cf0',
+        'd752bede1a85891fff344604431fd6dc30ba685b382f2e0fe15da8141d36e34e',
       index: 2,
-      amount: 100000001,
-      name: 'rptconfRSNV1',
+      amount: 64001,
+      name: 'RSN-Pandora',
       decimals: 3,
+      type: 'EIP-004',
+    },
+    {
+      tokenId:
+        'fb2a47295e30289f3748eb35a325c11db5202b7420ee9588c67f7486de2662db',
+      index: 3,
+      amount: 1992,
+      name: 'RosenErgoAWC-Pandora',
+      decimals: 0,
       type: 'EIP-004',
     },
   ],
   additionalRegisters: {
     R4: {
-      serializedValue:
-        '1a0b046572676f20e61a83c5bca59e98c21d925faff5dfc079aa438f21df08702e4c4bf2bada02dc20d050d5e741b9e18bedb81be435f893c8c6ae32ecbbf88554480df8cb9cc0d58920995ca29a94c2290c7648b56e4a84dafda75765c6e793c5cdcd4fba55ff261e9f2090829fb915dba5c834d14b0e1e1387f6c2e4760965b8cd338892e4ad13baab3d20fe83cb8a2843fa6f5751d65e4f957fc622c67ab9211f30b44991a1fb03145c01208abd3c4a0e14dd3632919a758ccfee875cfcf8ea7e0ec85844d4188834fd602d203d36709eb83dc46cc60298ab183a1e4ab1d85363337b951b9494dc1ab1418eb1205589db926e6760d840c919948169a559abcab58ef0d2100126e48f9d2ef1232020aba9cf9df2a03cc07c1adc7515d4d70346c93bd7a250525536a90008f73d289d202228e54299db6c13479c6ced3705df36f2ed0e4e815ed7536ba99be14a13179d',
-      sigmaType: 'Coll[Coll[SByte]]',
-      renderedValue:
-        '[6572676f,e61a83c5bca59e98c21d925faff5dfc079aa438f21df08702e4c4bf2bada02dc,d050d5e741b9e18bedb81be435f893c8c6ae32ecbbf88554480df8cb9cc0d589,995ca29a94c2290c7648b56e4a84dafda75765c6e793c5cdcd4fba55ff261e9f,90829fb915dba5c834d14b0e1e1387f6c2e4760965b8cd338892e4ad13baab3d,fe83cb8a2843fa6f5751d65e4f957fc622c67ab9211f30b44991a1fb03145c01,8abd3c4a0e14dd3632919a758ccfee875cfcf8ea7e0ec85844d4188834fd602d,3d36709eb83dc46cc60298ab183a1e4ab1d85363337b951b9494dc1ab1418eb1,5589db926e6760d840c919948169a559abcab58ef0d2100126e48f9d2ef12320,aba9cf9df2a03cc07c1adc7515d4d70346c93bd7a250525536a90008f73d289d,2228e54299db6c13479c6ced3705df36f2ed0e4e815ed7536ba99be14a13179d]',
+      serializedValue: '0e046572676f',
+      sigmaType: 'Coll[SByte]',
+      renderedValue: '6572676f',
     },
     R5: {
-      serializedValue:
-        '110b0080dac40980dac40980dac40980dac40980dac40980dac40980dac40980dac40980dac40980dac409',
-      sigmaType: 'Coll[SLong]',
-      renderedValue:
-        '[0,10000000,10000000,10000000,10000000,10000000,10000000,10000000,10000000,10000000,10000000]',
-    },
-    R6: {
-      serializedValue: '1106a09c018c01020a80a8d6b90700',
-      sigmaType: 'Coll[SLong]',
-      renderedValue: '[10000,70,1,5,1000000000,0]',
+      serializedValue: '0510',
+      sigmaType: 'SLong',
+      renderedValue: '8',
     },
   },
-  spentTransactionId: null,
+  spentTransactionId:
+    'e84aefbd05f13c8af06f8481fe51365b072488e4d2df3abd651af05dcd090eba',
   mainChain: true,
 };
-
 export const boxInfo1Properties = {
   r4: ergoLib.Constant.decode_from_base16(
     boxInfo1.additionalRegisters.R4.serializedValue,
-  ).to_coll_coll_byte(),
-  r5: (
-    ergoLib.Constant.decode_from_base16(
-      boxInfo1.additionalRegisters.R5.serializedValue,
-    ).to_i64_str_array() as string[]
-  ).map(BigInt),
-  r6: (
-    ergoLib.Constant.decode_from_base16(
-      boxInfo1.additionalRegisters.R6.serializedValue,
-    ).to_i64_str_array() as string[]
-  ).map(BigInt),
-  get widPermits() {
-    return this.r4
-      .slice(1)
-      ?.map((wid) => Buffer.from(wid).toString('hex'))
-      .map((wid, i) => {
-        return { wid, rwtCount: this.r5[i + 1] };
-      });
-  },
+  ).to_byte_array(),
+  r5: ergoLib.Constant.decode_from_base16(
+    boxInfo1.additionalRegisters.R5.serializedValue,
+  ).to_i64(),
 };
 
 export const boxInfo2 = {

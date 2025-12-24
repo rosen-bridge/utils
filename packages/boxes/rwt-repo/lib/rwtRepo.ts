@@ -1,334 +1,146 @@
 import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
 import * as ergoLib from 'ergo-lib-wasm-nodejs';
 import { RWTRepoBuilder } from './rwtRepoBuilder';
-import { min } from './utils';
 
 export class RWTRepo {
+  private readonly chainId: string;
+  private readonly totalWatchers: number;
   constructor(
     protected box: ergoLib.ErgoBox,
-    private repoAddress: string,
-    private repoNft: string,
-    private rwt: string,
     private logger: AbstractLogger = new DummyLogger(),
   ) {
-    this.logger.debug(
-      `RWTRepo instance created with repo-address=[${this.repoAddress}] and repo-nft=[${this.repoNft}]`,
-    );
+    try {
+      if (this.box.tokens().len() < 4) {
+        throw new Error(
+          'Invalid RWTRepo box: expected at least 4 tokens (NFT, RWT, RSN, AWC)',
+        );
+      }
+
+      const chainIdReg = this.box.register_value(4);
+      if (!chainIdReg) {
+        throw new Error('Invalid RWTRepo box: missing R4 register (chainId)');
+      }
+      this.chainId = Buffer.from(chainIdReg.to_byte_array()).toString('utf8');
+
+      const totalWatchersReg = this.box.register_value(5);
+      if (!totalWatchersReg) {
+        throw new Error(
+          'Invalid RWTRepo box: missing R5 register (totalWatchers)',
+        );
+      }
+      this.totalWatchers = Number(totalWatchersReg.to_i64().to_str());
+
+      this.logger.debug(
+        `RWTRepo created repoNft=[${this.getRepoNftId()}] chainId=[${this.chainId}] watchers=[${this.totalWatchers}]`,
+      );
+    } catch (e) {
+      throw Error(`Failed to create RWTRepo: ${e}`);
+    }
   }
 
   /**
-   * creates an instance of RWTRepoBuilder using current instance's properties
+   * Creates an instance of RWTRepoBuilder using current instance's properties
    *
    * @return {RWTRepoBuilder}
    */
-  toBuilder = () => {
-    if (!this.box) {
-      throw new Error(
-        `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`,
-      );
-    }
-
-    const rwtCount = BigInt(
-      this.box.tokens().get(1).amount().as_i64().to_str(),
-    );
-
-    const rsn = this.box.tokens().get(2).id().to_str();
-    const rsnCount = BigInt(
-      this.box.tokens().get(2).amount().as_i64().to_str(),
-    );
-
-    const chainIdBytes = this.r4?.at(0);
-    const chainId =
-      chainIdBytes != undefined
-        ? Buffer.from(chainIdBytes).toString()
-        : undefined;
-
-    const quorumPercentage = Number(this.r6At(1));
-    const approvalOffset = Number(this.r6At(2));
-    const maximumApproval = Number(this.r6At(3));
-    const widPermits = this.r4
-      ?.slice(1)
-      .map((wid) => Buffer.from(wid).toString('hex'))
-      .map((wid) => {
-        return { wid, rwtCount: this.getPermitCount(wid) };
-      });
-
-    if (
-      !chainId ||
-      !quorumPercentage ||
-      !approvalOffset ||
-      !maximumApproval ||
-      !widPermits
-    ) {
-      throw new Error(
-        `could not create RWTRepoBuilder because one of [chainId=${chainId}, quorumPercentage=${quorumPercentage}, approvalOffset=${approvalOffset}, maximumApproval=${maximumApproval}, widPermits=${widPermits}] could not be calculated: ${this.rwtRepoLogDescription} `,
-      );
-    }
-
-    this.logger.debug(
-      `creating new RWTRepoBuilder instance with following arguments: repoAddress=[${
-        this.repoAddress
-      }], repoNft=[${this.repoNft}], rwt=[${
-        this.rwt
-      }], rwtCount=[${rwtCount}], rsn=[${rsn}], rsnCount=[${rsnCount}], chainId=[${chainId}], commitmentRwtCount=[${this.getCommitmentRwtCount()}], quorumPercentage=[${quorumPercentage}], approvalOffset=[${approvalOffset}], maximumApproval=[${maximumApproval}], ergCollateral=[${this.getErgCollateral()}], rsnCollateral=[${this.getRsnCollateral()}], widPermits=[${widPermits}]`,
-    );
-
+  toBuilder = (): RWTRepoBuilder => {
     return new RWTRepoBuilder(
-      this.repoAddress,
-      this.repoNft,
-      this.rwt,
-      rwtCount,
-      rsn,
-      rsnCount,
-      chainId,
-      this.getCommitmentRwtCount(),
-      quorumPercentage,
-      approvalOffset,
-      maximumApproval,
-      this.getErgCollateral(),
-      this.getRsnCollateral(),
-      widPermits,
+      this.getRepoErgoTree(),
+      this.getRepoNftId(),
+      this.getAwcId(),
+      this.getAwcCount(),
+      this.getRwtId(),
+      this.getRwtCount(),
+      this.getRsnId(),
+      this.getRsnCount(),
+      this.chainId,
+      this.totalWatchers,
       this.logger,
     );
   };
 
   /**
-   * returns value of ergCollateral for this.box. If this.box is undefined an
-   * exception is thrown
+   * Return the name of the chain
    *
-   * @return {bigint}
+   * @returns {string} chainId
    */
-  getErgCollateral = () => {
-    if (!this.box) {
-      throw new Error(
-        `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`,
-      );
-    }
-
-    const ergCollateralRegister = (
-      this.box.register_value(6)?.to_i64_str_array() as string[] | undefined
-    )?.at(4);
-
-    if (!ergCollateralRegister) {
-      throw new Error(
-        `could not extract ergCollateral from R6[4]: ${this.rwtRepoLogDescription} `,
-      );
-    }
-
-    this.logger.debug(
-      `ergCollateral in R6[4] register value: ${ergCollateralRegister}`,
-    );
-
-    return BigInt(ergCollateralRegister);
+  getChainName = (): string => {
+    return this.chainId;
   };
 
   /**
-   * returns value of rsnCollateral for this.box. If this.box is undefined an
-   * exception is thrown
+   * Return the count of the total watchers
    *
-   * @return {bigint}
+   * @returns {number} totalWatchers
    */
-  getRsnCollateral = () => {
-    if (!this.box) {
-      throw new Error(
-        `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`,
-      );
-    }
+  getTotalWatcherCount = (): number => {
+    return this.totalWatchers;
+  };
 
-    const rsnCollateralRegister = (
-      this.box.register_value(6)?.to_i64_str_array() as string[] | undefined
-    )?.at(5);
-
-    if (!rsnCollateralRegister) {
-      throw new Error(
-        `could not extract rsnCollateral from R6[5]: ${this.rwtRepoLogDescription} `,
-      );
-    }
-
-    this.logger.debug(
-      `rsnCollateral in R6[5] register value: ${rsnCollateralRegister}`,
-    );
-
-    return BigInt(rsnCollateralRegister);
+  getRepoErgoTree = (): string => {
+    return this.box.ergo_tree().to_base16_bytes();
   };
 
   /**
-   * calculates requiredCommitmentCount according to this formula:
-   * min(R6[3], R6[1] * (len(R4) - 1) / 100 + R6[2])
+   * Reads the id of the RepoNft token (index 0) from the box.
    *
-   * @return {bigint}
+   * @returns {string} RWT token amount as bigint
    */
-  getRequiredCommitmentCount = () => {
-    if (!this.box) {
-      throw new Error(
-        `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`,
-      );
-    }
-
-    const r6_1 = this.r6At(1);
-    const r6_2 = this.r6At(2);
-    const r6_3 = this.r6At(3);
-    const r4 = this.r4;
-
-    if (!r6_1 || !r6_2 || !r6_3 || !r4) {
-      throw new Error(
-        `could not calculate RequiredCommitmentCount, because R6[1] or R6[2] or R6[3] or R4 is undefined: ${this.rwtRepoLogDescription} `,
-      );
-    }
-
-    const requiredCommitmentCount = min(
-      (r6_1 * BigInt(r4.length - 1)) / 100n + r6_2,
-      r6_3,
-    );
-
-    return requiredCommitmentCount;
+  getRepoNftId = (): string => {
+    return this.box.tokens().get(0).id().to_str();
   };
 
   /**
-   * returns value of commitmentRwtCount for this.box. If this.box is undefined
-   * an exception is thrown.
+   * Reads the id of the RWT token (index 1) from the box.
    *
-   * @return {bigint}
+   * @returns {string} RWT token amount as bigint
    */
-  getCommitmentRwtCount = () => {
-    if (!this.box) {
-      throw new Error(
-        `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`,
-      );
-    }
-
-    const commitmentRwtCount = this.r6At(0);
-
-    if (!commitmentRwtCount) {
-      throw new Error(
-        `could not extract commitmentRwtCount from R6[0]: ${this.rwtRepoLogDescription} `,
-      );
-    }
-
-    this.logger.debug(
-      `commitmentRwtCount in R6[0] register value: ${commitmentRwtCount}`,
-    );
-
-    return commitmentRwtCount;
+  getRwtId = (): string => {
+    return this.box.tokens().get(1).id().to_str();
   };
 
   /**
-   * finds the index of wid in R4 register of this.box. returns -1 if not found.
+   * Reads the amount of the RWT token (index 1) from the box.
    *
-   * @param {string} wid - watcher id in hex format
-   * @return {number}
+   * @returns {bigint} RWT token amount as bigint
    */
-  getWidIndex = (wid: string) => {
-    if (!this.box) {
-      throw new Error(
-        `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`,
-      );
-    }
-
-    const r4Hex = this.r4?.map((bytes) => Buffer.from(bytes).toString('hex'));
-
-    if (!r4Hex) {
-      throw new Error(
-        `could not extract widIndex for wid=[${wid}] from R4: ${this.rwtRepoLogDescription} `,
-      );
-    }
-
-    let widIndex = r4Hex.slice(1).indexOf(wid);
-    widIndex = widIndex === -1 ? widIndex : widIndex + 1;
-
-    if (widIndex !== -1) {
-      this.logger.debug(
-        `index of wid=[${wid}] found in R4: index=[${widIndex}], R4[${widIndex}]=[${r4Hex[widIndex]}]`,
-      );
-    } else {
-      this.logger.debug(`index of wid=[${wid}] not found in R4`);
-    }
-
-    return widIndex;
+  getRwtCount = (): bigint => {
+    return BigInt(this.box.tokens().get(1).amount().as_i64().to_str());
   };
 
   /**
-   * returns permitCount for passed wid
+   * Reads the RSN token ID (index 2) from the box.
    *
-   * @param {string} wid
-   * @return {bigint}
+   * @returns {string} RSN token ID as a string
    */
-  getPermitCount = (wid: string) => {
-    if (!this.box) {
-      throw new Error(
-        `no boxes stored for this RwtRepo instance: ${this.rwtRepoLogDescription}}`,
-      );
-    }
-
-    const widIndex = this.getWidIndex(wid);
-
-    if (widIndex === -1) {
-      return 0n;
-    }
-
-    const permitCount = this.r5?.at(widIndex);
-
-    if (permitCount == undefined) {
-      throw new Error(
-        `could not extract permitCount for wid=[${wid}] and widIndex=[${widIndex}] from R5: ${this.rwtRepoLogDescription} `,
-      );
-    }
-
-    this.logger.debug(
-      `permitCount for wid=[${wid}] in R5: permitCount=${permitCount}, widIndex=${widIndex}`,
-    );
-
-    return permitCount;
+  getRsnId = (): string => {
+    return this.box.tokens().get(2).id().to_str();
   };
 
   /**
-   * returns value of R6[index] register of this.box
+   * Reads the amount of the RSN token (index 2) from the box.
    *
-   * @param {number} index
-   * @return {bigint | undefined}
+   * @returns {bigint} RSN token amount as bigint
    */
-  private r6At = (index: number) => {
-    const val = (
-      this.box?.register_value(6)?.to_i64_str_array() as string[] | undefined
-    )?.at(index);
-
-    return val ? BigInt(val) : undefined;
+  getRsnCount = (): bigint => {
+    return BigInt(this.box.tokens().get(2).amount().as_i64().to_str());
   };
 
   /**
-   * returns value of R4 register for this.box
+   * Reads the AWC token ID (index 3) from the box.
    *
-   * @readonly
-   * @type {(Uint8Array[] | undefined)}
+   * @returns {string} AWC token ID as a string
    */
-  get r4(): Uint8Array[] | undefined {
-    return this.box?.register_value(4)?.to_coll_coll_byte();
-  }
+  getAwcId = (): string => {
+    return this.box.tokens().get(3).id().to_str();
+  };
 
   /**
-   * returns value of R5 register for this.box
+   * Reads the amount of the AWC token (index 3) from the box.
    *
-   * @readonly
-   * @type {(bigint[] | undefined)}
+   * @returns {bigint} AWC token amount as bigint
    */
-  get r5(): bigint[] | undefined {
-    return (
-      this.box?.register_value(5)?.to_i64_str_array() as string[] | undefined
-    )?.map(BigInt);
-  }
-
-  /**
-   * returns a string description of this instance that can be used in logs.
-   *
-   * @readonly
-   * @private
-   * @type {string}
-   */
-  private get rwtRepoLogDescription(): string {
-    if (this.box) {
-      return `boxId=[${this.box?.box_id().to_str()}]`;
-    } else {
-      return `no boxes stored yet!`;
-    }
-  }
+  getAwcCount = (): bigint => {
+    return BigInt(this.box.tokens().get(3).amount().as_i64().to_str());
+  };
 }
