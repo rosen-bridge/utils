@@ -44,7 +44,7 @@ describe('createPermit', () => {
       rwtCount.toString(),
     );
 
-    expect(permitBox.register_value(4)?.to_coll_coll_byte()[0]).toEqual(
+    expect(permitBox.register_value(4)?.to_byte_array()).toEqual(
       hexToUint8Array(testData.permitParams.wid),
     );
   });
