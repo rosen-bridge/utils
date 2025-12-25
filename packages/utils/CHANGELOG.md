@@ -1,5 +1,11 @@
 # @rosen-bridge/utils
 
+## 2.0.2
+
+### Patch Changes
+
+- Fix asset name regex to support `contracts` and `tokensMap`.
+
 ## 2.0.1
 
 ### Patch Changes

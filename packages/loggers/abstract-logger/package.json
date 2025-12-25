@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/abstract-logger",
-  "version": "3.0.1",
+  "version": "4.0.0",
   "description": "Rosen Bridge abstract logger class, the base type for loggers used in all Rosen packages",
   "keywords": [
     "rosen"
