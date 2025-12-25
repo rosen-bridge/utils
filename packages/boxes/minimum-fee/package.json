@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/minimum-fee",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "description": "this project gets minimum fee of the bridge for supported tokens from blockchain",
   "repository": {
     "type": "git",
@@ -27,7 +27,7 @@
     "release": "npm run test && npm run build && npm publish --access public"
   },
   "dependencies": {
-    "@rosen-bridge/abstract-logger": "^3.0.1",
+    "@rosen-bridge/abstract-logger": "^4.0.0",
     "@rosen-bridge/json-bigint": "^1.1.0",
     "@rosen-clients/ergo-explorer": "^2.1.0",
     "@rosen-clients/ergo-node": "^3.1.0",

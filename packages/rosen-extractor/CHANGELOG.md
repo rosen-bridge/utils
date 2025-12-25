@@ -1,5 +1,13 @@
 # @rosen-bridge/rosen-extractor
 
+## 11.1.2
+
+### Patch Changes
+
+- Update dependencies
+  - @rosen-bridge/abstract-logger@4.0.0
+  - @rosen-bridge/tokens@5.0.0
+
 ## 11.1.1
 
 ### Patch Changes
