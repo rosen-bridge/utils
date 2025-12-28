@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/rwt-repo",
-  "version": "3.1.1",
+  "version": "4.0.0",
   "description": "a package to manage RWT Repo box",
   "repository": {
     "type": "git",
