@@ -2,56 +2,58 @@ import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
 import * as ergoLib from 'ergo-lib-wasm-nodejs';
 
 export class CollateralBoxBuilder {
-  private value?: bigint;
   private height?: number;
 
   constructor(
     private collateralErgoTree: string,
     private awcNftId: string,
-    private lockedRsn: bigint,
-    private rsnTokenId: string,
-    private rsnTokenAmount: bigint = 0n,
-
+    private rsnAmount: bigint,
+    private rsnTokenId: string | undefined,
+    private collateralRsn: bigint = 0n,
     private wid: Uint8Array,
-
+    private value: string,
     private logger: AbstractLogger = new DummyLogger(),
   ) {}
 
   /**
-   * Borrow permits (increase locked RSN)
-   * Rwt > 0
+   * Increases the locked RSN amount allocated to this watcher.
+   * @param amount RSN amount to lock
+   * @returns Updated CollateralBoxBuilder instance
    */
   lockRsn = (amount: bigint): CollateralBoxBuilder => {
     if (amount <= 0n) throw new Error('amount must be positive');
 
-    this.rsnTokenAmount += amount;
+    this.rsnAmount += amount;
     this.logger.debug(
-      `locked RSN increased by ${amount}, total=${this.rsnTokenAmount}`,
+      `locked RSN increased by ${amount}, total=${this.rsnAmount}`,
     );
     return this;
   };
 
   /**
-   * Return permits (decrease locked RSN)
-   * Rwt < 0
+   * Decreases the locked RSN amount allocated to this watcher.
+   * @param amount RSN amount to unlock
+   * @returns Updated CollateralBoxBuilder instance
    */
   unlockRsn = (amount: bigint): CollateralBoxBuilder => {
     if (amount <= 0n) throw new Error('amount must be positive');
 
-    if (this.rsnTokenAmount < amount)
+    if (this.rsnAmount < amount)
       throw new Error(
-        `locked RSN [${this.rsnTokenAmount}] < unlock amount [${amount}]`,
+        `locked RSN [${this.rsnAmount}] < unlock amount [${amount}]`,
       );
 
-    this.rsnTokenAmount -= amount;
+    this.rsnAmount -= amount;
     this.logger.debug(
-      `locked RSN decreased by ${amount}, total=${this.rsnTokenAmount}`,
+      `locked RSN decreased by ${amount}, total=${this.rsnAmount}`,
     );
     return this;
   };
 
   /**
-   * Build collateral box
+   * Creates a CollateralBox from the properties of this CollateralBoxBuilder instance
+   *
+   * @return {ergoLib.ErgoBoxCandidate}
    */
   build = (): ergoLib.ErgoBoxCandidate => {
     if (this.value === undefined || this.height === undefined) {
@@ -59,7 +61,7 @@ export class CollateralBoxBuilder {
     }
 
     const boxBuilder = new ergoLib.ErgoBoxCandidateBuilder(
-      ergoLib.BoxValue.from_i64(ergoLib.I64.from_str(this.value.toString())),
+      ergoLib.BoxValue.from_i64(ergoLib.I64.from_str(this.value)),
       ergoLib.Contract.new(
         ergoLib.ErgoTree.from_base16_bytes(this.collateralErgoTree),
       ),
@@ -74,7 +76,7 @@ export class CollateralBoxBuilder {
     boxBuilder.set_register_value(
       5,
       ergoLib.Constant.from_i64(
-        ergoLib.I64.from_str(this.lockedRsn.toString()),
+        ergoLib.I64.from_str(this.rsnAmount.toString()),
       ),
     );
 
@@ -83,11 +85,11 @@ export class CollateralBoxBuilder {
       ergoLib.TokenAmount.from_i64(ergoLib.I64.from_str('1')),
     );
 
-    if (this.rsnTokenId && this.rsnTokenAmount > 0n) {
+    if (this.rsnTokenId) {
       boxBuilder.add_token(
         ergoLib.TokenId.from_str(this.rsnTokenId),
         ergoLib.TokenAmount.from_i64(
-          ergoLib.I64.from_str(this.rsnTokenAmount.toString()),
+          ergoLib.I64.from_str(this.collateralRsn.toString()),
         ),
       );
     }
@@ -95,11 +97,9 @@ export class CollateralBoxBuilder {
     return boxBuilder.build();
   };
 
-  setValue = (value: bigint) => {
-    if (value < 0n) throw new Error('value cannot be negative');
-    this.value = value;
-  };
-
+  /** Sets the height of the box
+   * @param {number} height
+   */
   setHeight = (height: number) => {
     if (height < 1) throw new Error('height must be positive');
     this.height = height;

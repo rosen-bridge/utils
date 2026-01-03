@@ -4,7 +4,7 @@ import { CollateralBoxBuilder } from './collateralBuilder';
 
 export class CollateralBox {
   private readonly wid: Uint8Array;
-  private readonly lockedRsn: bigint;
+  private readonly rsnAmount: bigint;
 
   constructor(
     protected box: ergoLib.ErgoBox,
@@ -13,67 +13,94 @@ export class CollateralBox {
     try {
       const widReg = this.box.register_value(4);
       if (!widReg) {
-        throw new Error('Invalid Collateral box: missing R4 register (WID)');
+        throw new Error('missing R4 register');
       }
       this.wid = widReg.to_byte_array();
 
-      const lockedRsnReg = this.box.register_value(5);
-      if (!lockedRsnReg) {
-        throw new Error(
-          'Invalid Collateral box: missing R5 register (locked RSN)',
-        );
+      const rsnAmount = this.box.register_value(5);
+      if (!rsnAmount) {
+        throw new Error('missing R5 register');
       }
-      this.lockedRsn = BigInt(lockedRsnReg.to_i64().to_str());
+      this.rsnAmount = BigInt(rsnAmount.to_i64().to_str());
 
       if (this.box.tokens().len() < 1) {
-        throw new Error(
-          'Invalid Collateral box: expected at least 1 token (X-AWC NFT)',
-        );
+        throw new Error('expected at least 1 token (X-AWC NFT)');
       }
 
       this.logger.debug(
-        `CollateralBox created wid=[${Buffer.from(this.wid).toString(
+        `CollateralBox wid=[${Buffer.from(this.wid).toString(
           'hex',
-        )}] lockedRsn=[${this.lockedRsn}]`,
+        )}] Rsn=[${this.rsnAmount}]`,
       );
     } catch (e) {
       throw Error(`Failed to create CollateralBox: ${e}`);
     }
   }
-
+  /**
+   * Creates an instance of CollateralBoxBuilder using current instance's
+   *  properties
+   *
+   * @return {CollateralBoxBuilder}
+   */
   toBuilder = (): CollateralBoxBuilder => {
     return new CollateralBoxBuilder(
       this.getErgoTree(),
       this.getAwcNftId(),
-      this.getLockedRsn(),
-      this.getRsnId(),
       this.getRsnAmount(),
+      this.getRsnId(),
+      this.getCollateralRsnAmount(),
       this.wid,
+      this.getCollateralValue(),
       this.logger,
     );
   };
 
+  /**
+   * @returns ErgoTree of the box
+   */
   getErgoTree = (): string => {
     return this.box.ergo_tree().to_base16_bytes();
   };
-
+  /**
+   * @returns Owner WID extracted from R4
+   */
   getOwnerWid = (): Uint8Array => {
     return this.wid;
   };
 
-  getLockedRsn = (): bigint => {
-    return this.lockedRsn;
+  /**
+   * @returns RSN amount stored in R5
+   */
+  getRsnAmount = (): bigint => {
+    return this.rsnAmount;
   };
 
+  /**
+   * @returns collateral box value
+   */
+  getCollateralValue = (): string => {
+    return this.box.value().as_i64().to_str();
+  };
+  /**
+   * @returns X-AWC NFT token ID
+   */
   getAwcNftId = (): string => {
     return this.box.tokens().get(0).id().to_str();
   };
 
-  getRsnId = (): string => {
+  /**
+   * getRsnId() Returns the RSN token ID if present in the box; otherwise returns `undefined`.
+   *
+   * @returns {string} RSN token ID | undefined
+   */
+  getRsnId = (): string | undefined => {
+    if (this.box.tokens().len() < 2) return undefined;
     return this.box.tokens().get(1).id().to_str();
   };
-
-  getRsnAmount = (): bigint => {
+  /**
+   * @returns Amount of RSN tokens locked in the box as collateral
+   */
+  getCollateralRsnAmount = (): bigint => {
     if (this.box.tokens().len() < 2) return 0n;
     return BigInt(this.box.tokens().get(1).amount().as_i64().to_str());
   };
