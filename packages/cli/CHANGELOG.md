@@ -1,5 +1,11 @@
 # @rosen-bridge/cli
 
+## 2.1.2
+
+### Patch Changes
+
+- Update dependency @rosen-bridge/encryption@1.0.1
+
 ## 2.1.1
 
 ### Patch Changes
