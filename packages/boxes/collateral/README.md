@@ -8,7 +8,9 @@
 ## Introduction
 
 provides a structured and reusable way to work with collateral boxes.
-The first class is responsible for reading and exposing all collateral box properties in a clear and consistent manner. The second class is a builder that constructs the final collateral box based on those properties.
+The CollateralBox class is responsible for reading and exposing all collateral
+box properties in a clear and consistent manner. The CollateralBoxBuilder class is a builder
+that constructs the final collateral box based on those properties.
 
 ## Installation
 

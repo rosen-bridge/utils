@@ -3,9 +3,9 @@
   "private": true,
   "workspaces": {
     "packages": [
-      "packages/*",
       "packages/boxes/*",
-      "packages/loggers/*"
+      "packages/loggers/*",
+      "packages/*"
     ]
   },
   "scripts": {
