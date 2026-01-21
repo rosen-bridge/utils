@@ -1,31 +1,20 @@
 {
-  "author": "Rosen Team",
-  "dependencies": {
-    "@rosen-bridge/abstract-logger": "^4.0.0",
-    "ergo-lib-wasm-nodejs": "^0.24.1"
-  },
-  "description": "a package to manage collateral box",
-  "devDependencies": {
-    "@rosen-bridge/json-bigint": "^1.1.0",
-    "@vitest/coverage-istanbul": "^3.1.4",
-    "tsx": "^4.20.5",
-    "vitest": "^3.1.4"
-  },
-  "engines": {
-    "node": ">=22.18.0",
-    "npm": "11.6.2"
-  },
-  "files": [
-    "dist",
-    "CHANGELOG.md"
-  ],
-  "license": "MIT",
-  "main": "dist/index.js",
   "name": "@rosen-bridge/collateral",
+  "version": "0.1.0",
+  "description": "a package to manage collateral box",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rosen-bridge/utils.git"
   },
+  "license": "MIT",
+  "author": "Rosen Team",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
   "scripts": {
     "build": "tsc --build tsconfig.build.json",
     "coverage": "npm run test -- --run --coverage",
@@ -37,7 +26,18 @@
     "test": "NODE_OPTIONS='--import tsx' vitest",
     "type-check": "tsc --noEmit"
   },
-  "type": "module",
-  "types": "dist/index.d.ts",
-  "version": "0.1.0"
+  "dependencies": {
+    "@rosen-bridge/abstract-logger": "^4.0.0",
+    "ergo-lib-wasm-nodejs": "^0.24.1"
+  },
+  "devDependencies": {
+    "@rosen-bridge/json-bigint": "^1.1.0",
+    "@vitest/coverage-istanbul": "^3.1.4",
+    "tsx": "^4.20.5",
+    "vitest": "^3.1.4"
+  },
+  "engines": {
+    "node": ">=22.18.0",
+    "npm": "11.6.2"
+  }
 }
