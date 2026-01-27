@@ -7,6 +7,8 @@ import {
   ERGO_CHAIN,
   ETHEREUM_CHAIN,
   RUNES_CHAIN,
+  FIRO_CHAIN,
+  FIRO_NETWORK,
 } from './const';
 import { UnsupportedAddressError, UnsupportedChainError } from './types';
 import * as ergoLib from 'ergo-lib-wasm-nodejs';
@@ -49,6 +51,13 @@ export const validateAddress = (chain: string, address: string): boolean => {
         bitcoinLib.address.toOutputScript(address);
         if (address.slice(0, 4) != 'bc1p')
           throw new UnsupportedAddressError(chain, address);
+      } catch {
+        throw new UnsupportedAddressError(chain, address);
+      }
+      return true;
+    case FIRO_CHAIN:
+      try {
+        bitcoinLib.address.toOutputScript(address, FIRO_NETWORK);
       } catch {
         throw new UnsupportedAddressError(chain, address);
       }

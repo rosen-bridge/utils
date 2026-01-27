@@ -21,6 +21,8 @@ export { RosenData, TokenTransformation } from './getRosenData/abstract/types';
 export { DogeEsploraRosenExtractor } from './getRosenData/doge/dogeEsploraRosenExtractor';
 export { DogeRosenExtractor } from './getRosenData/doge/dogeRosenExtractor';
 export { DogeRpcRosenExtractor } from './getRosenData/doge/dogeRpcRosenExtractor';
+export { FiroRosenExtractor } from './getRosenData/firo/firoRosenExtractor';
+export { FiroRpcRosenExtractor } from './getRosenData/firo/firoRpcRosenExtractor';
 export { BitcoinRunesEsploraRosenExtractor } from './getRosenData/bitcoin-runes/bitcoinRunesEsploraRosenExtractor';
 export { BitcoinRunesRosenExtractor } from './getRosenData/bitcoin-runes/bitcoinRunesRosenExtractor';
 export { BitcoinRunesRpcRosenExtractor } from './getRosenData/bitcoin-runes/bitcoinRunesRpcRosenExtractor';

@@ -12,6 +12,8 @@ import {
   ERGO_NATIVE_TOKEN,
   DOGE_CHAIN,
   DOGE_NATIVE_TOKEN,
+  FIRO_CHAIN,
+  FIRO_NATIVE_TOKEN,
 } from '../../lib/getRosenData/const';
 
 export default class TestUtils {
@@ -150,6 +152,24 @@ export default class TestUtils {
         tokenId:
           'dcbda15f1361f5eeba416dd63e059fce34f0c57499e9afe733ea0fd59cf63f48',
         name: 'rsDOGE',
+        decimals: 8,
+        type: 'EIP-004',
+        residency: 'wrapped',
+        extra: {},
+      },
+    },
+    {
+      [FIRO_CHAIN]: {
+        tokenId: FIRO_NATIVE_TOKEN,
+        name: FIRO_NATIVE_TOKEN,
+        decimals: 8,
+        type: 'tokenType',
+        residency: 'tokenResidency',
+        extra: {},
+      },
+      [ERGO_CHAIN]: {
+        tokenId: 'e15f1361f5eeba416dd63e059fce34f0c57499e9afe733ea0fd59cf63f49',
+        name: 'rsFIRO',
         decimals: 8,
         type: 'EIP-004',
         residency: 'wrapped',
