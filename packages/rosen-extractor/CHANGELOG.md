@@ -1,5 +1,16 @@
 # @rosen-bridge/rosen-extractor
 
+## 11.2.0
+
+### Minor Changes
+
+- Add Firo chain support with FiroRosenExtractor and FiroRpcRosenExtractor
+
+### Patch Changes
+
+- Update dependencies
+  - @rosen-bridge/address-codec@1.1.0
+
 ## 11.1.2
 
 ### Patch Changes
