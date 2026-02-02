@@ -1,7 +1,7 @@
 import { RosenData, TokenTransformation } from '../abstract/types';
 import AbstractRosenDataExtractor from '../abstract/abstractRosenDataExtractor';
 import { HANDSHAKE_CHAIN, HANDSHAKE_NATIVE_TOKEN } from '../const';
-import { HandshakeTx, HandshakeTxOutput, OpReturnData } from './types';
+import { HandshakeTx, HandshakeTxOutput, HandshakeRosenData } from './types';
 import { TokenMap } from '@rosen-bridge/tokens';
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import { parseRosenData, addressToHash } from './utils';
@@ -37,34 +37,33 @@ export class HandshakeRosenExtractor extends AbstractRosenDataExtractor<string> 
         return undefined;
       }
 
-      let validData = false; // an OP_RETURN box with valid data is found
+      let validData = false; // an UPDATE box with valid data is found
       let validLock = false; // a lock box is found with available asset transformation
 
-      // parse rosen data from OP_RETURN box
-      // In Handshake, OP_RETURN data is stored in outputs with address.version === 31
-      let opReturnData: OpReturnData | undefined;
+      // parse rosen data from UPDATE box
+      let hnsRosenData: HandshakeRosenData | undefined;
       let rawData: string = '';
       for (let i = 0; i < outputs.length; i++) {
         const output = outputs[i];
-        // Check if this is an OP_RETURN output (version 31 in Handshake)
-        // Note: JsonBigInt may parse version as bigint
-        if (Number(output.address.version) !== 31) continue;
+        // Check if this is an UPDATE output (type 7 in Handshake)
+        // Note: JsonBigInt may parse type as bigint
+        if (Number(output.covenant.type) !== 7) continue;
 
         try {
-          // In Handshake, the data is stored in address.hash (hex encoded)
-          opReturnData = parseRosenData(output.address.hash);
-          rawData = output.address.hash;
+          // In Handshake, the UPDATE data is stored in covenant.items at index 2 (hex encoded)
+          hnsRosenData = parseRosenData(output.covenant.items[2]);
+          rawData = output.covenant.items[2];
           validData = true;
           break;
         } catch (e) {
           this.logger.debug(
-            `Failed to extract data from OP_RETURN box [${transaction.id}.${i}]: ${e}`,
+            `Failed to extract data from UPDATE box [${transaction.id}.${i}]: ${e}`,
           );
         }
       }
-      if (!validData || !opReturnData) {
+      if (!validData || !hnsRosenData) {
         this.logger.debug(
-          baseError + `: No OP_RETURN box with valid data is found`,
+          baseError + `: No UPDATE box with valid data is found`,
         );
         return undefined;
       }
@@ -73,16 +72,16 @@ export class HandshakeRosenExtractor extends AbstractRosenDataExtractor<string> 
       let assetTransformation: TokenTransformation | undefined;
       for (let i = 0; i < outputs.length; i++) {
         const output = outputs[i];
-        // Skip OP_RETURN outputs (version 31) as they can never be lock addresses
-        // Note: JsonBigInt may parse version as bigint
-        if (Number(output.address.version) === 31) continue;
+        // Skip UPDATE outputs (type 7) as they can never be lock addresses
+        // Note: JsonBigInt may parse type as bigint
+        if (Number(output.covenant.type) === 7) continue;
 
         // Check if the output address hash matches the lock address hash
         if (output.address.hash !== this.lockAddressHash) continue; // utxo address is not lock address
 
         assetTransformation = this.getAssetTransformation(
           output,
-          opReturnData.toChain,
+          hnsRosenData.toChain,
         );
         if (assetTransformation) {
           validLock = true;
@@ -98,10 +97,10 @@ export class HandshakeRosenExtractor extends AbstractRosenDataExtractor<string> 
 
       const fromAddress = `box:${transaction.inputs[0].txId}.${transaction.inputs[0].index}`;
       return {
-        toChain: opReturnData.toChain,
-        toAddress: opReturnData.toAddress,
-        bridgeFee: opReturnData.bridgeFee,
-        networkFee: opReturnData.networkFee,
+        toChain: hnsRosenData.toChain,
+        toAddress: hnsRosenData.toAddress,
+        bridgeFee: hnsRosenData.bridgeFee,
+        networkFee: hnsRosenData.networkFee,
         fromAddress: fromAddress,
         sourceChainTokenId: assetTransformation.from,
         amount: assetTransformation.amount,

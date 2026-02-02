@@ -1,4 +1,4 @@
-export interface OpReturnData {
+export interface HandshakeRosenData {
   toChain: string;
   toAddress: string;
   bridgeFee: string;
@@ -20,6 +20,11 @@ export interface HandshakeRpcTxOutput {
     hash: string;
     string: string;
   };
+  covenant: {
+    type: number;
+    action: string;
+    items: string[];
+  }
 }
 
 export interface HandshakeRpcTransaction {
@@ -62,6 +67,11 @@ export interface HandshakeTxOutput {
     hash: string;
     string: string;
   };
+  covenant: {
+    type: number;
+    action: string;
+    items: string[];
+  }
 }
 
 export interface HandshakeTx {
