@@ -61,17 +61,17 @@ describe('HandshakeRpcRosenExtractor', () => {
 
     /**
      * @target `HandshakeRpcRosenExtractor.get` should return undefined when
-     * no valid OP_RETURN output is found
+     * no data outputs are found
      * @dependencies
      * @scenario
-     * - mock tx without OP_RETURN utxo
+     * - mock tx without data outputs
      * - run test
      * - check returned value
      * @expected
      * - it should return undefined
      */
-    it('should return undefined when no valid OP_RETURN output is found', () => {
-      const invalidTx = testData.txs.noOpReturn;
+    it('should return undefined when no data outputs are found', () => {
+      const invalidTx = testData.txs.noDataOutputs;
 
       const extractor = new HandshakeRpcRosenExtractor(
         testData.lockAddress,
@@ -107,16 +107,16 @@ describe('HandshakeRpcRosenExtractor', () => {
 
     /**
      * @target `HandshakeRpcRosenExtractor.get` should return undefined when
-     * no data is extracted from OP_RETURN box
+     * data cannot be parsed
      * @dependencies
      * @scenario
-     * - mock tx with invalid rosen data in OP_RETURN
+     * - mock tx with invalid rosen data (invalid toChain code)
      * - run test
      * - check returned value
      * @expected
      * - it should return undefined
      */
-    it('should return undefined when no data is extracted from OP_RETURN box', () => {
+    it('should return undefined when data cannot be parsed', () => {
       const invalidTx = testData.txs.invalidData;
 
       const extractor = new HandshakeRpcRosenExtractor(

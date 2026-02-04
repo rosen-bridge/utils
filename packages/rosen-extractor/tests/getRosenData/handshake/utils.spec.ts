@@ -6,10 +6,10 @@ import {
 describe('Handshake utils', () => {
   describe('parseRosenData', () => {
     /**
-     * @target `parseRosenData` should parse rosen data from Handshake address hash successfully
+     * @target `parseRosenData` should parse rosen data from UPDATE covenant successfully
      * @dependencies
      * @scenario
-     * - mock valid rosen data hex (from OP_RETURN address.hash)
+     * - mock valid rosen data hex (from UPDATE covenant.items[2])
      * - run test
      * - check returned value
      * @expected
@@ -43,9 +43,7 @@ describe('Handshake utils', () => {
       const invalidData =
         '090000000005f5e10000000000009896802103e5bedab3f782ef17a73e9bdc41ee0e18c3ab477400f35bcf7caa54171db7ff36';
 
-      expect(() => parseRosenData(invalidData)).toThrow(
-        'invalid toChain code',
-      );
+      expect(() => parseRosenData(invalidData)).toThrow('invalid toChain code');
     });
   });
 
@@ -65,9 +63,7 @@ describe('Handshake utils', () => {
 
       const result = addressToHash(address);
 
-      expect(result).toBe(
-        '602af514493899b8442ed2ca29cb94701798dc24',
-      );
+      expect(result).toBe('602af514493899b8442ed2ca29cb94701798dc24');
     });
 
     /**
@@ -85,9 +81,7 @@ describe('Handshake utils', () => {
 
       const result = addressToHash(address);
 
-      expect(result).toBe(
-        '1da864f4cdb5777cece3fc874b3c8cb74d3d304c',
-      );
+      expect(result).toBe('1da864f4cdb5777cece3fc874b3c8cb74d3d304c');
     });
   });
 });

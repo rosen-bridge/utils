@@ -4,11 +4,11 @@ import { HANDSHAKE_CHAIN, HANDSHAKE_NATIVE_TOKEN } from '../const';
 import {
   HandshakeRpcTransaction,
   HandshakeRpcTxOutput,
-  OpReturnData,
+  HandshakeRosenData,
 } from './types';
 import { TokenMap } from '@rosen-bridge/tokens';
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
-import { parseRosenData, addressToHash } from './utils';
+import { parseRosenData, addressToHash, extractDataFromOutputs } from './utils';
 
 export class HandshakeRpcRosenExtractor extends AbstractRosenDataExtractor<HandshakeRpcTransaction> {
   readonly chain = HANDSHAKE_CHAIN;
@@ -30,61 +30,52 @@ export class HandshakeRpcRosenExtractor extends AbstractRosenDataExtractor<Hands
     try {
       const outputs = transaction.vout;
       if (outputs.length < 2) {
-        this.logger.debug(baseError + `: Insufficient number of boxes`);
+        this.logger.debug(baseError + `: Insufficient number of outputs`);
         return undefined;
       }
 
-      let validData = false; // an OP_RETURN box with valid data is found
-      let validLock = false; // a lock box is found with available asset transformation
+      // Convert RPC outputs to standard format (HNS to dollarydoos)
+      const convertedOutputs = outputs.map((output) => ({
+        value: Math.round(output.value * 1000000), // HNS to dollarydoos
+        address: output.address,
+      }));
 
-      // parse rosen data from OP_RETURN box
-      // In Handshake, OP_RETURN data is stored in outputs with address.version === 31
-      let opReturnData: OpReturnData | undefined;
-      let rawData: string = '';
-      for (let i = 0; i < outputs.length; i++) {
-        const output = outputs[i];
-        // Check if this is an OP_RETURN output (version 31 in Handshake)
-        if (output.address.version !== 31) continue;
+      // Extract data from outputs using utility function
+      const { validLock, lockOutput, reconstructedData } =
+        extractDataFromOutputs(convertedOutputs, this.lockAddressHash);
 
-        try {
-          // In Handshake, the data is stored in address.hash (hex encoded)
-          opReturnData = parseRosenData(output.address.hash);
-          rawData = output.address.hash;
-          validData = true;
-          break;
-        } catch (e) {
-          this.logger.debug(
-            `Failed to extract data from OP_RETURN box [${transaction.txid}.${i}]: ${e}`,
-          );
-        }
+      if (!validLock || !lockOutput) {
+        this.logger.debug(baseError + `: Lock output not found`);
+        return undefined;
       }
-      if (!validData || !opReturnData) {
+
+      if (!reconstructedData) {
+        this.logger.debug(baseError + `: No data chunks found`);
+        return undefined;
+      }
+
+      // Parse the reconstructed data
+      let rosenData: HandshakeRosenData | undefined;
+      try {
+        rosenData = parseRosenData(reconstructedData);
         this.logger.debug(
-          baseError + `: No OP_RETURN box with valid data is found`,
+          `Successfully extracted Rosen data for ${rosenData.toChain}`,
         );
+      } catch (e) {
+        this.logger.debug(baseError + `: Failed to parse extracted data: ${e}`);
         return undefined;
       }
 
-      // find target chain token id
-      let assetTransformation: TokenTransformation | undefined;
-      for (let i = 0; i < outputs.length; i++) {
-        const output = outputs[i];
-        // Skip OP_RETURN outputs (version 31) as they can never be lock addresses
-        if (output.address.version === 31) continue;
+      // Find asset transformation (need to use original RPC output for value)
+      const lockOutputRpc = outputs.find(
+        (o) => o.address?.hash === this.lockAddressHash,
+      ) as HandshakeRpcTxOutput;
+      const assetTransformation = this.getAssetTransformation(
+        lockOutputRpc,
+        rosenData.toChain,
+      );
 
-        // Check if the output address hash matches the lock address hash
-        if (output.address.hash !== this.lockAddressHash) continue; // utxo address is not lock address
-
-        assetTransformation = this.getAssetTransformation(
-          output,
-          opReturnData.toChain,
-        );
-        if (assetTransformation) {
-          validLock = true;
-          break;
-        }
-      }
-      if (!validLock || !assetTransformation) {
+      if (!assetTransformation) {
         this.logger.debug(
           baseError + `: Failed to find rosen asset transformation`,
         );
@@ -93,16 +84,16 @@ export class HandshakeRpcRosenExtractor extends AbstractRosenDataExtractor<Hands
 
       const fromAddress = `box:${transaction.vin[0].txid}.${transaction.vin[0].vout}`;
       return {
-        toChain: opReturnData.toChain,
-        toAddress: opReturnData.toAddress,
-        bridgeFee: opReturnData.bridgeFee,
-        networkFee: opReturnData.networkFee,
+        toChain: rosenData.toChain,
+        toAddress: rosenData.toAddress,
+        bridgeFee: rosenData.bridgeFee,
+        networkFee: rosenData.networkFee,
         fromAddress: fromAddress,
         sourceChainTokenId: assetTransformation.from,
         amount: assetTransformation.amount,
         targetChainTokenId: assetTransformation.to,
         sourceTxId: transaction.txid,
-        rawData,
+        rawData: reconstructedData,
       };
     } catch (e) {
       this.logger.debug(
@@ -128,16 +119,16 @@ export class HandshakeRpcRosenExtractor extends AbstractRosenDataExtractor<Hands
     const wrappedHns = this.tokens.search(HANDSHAKE_CHAIN, {
       tokenId: HANDSHAKE_NATIVE_TOKEN,
     });
+
     if (wrappedHns.length > 0 && Object.hasOwn(wrappedHns[0], toChain)) {
-      const parts = box.value.toString().split('.');
-      const part1 = ((parts[1] ?? '') + '0'.repeat(6)).substring(0, 6);
+      // Safe conversion to dollarydoos
+      const dollarydoos = Math.round(box.value * 1000000).toString();
       return {
         from: HANDSHAKE_NATIVE_TOKEN,
         to: this.tokens.getID(wrappedHns[0], toChain),
-        amount: (parts[0] === '0' ? '' : parts[0]) + part1,
+        amount: dollarydoos,
       };
-    } else {
-      return undefined;
     }
+    return undefined;
   };
 }

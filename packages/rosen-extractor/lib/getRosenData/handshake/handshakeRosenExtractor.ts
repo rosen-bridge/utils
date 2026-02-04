@@ -4,7 +4,7 @@ import { HANDSHAKE_CHAIN, HANDSHAKE_NATIVE_TOKEN } from '../const';
 import { HandshakeTx, HandshakeTxOutput, HandshakeRosenData } from './types';
 import { TokenMap } from '@rosen-bridge/tokens';
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
-import { parseRosenData, addressToHash } from './utils';
+import { parseRosenData, addressToHash, extractDataFromOutputs } from './utils';
 import JsonBigInt from '@rosen-bridge/json-bigint';
 
 export class HandshakeRosenExtractor extends AbstractRosenDataExtractor<string> {
@@ -29,66 +29,50 @@ export class HandshakeRosenExtractor extends AbstractRosenDataExtractor<string> 
         `Failed to parse transaction json to HandshakeTx format while extracting rosen data: ${e}`,
       );
     }
+
     const baseError = `No rosen data found for tx [${transaction.id}]`;
     try {
       const outputs = transaction.outputs;
       if (outputs.length < 2) {
-        this.logger.debug(baseError + `: Insufficient number of boxes`);
+        this.logger.debug(baseError + `: Insufficient number of outputs`);
         return undefined;
       }
 
-      let validData = false; // an UPDATE box with valid data is found
-      let validLock = false; // a lock box is found with available asset transformation
+      // Extract data from outputs using utility function
+      const { validLock, lockOutput, reconstructedData } =
+        extractDataFromOutputs(outputs, this.lockAddressHash);
 
-      // parse rosen data from UPDATE box
-      let hnsRosenData: HandshakeRosenData | undefined;
-      let rawData: string = '';
-      for (let i = 0; i < outputs.length; i++) {
-        const output = outputs[i];
-        // Check if this is an UPDATE output (type 7 in Handshake)
-        // Note: JsonBigInt may parse type as bigint
-        if (Number(output.covenant.type) !== 7) continue;
-
-        try {
-          // In Handshake, the UPDATE data is stored in covenant.items at index 2 (hex encoded)
-          hnsRosenData = parseRosenData(output.covenant.items[2]);
-          rawData = output.covenant.items[2];
-          validData = true;
-          break;
-        } catch (e) {
-          this.logger.debug(
-            `Failed to extract data from UPDATE box [${transaction.id}.${i}]: ${e}`,
-          );
-        }
+      if (!validLock || !lockOutput) {
+        this.logger.debug(baseError + `: Lock output not found`);
+        return undefined;
       }
-      if (!validData || !hnsRosenData) {
+
+      if (!reconstructedData) {
+        this.logger.debug(baseError + `: No data chunks found`);
+        return undefined;
+      }
+
+      // Parse the reconstructed data
+      let rosenData: HandshakeRosenData | undefined;
+      try {
+        rosenData = parseRosenData(reconstructedData);
         this.logger.debug(
-          baseError + `: No UPDATE box with valid data is found`,
+          `Successfully extracted Rosen data for ${rosenData.toChain}`,
+        );
+      } catch (e) {
+        this.logger.debug(
+          baseError + `: Failed to parse reconstructed data: ${e}`,
         );
         return undefined;
       }
 
-      // find target chain token id
-      let assetTransformation: TokenTransformation | undefined;
-      for (let i = 0; i < outputs.length; i++) {
-        const output = outputs[i];
-        // Skip UPDATE outputs (type 7) as they can never be lock addresses
-        // Note: JsonBigInt may parse type as bigint
-        if (Number(output.covenant.type) === 7) continue;
+      // Find asset transformation using the lock output
+      const assetTransformation = this.getAssetTransformation(
+        lockOutput,
+        rosenData.toChain,
+      );
 
-        // Check if the output address hash matches the lock address hash
-        if (output.address.hash !== this.lockAddressHash) continue; // utxo address is not lock address
-
-        assetTransformation = this.getAssetTransformation(
-          output,
-          hnsRosenData.toChain,
-        );
-        if (assetTransformation) {
-          validLock = true;
-          break;
-        }
-      }
-      if (!validLock || !assetTransformation) {
+      if (!assetTransformation) {
         this.logger.debug(
           baseError + `: Failed to find rosen asset transformation`,
         );
@@ -97,16 +81,16 @@ export class HandshakeRosenExtractor extends AbstractRosenDataExtractor<string> 
 
       const fromAddress = `box:${transaction.inputs[0].txId}.${transaction.inputs[0].index}`;
       return {
-        toChain: hnsRosenData.toChain,
-        toAddress: hnsRosenData.toAddress,
-        bridgeFee: hnsRosenData.bridgeFee,
-        networkFee: hnsRosenData.networkFee,
+        toChain: rosenData.toChain,
+        toAddress: rosenData.toAddress,
+        bridgeFee: rosenData.bridgeFee,
+        networkFee: rosenData.networkFee,
         fromAddress: fromAddress,
         sourceChainTokenId: assetTransformation.from,
         amount: assetTransformation.amount,
         targetChainTokenId: assetTransformation.to,
         sourceTxId: transaction.id,
-        rawData,
+        rawData: reconstructedData,
       };
     } catch (e) {
       this.logger.debug(
@@ -128,19 +112,17 @@ export class HandshakeRosenExtractor extends AbstractRosenDataExtractor<string> 
     box: HandshakeTxOutput,
     toChain: string,
   ): TokenTransformation | undefined => {
-    // try to build transformation using locked HNS
     const wrappedHns = this.tokens.search(HANDSHAKE_CHAIN, {
       tokenId: HANDSHAKE_NATIVE_TOKEN,
     });
+
     if (wrappedHns.length > 0 && Object.hasOwn(wrappedHns[0], toChain)) {
-      const dollarydoosAmount = box.value;
       return {
         from: HANDSHAKE_NATIVE_TOKEN,
         to: this.tokens.getID(wrappedHns[0], toChain),
-        amount: dollarydoosAmount.toString(),
+        amount: box.value.toString(),
       };
-    } else {
-      return undefined;
     }
+    return undefined;
   };
 }

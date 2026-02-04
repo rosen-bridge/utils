@@ -1,6 +1,5 @@
 export const lockAddress = 'hs1qvq4029zf8zvms3pw6t9znju5wqte3hpykr8q3s';
-export const lockAddressHash =
-  '602af514493899b8442ed2ca29cb94701798dc24';
+export const lockAddressHash = '602af514493899b8442ed2ca29cb94701798dc24';
 
 export const baseTx = {
   id: 'abc123cd9ed1ac1dbd6a9185fab6a34488325bec478ecfd26f76405ab1f2cd11d1',
@@ -12,27 +11,74 @@ export const baseTx = {
   ],
 };
 
-// Rosen data without OP_RETURN prefix (6a33)
-const rosenDataHex =
-  '000000000005f5e10000000000009896802103e5bedab3f782ef17a73e9bdc41ee0e18c3ab477400f35bcf7caa54171db7ff36';
+// Rosen data hex (60 bytes total, reconstructed from 3 P2WPKH outputs):
+// Chunk 0: 000000000005f5e10000000000009896802103e5 (40 hex chars / 20 bytes)
+// Chunk 1: bedab3f782ef17a73e9bdc41ee0e18c3ab477400 (40 hex chars / 20 bytes)
+// Chunk 2: f35bcf7caa54171db7ff36000000000000000000 (40 hex chars / 20 bytes, padded)
+// Data output hashes (from chunked rosenDataHex - 40 chars per chunk for P2WPKH)
+const dataChunk0 = '000000000005f5e10000000000009896802103e5';
+const dataChunk1 = 'bedab3f782ef17a73e9bdc41ee0e18c3ab477400';
+const dataChunk2 = 'f35bcf7caa54171db7ff36000000000000000000';
 
 export const txUtxos = {
   lockTx: {
     outputs: [
       {
-        value: 0n,
-        address: {
-          version: 31, // OP_RETURN in Handshake
-          hash: rosenDataHex,
-          string: 'hs1lqqqqqqqq9a0przqqqqqqqqzexvqysxw96m6ma0gqachhulqqw0ahucl7dlhxedsy8rwl',
-        },
-      },
-      {
         value: 100000n,
         address: {
-          version: 0, // Witness v0
+          version: 0,
           hash: lockAddressHash,
           string: lockAddress,
+        },
+        covenant: {
+          type: 0,
+          action: '',
+          items: [],
+        },
+      },
+      // Data output 0: chunk 0 at value 1000
+      {
+        value: 1000n,
+        address: {
+          version: 0,
+          hash: dataChunk0,
+          string:
+            'hs1qqqqqqqqqq0pdypgslz72mqqyqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq3v2yzd',
+        },
+        covenant: {
+          type: 0,
+          action: '',
+          items: [],
+        },
+      },
+      // Data output 1: chunk 1 at value 1001
+      {
+        value: 1001n,
+        address: {
+          version: 0,
+          hash: dataChunk1,
+          string:
+            'hs1qqgqqq7gzvh5gw6gvqq5gvqq5gvqq5gvqq5gvqq5gvqq5gvqq5gvqq5gq0tymtt',
+        },
+        covenant: {
+          type: 0,
+          action: '',
+          items: [],
+        },
+      },
+      // Data output 2: chunk 2 at value 1002
+      {
+        value: 1002n,
+        address: {
+          version: 0,
+          hash: dataChunk2,
+          string:
+            'hs1qqepqz7p9qqvq9qqvq9qqvq9qqvq9qqvq9qqvq9qqvq9qqvq9qqvq9qq0mh80w',
+        },
+        covenant: {
+          type: 0,
+          action: '',
+          items: [],
         },
       },
     ],
@@ -40,7 +86,7 @@ export const txUtxos = {
   lessBoxes: {
     outputs: [
       {
-        value: 15594394312n,
+        value: 100000n,
         address: {
           version: 0,
           hash: lockAddressHash,
@@ -49,10 +95,10 @@ export const txUtxos = {
       },
     ],
   },
-  noOpReturn: {
+  noDataOutputs: {
     outputs: [
       {
-        value: 10000000n,
+        value: 100000n,
         address: {
           version: 0,
           hash: lockAddressHash,
@@ -71,19 +117,21 @@ export const txUtxos = {
   },
   noLock: {
     outputs: [
+      // Data output at value 1000 (no lock output)
       {
-        value: 0n,
+        value: 1000n,
         address: {
-          version: 31,
-          hash: rosenDataHex,
-          string: 'hs1lqqqqqqqq9a0przqqqqqqqqzexvqysxw96m6ma0gqachhulqqw0ahucl7dlhxedsy8rwl',
+          version: 0,
+          hash: dataChunk0,
+          string:
+            'hs1qqqqqqqqqq0pdypgslz72mqqyqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq3v2yzd',
         },
       },
       {
         value: 15594394312n,
         address: {
           version: 0,
-          hash: '3c57eac03143c004195bb5ab1fe67e5f88a2b0554104613', // Different hash
+          hash: '3c57eac03143c004195bb5ab1fe67e5f88a2b0554104613', // Different hash (not lock)
           string: 'hs1q83t74spnrspqgx273k4rle3lu40g52c92sg5vyn',
         },
       },
@@ -92,19 +140,21 @@ export const txUtxos = {
   invalidData: {
     outputs: [
       {
-        value: 0n,
-        address: {
-          version: 31,
-          hash: '090000000005f5e10000000000009896802103e5bedab3f782ef17a73e9bdc41ee0e18c3ab477400f35bcf7caa54171db7ff36',
-          string: 'hs1lpyqqqqqq9a0przqqqqqqqqzexvqysxw96m6ma0gqachhulqqw0ahucl7dlhxeaqhp8u7',
-        },
-      },
-      {
-        value: 15594394312n,
+        value: 100000n,
         address: {
           version: 0,
           hash: lockAddressHash,
           string: lockAddress,
+        },
+      },
+      // Data output with invalid chunk (toChain code 09 = invalid)
+      {
+        value: 1000n,
+        address: {
+          version: 0,
+          hash: '090000000005f5e10000000000009896', // Invalid toChain code
+          string:
+            'hs1qqqqqqqqqq0pdypgslz72mqqyqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq3v2yzd',
         },
       },
     ],
@@ -120,9 +170,9 @@ export const txs = {
     ...baseTx,
     ...txUtxos.lessBoxes,
   },
-  noOpReturn: {
+  noDataOutputs: {
     ...baseTx,
-    ...txUtxos.noOpReturn,
+    ...txUtxos.noDataOutputs,
   },
   noLock: {
     ...baseTx,
@@ -147,7 +197,7 @@ export const rosenData = {
     'dcbda15f1361f5eeba416dd63e059fce34f0c57499e9afe733ea0fd59cf63f48',
   sourceTxId:
     'abc123cd9ed1ac1dbd6a9185fab6a34488325bec478ecfd26f76405ab1f2cd11d1',
-  rawData: rosenDataHex,
+  rawData: dataChunk0 + dataChunk1 + dataChunk2,
 };
 
 export const lockUtxo = {
@@ -156,6 +206,11 @@ export const lockUtxo = {
     version: 0,
     hash: lockAddressHash,
     string: lockAddress,
+  },
+  covenant: {
+    type: 0,
+    action: '',
+    items: [],
   },
 };
 
