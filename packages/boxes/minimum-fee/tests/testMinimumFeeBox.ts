@@ -1,12 +1,11 @@
-import { ErgoBox } from 'ergo-lib-wasm-nodejs';
-import { MinimumFeeBox } from '../lib';
+import { ErgoBoxWrapper, MinimumFeeBox } from '../lib';
 
 export class TestMinimumFeeBox extends MinimumFeeBox {
   /**
    * sets ErgoBox
    * @param box
    */
-  setBox = (box: ErgoBox): void => {
+  setBox = (box: ErgoBoxWrapper): void => {
     this.box = box;
   };
 
@@ -14,6 +13,7 @@ export class TestMinimumFeeBox extends MinimumFeeBox {
    * calls selectEligibleBox function
    * @param eligibleBoxes
    */
-  callSelectEligibleBox = (eligibleBoxes: Array<ErgoBox>): ErgoBox =>
-    this.selectEligibleBox(eligibleBoxes);
+  callSelectEligibleBox = (
+    eligibleBoxes: Array<ErgoBoxWrapper>,
+  ): ErgoBoxWrapper => this.selectEligibleBox(eligibleBoxes);
 }

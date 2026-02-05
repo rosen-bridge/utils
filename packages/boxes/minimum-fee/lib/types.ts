@@ -45,3 +45,26 @@ export interface RegisterValues {
   R8: Constant;
   R9: Constant;
 }
+
+export type AdditionalRegisters = {
+  R4: string;
+  R5: string;
+  R6: string;
+  R7: string;
+  R8: string;
+  R9: string;
+};
+
+export type ErgoBoxWrapper = {
+  boxId: string;
+  txId: string;
+  address: string;
+  index: number;
+  value: bigint;
+  creationHeight: number;
+  assets: { tokenId: string; amount: bigint }[];
+  additionalRegisters: AdditionalRegisters;
+  ergoTree: string;
+  globalIndex: bigint;
+  spentTransactionId?: string;
+};

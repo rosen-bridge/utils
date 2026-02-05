@@ -1,6 +1,6 @@
-import { ErgoBox } from 'ergo-lib-wasm-nodejs';
 import { extractFeeFromBox, feeToRegisterValues } from '../lib';
 import * as testData from './testData';
+import { jsonToErgoBoxWrapper } from './testUtils';
 
 describe('extractFeeFromBox', () => {
   /**
@@ -15,7 +15,7 @@ describe('extractFeeFromBox', () => {
    * - it should return correct fee config
    */
   it('should build expected config box with normal config for Erg successfully', () => {
-    const box = ErgoBox.from_json(testData.normalFeeBox);
+    const box = jsonToErgoBoxWrapper(testData.normalFeeBox);
     const result = extractFeeFromBox(box);
     expect(result).toEqual(testData.normalFee);
   });

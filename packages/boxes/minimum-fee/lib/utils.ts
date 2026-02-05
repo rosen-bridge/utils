@@ -1,23 +1,21 @@
-import { Constant, ErgoBox } from 'ergo-lib-wasm-nodejs';
-import { Fee } from './types';
+import { Constant } from 'ergo-lib-wasm-nodejs';
+import { ErgoBoxWrapper, Fee } from './types';
 
 /**
  * extracts Fee config from box registers
  * @param box
  */
-export const extractFeeFromBox = (box: ErgoBox): Array<Fee> => {
-  const R4 = box.register_value(4);
-  const R5 = box.register_value(5);
-  const R6 = box.register_value(6);
-  const R7 = box.register_value(7);
-  const R8 = box.register_value(8);
-  const R9 = box.register_value(9);
+export const extractFeeFromBox = (box: ErgoBoxWrapper): Array<Fee> => {
+  const R4 = Constant.decode_from_base16(box.additionalRegisters.R4);
+  const R5 = Constant.decode_from_base16(box.additionalRegisters.R5);
+  const R6 = Constant.decode_from_base16(box.additionalRegisters.R6);
+  const R7 = Constant.decode_from_base16(box.additionalRegisters.R7);
+  const R8 = Constant.decode_from_base16(box.additionalRegisters.R8);
+  const R9 = Constant.decode_from_base16(box.additionalRegisters.R9);
 
   if (!R4 || !R5 || !R6 || !R7 || !R8 || !R9)
     throw Error(
-      `Incomplete register data for minimum-fee config box [${box
-        .box_id()
-        .to_str()}]`,
+      `Incomplete register data for minimum-fee config box [${box.boxId}]`,
     );
 
   const fees: Array<Fee> = [];
