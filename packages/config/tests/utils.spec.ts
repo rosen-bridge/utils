@@ -1,6 +1,5 @@
 import { IConfigSource } from 'config';
 import path from 'path';
-import { describe, expect, it } from 'vitest';
 import {
   getSourceName,
   getValue,

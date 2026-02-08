@@ -1,5 +1,20 @@
 # @rosen-bridge/callback-logger
 
+## 2.0.0
+
+### Major Changes
+
+- Add `child` method to logger classes and delete the logger factory class
+
+### Minor Changes
+
+- Add `critical` and `trace` log level
+
+### Patch Changes
+
+- Update dependencies
+  - @rosen-bridge/abstract-logger@4.0.0
+
 ## 1.0.1
 
 ### Patch Changes

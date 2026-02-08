@@ -9,8 +9,8 @@ export const mainNetPrereleaseRelease = {
   assets: [
     {
       browser_download_url:
-        'https://example.com/contracts-awesomechain-mainnet-2.0.1-0b08047.json',
-      name: 'contracts-awesomechain-mainnet-2.0.1-0b08047.json',
+        'https://example.com/contracts-mainnet-2.0.1-0b08047.json',
+      name: 'contracts-mainnet-2.0.1-0b08047.json',
     } as any,
     {
       browser_download_url:
@@ -27,8 +27,8 @@ export const mainNetStableRelease = {
   assets: [
     {
       browser_download_url:
-        'https://example.com/contracts-awesomechain-mainnet-2.0.1-0b08046.json',
-      name: 'contracts-awesomechain-mainnet-2.0.1-0b08046.json',
+        'https://example.com/contracts-mainnet-2.0.1-0b08046.json',
+      name: 'contracts-mainnet-2.0.1-0b08046.json',
     } as any,
     {
       browser_download_url:
@@ -116,8 +116,8 @@ export const testNetPrereleaseRelease = {
   assets: [
     {
       browser_download_url:
-        'https://example.com/contracts-awesomechain-testnet-2.0.1-0b08041.json',
-      name: 'contracts-awesomechain-testnet-2.0.1-0b08041.json',
+        'https://example.com/contracts-testnet-2.0.1-0b08041.json',
+      name: 'contracts-testnet-2.0.1-0b08041.json',
     } as any,
   ],
 };
@@ -129,8 +129,8 @@ export const testNetStableRelease = {
   assets: [
     {
       browser_download_url:
-        'https://example.com/contracts-awesomechain-testnet-2.0.1-0b08042.json',
-      name: 'contracts-awesomechain-testnet-2.0.1-0b08042.json',
+        'https://example.com/contracts-testnet-2.0.1-0b08042.json',
+      name: 'contracts-testnet-2.0.1-0b08042.json',
     } as any,
   ],
 };
@@ -145,8 +145,8 @@ export const contractReleases = [
     assets: [
       {
         browser_download_url:
-          'https://example.com/contracts-awesomechain-mainnet-2.0.1-0b08045.json',
-        name: 'contracts-awesomechain-mainnet-2.0.1-0b08045.json',
+          'https://example.com/contracts-mainnet-2.0.1-0b08045.json',
+        name: 'contracts-mainnet-2.0.1-0b08045.json',
       } as any,
     ],
   },
@@ -159,8 +159,8 @@ export const contractReleases = [
     assets: [
       {
         browser_download_url:
-          'https://example.com/contracts-awesomechain-mainnet-2.0.1-0b08044.json',
-        name: 'contracts-awesomechain-mainnet-2.0.1-0b08044.json',
+          'https://example.com/contracts-mainnet-2.0.1-0b08044.json',
+        name: 'contracts-mainnet-2.0.1-0b08044.json',
       } as any,
     ],
   },
@@ -171,8 +171,8 @@ export const contractReleases = [
     assets: [
       {
         browser_download_url:
-          'https://example.com/contracts-awesomechain-mainnet-2.0.1-0b08043.json',
-        name: 'contracts-awesomechain-mainnet-2.0.1-0b08043.json',
+          'https://example.com/contracts-mainnet-2.0.1-0b08043.json',
+        name: 'contracts-mainnet-2.0.1-0b08043.json',
       } as any,
     ],
   },
@@ -183,8 +183,8 @@ export const contractReleases = [
     assets: [
       {
         browser_download_url:
-          'https://example.com/contracts-awesomechain-mainnet-2.0.1-0b08042.json',
-        name: 'contracts-awesomechain-mainnet-2.0.1-0b08042.json',
+          'https://example.com/contracts-mainnet-2.0.1-0b08042.json',
+        name: 'contracts-mainnet-2.0.1-0b08042.json',
       } as any,
     ],
   },
@@ -195,8 +195,8 @@ export const contractReleases = [
     assets: [
       {
         browser_download_url:
-          'https://example.com/contracts-awesomechain-mainnet-2.0.1-0b08041.json',
-        name: 'contracts-awesomechain-mainnet-2.0.1-0b08041.json',
+          'https://example.com/contracts-mainnet-2.0.1-0b08041.json',
+        name: 'contracts-mainnet-2.0.1-0b08041.json',
       } as any,
     ],
   },

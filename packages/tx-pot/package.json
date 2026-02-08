@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/tx-pot",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "a Typescript package to manage transactions storage, sign, submit and related processes",
   "repository": {
     "type": "git",
@@ -32,10 +32,11 @@
     "vitest": "^3.1.4"
   },
   "dependencies": {
-    "@rosen-bridge/abstract-logger": "^3.0.1",
+    "@rosen-bridge/abstract-logger": "^4.0.0",
     "@rosen-bridge/extended-typeorm": "^1.0.1"
   },
   "engines": {
-    "node": ">=22.18.0"
+    "node": ">=22.18.0",
+    "npm": "11.6.2"
   }
 }

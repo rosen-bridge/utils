@@ -1,5 +1,4 @@
 import * as ergoLib from 'ergo-lib-wasm-nodejs';
-import { describe, expect, it } from 'vitest';
 import * as testData from './permitTestData';
 import { createPermit } from '../lib';
 import { hexToUint8Array } from '../lib/utils';
@@ -45,7 +44,7 @@ describe('createPermit', () => {
       rwtCount.toString(),
     );
 
-    expect(permitBox.register_value(4)?.to_coll_coll_byte()[0]).toEqual(
+    expect(permitBox.register_value(4)?.to_byte_array()).toEqual(
       hexToUint8Array(testData.permitParams.wid),
     );
   });

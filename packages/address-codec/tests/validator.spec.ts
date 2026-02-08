@@ -12,6 +12,7 @@ import {
   ETHEREUM_CHAIN,
   HANDSHAKE_CHAIN,
   RUNES_CHAIN,
+  FIRO_CHAIN,
 } from '../lib/const';
 
 describe('validateAddress', () => {
@@ -230,6 +231,33 @@ describe('validateAddress', () => {
   it('should throw error for wrong Runes address', () => {
     expect(() => {
       validateAddress(RUNES_CHAIN, testData.bitcoinAddress);
+    }).toThrow(UnsupportedAddressError);
+  });
+
+  /**
+   * @target `validateAddress` should validate Firo address successfully
+   * @dependencies
+   * @scenario
+   * - run test
+   * @expected
+   * - to validate correct Firo address
+   */
+  it('should validate Firo address successfully', () => {
+    const res = validateAddress(FIRO_CHAIN, testData.firoAddress);
+    expect(res).toEqual(true);
+  });
+
+  /**
+   * @target `validateAddress` should throw error for wrong Firo address
+   * @dependencies
+   * @scenario
+   * - run test
+   * @expected
+   * - to throw error for wrong Firo address
+   */
+  it('should throw error for wrong Firo address', () => {
+    expect(() => {
+      validateAddress(FIRO_CHAIN, testData.invalidFiroAddress);
     }).toThrow(UnsupportedAddressError);
   });
 

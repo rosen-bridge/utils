@@ -1,5 +1,20 @@
 # @rosen-bridge/minimum-fee
 
+## 3.1.2
+
+### Patch Changes
+
+- Update dependencies
+  - @rosen-clients/ergo-explorer@2.1.1
+  - @rosen-clients/ergo-node@3.1.1
+
+## 3.1.1
+
+### Patch Changes
+
+- Update dependencies
+  - @rosen-bridge/abstract-logger@4.0.0
+
 ## 3.1.0
 
 ### Minor Changes

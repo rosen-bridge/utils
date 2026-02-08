@@ -1,0 +1,24 @@
+export type RosenTokens = Array<Record<string, RosenChainToken>>;
+
+export interface RosenChainToken {
+  tokenId: string;
+  name: string;
+  decimals: number;
+  type: string;
+  residency: string;
+  extra: Record<string, string | number | boolean>;
+}
+
+export interface RosenAmount {
+  amount: bigint;
+  decimals: number;
+}
+
+export interface ExtractedConfig {
+  boxId: string;
+  chain: string;
+  headers: string[];
+  values: string[][];
+}
+
+export type CallbackFunction = () => unknown;

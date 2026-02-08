@@ -5,7 +5,7 @@ import { PartialReleases } from '../data/octokit.data';
 import { DEFAULT_RELEASES_FETCHING_PAGE_SIZE } from '../../lib/constants';
 
 export const mockOctokit = (releases: any[]) =>
-  jest.mocked(Octokit).mockImplementation(() => {
+  vi.mocked(Octokit).mockImplementation(() => {
     let page = 0;
     return {
       rest: {
@@ -26,7 +26,7 @@ export const mockOctokit = (releases: any[]) =>
  * mock `getReleaseByTag` of Octokit
  */
 export const mockOctokitGetReleaseByTag = (releases: PartialReleases) =>
-  jest.mocked(Octokit).mockImplementation(() => {
+  vi.mocked(Octokit).mockImplementation(() => {
     return {
       rest: {
         repos: {

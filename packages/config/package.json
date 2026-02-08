@@ -34,8 +34,8 @@
     "@vitest/coverage-istanbul": "^3.1.4",
     "lodash-es": "^4.17.21",
     "tsx": "^4.20.5",
-    "uuid": "^11.1.0",
-    "vitest": "^3.1.4"
+    "vitest": "^3.1.4",
+    "uuid": "^11.1.0"
   },
   "dependencies": {
     "@rosen-bridge/json-bigint": "^1.1.0",
@@ -46,6 +46,7 @@
     "yargs": "^17.7.2"
   },
   "engines": {
-    "node": ">=22.18.0"
+    "node": ">=22.18.0",
+    "npm": "11.6.2"
   }
 }

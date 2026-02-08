@@ -23,7 +23,7 @@ export class HandshakeRpcRosenExtractor extends AbstractRosenDataExtractor<Hands
    * extracts RosenData from given lock transaction in Rpc format
    * @param transaction the lock transaction in Rpc format
    */
-  extractRawData = (
+  extractData = (
     transaction: HandshakeRpcTransaction,
   ): RosenData | undefined => {
     const baseError = `No rosen data found for tx [${transaction.txid}]`;

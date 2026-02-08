@@ -1,5 +1,11 @@
 # @rosen-bridge/permit
 
+## 1.1.0
+
+### Minor Changes
+
+- َUpdated R4 register type in permit Boxes package.
+
 ## 1.0.1
 
 ### Patch Changes

@@ -9,6 +9,8 @@ import {
   HANDSHAKE_CHAIN,
   HANDSHAKE_NETWORK,
   RUNES_CHAIN,
+  FIRO_CHAIN,
+  FIRO_NETWORK,
 } from './const';
 import { UnsupportedAddressError, UnsupportedChainError } from './types';
 import * as ergoLib from 'ergo-lib-wasm-nodejs';
@@ -52,6 +54,11 @@ export const decodeAddress = (
       return bitcoinLib.address.fromOutputScript(
         Buffer.from(encodedAddress, 'hex'),
         DOGE_NETWORK,
+      );
+    case FIRO_CHAIN:
+      return bitcoinLib.address.fromOutputScript(
+        Buffer.from(encodedAddress, 'hex'),
+        FIRO_NETWORK,
       );
     case HANDSHAKE_CHAIN:
       return bitcoinLib.address.fromOutputScript(

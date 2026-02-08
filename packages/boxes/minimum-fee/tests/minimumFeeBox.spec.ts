@@ -12,9 +12,6 @@ import ergoExplorerClientFactory from '@rosen-clients/ergo-explorer';
 import ergoNodeClientFactory from '@rosen-clients/ergo-node';
 import JsonBigInt from '@rosen-bridge/json-bigint';
 
-jest.mock('@rosen-clients/ergo-explorer');
-jest.mock('@rosen-clients/ergo-node');
-
 describe('MinimumFeeBox', () => {
   const nativeTokenId = 'erg';
   const tokenId =
@@ -37,7 +34,7 @@ describe('MinimumFeeBox', () => {
     const mockExplorergetApiV1BoxesUnspentBytokenidP1 = (
       shouldIncludeItemsField = true,
     ) =>
-      jest.mocked(ergoExplorerClientFactory).mockReturnValueOnce({
+      vi.mocked(ergoExplorerClientFactory).mockReturnValueOnce({
         v1: {
           getApiV1BoxesUnspentBytokenidP1: async (
             tokenId: string,
@@ -64,7 +61,7 @@ describe('MinimumFeeBox', () => {
      * mocks `getBoxesByTokenIdUnspent` of ergo node client
      */
     const mockNodegetBoxesByTokenIdUnspent = () =>
-      jest.mocked(ergoNodeClientFactory).mockReturnValueOnce({
+      vi.mocked(ergoNodeClientFactory).mockReturnValueOnce({
         getBoxesByTokenIdUnspent: async (
           address: string,
           { offset, limit }: { offset: number; limit: number },
@@ -220,9 +217,10 @@ describe('MinimumFeeBox', () => {
     it('should update box to undefined when received FailedError while fetching or selecting the box', async () => {
       mockExplorergetApiV1BoxesUnspentBytokenidP1(false);
       const minimumFeeBox = generateDefaultMinimumFeeBox();
-      jest
-        .spyOn(minimumFeeBox as any, 'fetchBoxesUsingExplorer')
-        .mockRejectedValueOnce(new FailedError(`test FailedError`));
+      vi.spyOn(
+        minimumFeeBox as any,
+        'fetchBoxesUsingExplorer',
+      ).mockRejectedValueOnce(new FailedError(`test FailedError`));
       minimumFeeBox.setBox(ErgoBox.from_json(testData.normalFeeBox));
       const res = await minimumFeeBox.fetchBox();
       expect(res).toEqual(false);
@@ -247,9 +245,10 @@ describe('MinimumFeeBox', () => {
     it('should not update the box when received NetworkError while fetching the box', async () => {
       mockExplorergetApiV1BoxesUnspentBytokenidP1(false);
       const minimumFeeBox = generateDefaultMinimumFeeBox();
-      jest
-        .spyOn(minimumFeeBox as any, 'fetchBoxesUsingExplorer')
-        .mockRejectedValueOnce(new NetworkError(`test NetworkError`));
+      vi.spyOn(
+        minimumFeeBox as any,
+        'fetchBoxesUsingExplorer',
+      ).mockRejectedValueOnce(new NetworkError(`test NetworkError`));
       minimumFeeBox.setBox(ErgoBox.from_json(testData.normalFeeBox));
       const res = await minimumFeeBox.fetchBox();
       expect(res).toEqual(false);

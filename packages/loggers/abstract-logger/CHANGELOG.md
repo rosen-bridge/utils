@@ -1,5 +1,16 @@
 # @rosen-bridge/abstract-logger
 
+## 4.0.0
+
+### Major Changes
+
+- Add `child` method to logger classes and delete the logger factory class
+
+### Minor Changes
+
+- Add `ConsoleLogger`
+- Add `critical` and `trace` log level
+
 ## 3.0.1
 
 ### Patch Changes

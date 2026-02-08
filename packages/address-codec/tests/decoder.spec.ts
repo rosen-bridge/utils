@@ -12,6 +12,7 @@ import {
   ETHEREUM_CHAIN,
   HANDSHAKE_CHAIN,
   RUNES_CHAIN,
+  FIRO_CHAIN,
 } from '../lib/const';
 
 describe('decodeAddress', () => {
@@ -128,6 +129,20 @@ describe('decodeAddress', () => {
       testData.encodedTaprootBitcoinAddress,
     );
     expect(res).toEqual(testData.taprootBitcoinAddress);
+  });
+
+  /**
+   * @target `decodeAddress` should decode Firo address successfully
+   * @dependencies
+   * @scenario
+   * - run test
+   * - check returned value
+   * @expected
+   * - it should be address in hex format
+   */
+  it('should decode Firo address successfully', () => {
+    const res = decodeAddress(FIRO_CHAIN, testData.encodedFiroAddress);
+    expect(res).toEqual(testData.firoAddress);
   });
 
   /**

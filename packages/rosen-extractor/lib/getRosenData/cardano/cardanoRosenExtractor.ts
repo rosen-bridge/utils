@@ -1,8 +1,8 @@
+import JsonBigInt from '@rosen-bridge/json-bigint';
 import AbstractRosenDataExtractor from '../abstract/abstractRosenDataExtractor';
 import { RosenData, TokenTransformation } from '../abstract/types';
 import { CardanoBoxCandidate, CardanoTx } from './types';
 import { CARDANO_CHAIN, CARDANO_NATIVE_TOKEN } from '../const';
-import JsonBigInt from '@rosen-bridge/json-bigint';
 import { getCardanoTokenId, parseRosenData } from './utils';
 
 export class CardanoRosenExtractor extends AbstractRosenDataExtractor<string> {
@@ -11,7 +11,7 @@ export class CardanoRosenExtractor extends AbstractRosenDataExtractor<string> {
    * extracts RosenData from given lock transaction in CardanoTx format
    * @param serializedTransaction stringified transaction in CardanoTx format
    */
-  extractRawData = (serializedTransaction: string): RosenData | undefined => {
+  extractData = (serializedTransaction: string): RosenData | undefined => {
     let transaction: CardanoTx;
     try {
       transaction = JsonBigInt.parse(serializedTransaction);
@@ -22,7 +22,7 @@ export class CardanoRosenExtractor extends AbstractRosenDataExtractor<string> {
     }
     try {
       const baseError = `No rosen data found for tx [${transaction.id}]`;
-      const data = transaction.metadata?.['0'];
+      const data = transaction.metadata?.parsedJson?.['0'];
       const rosenData = parseRosenData(data);
       if (rosenData) {
         const lockOutputs = transaction.outputs.filter(
@@ -40,8 +40,7 @@ export class CardanoRosenExtractor extends AbstractRosenDataExtractor<string> {
               amount: assetTransformation.amount,
               targetChainTokenId: assetTransformation.to,
               sourceTxId: transaction.id,
-              // TODO: save rawData in CBOR (local:ergo/rosen-bridge/utils#293)
-              rawData: JsonBigInt.stringify(data),
+              rawData: transaction.metadata!.cbor,
             };
           }
         }

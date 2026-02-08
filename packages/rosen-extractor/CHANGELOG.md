@@ -1,5 +1,43 @@
 # @rosen-bridge/rosen-extractor
 
+## 11.2.0
+
+### Minor Changes
+
+- Add Firo chain support with FiroRosenExtractor and FiroRpcRosenExtractor
+
+### Patch Changes
+
+- Update dependencies
+  - @rosen-bridge/address-codec@1.1.0
+
+## 11.1.2
+
+### Patch Changes
+
+- Update dependencies
+  - @rosen-bridge/abstract-logger@4.0.0
+  - @rosen-bridge/tokens@5.0.0
+
+## 11.1.1
+
+### Patch Changes
+
+- Throw error when tx cbor output is not set on ogmios client
+
+## 11.1.0
+
+### Minor Changes
+
+- Add optional `storeRawData` parameter to control whether raw transaction data should exist in RosenData object
+
+## 11.0.0
+
+### Major Changes
+
+- Save Cardano rawData in CBOR format
+- Remove Cardano GraphQL module (no longer maintained)
+
 ## 10.1.1
 
 ### Patch Changes

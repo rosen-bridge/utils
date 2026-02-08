@@ -1,3 +1,4 @@
-export { TokenMap } from './TokenMap/tokenMap';
-export * from './TokenMap/types';
-export * from './TokenMap/constants';
+export { TokenMap } from './tokenMap';
+export * from './types';
+export * from './constants';
+export * from './errors';

@@ -12,6 +12,7 @@ import {
   ETHEREUM_CHAIN,
   HANDSHAKE_CHAIN,
   RUNES_CHAIN,
+  FIRO_CHAIN,
 } from '../lib/const';
 
 describe('encodeAddress', () => {
@@ -140,6 +141,20 @@ describe('encodeAddress', () => {
   it('should encode Runes address successfully', () => {
     const res = encodeAddress(RUNES_CHAIN, testData.taprootBitcoinAddress);
     expect(res).toEqual(testData.encodedTaprootBitcoinAddress);
+  });
+
+  /**
+   * @target `encodeAddress` should encode Firo address successfully
+   * @dependencies
+   * @scenario
+   * - run test
+   * - check returned value
+   * @expected
+   * - it should be output script of given address in hex
+   */
+  it('should encode Firo address successfully', () => {
+    const res = encodeAddress(FIRO_CHAIN, testData.firoAddress);
+    expect(res).toEqual(testData.encodedFiroAddress);
   });
 
   /**

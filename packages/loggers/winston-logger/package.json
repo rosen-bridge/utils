@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/winston-logger",
-  "version": "2.0.1",
+  "version": "3.0.0",
   "description": "Rosen Bridge Winston logger, used inside Rosen services",
   "repository": {
     "type": "git",
@@ -24,17 +24,15 @@
     "release": "npm run build && npm publish --access public",
     "type-check": "tsc --noEmit"
   },
-  "devDependencies": {
-    "tsx": "^4.20.5"
-  },
   "dependencies": {
-    "@rosen-bridge/abstract-logger": "^3.0.1",
+    "@rosen-bridge/abstract-logger": "^4.0.0",
     "@rosen-bridge/json-bigint": "^1.1.0",
     "winston": "^3.17.0",
     "winston-daily-rotate-file": "^4.7.1",
     "winston-loki": "^6.0.7"
   },
   "engines": {
-    "node": ">=22.18.0"
+    "node": ">=22.18.0",
+    "npm": "11.6.2"
   }
 }

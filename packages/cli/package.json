@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/cli",
-  "version": "2.1.0",
+  "version": "2.1.2",
   "description": "The official Rosen bridge cli, providing helpers for the tasks related to Rosen bridge",
   "repository": {
     "type": "git",
@@ -27,8 +27,8 @@
     "rosen"
   ],
   "dependencies": {
-    "@rosen-bridge/encryption": "^0.1.2",
-    "@rosen-bridge/utils": "^2.0.1",
+    "@rosen-bridge/encryption": "^1.0.1",
+    "@rosen-bridge/utils": "^2.0.2",
     "@zxcvbn-ts/core": "^3.0.4",
     "@zxcvbn-ts/language-common": "^3.0.4",
     "@zxcvbn-ts/language-en": "^3.0.2",
@@ -39,6 +39,10 @@
     "yargs": "^17.7.2"
   },
   "engines": {
-    "node": ">=22.18.0"
+    "node": ">=22.18.0",
+    "npm": "11.6.2"
+  },
+  "devDependencies": {
+    "@types/yargs": "^17.0.33"
   }
 }

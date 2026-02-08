@@ -1,5 +1,24 @@
 # @rosen-bridge/tokens
 
+## 5.0.0
+
+### Major Changes
+
+- Remove the `updateConfigByBoxes` function (Please refer to [`@rosen-bridge/extended-tokens` package](https://www.npmjs.com/package/@rosen-bridge/extended-tokens))
+
+### Minor Changes
+
+- Support Unbridgeable tokens (i.e., token sets with exactly one non-Ergo token), they are considered in the `wrapAmount`, `unwrapAmount` and `getSignificantDecimals` functions
+- Add a new argument to `TokenMap.getTokenSet` function, the `includeUnbridgeableTokens`, with the default value of `false`
+- Add validations on tokens json that throws `CorruptedConfigError`
+  - when a token set is empty
+  - when a token set has more than one token without supporting `ergo`
+
+### Patch Changes
+
+- Update dependencies
+  - @rosen-bridge/abstract-logger@4.0.0
+
 ## 4.0.1
 
 ### Patch Changes

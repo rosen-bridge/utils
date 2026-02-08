@@ -42,6 +42,11 @@ export const invalidDogeAddress = 'bc1qkgp89fjerymm5ltg0hygnumr0m2qa7n22gyw6h';
 export const encodedDogeAddress =
   'a914966ba9f4755996c3d51025d53044b415121bc10287';
 
+export const firoAddress = 'a41owUrDFUy7taaQjntHqUadXm49d4z65e';
+export const invalidFiroAddress = 'bc1qkgp89fjerymm5ltg0hygnumr0m2qa7n22gyw6h';
+export const encodedFiroAddress =
+  '76a91424304f7ac11d0bcb0de1ebc6e2ea6aae174aee8988ac';
+
 export const handshakeAddress = 'hs1qvq4029zf8zvms3pw6t9znju5wqte3hpykr8q3s';
 export const invalidHandshakeAddress = 'bc1qkgp89fjerymm5ltg0hygnumr0m2qa7n22gyw6h';
 export const encodedHandshakeAddress =

@@ -10,8 +10,13 @@ export class DogeEsploraRosenExtractor extends AbstractRosenDataExtractor<DogeEs
   readonly chain = DOGE_CHAIN;
   protected lockScriptPubKey: string;
 
-  constructor(lockAddress: string, tokens: TokenMap, logger?: AbstractLogger) {
-    super(lockAddress, tokens, logger);
+  constructor(
+    lockAddress: string,
+    tokens: TokenMap,
+    logger?: AbstractLogger,
+    storeRawData = true,
+  ) {
+    super(lockAddress, tokens, logger, storeRawData);
     this.lockScriptPubKey = addressToOutputScript(lockAddress);
   }
 
@@ -19,7 +24,7 @@ export class DogeEsploraRosenExtractor extends AbstractRosenDataExtractor<DogeEs
    * extracts RosenData from given lock transaction in Esplora format
    * @param transaction the lock transaction in Esplora format
    */
-  extractRawData = (
+  extractData = (
     transaction: DogeEsploraTransaction,
   ): RosenData | undefined => {
     const baseError = `No rosen data found for tx [${transaction.txid}]`;

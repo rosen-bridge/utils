@@ -1,9 +1,9 @@
+import JsonBigInt from '@rosen-bridge/json-bigint';
 import { isPlainObject } from 'lodash-es';
 import { RosenData, TokenTransformation } from '../abstract/types';
 import AbstractRosenDataExtractor from '../abstract/abstractRosenDataExtractor';
 import { CARDANO_CHAIN, CARDANO_NATIVE_TOKEN } from '../const';
 import { KoiosCborTransaction } from './types';
-import JsonBigInt from '@rosen-bridge/json-bigint';
 import { getCardanoTokenId, parseRosenData } from './utils';
 import {
   TransactionOutputJSON,
@@ -11,6 +11,7 @@ import {
   BigNum,
   GeneralTransactionMetadata,
   MetadataJsonSchema,
+  Transaction,
 } from '@emurgo/cardano-serialization-lib-nodejs';
 
 export class CardanoKoiosRosenExtractor extends AbstractRosenDataExtractor<KoiosCborTransaction> {
@@ -20,9 +21,7 @@ export class CardanoKoiosRosenExtractor extends AbstractRosenDataExtractor<Koios
    * extracts RosenData from given lock transaction in Koios format
    * @param transaction the lock transaction in Koios format
    */
-  extractRawData = (
-    transaction: KoiosCborTransaction,
-  ): RosenData | undefined => {
+  extractData = (transaction: KoiosCborTransaction): RosenData | undefined => {
     const baseError = `No rosen data found for tx [${transaction.tx_hash}]`;
     if (!transaction.auxiliary_data) return undefined;
     const metadata = transaction.auxiliary_data.metadata;
@@ -48,14 +47,24 @@ export class CardanoKoiosRosenExtractor extends AbstractRosenDataExtractor<Koios
               rosenData.toChain,
             );
             if (assetTransformation) {
+              let rawData: string | undefined = '';
+              if (this.storeRawData) {
+                rawData = Transaction.from_hex(transaction.cbor)
+                  .auxiliary_data()
+                  ?.metadata()
+                  ?.to_hex();
+                if (!rawData)
+                  throw new Error(
+                    `ImpossibleBehavior: Rosen data is successfully extracted for tx [${transaction.tx_hash}] but failed to get metadata from transaction CBOR`,
+                  );
+              }
               return {
                 ...rosenData,
                 sourceChainTokenId: assetTransformation.from,
                 amount: assetTransformation.amount,
                 targetChainTokenId: assetTransformation.to,
                 sourceTxId: transaction.tx_hash,
-                // TODO: save rawData in CBOR (local:ergo/rosen-bridge/utils#293)
-                rawData: JsonBigInt.stringify(data),
+                rawData: rawData,
               };
             }
           }

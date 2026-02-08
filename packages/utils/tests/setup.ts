@@ -1,1 +1,1 @@
-jest.mock('octokit');
+vi.mock('octokit');

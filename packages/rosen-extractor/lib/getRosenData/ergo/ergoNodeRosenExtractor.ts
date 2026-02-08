@@ -11,8 +11,13 @@ export class ErgoNodeRosenExtractor extends AbstractRosenDataExtractor<NodeTrans
   readonly chain = ERGO_CHAIN;
   lockErgoTree: string;
 
-  constructor(lockAddress: string, tokens: TokenMap, logger?: AbstractLogger) {
-    super(lockAddress, tokens, logger);
+  constructor(
+    lockAddress: string,
+    tokens: TokenMap,
+    logger?: AbstractLogger,
+    storeRawData = true,
+  ) {
+    super(lockAddress, tokens, logger, storeRawData);
     this.lockErgoTree = Address.from_base58(lockAddress)
       .to_ergo_tree()
       .to_base16_bytes();
@@ -22,7 +27,7 @@ export class ErgoNodeRosenExtractor extends AbstractRosenDataExtractor<NodeTrans
    * extracts RosenData from given lock transaction in Node format
    * @param transaction the lock transaction in Node format
    */
-  extractRawData = (transaction: NodeTransaction): RosenData | undefined => {
+  extractData = (transaction: NodeTransaction): RosenData | undefined => {
     const baseError = `No rosen data found for tx [${transaction.id}]`;
     try {
       for (const box of transaction.outputs) {

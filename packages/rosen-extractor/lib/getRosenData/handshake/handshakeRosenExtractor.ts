@@ -20,7 +20,7 @@ export class HandshakeRosenExtractor extends AbstractRosenDataExtractor<string> 
    * extracts RosenData from given lock transaction in HandshakeTx format
    * @param serializedTransaction stringified transaction in HandshakeTx format
    */
-  extractRawData = (serializedTransaction: string): RosenData | undefined => {
+  extractData = (serializedTransaction: string): RosenData | undefined => {
     let transaction: HandshakeTx;
     try {
       transaction = JsonBigInt.parse(serializedTransaction);

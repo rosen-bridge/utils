@@ -9,6 +9,8 @@ import {
   HANDSHAKE_CHAIN,
   HANDSHAKE_NETWORK,
   RUNES_CHAIN,
+  FIRO_CHAIN,
+  FIRO_NETWORK,
 } from './const';
 import { UnsupportedAddressError, UnsupportedChainError } from './types';
 import * as ergoLib from 'ergo-lib-wasm-nodejs';
@@ -48,6 +50,11 @@ export const encodeAddress = (chain: string, address: string): string => {
     case DOGE_CHAIN:
       encoded = bitcoinLib.address
         .toOutputScript(address, DOGE_NETWORK)
+        .toString('hex');
+      break;
+    case FIRO_CHAIN:
+      encoded = bitcoinLib.address
+        .toOutputScript(address, FIRO_NETWORK)
         .toString('hex');
       break;
     case HANDSHAKE_CHAIN:
