@@ -14,7 +14,7 @@ describe('RWTRepoBuilder', () => {
       BigInt(boxInfo1.assets[1].amount),
       boxInfo1.assets[2].tokenId,
       BigInt(boxInfo1.assets[2].amount),
-
+      BigInt(boxInfo1.value.toString()),
       Buffer.from(boxInfo1Properties.r4).toString(),
       Number(boxInfo1Properties.r5.to_str()),
     );
@@ -143,10 +143,8 @@ describe('RWTRepoBuilder', () => {
      *     - AWC with amount `awcTokenCount`
      */
     it(`should create an rwt repo candidate Ergo box using the current instance's properties`, () => {
-      const ergValue = 7000000n;
       const height = 5000;
 
-      rwtRepoBuilder.setValue(ergValue);
       rwtRepoBuilder.setHeight(height);
       const r4Expected = ergoLib.Constant.from_byte_array(
         Uint8Array.from(Buffer.from(rwtRepoBuilder['chainId'])),
@@ -160,7 +158,7 @@ describe('RWTRepoBuilder', () => {
         rwtRepoBuilder['repoErgoTree'],
       );
       expect(candidateBox.value().as_i64().to_str()).toEqual(
-        ergValue.toString(),
+        rwtRepoBuilder['value'].toString(),
       );
       expect(candidateBox.creation_height()).toEqual(height);
 

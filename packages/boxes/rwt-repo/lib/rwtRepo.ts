@@ -53,6 +53,7 @@ export class RWTRepo {
       this.getRwtCount(),
       this.getRsnId(),
       this.getRsnCount(),
+      this.getRepoValue(),
       this.chainId,
       this.totalWatchers,
       this.logger,
@@ -77,8 +78,22 @@ export class RWTRepo {
     return this.totalWatchers;
   };
 
+  /**
+   * Return the ergo tree of the repo box
+   *
+   * @returns {string} repoErgoTree
+   */
   getRepoErgoTree = (): string => {
     return this.box.ergo_tree().to_base16_bytes();
+  };
+
+  /**
+   * Return the value of the repo box
+   *
+   * @returns {bigint} repoValue
+   */
+  getRepoValue = (): bigint => {
+    return BigInt(this.box.value().as_i64().to_str());
   };
 
   /**
