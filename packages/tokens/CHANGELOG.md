@@ -1,5 +1,11 @@
 # @rosen-bridge/tokens
 
+## 5.0.1
+
+### Patch Changes
+
+- Fix a bug where the `unbridgeableTokens` field was not initialized in the `constructor`
+
 ## 5.0.0
 
 ### Major Changes

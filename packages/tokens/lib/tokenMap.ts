@@ -22,6 +22,7 @@ export class TokenMap {
 
   constructor(logger?: AbstractLogger) {
     this.tokensConfig = [];
+    this.unbridgeableTokens = [];
     this.updateSemaphore = new Semaphore(1);
     this.callbacks = new Map<number, CallbackFunction>();
     this.logger = logger ?? new DummyLogger();

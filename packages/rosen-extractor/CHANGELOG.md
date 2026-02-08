@@ -1,5 +1,14 @@
 # @rosen-bridge/rosen-extractor
 
+## 11.2.1
+
+### Patch Changes
+
+- Update dependencies
+  - @rosen-bridge/address-codec@1.1.1
+  - @rosen-bridge/tokens@5.0.1
+  - ethers@6.16.0
+
 ## 11.2.0
 
 ### Minor Changes
