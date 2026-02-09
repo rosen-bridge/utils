@@ -1,8 +1,6 @@
 import * as wasm from 'ergo-lib-wasm-nodejs';
 import {
   ERGO_CHAIN,
-  ERGO_SIDE_TOKEN_ID_KEY,
-  REQUIRED_FIELDS,
   ExtractedConfig,
   RosenChainToken,
   RosenTokens,
@@ -10,6 +8,7 @@ import {
 import { CorruptedConfigBoxError } from './errors';
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import { DummyLogger } from '@rosen-bridge/abstract-logger';
+import { ERGO_SIDE_TOKEN_ID_KEY, REQUIRED_FIELDS } from './constants';
 
 /**
  * set tokens config by token map boxes
