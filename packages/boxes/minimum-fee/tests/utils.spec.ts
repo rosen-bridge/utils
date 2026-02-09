@@ -1,6 +1,5 @@
 import { extractFeeFromBox, feeToRegisterValues } from '../lib';
 import * as testData from './testData';
-import { jsonToErgoBoxWrapper } from './testUtils';
 
 describe('extractFeeFromBox', () => {
   /**
@@ -15,8 +14,7 @@ describe('extractFeeFromBox', () => {
    * - it should return correct fee config
    */
   it('should build expected config box with normal config for Erg successfully', () => {
-    const box = jsonToErgoBoxWrapper(testData.normalFeeBox);
-    const result = extractFeeFromBox(box);
+    const result = extractFeeFromBox(testData.normalFeeBox);
     expect(result).toEqual(testData.normalFee);
   });
 });

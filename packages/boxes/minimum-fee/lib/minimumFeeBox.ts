@@ -166,7 +166,7 @@ export class MinimumFeeBox {
         ErgoTree.from_base16_bytes(this.box.ergoTree),
       ).to_base58(NetworkPrefix.Mainnet),
     )
-      .setValue(BigInt(this.box.value))
+      .setValue(this.box.value)
       .setToken(this.tokenId);
 
     this.getConfigs().forEach((fee) => {

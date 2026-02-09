@@ -41,7 +41,7 @@ describe('MinimumFeeExplorerNetwork', () => {
       } as any);
 
     /**
-     * @target MinimumFeeBox.fetchBox should fetch and select
+     * @target MinimumFeeExplorerNetwork.getBoxesByTokenId should fetch and select
      * Erg config box from explorer client successfully
      * @dependencies
      * @scenario
@@ -69,7 +69,7 @@ describe('MinimumFeeExplorerNetwork', () => {
     });
 
     /**
-     * @target MinimumFeeBox.fetchBox should fetch and select
+     * @target MinimumFeeExplorerNetwork.getBoxesByTokenId should fetch and select
      * token config box from explorer client successfully
      * @dependencies
      * @scenario

@@ -7,9 +7,7 @@ import {
 } from '../lib';
 import { TestMinimumFeeBox } from './testMinimumFeeBox';
 import * as testData from './testData';
-import JsonBigInt from '@rosen-bridge/json-bigint';
 import TestNetwork from './network/testNetwork.mock';
-import { jsonToErgoBoxWrapper, parseExplorerBox } from './testUtils';
 import { Constant } from 'ergo-lib-wasm-nodejs';
 
 describe('MinimumFeeBox', () => {
@@ -39,7 +37,7 @@ describe('MinimumFeeBox', () => {
      */
     it('should fetch and select Erg config box successfully', async () => {
       vi.spyOn(testNetwork as any, 'getBoxesByTokenId').mockResolvedValueOnce(
-        testData.explorerTestBoxes.map(parseExplorerBox),
+        testData.networkTestBoxes,
       );
       const minimumFeeBox = generateDefaultMinimumFeeBox();
       const res = await minimumFeeBox.fetchBox();
@@ -64,7 +62,7 @@ describe('MinimumFeeBox', () => {
      */
     it('should fetch and select token config box successfully', async () => {
       vi.spyOn(testNetwork as any, 'getBoxesByTokenId').mockResolvedValueOnce(
-        testData.explorerTestBoxes.map(parseExplorerBox),
+        testData.networkTestBoxes,
       );
       const minimumFeeBox = new TestMinimumFeeBox(
         tokenId,
@@ -97,7 +95,7 @@ describe('MinimumFeeBox', () => {
         [],
       );
       const minimumFeeBox = generateDefaultMinimumFeeBox();
-      minimumFeeBox.setBox(jsonToErgoBoxWrapper(testData.normalFeeBox));
+      minimumFeeBox.setBox(testData.normalFeeBox);
       const res = await minimumFeeBox.fetchBox();
       expect(res).toEqual(false);
       expect(minimumFeeBox.getBox()).toBeUndefined();
@@ -123,7 +121,7 @@ describe('MinimumFeeBox', () => {
       vi.spyOn(testNetwork as any, 'getBoxesByTokenId').mockRejectedValueOnce(
         new FailedError(`test FailedError`),
       );
-      minimumFeeBox.setBox(jsonToErgoBoxWrapper(testData.normalFeeBox));
+      minimumFeeBox.setBox(testData.normalFeeBox);
       const res = await minimumFeeBox.fetchBox();
       expect(res).toEqual(false);
       expect(minimumFeeBox.getBox()).toBeUndefined();
@@ -149,7 +147,7 @@ describe('MinimumFeeBox', () => {
       vi.spyOn(testNetwork as any, 'getBoxesByTokenId').mockRejectedValueOnce(
         new NetworkError(`test NetworkError`),
       );
-      minimumFeeBox.setBox(jsonToErgoBoxWrapper(testData.normalFeeBox));
+      minimumFeeBox.setBox(testData.normalFeeBox);
       const res = await minimumFeeBox.fetchBox();
       expect(res).toEqual(false);
       expect(minimumFeeBox.getBox()).toBeDefined();
@@ -168,12 +166,11 @@ describe('MinimumFeeBox', () => {
      * - FailedError should be thrown
      */
     it('should throw FailedError when found multiple config box', async () => {
-      const testBoxes = testData.nodeTestBoxes.map((boxJson) =>
-        jsonToErgoBoxWrapper(JsonBigInt.stringify(boxJson)),
-      );
       const minimumFeeBox = generateDefaultMinimumFeeBox();
       expect(() => {
-        minimumFeeBox.callSelectEligibleBox(testBoxes);
+        minimumFeeBox.callSelectEligibleBox(
+          testData.networkTestBoxesMultipleConfig,
+        );
       }).toThrow(FailedError);
     });
   });
@@ -191,7 +188,7 @@ describe('MinimumFeeBox', () => {
      */
     it('should extract normal fee successfully', () => {
       const minimumFeeBox = generateDefaultMinimumFeeBox();
-      minimumFeeBox.setBox(jsonToErgoBoxWrapper(testData.normalFeeBox));
+      minimumFeeBox.setBox(testData.normalFeeBox);
       const result = minimumFeeBox.getFee('ergo', 12000, 'cardano');
       expect(result).toEqual(
         new ChainMinimumFee(testData.normalFee[0].configs.cardano),
@@ -211,7 +208,7 @@ describe('MinimumFeeBox', () => {
      */
     it('should extract the fee that adds a new chain successfully', () => {
       const minimumFeeBox = generateDefaultMinimumFeeBox();
-      minimumFeeBox.setBox(jsonToErgoBoxWrapper(testData.newChainFeeBox));
+      minimumFeeBox.setBox(testData.newChainFeeBox);
       const result = minimumFeeBox.getFee('ergo', 23000, 'cardano');
       expect(result).toEqual(
         new ChainMinimumFee(testData.newChainFee[1].configs.cardano),
@@ -231,7 +228,7 @@ describe('MinimumFeeBox', () => {
      */
     it('should extract the fee that removes a chain successfully', () => {
       const minimumFeeBox = generateDefaultMinimumFeeBox();
-      minimumFeeBox.setBox(jsonToErgoBoxWrapper(testData.removeChainFeeBox));
+      minimumFeeBox.setBox(testData.removeChainFeeBox);
       const result = minimumFeeBox.getFee('ergo', 12000, 'cardano');
       expect(result).toEqual(
         new ChainMinimumFee(testData.removeChainFee[0].configs.cardano),
@@ -250,7 +247,7 @@ describe('MinimumFeeBox', () => {
      */
     it('should throw error when fromChain is not supported', () => {
       const minimumFeeBox = generateDefaultMinimumFeeBox();
-      minimumFeeBox.setBox(jsonToErgoBoxWrapper(testData.normalFeeBox));
+      minimumFeeBox.setBox(testData.normalFeeBox);
       expect(() => {
         minimumFeeBox.getFee('notSupportedChain', 12000, 'cardano');
       }).toThrow(NotFoundError);
@@ -268,7 +265,7 @@ describe('MinimumFeeBox', () => {
      */
     it('should throw error when toChain is not supported', () => {
       const minimumFeeBox = generateDefaultMinimumFeeBox();
-      minimumFeeBox.setBox(jsonToErgoBoxWrapper(testData.normalFeeBox));
+      minimumFeeBox.setBox(testData.normalFeeBox);
       expect(() => {
         minimumFeeBox.getFee('ergo', 12000, 'notSupporetedChain');
       }).toThrow(Error);
@@ -286,7 +283,7 @@ describe('MinimumFeeBox', () => {
      */
     it('should throw error when given height of fromChain is not supported', () => {
       const minimumFeeBox = generateDefaultMinimumFeeBox();
-      minimumFeeBox.setBox(jsonToErgoBoxWrapper(testData.normalFeeBox));
+      minimumFeeBox.setBox(testData.normalFeeBox);
       expect(() => {
         minimumFeeBox.getFee('ergo', 10000, 'cardano');
       }).toThrow(NotFoundError);
@@ -328,7 +325,7 @@ describe('MinimumFeeBox', () => {
      */
     it('should return a builder with the same parameters', () => {
       const minimumFeeBox = generateDefaultMinimumFeeBox();
-      const testBox = jsonToErgoBoxWrapper(testData.tokenNormalFeeBox);
+      const testBox = testData.tokenNormalFeeBox;
       minimumFeeBox.setBox(testBox);
       const result = minimumFeeBox.toBuilder();
       result.setHeight(1000000);
@@ -358,14 +355,14 @@ describe('MinimumFeeBox', () => {
           ?.to_coll_coll_byte()
           .map((element) => Buffer.from(element).toString()),
       ).toEqual(
-        Constant.decode_from_base16(testBox.additionalRegisters.R4)
+        Constant.decode_from_base16(testBox.additionalRegisters!.R4!)
           ?.to_coll_coll_byte()
           .map((element) => Buffer.from(element).toString()),
       );
       for (let i = 5; i < 10; i++) {
         expect(resultBoxCandidate.register_value(i)?.to_js()).toEqual(
           Constant.decode_from_base16(
-            testBox.additionalRegisters[`R${i}` as keyof AdditionalRegisters],
+            testBox.additionalRegisters![`R${i}` as keyof AdditionalRegisters]!,
           )?.to_js(),
         );
       }
@@ -389,7 +386,7 @@ describe('MinimumFeeBox', () => {
      */
     it('should return a builder with the same parameters with a config that removes a chain', () => {
       const minimumFeeBox = generateDefaultMinimumFeeBox();
-      const testBox = jsonToErgoBoxWrapper(testData.removeChainFeeBox);
+      const testBox = testData.removeChainFeeBox;
       minimumFeeBox.setBox(testBox);
       const result = minimumFeeBox.toBuilder();
       result.setHeight(1000000);
@@ -419,14 +416,14 @@ describe('MinimumFeeBox', () => {
           ?.to_coll_coll_byte()
           .map((element) => Buffer.from(element).toString()),
       ).toEqual(
-        Constant.decode_from_base16(testBox.additionalRegisters.R4)
+        Constant.decode_from_base16(testBox.additionalRegisters!.R4!)
           ?.to_coll_coll_byte()
           .map((element) => Buffer.from(element).toString()),
       );
       for (let i = 5; i < 10; i++) {
         expect(resultBoxCandidate.register_value(i)?.to_js()).toEqual(
           Constant.decode_from_base16(
-            testBox.additionalRegisters[`R${i}` as keyof AdditionalRegisters],
+            testBox.additionalRegisters![`R${i}` as keyof AdditionalRegisters]!,
           )?.to_js(),
         );
       }
@@ -445,7 +442,7 @@ describe('MinimumFeeBox', () => {
      */
     it('should not set height for builder', () => {
       const minimumFeeBox = generateDefaultMinimumFeeBox();
-      minimumFeeBox.setBox(jsonToErgoBoxWrapper(testData.normalFeeBox));
+      minimumFeeBox.setBox(testData.normalFeeBox);
       const result = minimumFeeBox.toBuilder();
       expect((result as any).height).toBeUndefined();
     });

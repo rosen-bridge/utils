@@ -24,7 +24,7 @@ describe('MinimumFeeNodeNetwork', () => {
       } as any);
 
     /**
-     * @target MinimumFeeBox.fetchBox should fetch and select
+     * @target MinimumFeeNodeNetwork.getBoxesByTokenId should fetch and select
      * Erg config box from node client successfully
      * @dependencies
      * @scenario
@@ -52,7 +52,7 @@ describe('MinimumFeeNodeNetwork', () => {
     });
 
     /**
-     * @target MinimumFeeBox.fetchBox should fetch and select
+     * @target MinimumFeeNodeNetwork.getBoxesByTokenId should fetch and select
      * token config box from node client successfully
      * @dependencies
      * @scenario
