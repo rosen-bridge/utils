@@ -1,11 +1,12 @@
+import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
 import { Semaphore } from 'await-semaphore';
+
 import {
   ActionPromise,
   Dependency,
   ServiceAction,
   ServiceStatus,
 } from './types';
-import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
 
 export type StatusChangeCallbackFunction = (
   service: AbstractService,

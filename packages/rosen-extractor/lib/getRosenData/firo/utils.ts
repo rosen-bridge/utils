@@ -1,6 +1,7 @@
-import { parseRosenData } from '../../utils';
 import { address } from 'bitcoinjs-lib';
+
 import { MinimalOnChainRosenData } from '../../types';
+import { parseRosenData } from '../../utils';
 
 const firoNetwork = {
   // Firo network parameters

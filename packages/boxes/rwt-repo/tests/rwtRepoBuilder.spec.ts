@@ -1,5 +1,6 @@
-import { RWTRepoBuilder } from '../lib';
 import * as ergoLib from 'ergo-lib-wasm-nodejs';
+
+import { RWTRepoBuilder } from '../lib';
 import { boxInfo1, boxInfo1Properties, repoNft } from './rwtRepoTestData';
 
 describe('RWTRepoBuilder', () => {

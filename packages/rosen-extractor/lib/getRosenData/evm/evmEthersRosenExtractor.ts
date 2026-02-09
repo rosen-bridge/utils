@@ -1,8 +1,9 @@
-import { RosenData } from '../abstract/types';
-import AbstractRosenDataExtractor from '../abstract/abstractRosenDataExtractor';
-import { Transaction, TransactionResponse } from 'ethers';
-import { TokenMap } from '@rosen-bridge/tokens';
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
+import { TokenMap } from '@rosen-bridge/tokens';
+import { Transaction, TransactionResponse } from 'ethers';
+
+import AbstractRosenDataExtractor from '../abstract/abstractRosenDataExtractor';
+import { RosenData } from '../abstract/types';
 import { EvmRpcRosenExtractor } from './evmRpcRosenExtractor';
 
 export class EvmEthersRosenExtractor extends AbstractRosenDataExtractor<TransactionResponse> {

@@ -1,6 +1,7 @@
+import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
+
 import { AbstractService } from './abstractService';
 import { Action, Dependency, ServiceAction, ServiceStatus } from './types';
-import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
 
 export class ServiceManager {
   private static instance: ServiceManager;

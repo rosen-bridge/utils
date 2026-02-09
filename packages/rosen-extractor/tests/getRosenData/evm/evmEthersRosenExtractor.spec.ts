@@ -1,8 +1,9 @@
-import { EvmEthersRosenExtractor } from '../../../lib';
-import * as testData from './testData';
-import TestUtils from '../testUtils';
-import { JsonRpcProvider, TransactionResponse } from 'ethers';
 import { TokenMap } from '@rosen-bridge/tokens';
+import { JsonRpcProvider, TransactionResponse } from 'ethers';
+
+import { EvmEthersRosenExtractor } from '../../../lib';
+import TestUtils from '../testUtils';
+import * as testData from './testData';
 
 describe('EvmEthersRosenExtractor', () => {
   describe('constructor', () => {

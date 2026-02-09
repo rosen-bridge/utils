@@ -94,6 +94,7 @@ To instantiate `TxPot`, the `setup` function should get called with `typeorm` da
 
 ```ts
 import { TxPot } from '@rosen-bridge/tx-pot';
+
 import { dataSource } from '../db/dataSource';
 
 const txPot = TxPot.setup(dataSource);
@@ -103,8 +104,9 @@ A logger can be passed to `TxPot`. Example of integrating `@rosen-bridge/winston
 
 ```ts
 import { TxPot } from '@rosen-bridge/tx-pot';
-import { dataSource } from '../db/dataSource';
 import WinstonLogger from '@rosen-bridge/winston-logger';
+
+import { dataSource } from '../db/dataSource';
 
 const logger = WinstonLogger.getInstance().getLogger(`TxPot`);
 
@@ -114,8 +116,8 @@ const txPot = TxPot.setup(dataSource, logger);
 After instantiating `TxPot` all supported chains interfaces should be registered in (see [#network-interface](#network-interface) for more details).
 
 ```ts
-import { ErgoChainManager } from 'managers/ErgoChainManager';
 import { CardanoChainManager } from 'managers/CardanoChainManager';
+import { ErgoChainManager } from 'managers/ErgoChainManager';
 
 txPot.registerChain(`ergo`, ErgoChainManager);
 txPot.registerChain(`cardano`, CardanoChainManager);

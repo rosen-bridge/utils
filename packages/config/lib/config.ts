@@ -1,16 +1,17 @@
+import JsonBigInt from '@rosen-bridge/json-bigint';
 import { IConfig, IConfigSource } from 'config';
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
 import path from 'path';
+
+import { ConfigField, ConfigSchema } from './schema/types/fields';
+import { When } from './schema/types/validations';
 import {
   propertyValidators,
   supportedTypes,
 } from './schema/Validators/fieldProperties';
-import { ConfigField, ConfigSchema } from './schema/types/fields';
-import { When } from './schema/types/validations';
 import { getSourceName, getValueFromConfigSources } from './utils';
 import { valueValidations, valueValidators } from './value/validators';
-import JsonBigInt from '@rosen-bridge/json-bigint';
 
 export class ConfigValidator {
   constructor(private schema: ConfigSchema) {

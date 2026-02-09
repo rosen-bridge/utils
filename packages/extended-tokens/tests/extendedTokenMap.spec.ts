@@ -1,10 +1,11 @@
 import { ErgoBox } from 'ergo-lib-wasm-nodejs';
+
+import { CorruptedConfigBoxError, ExtendedTokenMap } from '../lib';
 import {
   configBoxes,
   missingHeaderFieldConfigBox,
   thirdTokenMap,
 } from './testData';
-import { CorruptedConfigBoxError, ExtendedTokenMap } from '../lib';
 
 describe('ExtendedTokenMap', () => {
   describe('updateConfigByBoxes', () => {

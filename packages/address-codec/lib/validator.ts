@@ -1,3 +1,8 @@
+import * as cardanoLib from '@emurgo/cardano-serialization-lib-nodejs';
+import * as bitcoinLib from 'bitcoinjs-lib';
+import * as ergoLib from 'ergo-lib-wasm-nodejs';
+import * as ethereumLib from 'ethers';
+
 import {
   BINANCE_CHAIN,
   BITCOIN_CHAIN,
@@ -11,10 +16,6 @@ import {
   FIRO_NETWORK,
 } from './const';
 import { UnsupportedAddressError, UnsupportedChainError } from './types';
-import * as ergoLib from 'ergo-lib-wasm-nodejs';
-import * as cardanoLib from '@emurgo/cardano-serialization-lib-nodejs';
-import * as bitcoinLib from 'bitcoinjs-lib';
-import * as ethereumLib from 'ethers';
 
 /**
  * validates address of a chain

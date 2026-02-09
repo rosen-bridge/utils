@@ -1,4 +1,3 @@
-import * as testData from './testData';
 import {
   UnsupportedAddressError,
   UnsupportedChainError,
@@ -13,6 +12,7 @@ import {
   RUNES_CHAIN,
   FIRO_CHAIN,
 } from '../lib/const';
+import * as testData from './testData';
 
 describe('validateAddress', () => {
   /**

@@ -1,15 +1,12 @@
 import download from 'download';
 
-import downloadRosenAssets from '../lib/downloadRosenAssets';
-
 import { RosenAssetsDownloadError } from '../lib';
-
+import downloadRosenAssets from '../lib/downloadRosenAssets';
 import {
   mainNetPrereleaseRelease,
   mainNetStableRelease,
   contractReleases,
 } from './data/octokit.data';
-
 import { mockOctokit, mockOctokitGetReleaseByTag } from './mocks/octokit.mock';
 
 vi.mock('download');

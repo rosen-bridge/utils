@@ -1,9 +1,9 @@
-import winston, { format } from 'winston';
-import 'winston-daily-rotate-file';
-import path from 'node:path';
-
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import JsonBigInt from '@rosen-bridge/json-bigint';
+import path from 'node:path';
+import winston, { format } from 'winston';
+import 'winston-daily-rotate-file';
+import LokiTransport from 'winston-loki';
 
 import {
   ConsoleTransportOptions,
@@ -16,7 +16,6 @@ import {
 } from './types';
 
 import printf = format.printf;
-import LokiTransport from 'winston-loki';
 
 /**
  * Custom log format that includes timestamp, level, filename, message and context.

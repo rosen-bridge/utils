@@ -1,4 +1,5 @@
 import { ErgoBox } from 'ergo-lib-wasm-nodejs';
+
 import { MinimumFeeBox } from '../lib';
 
 export class TestMinimumFeeBox extends MinimumFeeBox {

@@ -1,6 +1,6 @@
-import * as http from 'http';
 import { FastifyBaseLogger, FastifyInstance } from 'fastify';
 import type { FastifyZodOpenApiTypeProvider } from 'fastify-zod-openapi';
+import * as http from 'http';
 
 export type FastifyWithZod = FastifyInstance<
   http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>,

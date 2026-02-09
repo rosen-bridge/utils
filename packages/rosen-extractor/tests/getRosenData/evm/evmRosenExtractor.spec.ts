@@ -1,8 +1,9 @@
-import { EvmRosenExtractor } from '../../../lib';
-import * as testData from './testData';
-import TestUtils from '../testUtils';
-import { Transaction } from 'ethers';
 import { TokenMap } from '@rosen-bridge/tokens';
+import { Transaction } from 'ethers';
+
+import { EvmRosenExtractor } from '../../../lib';
+import TestUtils from '../testUtils';
+import * as testData from './testData';
 
 describe('EvmRosenExtractor', () => {
   describe('get', () => {

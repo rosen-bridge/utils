@@ -8,10 +8,11 @@ import {
   TokenId,
   ErgoBoxCandidate,
 } from 'ergo-lib-wasm-nodejs';
+
+import { ERGO_NATIVE_TOKEN } from './constants';
+import { InvalidConfig } from './errors';
 import { MinimumFeeConfig } from './minimumFeeConfig';
 import { Fee } from './types';
-import { InvalidConfig } from './errors';
-import { ERGO_NATIVE_TOKEN } from './constants';
 import { feeToRegisterValues } from './utils';
 
 export class MinimumFeeBoxBuilder {

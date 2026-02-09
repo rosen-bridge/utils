@@ -1,5 +1,5 @@
-import { parseRosenData } from '../../utils';
 import { MinimalOnChainRosenData } from '../../types';
+import { parseRosenData } from '../../utils';
 
 /**
  * extracts rosen data from raw hex data

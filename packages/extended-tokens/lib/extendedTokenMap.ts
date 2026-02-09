@@ -1,5 +1,6 @@
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import { TokenMap } from '@rosen-bridge/tokens';
+
 import { parseTokenMapBoxes } from './parseTokenMapBoxes';
 
 /**

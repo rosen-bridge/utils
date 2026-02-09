@@ -1,4 +1,5 @@
 import { Constant } from 'ergo-lib-wasm-nodejs';
+
 import { FEE_RATIO_DIVISOR } from './constants';
 
 export interface Fee {

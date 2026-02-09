@@ -1,4 +1,8 @@
+import JsonBigInt from '@rosen-bridge/json-bigint';
+import ergoExplorerClientFactory from '@rosen-clients/ergo-explorer';
+import ergoNodeClientFactory from '@rosen-clients/ergo-node';
 import { ErgoBox } from 'ergo-lib-wasm-nodejs';
+
 import {
   ChainMinimumFee,
   ErgoNetworkType,
@@ -6,11 +10,8 @@ import {
   NetworkError,
   NotFoundError,
 } from '../lib';
-import { TestMinimumFeeBox } from './testMinimumFeeBox';
 import * as testData from './testData';
-import ergoExplorerClientFactory from '@rosen-clients/ergo-explorer';
-import ergoNodeClientFactory from '@rosen-clients/ergo-node';
-import JsonBigInt from '@rosen-bridge/json-bigint';
+import { TestMinimumFeeBox } from './testMinimumFeeBox';
 
 describe('MinimumFeeBox', () => {
   const nativeTokenId = 'erg';

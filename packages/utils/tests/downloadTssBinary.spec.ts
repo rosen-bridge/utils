@@ -2,14 +2,12 @@ import download from 'download';
 
 import { downloadTssBinary } from '../lib';
 import { RosenAssetsDownloadError } from '../lib';
-
 import {
   tssReleases,
   tssTag1,
   tssTag2,
   tssTag3PreRelease,
 } from './data/octokit.data';
-
 import { mockOctokit, mockOctokitGetReleaseByTag } from './mocks/octokit.mock';
 
 vi.mock('download');

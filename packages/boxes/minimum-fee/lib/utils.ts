@@ -1,4 +1,5 @@
 import { Constant, ErgoBox } from 'ergo-lib-wasm-nodejs';
+
 import { Fee } from './types';
 
 /**

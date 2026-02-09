@@ -1,9 +1,10 @@
-import { DogeRpcRosenExtractor } from '../../../lib';
-import * as testData from './rpcTestData';
-import TestUtils from '../testUtils';
-import { ERGO_CHAIN, CARDANO_CHAIN } from '../../../lib/getRosenData/const';
 import { TokenMap } from '@rosen-bridge/tokens';
+
+import { DogeRpcRosenExtractor } from '../../../lib';
+import { ERGO_CHAIN, CARDANO_CHAIN } from '../../../lib/getRosenData/const';
 import { DogeRpcTransaction } from '../../../lib/getRosenData/doge/types';
+import TestUtils from '../testUtils';
+import * as testData from './rpcTestData';
 
 describe('DogeRpcRosenExtractor', () => {
   const tokenMap = new TokenMap();
