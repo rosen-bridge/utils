@@ -4,7 +4,8 @@ import { HANDSHAKE_CHAIN, HANDSHAKE_NATIVE_TOKEN } from '../const';
 import { HandshakeTx, HandshakeTxOutput, HandshakeRosenData } from './types';
 import { TokenMap } from '@rosen-bridge/tokens';
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
-import { parseRosenData, addressToHash, extractDataFromOutputs } from './utils';
+import { addressToHash, extractDataFromOutputs } from './utils';
+import { parseRosenData } from '../../utils';
 import JsonBigInt from '@rosen-bridge/json-bigint';
 
 export class HandshakeRosenExtractor extends AbstractRosenDataExtractor<string> {
@@ -38,14 +39,24 @@ export class HandshakeRosenExtractor extends AbstractRosenDataExtractor<string> 
         return undefined;
       }
 
-      // Extract data from outputs using utility function
-      const { validLock, lockOutput, reconstructedData } =
-        extractDataFromOutputs(outputs, this.lockAddressHash);
-
-      if (!validLock || !lockOutput) {
+      // Find lock output and position
+      let lockOutput = undefined;
+      let lockOutputIndex = -1;
+      for (let i = outputs.length - 1; i >= 0; i--) {
+        if (outputs[i].address?.hash === this.lockAddressHash) {
+          lockOutput = outputs[i];
+          lockOutputIndex = i;
+          break;
+        }
+      }
+      
+      if (!lockOutput) {
         this.logger.debug(baseError + `: Lock output not found`);
         return undefined;
       }
+
+      // Extract data from outputs using utility function
+      const reconstructedData = extractDataFromOutputs(outputs, lockOutputIndex);
 
       if (!reconstructedData) {
         this.logger.debug(baseError + `: No data chunks found`);
@@ -57,7 +68,7 @@ export class HandshakeRosenExtractor extends AbstractRosenDataExtractor<string> 
       try {
         rosenData = parseRosenData(reconstructedData);
         this.logger.debug(
-          `Successfully extracted Rosen data for ${rosenData.toChain}`,
+          `Successfully extracted Rosen data for [${rosenData.toChain}]`,
         );
       } catch (e) {
         this.logger.debug(
@@ -90,7 +101,9 @@ export class HandshakeRosenExtractor extends AbstractRosenDataExtractor<string> 
         amount: assetTransformation.amount,
         targetChainTokenId: assetTransformation.to,
         sourceTxId: transaction.id,
-        rawData: reconstructedData,
+        rawData: outputs
+          .map((output) => `${output.address?.hash}:${output.value}`)
+          .join(','),
       };
     } catch (e) {
       this.logger.debug(

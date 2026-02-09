@@ -74,6 +74,11 @@ export interface HandshakeTxOutput {
   }
 }
 
+export interface DataExtractionOutput {
+  value: bigint;
+  address?: { hash: string; version?: number };
+}
+
 export interface HandshakeTx {
   id: string;
   inputs: HandshakeTxInput[];

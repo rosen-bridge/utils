@@ -8,7 +8,8 @@ import {
 } from './types';
 import { TokenMap } from '@rosen-bridge/tokens';
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
-import { parseRosenData, addressToHash, extractDataFromOutputs } from './utils';
+import { addressToHash, convertHnsToDollarydoos, extractDataFromOutputs } from './utils';
+import { parseRosenData } from '../../utils';
 
 export class HandshakeRpcRosenExtractor extends AbstractRosenDataExtractor<HandshakeRpcTransaction> {
   readonly chain = HANDSHAKE_CHAIN;
@@ -34,20 +35,33 @@ export class HandshakeRpcRosenExtractor extends AbstractRosenDataExtractor<Hands
         return undefined;
       }
 
-      // Convert RPC outputs to standard format (HNS to dollarydoos)
-      const convertedOutputs = outputs.map((output) => ({
-        value: Math.round(output.value * 1000000), // HNS to dollarydoos
-        address: output.address,
-      }));
+      // Find lock output first (need to use original RPC output for value)
+      let lockOutputRpc = undefined;
+      let lockOutputIndex = -1;
+      for (let i = outputs.length - 1; i >= 0; i--) {
+        if (outputs[i].address?.hash === this.lockAddressHash) {
+          lockOutputRpc = outputs[i] as HandshakeRpcTxOutput | undefined;
+          lockOutputIndex = i;
+          break;
+        }
+      }
 
-      // Extract data from outputs using utility function
-      const { validLock, lockOutput, reconstructedData } =
-        extractDataFromOutputs(convertedOutputs, this.lockAddressHash);
-
-      if (!validLock || !lockOutput) {
+      if (!lockOutputRpc) {
         this.logger.debug(baseError + `: Lock output not found`);
         return undefined;
       }
+
+      // Convert RPC outputs to standard format (HNS to dollarydoos)
+      const convertedOutputs = outputs.map((output) => {
+        const dollarydoos = convertHnsToDollarydoos(output.value);
+        return {
+          value: BigInt(dollarydoos),
+          address: output.address,
+        };
+      });
+
+      // Extract data from outputs using utility function
+      const reconstructedData = extractDataFromOutputs(convertedOutputs, lockOutputIndex);
 
       if (!reconstructedData) {
         this.logger.debug(baseError + `: No data chunks found`);
@@ -59,17 +73,14 @@ export class HandshakeRpcRosenExtractor extends AbstractRosenDataExtractor<Hands
       try {
         rosenData = parseRosenData(reconstructedData);
         this.logger.debug(
-          `Successfully extracted Rosen data for ${rosenData.toChain}`,
+          `Successfully extracted Rosen data for [${rosenData.toChain}]`,
         );
       } catch (e) {
         this.logger.debug(baseError + `: Failed to parse extracted data: ${e}`);
         return undefined;
       }
 
-      // Find asset transformation (need to use original RPC output for value)
-      const lockOutputRpc = outputs.find(
-        (o) => o.address?.hash === this.lockAddressHash,
-      ) as HandshakeRpcTxOutput;
+      // Find asset transformation using the lock output
       const assetTransformation = this.getAssetTransformation(
         lockOutputRpc,
         rosenData.toChain,
@@ -93,7 +104,9 @@ export class HandshakeRpcRosenExtractor extends AbstractRosenDataExtractor<Hands
         amount: assetTransformation.amount,
         targetChainTokenId: assetTransformation.to,
         sourceTxId: transaction.txid,
-        rawData: reconstructedData,
+        rawData: outputs
+          .map((output) => `${output.address?.hash}:${output.value}`)
+          .join(','),
       };
     } catch (e) {
       this.logger.debug(
@@ -115,14 +128,14 @@ export class HandshakeRpcRosenExtractor extends AbstractRosenDataExtractor<Hands
     box: HandshakeRpcTxOutput,
     toChain: string,
   ): TokenTransformation | undefined => {
-    // try to build transformation using locked HNS
     const wrappedHns = this.tokens.search(HANDSHAKE_CHAIN, {
       tokenId: HANDSHAKE_NATIVE_TOKEN,
     });
 
     if (wrappedHns.length > 0 && Object.hasOwn(wrappedHns[0], toChain)) {
-      // Safe conversion to dollarydoos
-      const dollarydoos = Math.round(box.value * 1000000).toString();
+      // Convert HNS to dollarydoos
+      const dollarydoos = convertHnsToDollarydoos(box.value);
+
       return {
         from: HANDSHAKE_NATIVE_TOKEN,
         to: this.tokens.getID(wrappedHns[0], toChain),

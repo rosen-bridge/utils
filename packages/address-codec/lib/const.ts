@@ -42,7 +42,7 @@ export const HANDSHAKE_NETWORK = {
     public: 0x0488b21e,
     private: 0x0488ade4,
   },
-  pubKeyHash: 0,
-  scriptHash: 0,
-  wif: 0,
+  pubKeyHash: -1,
+  scriptHash: -1,
+  wif: -1,
 };

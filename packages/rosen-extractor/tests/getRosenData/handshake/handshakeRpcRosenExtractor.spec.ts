@@ -37,6 +37,29 @@ describe('HandshakeRpcRosenExtractor', () => {
     });
 
     /**
+     * @target `HandshakeRpcRosenExtractor.get` should extract rosenData from
+     * Handshake locking tx successfully when the outputs are unorganized
+     * @dependencies
+     * @scenario
+     * - mock tx with outputs in non-sequential order
+     * - run test
+     * - check returned value
+     * @expected
+     * - it should return expected rosenData object
+     */
+    it('should extract rosenData from Handshake locking tx successfully when the outputs are unorganized', () => {
+      const unorderedTx = testData.txs.unorderedTx;
+
+      const extractor = new HandshakeRpcRosenExtractor(
+        testData.lockAddress,
+        tokenMap,
+      );
+      const result = extractor.get(unorderedTx as HandshakeRpcTransaction);
+
+      expect(result).toStrictEqual(testData.rosenDataUnordered);
+    });
+
+    /**
      * @target `HandshakeRpcRosenExtractor.get` should return undefined when
      * there is only one output
      * @dependencies

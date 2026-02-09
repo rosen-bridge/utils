@@ -222,7 +222,7 @@ export default class TestUtils {
         tokenId:
           'dcbda15f1361f5eeba416dd63e059fce34f0c57499e9afe733ea0fd59cf63f48',
         name: 'rsHNS',
-        decimals: 8,
+        decimals: 6,
         type: 'EIP-004',
         residency: 'wrapped',
         extra: {},

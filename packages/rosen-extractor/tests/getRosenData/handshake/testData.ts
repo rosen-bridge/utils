@@ -1,5 +1,5 @@
-export const lockAddress = 'hs1qvq4029zf8zvms3pw6t9znju5wqte3hpykr8q3s';
-export const lockAddressHash = '602af514493899b8442ed2ca29cb94701798dc24';
+export const lockAddress = 'hs1qqzs0e6rrkr0r85e4h6m8xq7457ca07sh6ezhpv';
+export const lockAddressHash = '00a0fce863b0de33d335beb67303d5a7b1d7fa17';
 
 export const baseTx = {
   id: 'abc123cd9ed1ac1dbd6a9185fab6a34488325bec478ecfd26f76405ab1f2cd11d1',
@@ -20,22 +20,12 @@ const dataChunk0 = '000000000005f5e10000000000009896802103e5';
 const dataChunk1 = 'bedab3f782ef17a73e9bdc41ee0e18c3ab477400';
 const dataChunk2 = 'f35bcf7caa54171db7ff36000000000000000000';
 
+const changeAddress = 'hs1qklfprkfm3cr3ktefsgksl02rfjt38ax234gwyq';
+const changeAddressHash = 'b7d211d93b8e071b2f29822d0fbd434c9713f4ca'
+
 export const txUtxos = {
   lockTx: {
     outputs: [
-      {
-        value: 100000n,
-        address: {
-          version: 0,
-          hash: lockAddressHash,
-          string: lockAddress,
-        },
-        covenant: {
-          type: 0,
-          action: '',
-          items: [],
-        },
-      },
       // Data output 0: chunk 0 at value 1000
       {
         value: 1000n,
@@ -74,6 +64,34 @@ export const txUtxos = {
           hash: dataChunk2,
           string:
             'hs1qqepqz7p9qqvq9qqvq9qqvq9qqvq9qqvq9qqvq9qqvq9qqvq9qqvq9qq0mh80w',
+        },
+        covenant: {
+          type: 0,
+          action: '',
+          items: [],
+        },
+      },
+      // Lock output
+      {
+        value: 100000n,
+        address: {
+          version: 0,
+          hash: lockAddressHash,
+          string: lockAddress,
+        },
+        covenant: {
+          type: 0,
+          action: '',
+          items: [],
+        },
+      },
+      // Change output
+      {
+        value: 50000n,
+        address: {
+          version: 0,
+          hash: changeAddressHash,
+          string: changeAddress,
         },
         covenant: {
           type: 0,
@@ -147,14 +165,91 @@ export const txUtxos = {
           string: lockAddress,
         },
       },
-      // Data output with invalid chunk (toChain code 09 = invalid)
+      // Data output with invalid chunk (toChain code 64 = invalid)
       {
         value: 1000n,
         address: {
           version: 0,
-          hash: '090000000005f5e10000000000009896', // Invalid toChain code
+          hash: '640000000005f5e10000000000009896', // Invalid toChain code
           string:
             'hs1qqqqqqqqqq0pdypgslz72mqqyqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq3v2yzd',
+        },
+      },
+    ],
+  },
+  unorderedTx: {
+    outputs: [
+      // Data output 1: chunk 1 at value 1001 (out of order)
+      {
+        value: 1001n,
+        address: {
+          version: 0,
+          hash: dataChunk1,
+          string:
+            'hs1qqgqqq7gzvh5gw6gvqq5gvqq5gvqq5gvqq5gvqq5gvqq5gvqq5gvqq5gq0tymtt',
+        },
+        covenant: {
+          type: 0,
+          action: '',
+          items: [],
+        },
+      },
+      // Data output 0: chunk 0 at value 1000 (out of order)
+      {
+        value: 1000n,
+        address: {
+          version: 0,
+          hash: dataChunk0,
+          string:
+            'hs1qqqqqqqqqq0pdypgslz72mqqyqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq3v2yzd',
+        },
+        covenant: {
+          type: 0,
+          action: '',
+          items: [],
+        },
+      },
+      // Data output 2: chunk 2 at value 1002 (out of order)
+      {
+        value: 1002n,
+        address: {
+          version: 0,
+          hash: dataChunk2,
+          string:
+            'hs1qqepqz7p9qqvq9qqvq9qqvq9qqvq9qqvq9qqvq9qqvq9qqvq9qqvq9qq0mh80w',
+        },
+        covenant: {
+          type: 0,
+          action: '',
+          items: [],
+        },
+      },
+      // Lock output
+      {
+        value: 100000n,
+        address: {
+          version: 0,
+          hash: lockAddressHash,
+          string: lockAddress,
+        },
+        covenant: {
+          type: 0,
+          action: '',
+          items: [],
+        },
+      },
+      // Change output
+      {
+        value: 50000n,
+        address: {
+          version: 0,
+          hash: changeAddressHash,
+          string: changeAddress,
+        },
+        covenant: {
+          type: 0,
+          action: '',
+          items: [],
         },
       },
     ],
@@ -182,6 +277,10 @@ export const txs = {
     ...baseTx,
     ...txUtxos.invalidData,
   },
+  unorderedTx: {
+    ...baseTx,
+    ...txUtxos.unorderedTx,
+  },
 };
 
 export const rosenData = {
@@ -197,7 +296,23 @@ export const rosenData = {
     'dcbda15f1361f5eeba416dd63e059fce34f0c57499e9afe733ea0fd59cf63f48',
   sourceTxId:
     'abc123cd9ed1ac1dbd6a9185fab6a34488325bec478ecfd26f76405ab1f2cd11d1',
-  rawData: dataChunk0 + dataChunk1 + dataChunk2,
+  rawData: `${dataChunk0}:1000,${dataChunk1}:1001,${dataChunk2}:1002,${lockAddressHash}:100000,${changeAddressHash}:50000`,
+};
+
+export const rosenDataUnordered = {
+  toChain: 'ergo',
+  toAddress: '9iCzESRfvKU6Axyt3BnBuVrYW3ZYj3knPF95STzrjaRrjtTcj9R',
+  bridgeFee: '100000000',
+  networkFee: '10000000',
+  fromAddress:
+    'box:fe18c9485e2944034e1612c15ffe42d032a5c5634227aca30d949404da5d85b8.2',
+  sourceChainTokenId: 'hns',
+  amount: '100000',
+  targetChainTokenId:
+    'dcbda15f1361f5eeba416dd63e059fce34f0c57499e9afe733ea0fd59cf63f48',
+  sourceTxId:
+    'abc123cd9ed1ac1dbd6a9185fab6a34488325bec478ecfd26f76405ab1f2cd11d1',
+  rawData: `${dataChunk1}:1001,${dataChunk0}:1000,${dataChunk2}:1002,${lockAddressHash}:100000,${changeAddressHash}:50000`,
 };
 
 export const lockUtxo = {
