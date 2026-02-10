@@ -40,23 +40,22 @@ export class HandshakeRosenExtractor extends AbstractRosenDataExtractor<string> 
       }
 
       // Find lock output and position
-      let lockOutput = undefined;
-      let lockOutputIndex = -1;
-      for (let i = outputs.length - 1; i >= 0; i--) {
-        if (outputs[i].address?.hash === this.lockAddressHash) {
-          lockOutput = outputs[i];
-          lockOutputIndex = i;
-          break;
-        }
-      }
-      
-      if (!lockOutput) {
+      const lockOutputIndex = outputs.findIndex(
+        (output) => output.address?.hash === this.lockAddressHash,
+      );
+
+      if (lockOutputIndex === -1) {
         this.logger.debug(baseError + `: Lock output not found`);
         return undefined;
       }
 
+      const lockOutput = outputs[lockOutputIndex];
+
       // Extract data from outputs using utility function
-      const reconstructedData = extractDataFromOutputs(outputs, lockOutputIndex);
+      const reconstructedData = extractDataFromOutputs(
+        outputs,
+        lockOutputIndex,
+      );
 
       if (!reconstructedData) {
         this.logger.debug(baseError + `: No data chunks found`);

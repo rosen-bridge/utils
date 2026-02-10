@@ -8,7 +8,11 @@ import {
 } from './types';
 import { TokenMap } from '@rosen-bridge/tokens';
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
-import { addressToHash, convertHnsToDollarydoos, extractDataFromOutputs } from './utils';
+import {
+  addressToHash,
+  convertHnsToDollarydoos,
+  extractDataFromOutputs,
+} from './utils';
 import { parseRosenData } from '../../utils';
 
 export class HandshakeRpcRosenExtractor extends AbstractRosenDataExtractor<HandshakeRpcTransaction> {
@@ -36,20 +40,16 @@ export class HandshakeRpcRosenExtractor extends AbstractRosenDataExtractor<Hands
       }
 
       // Find lock output first (need to use original RPC output for value)
-      let lockOutputRpc = undefined;
-      let lockOutputIndex = -1;
-      for (let i = outputs.length - 1; i >= 0; i--) {
-        if (outputs[i].address?.hash === this.lockAddressHash) {
-          lockOutputRpc = outputs[i] as HandshakeRpcTxOutput | undefined;
-          lockOutputIndex = i;
-          break;
-        }
-      }
+      const lockOutputIndex = outputs.findIndex(
+        (output) => output.address?.hash === this.lockAddressHash,
+      );
 
-      if (!lockOutputRpc) {
+      if (lockOutputIndex === -1) {
         this.logger.debug(baseError + `: Lock output not found`);
         return undefined;
       }
+
+      const lockOutputRpc = outputs[lockOutputIndex];
 
       // Convert RPC outputs to standard format (HNS to dollarydoos)
       const convertedOutputs = outputs.map((output) => {
@@ -61,7 +61,10 @@ export class HandshakeRpcRosenExtractor extends AbstractRosenDataExtractor<Hands
       });
 
       // Extract data from outputs using utility function
-      const reconstructedData = extractDataFromOutputs(convertedOutputs, lockOutputIndex);
+      const reconstructedData = extractDataFromOutputs(
+        convertedOutputs,
+        lockOutputIndex,
+      );
 
       if (!reconstructedData) {
         this.logger.debug(baseError + `: No data chunks found`);

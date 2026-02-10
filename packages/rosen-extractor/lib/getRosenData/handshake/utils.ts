@@ -26,7 +26,7 @@ export const addressToHash = (addr: string): string => {
  */
 export const extractDataFromOutputs = (
   outputs: DataExtractionOutput[],
-  lockAddressIndex: number
+  lockAddressIndex: number,
 ): string | undefined => {
   const extractedChunks: Array<{ index: number; data: string }> = [];
 

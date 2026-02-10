@@ -21,7 +21,7 @@ const dataChunk1 = 'bedab3f782ef17a73e9bdc41ee0e18c3ab477400';
 const dataChunk2 = 'f35bcf7caa54171db7ff36000000000000000000';
 
 const changeAddress = 'hs1qklfprkfm3cr3ktefsgksl02rfjt38ax234gwyq';
-const changeAddressHash = 'b7d211d93b8e071b2f29822d0fbd434c9713f4ca'
+const changeAddressHash = 'b7d211d93b8e071b2f29822d0fbd434c9713f4ca';
 
 export const txUtxos = {
   lockTx: {

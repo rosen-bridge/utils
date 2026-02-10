@@ -24,7 +24,7 @@ export interface HandshakeRpcTxOutput {
     type: number;
     action: string;
     items: string[];
-  }
+  };
 }
 
 export interface HandshakeRpcTransaction {
@@ -39,19 +39,7 @@ export interface HandshakeRpcTransaction {
     txinwitness?: string[];
     sequence: number;
   }>;
-  vout: Array<{
-    value: number;
-    n: number;
-    address: {
-      version: number;
-      hash: string;
-      string: string;
-    };
-    covenant?: {
-      type: number;
-      items: string[];
-    };
-  }>;
+  vout: Array<HandshakeRpcTxOutput>;
   hash: string;
 }
 
@@ -71,7 +59,7 @@ export interface HandshakeTxOutput {
     type: number;
     action: string;
     items: string[];
-  }
+  };
 }
 
 export interface DataExtractionOutput {
