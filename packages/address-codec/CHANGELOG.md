@@ -1,5 +1,12 @@
 # @rosen-bridge/address-codec
 
+## 1.1.1
+
+### Patch Changes
+
+- Update dependencies
+  - ethers@6.16.0
+
 ## 1.1.0
 
 ### Minor Changes

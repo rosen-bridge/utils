@@ -2,7 +2,6 @@ import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
 import * as ergoLib from 'ergo-lib-wasm-nodejs';
 
 export class RWTRepoBuilder {
-  private value?: bigint;
   private height?: number;
 
   constructor(
@@ -21,6 +20,8 @@ export class RWTRepoBuilder {
     private rsn: string,
 
     private rsnCount: bigint,
+
+    private value: bigint,
 
     private chainId: string,
 
