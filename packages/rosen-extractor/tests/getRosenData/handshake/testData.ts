@@ -300,18 +300,7 @@ export const rosenData = {
 };
 
 export const rosenDataUnordered = {
-  toChain: 'ergo',
-  toAddress: '9iCzESRfvKU6Axyt3BnBuVrYW3ZYj3knPF95STzrjaRrjtTcj9R',
-  bridgeFee: '100000000',
-  networkFee: '10000000',
-  fromAddress:
-    'box:fe18c9485e2944034e1612c15ffe42d032a5c5634227aca30d949404da5d85b8.2',
-  sourceChainTokenId: 'hns',
-  amount: '100000',
-  targetChainTokenId:
-    'dcbda15f1361f5eeba416dd63e059fce34f0c57499e9afe733ea0fd59cf63f48',
-  sourceTxId:
-    'abc123cd9ed1ac1dbd6a9185fab6a34488325bec478ecfd26f76405ab1f2cd11d1',
+  ...rosenData,
   rawData: `${dataChunk1}:1001,${dataChunk0}:1000,${dataChunk2}:1002,${lockAddressHash}:100000,${changeAddressHash}:50000`,
 };
 
