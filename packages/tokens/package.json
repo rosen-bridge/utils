@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/tokens",
-  "version": "5.0.1",
+  "version": "6.0.0",
   "description": "this project manage supported tokens",
   "repository": {
     "type": "git",
