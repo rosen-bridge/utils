@@ -1,5 +1,11 @@
 # @rosen-bridge/rwt-repo
 
+## 4.1.0
+
+### Minor Changes
+
+- Fix ‍‍`rwtRepoBuilder` to use the existing `rwtRepoBox` value.
+
 ## 4.0.0
 
 ### Major Changes
