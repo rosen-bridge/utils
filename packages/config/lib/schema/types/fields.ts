@@ -19,11 +19,15 @@ export interface ObjectField {
   children: ConfigSchema;
 }
 
+export type ValueType =
+  | PrimitiveValue
+  | object
+  | Array<PrimitiveValue | object>;
 export interface ArrayField {
   type: 'array';
   description?: string;
   label?: string;
-  default?: any[];
+  default?: ValueType[];
   items: ConfigField;
 }
 

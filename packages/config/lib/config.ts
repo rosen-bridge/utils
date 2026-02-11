@@ -4,7 +4,7 @@ import * as fs from 'fs';
 import * as yaml from 'js-yaml';
 import path from 'path';
 
-import { ConfigField, ConfigSchema } from './schema/types/fields';
+import { ConfigField, ConfigSchema, ValueType } from './schema/types/fields';
 import { When } from './schema/types/validations';
 import {
   propertyValidators,
@@ -23,6 +23,7 @@ export class ConfigValidator {
    *
    * @param {Record<string, any>} config
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public validateConfig(config: Record<string, any>) {
     this.validateValue(
       config,
@@ -44,7 +45,9 @@ export class ConfigValidator {
    * @memberof ConfigValidator
    */
   private validateSubConfig(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     config: Record<string, any>,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     subConfig: Record<string, any>,
     subSchema: ConfigSchema,
     path: string[],
@@ -79,8 +82,10 @@ export class ConfigValidator {
             }
           }
         }
-      } catch (error: any) {
-        throw new Error(`${errorPreamble(childPath)}: ${error.message}`);
+      } catch (error) {
+        throw new Error(
+          `${errorPreamble(childPath)}: ${error instanceof Error ? error.message : error}`,
+        );
       }
     }
   }
@@ -95,8 +100,13 @@ export class ConfigValidator {
    * @return {*}
    * @memberof ConfigValidator
    */
-  static modifyObject(obj: Record<string, any>, newValue: any, path: string[]) {
-    let value: any = obj;
+  static modifyObject(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    obj: Record<string, any>,
+    newValue: ValueType,
+    path: string[],
+  ) {
+    let value = obj;
     for (const key of path.slice(0, -1)) {
       if (value != undefined && Object.hasOwn(value, key)) {
         value = value[key];
@@ -120,8 +130,10 @@ export class ConfigValidator {
    * @param {Record<string, any>} config the config object
    */
   private validateValue = (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     value: any,
     field: ConfigField,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     config: Record<string, any>,
   ) => {
     if (value != undefined) {
@@ -145,7 +157,7 @@ export class ConfigValidator {
         if (Object.hasOwn(valueValidations[field.type], name)) {
           try {
             valueValidations[field.type][name](value, validation, config, this);
-          } catch (error: any) {
+          } catch (error) {
             if (validation.error != undefined) {
               throw new Error(validation.error);
             }
@@ -164,6 +176,7 @@ export class ConfigValidator {
    * @param {Record<string, any>} config
    * @return {boolean}
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public isWhenTrue = (when: When, config: Record<string, any>): boolean => {
     const pathParts = when.path.split('.');
     const value = ConfigValidator.valueAt(config, pathParts);
@@ -178,7 +191,9 @@ export class ConfigValidator {
    * @param {string[]} path
    * @return {*}
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static valueAt = (config: Record<string, any>, path: string[]) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let value: any = config;
     for (const key of path) {
       if (value != undefined && Object.hasOwn(value, key)) {
@@ -244,8 +259,10 @@ export class ConfigValidator {
               parentPath: path,
             });
           }
-        } catch (error: any) {
-          throw new Error(`${errorPreamble(path)}: ${error.message}`);
+        } catch (error) {
+          throw new Error(
+            `${errorPreamble(path)}: ${error instanceof Error ? error.message : error}`,
+          );
         }
       }
     }
@@ -326,6 +343,7 @@ export class ConfigValidator {
    *
    * @return {Record<string, any>} object of default values
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   generateDefault = (options?: { validate?: boolean }): Record<string, any> => {
     const valueTree = this.buildDefaultsForSchema(this.schema);
     if (options?.validate) {
@@ -337,7 +355,9 @@ export class ConfigValidator {
   // Builds default values for a schema subtree (objects and arrays), recursively
   private buildDefaultsForSchema = (
     schema: ConfigSchema,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): Record<string, any> => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const defaults: Record<string, any> = Object.create(null);
     for (const key of Object.keys(schema)) {
       const field = schema[key];
@@ -347,12 +367,12 @@ export class ConfigValidator {
           defaults[key] = childDefaults;
         }
       } else if (field.type === 'array') {
-        if ((field as any).default != undefined) {
+        if (field.default != undefined) {
           if (field.items.type === 'object') {
             const itemDefaults = this.buildDefaultsForSchema(
               field.items.children,
             );
-            defaults[key] = (field as any).default.map((elem: any) => {
+            defaults[key] = field.default.map((elem: ValueType) => {
               if (
                 elem != null &&
                 typeof elem === 'object' &&
@@ -363,12 +383,12 @@ export class ConfigValidator {
               return elem;
             });
           } else {
-            defaults[key] = (field as any).default;
+            defaults[key] = field.default;
           }
         }
       } else {
-        if ((field as any).default != undefined) {
-          defaults[key] = (field as any).default;
+        if (field.default != undefined) {
+          defaults[key] = field.default;
         }
       }
     }
@@ -476,8 +496,10 @@ export class ConfigValidator {
             field.type === 'array' ? `${fieldType}[]` : fieldType,
           ]);
         }
-      } catch (error: any) {
-        throw new Error(`${errorPreamble(path)}: ${error.message}`);
+      } catch (error) {
+        throw new Error(
+          `${errorPreamble(path)}: ${error instanceof Error ? error.message : error}`,
+        );
       }
     }
 
@@ -507,6 +529,7 @@ export class ConfigValidator {
    * @param {string} level
    * @return {Record<string, any>}
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   getConfigForLevel(config: IConfig, level: string): Record<string, any> {
     const confLevels = ConfigValidator.getNodeConfigLevels(config);
     const levelIndex = confLevels.indexOf(level);
@@ -561,6 +584,7 @@ export class ConfigValidator {
     higherLevelSources: IConfigSource[],
     currentLevelSource: IConfigSource | undefined,
     lowerLevelSources: IConfigSource[],
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): Record<string, any> {
     const value = Object.create(null);
     for (const childName of Object.keys(schema).reverse()) {
@@ -670,6 +694,7 @@ export class ConfigValidator {
    * @param {string} format the format of the output file
    */
   validateAndWriteConfig = (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     configObj: Record<string, any>,
     config: IConfig,
     level: string,

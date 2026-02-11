@@ -10,8 +10,12 @@ import {
   VRequired,
 } from '../schema/types/validations';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const valueValidators: Record<string, any> = {
-  object: (value: Record<string, any>, field: types.ObjectField) => {
+  object: (
+    value: Record<string, types.ValueType>,
+    field: types.ObjectField,
+  ) => {
     if (typeof value !== 'object') {
       throw new Error(`value must be of object type`);
     }
@@ -24,7 +28,7 @@ export const valueValidators: Record<string, any> = {
     }
   },
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  array: (value: Array<any>, _field: types.ArrayField) => {
+  array: (value: Array<types.ValueType>, _field: types.ArrayField) => {
     if (!Array.isArray(value)) {
       throw new Error(`value must be of array type`);
     }
@@ -56,8 +60,9 @@ export const valueValidators: Record<string, any> = {
 };
 
 const required = (
-  value: any,
+  value: types.ValueType,
   validation: VRequired,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   config: Record<string, any>,
   configValidator: ConfigValidator,
 ) => {
@@ -70,6 +75,7 @@ const required = (
   }
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const valueValidations: Record<string, Record<string, any>> = {
   boolean: { required },
   string: {
@@ -77,6 +83,7 @@ export const valueValidations: Record<string, Record<string, any>> = {
     regex: (
       value: string,
       validation: VRegex,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       config: Record<string, any>,
       configValidator: ConfigValidator,
     ) => {
@@ -97,6 +104,7 @@ export const valueValidations: Record<string, Record<string, any>> = {
     choices: (
       value: string,
       validation: VChoices,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       config: Record<string, any>,
       configValidator: ConfigValidator,
     ) => {
@@ -122,6 +130,7 @@ export const valueValidations: Record<string, Record<string, any>> = {
     gt: (
       value: number,
       validation: VGreater<number>,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       config: Record<string, any>,
       configValidator: ConfigValidator,
     ) => {
@@ -140,6 +149,7 @@ export const valueValidations: Record<string, Record<string, any>> = {
     gte: (
       value: number,
       validation: VGreaterEqual<number>,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       config: Record<string, any>,
       configValidator: ConfigValidator,
     ) => {
@@ -160,6 +170,7 @@ export const valueValidations: Record<string, Record<string, any>> = {
     lt: (
       value: number,
       validation: VLess<number>,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       config: Record<string, any>,
       configValidator: ConfigValidator,
     ) => {
@@ -178,6 +189,7 @@ export const valueValidations: Record<string, Record<string, any>> = {
     lte: (
       value: number,
       validation: VLessEqual<number>,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       config: Record<string, any>,
       configValidator: ConfigValidator,
     ) => {
@@ -201,6 +213,7 @@ export const valueValidations: Record<string, Record<string, any>> = {
     gt: (
       value: bigint,
       validation: VGreater<bigint>,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       config: Record<string, any>,
       configValidator: ConfigValidator,
     ) => {
@@ -219,6 +232,7 @@ export const valueValidations: Record<string, Record<string, any>> = {
     gte: (
       value: bigint,
       validation: VGreaterEqual<bigint>,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       config: Record<string, any>,
       configValidator: ConfigValidator,
     ) => {
@@ -239,6 +253,7 @@ export const valueValidations: Record<string, Record<string, any>> = {
     lt: (
       value: bigint,
       validation: VLess<bigint>,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       config: Record<string, any>,
       configValidator: ConfigValidator,
     ) => {
@@ -257,6 +272,7 @@ export const valueValidations: Record<string, Record<string, any>> = {
     lte: (
       value: bigint,
       validation: VLessEqual<bigint>,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       config: Record<string, any>,
       configValidator: ConfigValidator,
     ) => {

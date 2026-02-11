@@ -3,7 +3,10 @@ import * as types from '../types/fields';
 import { VAll, VNumeric, VString } from '../types/validations';
 
 // Ensures a provided value structurally matches a field schema (non-traversal of schema tree)
-const assertShapeMatchesField = (value: any, field: types.ConfigField) => {
+const assertShapeMatchesField = (
+  value: types.ValueType,
+  field: types.ConfigField,
+) => {
   if (field.type === 'object') {
     if (value == null || typeof value !== 'object' || Array.isArray(value)) {
       throw new Error('value must be of object type');
@@ -13,7 +16,7 @@ const assertShapeMatchesField = (value: any, field: types.ConfigField) => {
         throw new Error(`"${k}" key is not found in the schema`);
       }
       assertShapeMatchesField(
-        (value as Record<string, any>)[k],
+        (value as Record<string, types.ValueType>)[k],
         (field as types.ObjectField).children[k],
       );
     }
@@ -184,15 +187,15 @@ export const propertyValidators = {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     default: (field: types.ArrayField, _config: ConfigValidator) => {
       if (!Object.hasOwn(field, 'default')) return;
-      if (!Array.isArray((field as any).default)) {
+      if (!Array.isArray(field.default)) {
         throw new Error(
           `default value=[${
-            (field as any).default
+            field.default
           }] doesn't match field type=[${field.type}]`,
         );
       }
 
-      for (const elem of (field as any).default as any[]) {
+      for (const elem of field.default) {
         assertShapeMatchesField(elem, field.items);
       }
     },
@@ -260,6 +263,7 @@ export const supportedTypes = Object.keys(propertyValidators).filter(
   (key) => key !== 'all' && key !== 'primitive',
 );
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const fieldValidations: Record<string, Record<string, any>> = {
   primitive: {
     required: (validation: VAll) => {
