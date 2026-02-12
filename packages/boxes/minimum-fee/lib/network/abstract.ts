@@ -15,4 +15,4 @@ abstract class AbstractMinimumFeeNetwork {
   abstract getBoxesByTokenId: (tokenId: string) => Promise<ErgoBoxWrapper[]>;
 }
 
-export default AbstractMinimumFeeNetwork;
+export { AbstractMinimumFeeNetwork };

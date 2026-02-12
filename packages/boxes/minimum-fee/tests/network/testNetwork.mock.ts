@@ -1,4 +1,4 @@
-import AbstractMinimumFeeNetwork from '../../lib/network/abstract';
+import { AbstractMinimumFeeNetwork } from '../../lib/network/abstract';
 
 class TestNetwork extends AbstractMinimumFeeNetwork {
   notImplemented = () => {

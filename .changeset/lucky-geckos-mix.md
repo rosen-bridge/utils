@@ -2,4 +2,4 @@
 '@rosen-bridge/minimum-fee': minor
 ---
 
-Separate node and explorer network implementations
+Implement AbstractMinimumFeeNetwork and two concrete network classes for ergo explorer and node that implement the abstract class

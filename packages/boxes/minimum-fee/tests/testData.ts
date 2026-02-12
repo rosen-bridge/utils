@@ -1,4 +1,4 @@
-import { OutputInfo } from '@rosen-clients/ergo-explorer/dist/v1/types';
+import { V1 } from '@rosen-clients/ergo-explorer';
 import { ErgoBoxWrapper, Fee } from '../lib';
 
 export const normalFee: Array<Fee> = [
@@ -395,7 +395,7 @@ export const removedPreviousChainFee: Array<Fee> = [
   },
 ];
 
-export const explorerTestBoxes: OutputInfo[] = [
+export const explorerTestBoxes: V1.OutputInfo[] = [
   {
     boxId: 'e13ebf5a32c0a4f4235676ec2be560b15a030723ce6c2cff1f7f34787565d1ba',
     transactionId:
@@ -547,7 +547,7 @@ export const explorerTestBoxes: OutputInfo[] = [
       },
     ],
     additionalRegisters: {},
-    spentTransactionId: undefined,
+    spentTransactionId: null as unknown as undefined,
     mainChain: true,
     ergoTreeConstants: '',
     ergoTreeScript: '',
@@ -617,7 +617,7 @@ export const explorerTestBoxes: OutputInfo[] = [
         renderedValue: '[6572676f,63617264616e6f]',
       },
     },
-    spentTransactionId: undefined,
+    spentTransactionId: null as unknown as undefined,
     mainChain: true,
     ergoTreeConstants: '',
     ergoTreeScript: '',
@@ -687,7 +687,7 @@ export const explorerTestBoxes: OutputInfo[] = [
         renderedValue: '[6572676f,63617264616e6f]',
       },
     },
-    spentTransactionId: undefined,
+    spentTransactionId: null as unknown as undefined,
     mainChain: true,
     ergoTreeConstants: '',
     ergoTreeScript: '',
@@ -757,7 +757,7 @@ export const explorerTestBoxes: OutputInfo[] = [
         renderedValue: '[6572676f,63617264616e6f]',
       },
     },
-    spentTransactionId: undefined,
+    spentTransactionId: null as unknown as undefined,
     mainChain: true,
     ergoTreeConstants: '',
     ergoTreeScript: '',
@@ -818,7 +818,7 @@ export const explorerTestBoxes: OutputInfo[] = [
         renderedValue: '[6572676f,63617264616e6f]',
       },
     },
-    spentTransactionId: undefined,
+    spentTransactionId: null as unknown as undefined,
     mainChain: true,
     ergoTreeConstants: '',
     ergoTreeScript: '',
@@ -1376,7 +1376,7 @@ export const networkTestBoxesMultipleConfig: ErgoBoxWrapper[] = [
 export const normalFeeBox: ErgoBoxWrapper = {
   boxId: '829f2e3bd7fa9d92eb4ade45cf4963d132ac5c179c0cf7de1e518268ae3929ba',
   txId: '956252e7b425b59802d478f0fa1dc297c47b1ace669a4532e5f0b06bf95b56ad',
-  address: '',
+  address: '9fsd61VwCBMZaFGctm8q7v59FsS67KusD5yHDhuwQc6KFfFX34U',
   index: 0,
   value: 500000n,
   creationHeight: 1000000,
@@ -1404,7 +1404,7 @@ export const normalFeeBox: ErgoBoxWrapper = {
 export const newChainFeeBox: ErgoBoxWrapper = {
   boxId: '58b634ddc3e50b77425eeacc2f413dd7d8b87a345b34dc3816424ce3345a6f28',
   txId: '956252e7b425b59802d478f0fa1dc297c47b1ace669a4532e5f0b06bf95b56ad',
-  address: '',
+  address: '9fsd61VwCBMZaFGctm8q7v59FsS67KusD5yHDhuwQc6KFfFX34U',
   index: 1,
   value: 500000n,
   creationHeight: 1000000,
@@ -1432,7 +1432,7 @@ export const newChainFeeBox: ErgoBoxWrapper = {
 export const removeChainFeeBox: ErgoBoxWrapper = {
   boxId: 'b93e75a40d8a32e5c1e438ecf69ce88a081648266a4b17b4e16fa9fa771eecfa',
   txId: '956252e7b425b59802d478f0fa1dc297c47b1ace669a4532e5f0b06bf95b56ad',
-  address: '',
+  address: '9fsd61VwCBMZaFGctm8q7v59FsS67KusD5yHDhuwQc6KFfFX34U',
   index: 2,
   value: 500000n,
   creationHeight: 1000000,
@@ -1460,7 +1460,7 @@ export const removeChainFeeBox: ErgoBoxWrapper = {
 export const tokenNormalFeeBox: ErgoBoxWrapper = {
   boxId: 'f2242b55f1d5dd2b6f2e794ae2e94e240742383c393d29317d79af127772c8c3',
   txId: '956252e7b425b59802d478f0fa1dc297c47b1ace669a4532e5f0b06bf95b56ad',
-  address: '',
+  address: '9fsd61VwCBMZaFGctm8q7v59FsS67KusD5yHDhuwQc6KFfFX34U',
   index: 3,
   value: 500000n,
   creationHeight: 1000000,

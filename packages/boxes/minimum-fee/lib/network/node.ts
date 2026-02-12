@@ -1,6 +1,6 @@
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import { ErgoBoxWrapper } from '../types';
-import AbstractMinimumFeeNetwork from './abstract';
+import { AbstractMinimumFeeNetwork } from './abstract';
 import ergoNodeClientFactory from '@rosen-clients/ergo-node';
 import JsonBigInt from '@rosen-bridge/json-bigint';
 import handleApiError from '../handleApiError';
@@ -86,4 +86,4 @@ class MinimumFeeNodeNetwork extends AbstractMinimumFeeNetwork {
   };
 }
 
-export default MinimumFeeNodeNetwork;
+export { MinimumFeeNodeNetwork };

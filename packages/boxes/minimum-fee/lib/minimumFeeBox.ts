@@ -7,7 +7,7 @@ import { MinimumFeeBoxBuilder } from './minimumFeeBoxBuilder';
 import { MinimumFeeConfig } from './minimumFeeConfig';
 import { ERGO_NATIVE_TOKEN } from './constants';
 import { extractFeeFromBox } from './utils';
-import AbstractMinimumFeeNetwork from './network/abstract';
+import { AbstractMinimumFeeNetwork } from './network/abstract';
 
 export class MinimumFeeBox {
   protected readonly BOX_FETCHING_PAGE_SIZE = 50;
