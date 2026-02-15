@@ -1,5 +1,16 @@
 # @rosen-bridge/rosen-extractor
 
+## 11.3.0
+
+### Minor Changes
+
+- Add Handshake chain rosen-extractor
+
+### Patch Changes
+
+- Update dependencies
+  - @rosen-bridge/address-codec@1.2.0
+
 ## 11.2.2
 
 ### Patch Changes
