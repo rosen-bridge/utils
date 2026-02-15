@@ -1,5 +1,11 @@
 # @rosen-bridge/address-codec
 
+## 1.2.0
+
+### Minor Changes
+
+- Add support for Handshake chain
+
 ## 1.1.1
 
 ### Patch Changes
