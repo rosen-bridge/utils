@@ -6,6 +6,8 @@ import {
   DOGE_NETWORK,
   ERGO_CHAIN,
   ETHEREUM_CHAIN,
+  HANDSHAKE_CHAIN,
+  HANDSHAKE_NETWORK,
   RUNES_CHAIN,
   FIRO_CHAIN,
   FIRO_NETWORK,
@@ -58,6 +60,13 @@ export const validateAddress = (chain: string, address: string): boolean => {
     case FIRO_CHAIN:
       try {
         bitcoinLib.address.toOutputScript(address, FIRO_NETWORK);
+      } catch {
+        throw new UnsupportedAddressError(chain, address);
+      }
+      return true;
+    case HANDSHAKE_CHAIN:
+      try {
+        bitcoinLib.address.toOutputScript(address, HANDSHAKE_NETWORK);
       } catch {
         throw new UnsupportedAddressError(chain, address);
       }

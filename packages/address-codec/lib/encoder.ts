@@ -6,6 +6,8 @@ import {
   DOGE_NETWORK,
   ERGO_CHAIN,
   ETHEREUM_CHAIN,
+  HANDSHAKE_CHAIN,
+  HANDSHAKE_NETWORK,
   RUNES_CHAIN,
   FIRO_CHAIN,
   FIRO_NETWORK,
@@ -53,6 +55,11 @@ export const encodeAddress = (chain: string, address: string): string => {
     case FIRO_CHAIN:
       encoded = bitcoinLib.address
         .toOutputScript(address, FIRO_NETWORK)
+        .toString('hex');
+      break;
+    case HANDSHAKE_CHAIN:
+      encoded = bitcoinLib.address
+        .toOutputScript(address, HANDSHAKE_NETWORK)
         .toString('hex');
       break;
     default:

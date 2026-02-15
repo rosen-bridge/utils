@@ -6,6 +6,8 @@ import {
   DOGE_NETWORK,
   ERGO_CHAIN,
   ETHEREUM_CHAIN,
+  HANDSHAKE_CHAIN,
+  HANDSHAKE_NETWORK,
   RUNES_CHAIN,
   FIRO_CHAIN,
   FIRO_NETWORK,
@@ -57,6 +59,11 @@ export const decodeAddress = (
       return bitcoinLib.address.fromOutputScript(
         Buffer.from(encodedAddress, 'hex'),
         FIRO_NETWORK,
+      );
+    case HANDSHAKE_CHAIN:
+      return bitcoinLib.address.fromOutputScript(
+        Buffer.from(encodedAddress, 'hex'),
+        HANDSHAKE_NETWORK,
       );
     default:
       throw new UnsupportedChainError(chain);
