@@ -13,6 +13,7 @@
     "coverage": "npm run coverage --workspaces --if-present",
     "lint": "npm run lint --workspaces",
     "lint:check": "npm run lint:check --workspaces",
+    "madge": "madge --circular --extensions ts ./",
     "prepare": "husky install",
     "release": "npm run release --workspaces",
     "test": "npm run test --if-present --workspaces",
@@ -35,6 +36,7 @@
     "husky": "^8.0.1",
     "knip": "5.54.1",
     "lint-staged": "^13.0.3",
+    "madge": "^8.0.0",
     "prettier": "^3.2.4",
     "rimraf": "^6.0.1",
     "typescript": "^5.8.3"
