@@ -44,10 +44,7 @@ export default [
     },
   },
   {
-    files: [
-      '**/tests/**/*.{ts,tsx,js,jsx}',
-      '**/packages/fastify-enhanced/**/*.{ts,tsx,js,jsx}',
-    ],
+    files: ['**/tests/**/*.{ts,tsx,js,jsx}'],
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
     },
