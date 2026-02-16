@@ -27,11 +27,6 @@
     "test:bin": "tsx tests/bin.ts",
     "type-check": "tsc --noEmit"
   },
-  "devDependencies": {
-    "@vitest/coverage-istanbul": "^3.1.4",
-    "tsx": "^4.20.5",
-    "vitest": "^3.1.4"
-  },
   "dependencies": {
     "@fastify/swagger": "^9.5.1",
     "@fastify/swagger-ui": "^5.2.3",
@@ -40,6 +35,11 @@
     "fastify-zod-openapi": "^4.1.2",
     "zod": "^3.25.56",
     "zod-openapi": "^4.2.4"
+  },
+  "devDependencies": {
+    "@vitest/coverage-istanbul": "^3.1.4",
+    "tsx": "^4.20.5",
+    "vitest": "^3.1.4"
   },
   "engines": {
     "node": ">=22.18.0",
