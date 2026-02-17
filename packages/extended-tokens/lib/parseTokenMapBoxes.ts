@@ -1,3 +1,5 @@
+import * as wasm from 'ergo-lib-wasm-nodejs';
+
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import { DummyLogger } from '@rosen-bridge/abstract-logger';
 import {
@@ -6,7 +8,6 @@ import {
   RosenChainToken,
   RosenTokens,
 } from '@rosen-bridge/tokens';
-import * as wasm from 'ergo-lib-wasm-nodejs';
 
 import { ERGO_SIDE_TOKEN_ID_KEY, REQUIRED_FIELDS } from './constants';
 import { CorruptedConfigBoxError } from './errors';

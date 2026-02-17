@@ -1,5 +1,6 @@
-import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
 import * as ergoLib from 'ergo-lib-wasm-nodejs';
+
+import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
 
 export class RWTRepoBuilder {
   private height?: number;

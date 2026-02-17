@@ -1,5 +1,6 @@
-import { TokenMap } from '@rosen-bridge/tokens';
 import { JsonRpcProvider, TransactionResponse } from 'ethers';
+
+import { TokenMap } from '@rosen-bridge/tokens';
 
 import { EvmEthersRosenExtractor } from '../../../lib';
 import TestUtils from '../testUtils';

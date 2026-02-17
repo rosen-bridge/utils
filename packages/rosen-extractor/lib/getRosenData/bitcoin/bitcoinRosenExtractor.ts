@@ -1,7 +1,8 @@
+import { address } from 'bitcoinjs-lib';
+
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import JsonBigInt from '@rosen-bridge/json-bigint';
 import { TokenMap } from '@rosen-bridge/tokens';
-import { address } from 'bitcoinjs-lib';
 
 import AbstractRosenDataExtractor from '../abstract/abstractRosenDataExtractor';
 import { RosenData, TokenTransformation } from '../abstract/types';

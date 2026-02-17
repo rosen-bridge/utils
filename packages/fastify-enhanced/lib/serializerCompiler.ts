@@ -1,6 +1,7 @@
-import { JsonBigIntFactory } from '@rosen-bridge/json-bigint';
 import { FastifySerializerCompiler } from 'fastify/types/schema';
 import { ZodAny } from 'zod';
+
+import { JsonBigIntFactory } from '@rosen-bridge/json-bigint';
 
 import { ResponseValidationError } from './error';
 import { hasOwnProperty } from './utils';

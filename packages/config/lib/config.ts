@@ -1,8 +1,9 @@
-import JsonBigInt from '@rosen-bridge/json-bigint';
 import { IConfig, IConfigSource } from 'config';
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
 import path from 'path';
+
+import JsonBigInt from '@rosen-bridge/json-bigint';
 
 import { ConfigField, ConfigSchema, ValueType } from './schema/types/fields';
 import { When } from './schema/types/validations';

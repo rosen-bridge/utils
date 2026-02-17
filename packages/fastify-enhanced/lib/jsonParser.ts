@@ -1,5 +1,6 @@
-import { JsonBigIntFactory } from '@rosen-bridge/json-bigint';
 import { ContentTypeParserDoneFunction } from 'fastify/types/content-type-parser';
+
+import { JsonBigIntFactory } from '@rosen-bridge/json-bigint';
 
 export const makeJsonParser = (
   jsonHandler: ReturnType<typeof JsonBigIntFactory>,

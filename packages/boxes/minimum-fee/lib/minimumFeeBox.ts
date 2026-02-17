@@ -1,8 +1,9 @@
+import { Address, ErgoBox, NetworkPrefix } from 'ergo-lib-wasm-nodejs';
+
 import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
 import JsonBigInt from '@rosen-bridge/json-bigint';
 import ergoExplorerClientFactory from '@rosen-clients/ergo-explorer';
 import ergoNodeClientFactory from '@rosen-clients/ergo-node';
-import { Address, ErgoBox, NetworkPrefix } from 'ergo-lib-wasm-nodejs';
 
 import { ERGO_NATIVE_TOKEN } from './constants';
 import { FailedError, NotFoundError } from './errors';

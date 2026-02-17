@@ -1,9 +1,10 @@
-import { AbstractLogger } from '@rosen-bridge/abstract-logger';
-import JsonBigInt from '@rosen-bridge/json-bigint';
 import path from 'node:path';
 import winston, { format } from 'winston';
 import 'winston-daily-rotate-file';
 import LokiTransport from 'winston-loki';
+
+import { AbstractLogger } from '@rosen-bridge/abstract-logger';
+import JsonBigInt from '@rosen-bridge/json-bigint';
 
 import {
   ConsoleTransportOptions,

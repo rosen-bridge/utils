@@ -6,8 +6,9 @@ import {
   MetadataJsonSchema,
   Transaction,
 } from '@emurgo/cardano-serialization-lib-nodejs';
-import JsonBigInt from '@rosen-bridge/json-bigint';
 import { isPlainObject } from 'lodash-es';
+
+import JsonBigInt from '@rosen-bridge/json-bigint';
 
 import AbstractRosenDataExtractor from '../abstract/abstractRosenDataExtractor';
 import { RosenData, TokenTransformation } from '../abstract/types';

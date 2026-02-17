@@ -1,6 +1,7 @@
+import { Transaction, TransactionResponse } from 'ethers';
+
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import { TokenMap } from '@rosen-bridge/tokens';
-import { Transaction, TransactionResponse } from 'ethers';
 
 import AbstractRosenDataExtractor from '../abstract/abstractRosenDataExtractor';
 import { RosenData } from '../abstract/types';

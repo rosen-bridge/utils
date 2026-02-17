@@ -1,7 +1,8 @@
+import { ErgoBox } from 'ergo-lib-wasm-nodejs';
+
 import JsonBigInt from '@rosen-bridge/json-bigint';
 import ergoExplorerClientFactory from '@rosen-clients/ergo-explorer';
 import ergoNodeClientFactory from '@rosen-clients/ergo-node';
-import { ErgoBox } from 'ergo-lib-wasm-nodejs';
 
 import {
   ChainMinimumFee,

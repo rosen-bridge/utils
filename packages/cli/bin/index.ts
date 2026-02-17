@@ -1,7 +1,5 @@
 #!/usr/bin/env -S tsx
 
-import { ECDSA, EdDSA } from '@rosen-bridge/encryption';
-import { downloadRosenAssets, downloadTssBinary } from '@rosen-bridge/utils';
 import { zxcvbn, zxcvbnOptions } from '@zxcvbn-ts/core';
 import * as zxcvbnCommonPackage from '@zxcvbn-ts/language-common';
 import * as zxcvbnEnPackage from '@zxcvbn-ts/language-en';
@@ -11,6 +9,9 @@ import { randomBytes } from 'crypto';
 import ora from 'ora';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
+
+import { ECDSA, EdDSA } from '@rosen-bridge/encryption';
+import { downloadRosenAssets, downloadTssBinary } from '@rosen-bridge/utils';
 
 yargs(hideBin(process.argv))
   .command(

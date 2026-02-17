@@ -1,4 +1,3 @@
-import { JsonBigIntFactory } from '@rosen-bridge/json-bigint';
 import Fastify from 'fastify';
 import {
   type FastifyZodOpenApiTypeProvider,
@@ -6,6 +5,8 @@ import {
   validatorCompiler,
 } from 'fastify-zod-openapi';
 import 'zod-openapi/extend';
+
+import { JsonBigIntFactory } from '@rosen-bridge/json-bigint';
 
 import { makeJsonParser } from './jsonParser';
 import { makeSerializerCompiler } from './serializerCompiler';

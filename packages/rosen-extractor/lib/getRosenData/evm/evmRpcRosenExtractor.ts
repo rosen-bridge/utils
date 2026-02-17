@@ -1,6 +1,7 @@
+import { Transaction } from 'ethers';
+
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import { TokenMap, RosenChainToken } from '@rosen-bridge/tokens';
-import { Transaction } from 'ethers';
 
 import AbstractRosenDataExtractor from '../abstract/abstractRosenDataExtractor';
 import { RosenData } from '../abstract/types';

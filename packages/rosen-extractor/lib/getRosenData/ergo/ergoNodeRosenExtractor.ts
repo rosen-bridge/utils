@@ -1,7 +1,8 @@
+import { Address, Constant } from 'ergo-lib-wasm-nodejs';
+
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import JsonBigInt from '@rosen-bridge/json-bigint';
 import { TokenMap } from '@rosen-bridge/tokens';
-import { Address, Constant } from 'ergo-lib-wasm-nodejs';
 
 import AbstractRosenDataExtractor from '../abstract/abstractRosenDataExtractor';
 import { RosenData, TokenTransformation } from '../abstract/types';

@@ -1,5 +1,6 @@
-import { decodeAddress } from '@rosen-bridge/address-codec';
 import { address } from 'bitcoinjs-lib';
+
+import { decodeAddress } from '@rosen-bridge/address-codec';
 
 import { SUPPORTED_CHAINS } from '../const';
 import { OpReturnData } from './types';
