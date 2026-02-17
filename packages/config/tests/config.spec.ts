@@ -1,10 +1,11 @@
+import { configDir } from './bootstrap';
+
 import config from 'config';
 import fs from 'fs';
 import path from 'path';
 
 import { ConfigValidator } from '../lib';
 import { ConfigSchema } from '../lib/schema/types/fields';
-import { configDir } from './configEnvSetup';
 import * as testData from './configTestData';
 
 afterAll(() => {
