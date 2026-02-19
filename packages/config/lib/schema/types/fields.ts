@@ -1,6 +1,6 @@
 import { VBoolean, VNumeric, VString } from './validations';
 
-export type PrimitiveValue = string | boolean | number | bigint | unknown;
+export type PrimitiveValue = string | boolean | number | bigint;
 
 export type ConfigSchema = Record<string, ConfigField>;
 

@@ -1,5 +1,7 @@
 import { cloneDeep } from 'lodash-es';
 
+import { ValueType } from '../lib/schema/types/fields';
+
 export const apiSchemaDefaultValuePairSample = {
   schema: {
     apiType: {
@@ -1345,7 +1347,7 @@ export const invalidLogsArrayDefaultsPair = {
           level: { type: 'string', default: 'info' },
         },
       },
-      default: [{ type: 'unknown' as any }, { level: 'debug' }],
+      default: [{ type: 'unknown' }, { level: 'debug' }] as ValueType[],
     },
   },
   defaultVal: {
@@ -1368,7 +1370,7 @@ export const unknownKeyLogsArrayDefaultsPair = {
           level: { type: 'string', default: 'info' },
         },
       },
-      default: [{ pathsskddkfjd: '/tmp/weird' } as any],
+      default: [{ pathsskddkfjd: '/tmp/weird' }],
     },
   },
   defaultVal: {
@@ -1504,7 +1506,7 @@ export const invalidDefaultsValidateOptionSchema = {
           level: { type: 'string', default: 'info' },
         },
       },
-      default: [{ type: 'unknown' as any }, { level: 'debug' }],
+      default: [{ type: 'unknown' }, { level: 'debug' }] as ValueType[],
     },
   },
 };
@@ -1541,7 +1543,7 @@ export const arrayPrimitiveDefaultsInvalid = {
       type: 'array',
       items: { type: 'number' },
       // invalid: contains a string
-      default: [80, '443' as any],
+      default: [80, '443'],
     },
   },
 };
@@ -1558,7 +1560,7 @@ export const arrayObjectDefaultsInvalidChildType = {
         },
       },
       // invalid: enabled should be boolean
-      default: [{ enabled: 'true' as any, path: '/var' }],
+      default: [{ enabled: 'true', path: '/var' }],
     },
   },
 };
@@ -1575,7 +1577,7 @@ export const nestedArrayDefaultsInvalid = {
         },
       },
       // invalid: tags contains a number
-      default: [{ name: 'file', tags: ['ok', 1 as any] }],
+      default: [{ name: 'file', tags: ['ok', 1] }],
     },
   },
 };
@@ -1651,9 +1653,7 @@ export const nestedArrayOfObjectsDefaultsInvalid = {
               },
             },
             // invalid: retries should be number, unknown key also invalid
-            default: [
-              { type: 'file', retries: 'three' as any, extra: true as any },
-            ],
+            default: [{ type: 'file', retries: 'three', extra: true }],
           },
         },
       },

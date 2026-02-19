@@ -24,7 +24,7 @@ export const makeSerializerCompiler =
       return jsonHandler.stringify(result.data);
     }
 
-    throw new ResponseValidationError(result);
+    throw new ResponseValidationError(result.error);
   };
 
 /**
