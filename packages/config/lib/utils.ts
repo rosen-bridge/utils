@@ -66,3 +66,18 @@ export const getValueFromConfigSources = (
   }
   return null;
 };
+
+/**
+ * Converts a kebab-case or lowercase string to PascalCase (e.g. 'bitcoin-runes' -> 'BitcoinRunes').
+ * Used when generating TypeScript type names from schema path keys.
+ */
+export const toPascalCase = (segment: string): string => {
+  return segment
+    .split('-')
+    .map((part) =>
+      part.length > 0
+        ? part[0].toUpperCase() + part.slice(1).toLowerCase()
+        : '',
+    )
+    .join('');
+};

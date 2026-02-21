@@ -8,7 +8,11 @@ import {
 } from './schema/Validators/fieldProperties';
 import { ConfigField, ConfigSchema } from './schema/types/fields';
 import { When } from './schema/types/validations';
-import { getSourceName, getValueFromConfigSources } from './utils';
+import {
+  getSourceName,
+  getValueFromConfigSources,
+  toPascalCase,
+} from './utils';
 import { valueValidations, valueValidators } from './value/validators';
 import JsonBigInt from '@rosen-bridge/json-bigint';
 
@@ -430,10 +434,10 @@ export class ConfigValidator {
           field.type === 'object' ||
           (field.type === 'array' && field.items.type === 'object')
         ) {
-          // Create unique type name from schema path excluding root interface name
+          // Create unique type name from schema path (supports hyphens: bitcoin-runes -> BitcoinRunes)
           const pathParts = path;
           const childTypeName = pathParts
-            .map((part) => part[0].toUpperCase() + part.substring(1))
+            .map((part) => toPascalCase(part))
             .join('');
 
           const children =
@@ -494,8 +498,18 @@ export class ConfigValidator {
     name: string,
     attributes: Array<[string, string]>,
   ): string => {
+    const formatAttr = (attr: [string, string]): string => {
+      const optional = attr[0].endsWith('?');
+      const key = optional ? attr[0].slice(0, -1) : attr[0];
+      const prop = key.includes('-')
+        ? optional
+          ? `"${key}"?`
+          : `"${key}"`
+        : attr[0];
+      return `${prop}: ${attr[1]};`;
+    };
     return `export interface ${name} {
-  ${attributes.map((attr) => `${attr[0]}: ${attr[1]};`).join('\n  ')}
+  ${attributes.map(formatAttr).join('\n  ')}
 }`;
   };
 
