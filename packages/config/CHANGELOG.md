@@ -1,5 +1,11 @@
 # @rosen-bridge/config
 
+## 1.2.0
+
+### Minor Changes
+
+- Support kebab-case keys in schema
+
 ## 1.1.0
 
 ### Minor Changes
