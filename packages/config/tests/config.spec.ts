@@ -1265,6 +1265,24 @@ describe('ConfigValidator', () => {
       expect((types.match(/export interface Logs\b/g) || []).length).toBe(1);
       expect(types).toContain('logs: Logs[]');
     });
+
+    /**
+     * @target generateTSTypes should support hyphenated keys (kebab-case) in type names and quoted props
+     * @dependencies
+     * @scenario
+     * - define a schema with a key like "bitcoin-runes" under "chains"
+     * - call generateTSTypes
+     * @expected
+     * - interface name is PascalCase without hyphen (ChainsBitcoinRunes)
+     * - property is quoted: "bitcoin-runes": ChainsBitcoinRunes
+     */
+    it(`should support hyphenated keys (bitcoin-runes -> ChainsBitcoinRunes, quoted prop)`, async () => {
+      const confValidator = new ConfigValidator(
+        <ConfigSchema>testData.schemaHyphenatedKeysTypeScriptPair.schema,
+      );
+      const types = confValidator.generateTSTypes('Root');
+      expect(types).toEqual(testData.schemaHyphenatedKeysTypeScriptPair.types);
+    });
   });
 
   describe('getConfigForLevel', () => {
