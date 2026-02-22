@@ -430,6 +430,9 @@ export class ConfigValidator {
         // if a node/field is of type object and thus is a subtree, add it to
         // the stack to be traversed later. Otherwise it's a leaf and needs no
         // traversal.
+        const childNameQuoted = childName.includes('-')
+          ? `"${childName}"`
+          : childName;
         if (
           field.type === 'object' ||
           (field.type === 'array' && field.items.type === 'object')
@@ -456,7 +459,7 @@ export class ConfigValidator {
           });
 
           attributes.push([
-            childName,
+            childNameQuoted,
             field.type === 'array' ? `${childTypeName}[]` : childTypeName,
           ]);
         } else {
@@ -475,7 +478,7 @@ export class ConfigValidator {
             }
           }
           attributes.push([
-            isOptional ? `${childName}?` : childName,
+            isOptional ? `${childNameQuoted}?` : childNameQuoted,
             field.type === 'array' ? `${fieldType}[]` : fieldType,
           ]);
         }
@@ -498,18 +501,8 @@ export class ConfigValidator {
     name: string,
     attributes: Array<[string, string]>,
   ): string => {
-    const formatAttr = (attr: [string, string]): string => {
-      const optional = attr[0].endsWith('?');
-      const key = optional ? attr[0].slice(0, -1) : attr[0];
-      const prop = key.includes('-')
-        ? optional
-          ? `"${key}"?`
-          : `"${key}"`
-        : attr[0];
-      return `${prop}: ${attr[1]};`;
-    };
     return `export interface ${name} {
-  ${attributes.map(formatAttr).join('\n  ')}
+  ${attributes.map((attr) => `${attr[0]}: ${attr[1]};`).join('\n  ')}
 }`;
   };
 

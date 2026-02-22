@@ -75,9 +75,7 @@ export const toPascalCase = (segment: string): string => {
   return segment
     .split('-')
     .map((part) =>
-      part.length > 0
-        ? part[0].toUpperCase() + part.slice(1).toLowerCase()
-        : '',
+      part.length > 0 ? part[0].toUpperCase() + part.slice(1) : '',
     )
     .join('');
 };
