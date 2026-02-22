@@ -38,10 +38,7 @@
     "octokit": "^2.0.14"
   },
   "devDependencies": {
-    "@types/download": "^8.0.2",
-    "@vitest/coverage-istanbul": "^3.1.4",
-    "tsx": "^4.20.5",
-    "vitest": "^3.1.4"
+    "@types/download": "^8.0.2"
   },
   "engines": {
     "node": ">=22.18.0",
