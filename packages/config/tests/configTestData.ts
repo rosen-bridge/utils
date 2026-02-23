@@ -1128,6 +1128,34 @@ export interface ApisExplorer {
 `,
 };
 
+export const schemaHyphenatedKeysTypeScriptPair = {
+  schema: {
+    chainsConfig: {
+      type: 'object',
+      children: {
+        'bitcoin-runes': {
+          type: 'object',
+          children: {
+            'enabled-key': { type: 'boolean' },
+          },
+        },
+      },
+    },
+  },
+  types: `export interface Root {
+  chainsConfig: ChainsConfig;
+}
+
+export interface ChainsConfig {
+  "bitcoin-runes": ChainsConfigBitcoinRunes;
+}
+
+export interface ChainsConfigBitcoinRunes {
+  "enabled-key"?: boolean;
+}
+`,
+};
+
 export const schemaConfigCharPair = {
   schema: {
     apiType: {

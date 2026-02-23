@@ -9,6 +9,7 @@ import {
   DOGE_CHAIN,
   ERGO_CHAIN,
   ETHEREUM_CHAIN,
+  HANDSHAKE_CHAIN,
   RUNES_CHAIN,
   FIRO_CHAIN,
 } from '../lib/const';
@@ -154,5 +155,19 @@ describe('encodeAddress', () => {
   it('should encode Firo address successfully', () => {
     const res = encodeAddress(FIRO_CHAIN, testData.firoAddress);
     expect(res).toEqual(testData.encodedFiroAddress);
+  });
+
+  /**
+   * @target `encodeAddress` should encode Handshake address successfully
+   * @dependencies
+   * @scenario
+   * - run test
+   * - check returned value
+   * @expected
+   * - it should be output script of given address in hex
+   */
+  it('should encode Handshake address successfully', () => {
+    const res = encodeAddress(HANDSHAKE_CHAIN, testData.handshakeAddress);
+    expect(res).toEqual(testData.encodedHandshakeAddress);
   });
 });

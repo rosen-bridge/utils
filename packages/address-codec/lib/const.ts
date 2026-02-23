@@ -6,6 +6,7 @@ export const ETHEREUM_CHAIN = 'ethereum';
 export const BINANCE_CHAIN = 'binance';
 export const DOGE_CHAIN = 'doge';
 export const FIRO_CHAIN = 'firo';
+export const HANDSHAKE_CHAIN = 'handshake';
 
 export const DOGE_NETWORK = {
   // Doge network parameters
@@ -31,4 +32,17 @@ export const FIRO_NETWORK = {
   pubKeyHash: 0x52,
   scriptHash: 0x07,
   wif: 0xd2,
+};
+
+export const HANDSHAKE_NETWORK = {
+  // Handshake network parameters
+  messagePrefix: '\x18Handshake Signed Message:\n',
+  bech32: 'hs',
+  bip32: {
+    public: 0x0488b21e,
+    private: 0x0488ade4,
+  },
+  pubKeyHash: -1,
+  scriptHash: -1,
+  wif: -1,
 };

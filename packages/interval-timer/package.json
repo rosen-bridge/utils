@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/interval-timer",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "this project contains interval timer class which can be used to run functions at specific intervals",
   "keywords": [
     "rosen"

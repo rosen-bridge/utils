@@ -1,5 +1,17 @@
 # @rosen-bridge/rwt-repo
 
+## 4.2.0
+
+### Minor Changes
+
+- Add RepoConfig with commitment calculation logic.
+
+## 4.1.0
+
+### Minor Changes
+
+- Fix ‍‍`rwtRepoBuilder` to use the existing `rwtRepoBox` value.
+
 ## 4.0.0
 
 ### Major Changes

@@ -1,5 +1,3 @@
-import { Constant } from 'ergo-lib-wasm-nodejs';
-
 import { FEE_RATIO_DIVISOR } from './constants';
 
 export interface Fee {
@@ -32,17 +30,25 @@ export class ChainMinimumFee implements ChainFee {
   }
 }
 
-export enum ErgoNetworkType {
-  explorer = 'explorer',
+export type AdditionalRegisters = {
+  R4?: string;
+  R5?: string;
+  R6?: string;
+  R7?: string;
+  R8?: string;
+  R9?: string;
+};
 
-  node = 'node',
-}
-
-export interface RegisterValues {
-  R4: Constant;
-  R5: Constant;
-  R6: Constant;
-  R7: Constant;
-  R8: Constant;
-  R9: Constant;
-}
+export type ErgoBoxWrapper = {
+  boxId: string;
+  txId: string;
+  address: string;
+  index: number;
+  value: bigint;
+  creationHeight: number;
+  assets: { tokenId: string; amount: bigint }[];
+  additionalRegisters?: AdditionalRegisters;
+  ergoTree: string;
+  globalIndex: bigint;
+  spentTransactionId?: string;
+};

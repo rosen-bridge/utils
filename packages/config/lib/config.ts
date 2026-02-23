@@ -11,7 +11,11 @@ import {
   propertyValidators,
   supportedTypes,
 } from './schema/Validators/fieldProperties';
-import { getSourceName, getValueFromConfigSources } from './utils';
+import {
+  getSourceName,
+  getValueFromConfigSources,
+  toPascalCase,
+} from './utils';
 import { valueValidations, valueValidators } from './value/validators';
 
 export class ConfigValidator {
@@ -448,14 +452,17 @@ export class ConfigValidator {
         // if a node/field is of type object and thus is a subtree, add it to
         // the stack to be traversed later. Otherwise it's a leaf and needs no
         // traversal.
+        const childNameQuoted = childName.includes('-')
+          ? `"${childName}"`
+          : childName;
         if (
           field.type === 'object' ||
           (field.type === 'array' && field.items.type === 'object')
         ) {
-          // Create unique type name from schema path excluding root interface name
+          // Create unique type name from schema path (supports hyphens: bitcoin-runes -> BitcoinRunes)
           const pathParts = path;
           const childTypeName = pathParts
-            .map((part) => part[0].toUpperCase() + part.substring(1))
+            .map((part) => toPascalCase(part))
             .join('');
 
           const children =
@@ -474,7 +481,7 @@ export class ConfigValidator {
           });
 
           attributes.push([
-            childName,
+            childNameQuoted,
             field.type === 'array' ? `${childTypeName}[]` : childTypeName,
           ]);
         } else {
@@ -493,7 +500,7 @@ export class ConfigValidator {
             }
           }
           attributes.push([
-            isOptional ? `${childName}?` : childName,
+            isOptional ? `${childNameQuoted}?` : childNameQuoted,
             field.type === 'array' ? `${fieldType}[]` : fieldType,
           ]);
         }
