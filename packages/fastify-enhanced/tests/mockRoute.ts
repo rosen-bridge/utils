@@ -55,6 +55,7 @@ export const mockRoutes = (server: FastifyWithZod) => {
             request.body.num2 +
             (request.body.num3 ?? 0n)
           ).toString(),
+          type: typeof request.body.num1,
         });
       } catch (error: any) {
         reply.status(500).send({ message: error.message });
@@ -80,6 +81,7 @@ export const ResponseObjectSchema = z.object({
 export const SuccessResponseSchema = z.object({
   array: z.array(ResponseObjectSchema),
   sum: z.string(),
+  type: z.string(),
 });
 
 export const HealthResponseSchema = {
