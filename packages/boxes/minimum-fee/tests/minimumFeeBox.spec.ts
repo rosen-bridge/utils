@@ -1,16 +1,14 @@
-import { ErgoBox } from 'ergo-lib-wasm-nodejs';
 import {
+  AdditionalRegisters,
   ChainMinimumFee,
-  ErgoNetworkType,
   FailedError,
   NetworkError,
   NotFoundError,
 } from '../lib';
 import { TestMinimumFeeBox } from './testMinimumFeeBox';
 import * as testData from './testData';
-import ergoExplorerClientFactory from '@rosen-clients/ergo-explorer';
-import ergoNodeClientFactory from '@rosen-clients/ergo-node';
-import JsonBigInt from '@rosen-bridge/json-bigint';
+import TestNetwork from './network/testNetwork.mock';
+import { Constant } from 'ergo-lib-wasm-nodejs';
 
 describe('MinimumFeeBox', () => {
   const nativeTokenId = 'erg';
@@ -18,60 +16,15 @@ describe('MinimumFeeBox', () => {
     '6cbeec04af6a5047d8818eac2ac6e2b28e1e74a0d339cff96f7641a1a0c3ca9b';
   const defaultMinimumFeeNFT =
     'c597eac4db28f62419eab5639122f2bc4955dfedf958e7cdba5248ba2a81210a';
+  const testNetwork = new TestNetwork();
 
   const generateDefaultMinimumFeeBox = () =>
-    new TestMinimumFeeBox(
-      nativeTokenId,
-      defaultMinimumFeeNFT,
-      ErgoNetworkType.explorer,
-      '',
-    );
+    new TestMinimumFeeBox(nativeTokenId, defaultMinimumFeeNFT, testNetwork);
 
   describe('fetchBox', () => {
     /**
-     * mocks `getApiV1BoxesUnspentBytokenidP1` of ergo explorer client
-     */
-    const mockExplorergetApiV1BoxesUnspentBytokenidP1 = (
-      shouldIncludeItemsField = true,
-    ) =>
-      vi.mocked(ergoExplorerClientFactory).mockReturnValueOnce({
-        v1: {
-          getApiV1BoxesUnspentBytokenidP1: async (
-            tokenId: string,
-            {
-              offset,
-              limit,
-            }: {
-              offset: bigint;
-              limit: bigint;
-            },
-          ) => ({
-            ...(shouldIncludeItemsField && {
-              items: testData.explorerTestBoxes.slice(
-                Number(offset),
-                Number(offset + limit),
-              ),
-            }),
-            total: testData.explorerTestBoxes.length,
-          }),
-        },
-      } as any);
-
-    /**
-     * mocks `getBoxesByTokenIdUnspent` of ergo node client
-     */
-    const mockNodegetBoxesByTokenIdUnspent = () =>
-      vi.mocked(ergoNodeClientFactory).mockReturnValueOnce({
-        getBoxesByTokenIdUnspent: async (
-          address: string,
-          { offset, limit }: { offset: number; limit: number },
-        ) =>
-          testData.nodeTestBoxes.slice(Number(offset), Number(offset + limit)),
-      } as any);
-
-    /**
      * @target MinimumFeeBox.fetchBox should fetch and select
-     * Erg config box from explorer client successfully
+     * Erg config box successfully
      * @dependencies
      * @scenario
      * - mock explorer client to return test boxes
@@ -82,19 +35,21 @@ describe('MinimumFeeBox', () => {
      * - it should return true
      * - updated box id should be as expected
      */
-    it('should fetch and select Erg config box from explorer client successfully', async () => {
-      mockExplorergetApiV1BoxesUnspentBytokenidP1();
+    it('should fetch and select Erg config box successfully', async () => {
+      vi.spyOn(testNetwork as any, 'getBoxesByTokenId').mockResolvedValueOnce(
+        testData.networkTestBoxes,
+      );
       const minimumFeeBox = generateDefaultMinimumFeeBox();
       const res = await minimumFeeBox.fetchBox();
       expect(res).toEqual(true);
-      expect(minimumFeeBox.getBox()?.box_id().to_str()).toEqual(
+      expect(minimumFeeBox.getBox()?.boxId).toEqual(
         '7def746de14a14756002c3dcaf19b3192d9cfb9ecb76c8c48eb7a8f8648675c2',
       );
     });
 
     /**
      * @target MinimumFeeBox.fetchBox should fetch and select
-     * token config box from explorer client successfully
+     * token config box successfully
      * @dependencies
      * @scenario
      * - mock explorer client to return test boxes
@@ -105,73 +60,18 @@ describe('MinimumFeeBox', () => {
      * - it should return true
      * - updated box id should be as expected
      */
-    it('should fetch and select token config box from explorer client successfully', async () => {
-      mockExplorergetApiV1BoxesUnspentBytokenidP1();
+    it('should fetch and select token config box successfully', async () => {
+      vi.spyOn(testNetwork as any, 'getBoxesByTokenId').mockResolvedValueOnce(
+        testData.networkTestBoxes,
+      );
       const minimumFeeBox = new TestMinimumFeeBox(
         tokenId,
         defaultMinimumFeeNFT,
-        ErgoNetworkType.explorer,
-        '',
+        testNetwork,
       );
       const res = await minimumFeeBox.fetchBox();
       expect(res).toEqual(true);
-      expect(minimumFeeBox.getBox()?.box_id().to_str()).toEqual(
-        'c65fad07c680589c80cddcc6c4a431317c647955aaf0f3ded6f73c42d805466c',
-      );
-    });
-
-    /**
-     * @target MinimumFeeBox.fetchBox should fetch and select
-     * Erg config box from node client successfully
-     * @dependencies
-     * @scenario
-     * - mock node client to return test boxes
-     * - run test
-     * - check returned value
-     * - check object box
-     * @expected
-     * - it should return true
-     * - updated box id should be as expected
-     */
-    it('should fetch and select Erg config box from node client successfully', async () => {
-      mockNodegetBoxesByTokenIdUnspent();
-      const minimumFeeBox = new TestMinimumFeeBox(
-        nativeTokenId,
-        defaultMinimumFeeNFT,
-        ErgoNetworkType.node,
-        '',
-      );
-      const res = await minimumFeeBox.fetchBox();
-      expect(res).toEqual(true);
-      expect(minimumFeeBox.getBox()?.box_id().to_str()).toEqual(
-        '7def746de14a14756002c3dcaf19b3192d9cfb9ecb76c8c48eb7a8f8648675c2',
-      );
-    });
-
-    /**
-     * @target MinimumFeeBox.fetchBox should fetch and select
-     * token config box from node client successfully
-     * @dependencies
-     * @scenario
-     * - mock node client to return test boxes
-     * - run test
-     * - check returned value
-     * - check object box
-     * @expected
-     * - it should return true
-     * - updated box id should be as expected
-     */
-    it('should fetch and select token config box from node client successfully', async () => {
-      mockNodegetBoxesByTokenIdUnspent();
-      const minimumFeeBox = new TestMinimumFeeBox(
-        tokenId,
-        defaultMinimumFeeNFT,
-        ErgoNetworkType.node,
-        '',
-      );
-      await minimumFeeBox.fetchBox();
-      const result = minimumFeeBox.getBox();
-      expect(result?.box_id().to_str()).toEqual(
+      expect(minimumFeeBox.getBox()?.boxId).toEqual(
         'c65fad07c680589c80cddcc6c4a431317c647955aaf0f3ded6f73c42d805466c',
       );
     });
@@ -191,9 +91,11 @@ describe('MinimumFeeBox', () => {
      * - box should be updated to undefined
      */
     it('should update box to undefined when got no config box', async () => {
-      mockExplorergetApiV1BoxesUnspentBytokenidP1(false);
+      vi.spyOn(testNetwork as any, 'getBoxesByTokenId').mockResolvedValueOnce(
+        [],
+      );
       const minimumFeeBox = generateDefaultMinimumFeeBox();
-      minimumFeeBox.setBox(ErgoBox.from_json(testData.normalFeeBox));
+      minimumFeeBox.setBox(testData.normalFeeBox);
       const res = await minimumFeeBox.fetchBox();
       expect(res).toEqual(false);
       expect(minimumFeeBox.getBox()).toBeUndefined();
@@ -215,13 +117,11 @@ describe('MinimumFeeBox', () => {
      * - box should be updated to undefined
      */
     it('should update box to undefined when received FailedError while fetching or selecting the box', async () => {
-      mockExplorergetApiV1BoxesUnspentBytokenidP1(false);
       const minimumFeeBox = generateDefaultMinimumFeeBox();
-      vi.spyOn(
-        minimumFeeBox as any,
-        'fetchBoxesUsingExplorer',
-      ).mockRejectedValueOnce(new FailedError(`test FailedError`));
-      minimumFeeBox.setBox(ErgoBox.from_json(testData.normalFeeBox));
+      vi.spyOn(testNetwork as any, 'getBoxesByTokenId').mockRejectedValueOnce(
+        new FailedError(`test FailedError`),
+      );
+      minimumFeeBox.setBox(testData.normalFeeBox);
       const res = await minimumFeeBox.fetchBox();
       expect(res).toEqual(false);
       expect(minimumFeeBox.getBox()).toBeUndefined();
@@ -243,13 +143,11 @@ describe('MinimumFeeBox', () => {
      * - box should be updated to undefined
      */
     it('should not update the box when received NetworkError while fetching the box', async () => {
-      mockExplorergetApiV1BoxesUnspentBytokenidP1(false);
       const minimumFeeBox = generateDefaultMinimumFeeBox();
-      vi.spyOn(
-        minimumFeeBox as any,
-        'fetchBoxesUsingExplorer',
-      ).mockRejectedValueOnce(new NetworkError(`test NetworkError`));
-      minimumFeeBox.setBox(ErgoBox.from_json(testData.normalFeeBox));
+      vi.spyOn(testNetwork as any, 'getBoxesByTokenId').mockRejectedValueOnce(
+        new NetworkError(`test NetworkError`),
+      );
+      minimumFeeBox.setBox(testData.normalFeeBox);
       const res = await minimumFeeBox.fetchBox();
       expect(res).toEqual(false);
       expect(minimumFeeBox.getBox()).toBeDefined();
@@ -268,12 +166,11 @@ describe('MinimumFeeBox', () => {
      * - FailedError should be thrown
      */
     it('should throw FailedError when found multiple config box', async () => {
-      const testBoxes = testData.nodeTestBoxes.map((boxJson) =>
-        ErgoBox.from_json(JsonBigInt.stringify(boxJson)),
-      );
       const minimumFeeBox = generateDefaultMinimumFeeBox();
       expect(() => {
-        minimumFeeBox.callSelectEligibleBox(testBoxes);
+        minimumFeeBox.callSelectEligibleBox(
+          testData.networkTestBoxesMultipleConfig,
+        );
       }).toThrow(FailedError);
     });
   });
@@ -291,7 +188,7 @@ describe('MinimumFeeBox', () => {
      */
     it('should extract normal fee successfully', () => {
       const minimumFeeBox = generateDefaultMinimumFeeBox();
-      minimumFeeBox.setBox(ErgoBox.from_json(testData.normalFeeBox));
+      minimumFeeBox.setBox(testData.normalFeeBox);
       const result = minimumFeeBox.getFee('ergo', 12000, 'cardano');
       expect(result).toEqual(
         new ChainMinimumFee(testData.normalFee[0].configs.cardano),
@@ -311,7 +208,7 @@ describe('MinimumFeeBox', () => {
      */
     it('should extract the fee that adds a new chain successfully', () => {
       const minimumFeeBox = generateDefaultMinimumFeeBox();
-      minimumFeeBox.setBox(ErgoBox.from_json(testData.newChainFeeBox));
+      minimumFeeBox.setBox(testData.newChainFeeBox);
       const result = minimumFeeBox.getFee('ergo', 23000, 'cardano');
       expect(result).toEqual(
         new ChainMinimumFee(testData.newChainFee[1].configs.cardano),
@@ -331,7 +228,7 @@ describe('MinimumFeeBox', () => {
      */
     it('should extract the fee that removes a chain successfully', () => {
       const minimumFeeBox = generateDefaultMinimumFeeBox();
-      minimumFeeBox.setBox(ErgoBox.from_json(testData.removeChainFeeBox));
+      minimumFeeBox.setBox(testData.removeChainFeeBox);
       const result = minimumFeeBox.getFee('ergo', 12000, 'cardano');
       expect(result).toEqual(
         new ChainMinimumFee(testData.removeChainFee[0].configs.cardano),
@@ -350,7 +247,7 @@ describe('MinimumFeeBox', () => {
      */
     it('should throw error when fromChain is not supported', () => {
       const minimumFeeBox = generateDefaultMinimumFeeBox();
-      minimumFeeBox.setBox(ErgoBox.from_json(testData.normalFeeBox));
+      minimumFeeBox.setBox(testData.normalFeeBox);
       expect(() => {
         minimumFeeBox.getFee('notSupportedChain', 12000, 'cardano');
       }).toThrow(NotFoundError);
@@ -368,7 +265,7 @@ describe('MinimumFeeBox', () => {
      */
     it('should throw error when toChain is not supported', () => {
       const minimumFeeBox = generateDefaultMinimumFeeBox();
-      minimumFeeBox.setBox(ErgoBox.from_json(testData.normalFeeBox));
+      minimumFeeBox.setBox(testData.normalFeeBox);
       expect(() => {
         minimumFeeBox.getFee('ergo', 12000, 'notSupporetedChain');
       }).toThrow(Error);
@@ -386,7 +283,7 @@ describe('MinimumFeeBox', () => {
      */
     it('should throw error when given height of fromChain is not supported', () => {
       const minimumFeeBox = generateDefaultMinimumFeeBox();
-      minimumFeeBox.setBox(ErgoBox.from_json(testData.normalFeeBox));
+      minimumFeeBox.setBox(testData.normalFeeBox);
       expect(() => {
         minimumFeeBox.getFee('ergo', 10000, 'cardano');
       }).toThrow(NotFoundError);
@@ -428,28 +325,28 @@ describe('MinimumFeeBox', () => {
      */
     it('should return a builder with the same parameters', () => {
       const minimumFeeBox = generateDefaultMinimumFeeBox();
-      const testBox = ErgoBox.from_json(testData.tokenNormalFeeBox);
+      const testBox = testData.tokenNormalFeeBox;
       minimumFeeBox.setBox(testBox);
       const result = minimumFeeBox.toBuilder();
       result.setHeight(1000000);
       const resultBoxCandidate = result.build();
 
       expect(resultBoxCandidate.value().as_i64().to_str()).toEqual(
-        testBox.value().as_i64().to_str(),
+        testBox.value.toString(),
       );
       expect(resultBoxCandidate.ergo_tree().to_base16_bytes()).toEqual(
-        testBox.ergo_tree().to_base16_bytes(),
+        testBox.ergoTree,
       );
       expect(resultBoxCandidate.tokens().len()).toEqual(
         resultBoxCandidate.tokens().len(),
       );
       for (let i = 0; i < resultBoxCandidate.tokens().len(); i++) {
         expect(resultBoxCandidate.tokens().get(i).id().to_str()).toEqual(
-          testBox.tokens().get(i).id().to_str(),
+          testBox.assets[i].tokenId,
         );
         expect(
           resultBoxCandidate.tokens().get(i).amount().as_i64().to_str(),
-        ).toEqual(testBox.tokens().get(i).amount().as_i64().to_str());
+        ).toEqual(testBox.assets[i].amount.toString());
       }
 
       expect(
@@ -458,14 +355,15 @@ describe('MinimumFeeBox', () => {
           ?.to_coll_coll_byte()
           .map((element) => Buffer.from(element).toString()),
       ).toEqual(
-        testBox
-          .register_value(4)
+        Constant.decode_from_base16(testBox.additionalRegisters!.R4!)
           ?.to_coll_coll_byte()
           .map((element) => Buffer.from(element).toString()),
       );
       for (let i = 5; i < 10; i++) {
         expect(resultBoxCandidate.register_value(i)?.to_js()).toEqual(
-          testBox.register_value(i)?.to_js(),
+          Constant.decode_from_base16(
+            testBox.additionalRegisters![`R${i}` as keyof AdditionalRegisters]!,
+          )?.to_js(),
         );
       }
     });
@@ -488,28 +386,28 @@ describe('MinimumFeeBox', () => {
      */
     it('should return a builder with the same parameters with a config that removes a chain', () => {
       const minimumFeeBox = generateDefaultMinimumFeeBox();
-      const testBox = ErgoBox.from_json(testData.removeChainFeeBox);
+      const testBox = testData.removeChainFeeBox;
       minimumFeeBox.setBox(testBox);
       const result = minimumFeeBox.toBuilder();
       result.setHeight(1000000);
       const resultBoxCandidate = result.build();
 
       expect(resultBoxCandidate.value().as_i64().to_str()).toEqual(
-        testBox.value().as_i64().to_str(),
+        testBox.value.toString(),
       );
       expect(resultBoxCandidate.ergo_tree().to_base16_bytes()).toEqual(
-        testBox.ergo_tree().to_base16_bytes(),
+        testBox.ergoTree,
       );
       expect(resultBoxCandidate.tokens().len()).toEqual(
         resultBoxCandidate.tokens().len(),
       );
       for (let i = 0; i < resultBoxCandidate.tokens().len(); i++) {
         expect(resultBoxCandidate.tokens().get(i).id().to_str()).toEqual(
-          testBox.tokens().get(i).id().to_str(),
+          testBox.assets[i].tokenId,
         );
         expect(
           resultBoxCandidate.tokens().get(i).amount().as_i64().to_str(),
-        ).toEqual(testBox.tokens().get(i).amount().as_i64().to_str());
+        ).toEqual(testBox.assets[i].amount.toString());
       }
 
       expect(
@@ -518,14 +416,15 @@ describe('MinimumFeeBox', () => {
           ?.to_coll_coll_byte()
           .map((element) => Buffer.from(element).toString()),
       ).toEqual(
-        testBox
-          .register_value(4)
+        Constant.decode_from_base16(testBox.additionalRegisters!.R4!)
           ?.to_coll_coll_byte()
           .map((element) => Buffer.from(element).toString()),
       );
       for (let i = 5; i < 10; i++) {
         expect(resultBoxCandidate.register_value(i)?.to_js()).toEqual(
-          testBox.register_value(i)?.to_js(),
+          Constant.decode_from_base16(
+            testBox.additionalRegisters![`R${i}` as keyof AdditionalRegisters]!,
+          )?.to_js(),
         );
       }
     });
@@ -543,7 +442,7 @@ describe('MinimumFeeBox', () => {
      */
     it('should not set height for builder', () => {
       const minimumFeeBox = generateDefaultMinimumFeeBox();
-      minimumFeeBox.setBox(ErgoBox.from_json(testData.normalFeeBox));
+      minimumFeeBox.setBox(testData.normalFeeBox);
       const result = minimumFeeBox.toBuilder();
       expect((result as any).height).toBeUndefined();
     });

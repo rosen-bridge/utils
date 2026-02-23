@@ -1,34 +1,42 @@
-import { Constant, ErgoBox } from 'ergo-lib-wasm-nodejs';
-import { Fee } from './types';
+import { Constant } from 'ergo-lib-wasm-nodejs';
+import { ErgoBoxWrapper, Fee } from './types';
 
 /**
  * extracts Fee config from box registers
  * @param box
  */
-export const extractFeeFromBox = (box: ErgoBox): Array<Fee> => {
-  const R4 = box.register_value(4);
-  const R5 = box.register_value(5);
-  const R6 = box.register_value(6);
-  const R7 = box.register_value(7);
-  const R8 = box.register_value(8);
-  const R9 = box.register_value(9);
+export const extractFeeFromBox = (box: ErgoBoxWrapper): Array<Fee> => {
+  const R4 = box.additionalRegisters?.R4;
+  const R5 = box.additionalRegisters?.R5;
+  const R6 = box.additionalRegisters?.R6;
+  const R7 = box.additionalRegisters?.R7;
+  const R8 = box.additionalRegisters?.R8;
+  const R9 = box.additionalRegisters?.R9;
 
   if (!R4 || !R5 || !R6 || !R7 || !R8 || !R9)
     throw Error(
-      `Incomplete register data for minimum-fee config box [${box
-        .box_id()
-        .to_str()}]`,
+      `Incomplete register data for minimum-fee config box [${box.boxId}]`,
     );
 
   const fees: Array<Fee> = [];
-  const chains = R4.to_coll_coll_byte().map((element) =>
-    Buffer.from(element).toString(),
-  );
-  const heights = R5.to_js() as Array<Array<number>>;
-  const bridgeFees = R6.to_js() as Array<Array<string>>;
-  const networkFees = R7.to_js() as Array<Array<string>>;
-  const rsnRatios = R8.to_js() as Array<Array<Array<string>>>;
-  const feeRatios = R9.to_js() as Array<Array<string>>;
+  const chains = Constant.decode_from_base16(R4)
+    .to_coll_coll_byte()
+    .map((element) => Buffer.from(element).toString());
+  const heights = Constant.decode_from_base16(R5).to_js() as Array<
+    Array<number>
+  >;
+  const bridgeFees = Constant.decode_from_base16(R6).to_js() as Array<
+    Array<string>
+  >;
+  const networkFees = Constant.decode_from_base16(R7).to_js() as Array<
+    Array<string>
+  >;
+  const rsnRatios = Constant.decode_from_base16(R8).to_js() as Array<
+    Array<Array<string>>
+  >;
+  const feeRatios = Constant.decode_from_base16(R9).to_js() as Array<
+    Array<string>
+  >;
 
   for (let feeIdx = 0; feeIdx < heights.length; feeIdx++) {
     const fee: Fee = {
