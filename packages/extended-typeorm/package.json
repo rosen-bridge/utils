@@ -49,11 +49,6 @@
     "reflect-metadata": "0.2.2",
     "typeorm": "0.3.26"
   },
-  "devDependencies": {
-    "@vitest/coverage-istanbul": "^3.1.4",
-    "tsx": "^4.20.5",
-    "vitest": "^3.1.4"
-  },
   "peerDependencies": {
     "sqlite3": "^5.1.6"
   },

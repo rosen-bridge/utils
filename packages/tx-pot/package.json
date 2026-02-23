@@ -30,11 +30,6 @@
     "@rosen-bridge/abstract-logger": "^4.0.0",
     "@rosen-bridge/extended-typeorm": "^1.0.1"
   },
-  "devDependencies": {
-    "@vitest/coverage-istanbul": "^3.1.4",
-    "tsx": "^4.20.5",
-    "vitest": "^3.1.4"
-  },
   "engines": {
     "node": ">=22.18.0",
     "npm": "11.6.2"

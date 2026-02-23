@@ -8,6 +8,7 @@
     "lib/**/*.spec.ts",
     "lib/**/*.test.ts",
     "lib/**/*.mock.ts",
+    "tests",
     "vitest.config.ts"
   ],
   "references": [{ "path": "../loggers/abstract-logger/tsconfig.build.json" }]
