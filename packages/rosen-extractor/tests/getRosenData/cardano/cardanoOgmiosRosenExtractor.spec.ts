@@ -1,10 +1,12 @@
-import { CardanoOgmiosRosenExtractor } from '../../../lib';
-import CardanoTestData from './cardanoTestData';
-import TestUtils from '../testUtils';
 import { Transaction } from '@cardano-ogmios/schema';
-import { ERGO_CHAIN } from '../../../lib/getRosenData/const';
+
 import JsonBigInt from '@rosen-bridge/json-bigint';
 import { TokenMap } from '@rosen-bridge/tokens';
+
+import { CardanoOgmiosRosenExtractor } from '../../../lib';
+import { ERGO_CHAIN } from '../../../lib/getRosenData/const';
+import TestUtils from '../testUtils';
+import CardanoTestData from './cardanoTestData';
 
 describe('OgmiosRosenExtractor', () => {
   const tokenMap = new TokenMap();

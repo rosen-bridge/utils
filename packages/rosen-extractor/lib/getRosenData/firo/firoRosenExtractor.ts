@@ -1,12 +1,13 @@
-import { RosenData, TokenTransformation } from '../abstract/types';
+import { AbstractLogger } from '@rosen-bridge/abstract-logger';
+import JsonBigInt from '@rosen-bridge/json-bigint';
+import { TokenMap } from '@rosen-bridge/tokens';
+
+import { MinimalOnChainRosenData } from '../../types';
 import AbstractRosenDataExtractor from '../abstract/abstractRosenDataExtractor';
+import { RosenData, TokenTransformation } from '../abstract/types';
 import { FIRO_CHAIN, FIRO_NATIVE_TOKEN } from '../const';
 import { FiroTx, FiroTxOutput } from './types';
-import { MinimalOnChainRosenData } from '../../types';
-import { TokenMap } from '@rosen-bridge/tokens';
-import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import { parseOpReturn, addressToOutputScript } from './utils';
-import JsonBigInt from '@rosen-bridge/json-bigint';
 
 export class FiroRosenExtractor extends AbstractRosenDataExtractor<string> {
   readonly chain = FIRO_CHAIN;

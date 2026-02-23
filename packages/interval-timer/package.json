@@ -2,6 +2,9 @@
   "name": "@rosen-bridge/interval-timer",
   "version": "0.1.0",
   "description": "this project contains interval timer class which can be used to run functions at specific intervals",
+  "keywords": [
+    "rosen"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rosen-bridge/utils.git",
@@ -12,34 +15,31 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "directories": {
+    "lib": "lib",
+    "test": "tests"
+  },
   "files": [
     "dist",
     "CHANGELOG.md"
   ],
   "scripts": {
-    "prettify": "prettier --write . --ignore-path ../../.gitignore",
-    "prettify:check": "prettier --check . --ignore-path ../../.gitignore",
-    "lint": "eslint --fix . && npm run prettify",
-    "lint:check": "eslint . && npm run prettify:check",
     "build": "tsc --build tsconfig.build.json",
     "clean": "rimraf dist && rimraf tsconfig.build.tsbuildinfo",
-    "type-check": "tsc --noEmit",
-    "test": "NODE_OPTIONS='--import tsx' vitest",
     "coverage": "npm run test -- --coverage",
-    "release": "npm run test -- --run && npm run clean && npm run build && npm publish --access public"
+    "lint": "eslint --fix . && npm run prettify",
+    "lint:check": "eslint . && npm run prettify:check",
+    "prettify": "prettier --write . --ignore-path ../../.gitignore",
+    "prettify:check": "prettier --check . --ignore-path ../../.gitignore",
+    "release": "npm run test -- --run && npm run clean && npm run build && npm publish --access public",
+    "test": "NODE_OPTIONS='--import tsx' vitest",
+    "type-check": "tsc --noEmit"
   },
   "devDependencies": {
     "@vitest/coverage-istanbul": "^3.1.4",
     "tsx": "^4.20.5",
     "vitest": "^3.1.4"
   },
-  "directories": {
-    "lib": "lib",
-    "test": "tests"
-  },
-  "keywords": [
-    "rosen"
-  ],
   "engines": {
     "node": ">=22.18.0",
     "npm": "11.6.2"

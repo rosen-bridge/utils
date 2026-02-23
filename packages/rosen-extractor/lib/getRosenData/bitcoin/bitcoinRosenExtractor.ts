@@ -1,12 +1,14 @@
-import { RosenData, TokenTransformation } from '../abstract/types';
+import { address } from 'bitcoinjs-lib';
+
+import { AbstractLogger } from '@rosen-bridge/abstract-logger';
+import JsonBigInt from '@rosen-bridge/json-bigint';
+import { TokenMap } from '@rosen-bridge/tokens';
+
 import AbstractRosenDataExtractor from '../abstract/abstractRosenDataExtractor';
+import { RosenData, TokenTransformation } from '../abstract/types';
 import { BITCOIN_CHAIN, BITCOIN_NATIVE_TOKEN } from '../const';
 import { BitcoinTx, BitcoinTxOutput, OpReturnData } from './types';
-import { TokenMap } from '@rosen-bridge/tokens';
-import { AbstractLogger } from '@rosen-bridge/abstract-logger';
-import { address } from 'bitcoinjs-lib';
 import { parseOpReturn } from './utils';
-import JsonBigInt from '@rosen-bridge/json-bigint';
 
 export class BitcoinRosenExtractor extends AbstractRosenDataExtractor<string> {
   readonly chain = BITCOIN_CHAIN;

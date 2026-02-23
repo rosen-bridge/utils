@@ -1,6 +1,7 @@
 import { FailedError, NetworkError, UnexpectedApiError } from './errors';
 
 interface ErrorHandler<HandlerReturnType> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (error: any): HandlerReturnType;
 }
 
@@ -17,6 +18,7 @@ const handleApiError = <
   NotRespondedStateHandlerReturnType = never,
   UnknownStateHandlerReturnType = never,
 >(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   error: any,
   baseMessage: string,
   overrideHandlers?: {

@@ -1,11 +1,12 @@
-import { RosenData, TokenTransformation } from '../abstract/types';
+import { AbstractLogger } from '@rosen-bridge/abstract-logger';
+import JsonBigInt from '@rosen-bridge/json-bigint';
+import { TokenMap } from '@rosen-bridge/tokens';
+
 import AbstractRosenDataExtractor from '../abstract/abstractRosenDataExtractor';
+import { RosenData, TokenTransformation } from '../abstract/types';
 import { DOGE_CHAIN, DOGE_NATIVE_TOKEN } from '../const';
 import { DogeTx, DogeTxOutput, OpReturnData } from './types';
-import { TokenMap } from '@rosen-bridge/tokens';
-import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import { parseRosenData, addressToOutputScript } from './utils';
-import JsonBigInt from '@rosen-bridge/json-bigint';
 
 export class DogeRosenExtractor extends AbstractRosenDataExtractor<string> {
   readonly chain = DOGE_CHAIN;

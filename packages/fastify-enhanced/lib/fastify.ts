@@ -1,17 +1,17 @@
-import 'zod-openapi/extend';
-
+import Fastify from 'fastify';
 import {
   type FastifyZodOpenApiTypeProvider,
   fastifyZodOpenApiPlugin,
   validatorCompiler,
 } from 'fastify-zod-openapi';
-import Fastify from 'fastify';
+import 'zod-openapi/extend';
 
-import { FastifyWithZod, SwaggerOpts } from './types';
-import { registerSwagger } from './swagger';
+import { JsonBigIntFactory } from '@rosen-bridge/json-bigint';
+
 import { makeJsonParser } from './jsonParser';
 import { makeSerializerCompiler } from './serializerCompiler';
-import { JsonBigIntFactory } from '@rosen-bridge/json-bigint';
+import { registerSwagger } from './swagger';
+import { FastifyWithZod, SwaggerOpts } from './types';
 
 /**
  * creates an instance of Fastify with Zod validation library as validator and

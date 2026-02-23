@@ -1,5 +1,4 @@
 // for manual testing
-
 import { makeFastify } from '../lib/fastify';
 import { FastifyWithZod } from '../lib/types';
 import { mockRoutes } from './mockRoute';

@@ -1,8 +1,9 @@
-import { BitcoinRunesRpcRosenExtractor } from '../../../lib';
-import * as testData from './rpcTestData';
-import TestUtils from '../testUtils';
-import { BitcoinRpcTransaction } from '../../../lib/getRosenData/bitcoin/types';
 import { TokenMap } from '@rosen-bridge/tokens';
+
+import { BitcoinRunesRpcRosenExtractor } from '../../../lib';
+import { BitcoinRpcTransaction } from '../../../lib/getRosenData/bitcoin/types';
+import TestUtils from '../testUtils';
+import * as testData from './rpcTestData';
 
 describe('BitcoinRunesRpcRosenExtractor', () => {
   const tokenMap = new TokenMap();

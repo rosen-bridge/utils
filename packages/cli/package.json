@@ -2,6 +2,9 @@
   "name": "@rosen-bridge/cli",
   "version": "2.1.2",
   "description": "The official Rosen bridge cli, providing helpers for the tasks related to Rosen bridge",
+  "keywords": [
+    "rosen"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rosen-bridge/utils.git"
@@ -15,17 +18,14 @@
     "CHANGELOG.md"
   ],
   "scripts": {
-    "prettify": "prettier --write . --ignore-path ../../.gitignore",
-    "prettify:check": "prettier --check . --ignore-path ../../.gitignore",
+    "build": "tsc --build tsconfig.build.json",
     "lint": "eslint --fix . && npm run prettify",
     "lint:check": "eslint . && npm run prettify:check",
-    "build": "tsc --build tsconfig.build.json",
-    "type-check": "tsc --noEmit",
-    "release": "npm run build && npm publish --access public"
+    "prettify": "prettier --write . --ignore-path ../../.gitignore",
+    "prettify:check": "prettier --check . --ignore-path ../../.gitignore",
+    "release": "npm run build && npm publish --access public",
+    "type-check": "tsc --noEmit"
   },
-  "keywords": [
-    "rosen"
-  ],
   "dependencies": {
     "@rosen-bridge/encryption": "^1.0.1",
     "@rosen-bridge/utils": "^2.0.2",
@@ -38,11 +38,11 @@
     "tsx": "^4.20.5",
     "yargs": "^17.7.2"
   },
+  "devDependencies": {
+    "@types/yargs": "^17.0.33"
+  },
   "engines": {
     "node": ">=22.18.0",
     "npm": "11.6.2"
-  },
-  "devDependencies": {
-    "@types/yargs": "^17.0.33"
   }
 }

@@ -1,14 +1,16 @@
 import * as wasm from 'ergo-lib-wasm-nodejs';
+
+import { AbstractLogger } from '@rosen-bridge/abstract-logger';
+import { DummyLogger } from '@rosen-bridge/abstract-logger';
 import {
   ERGO_CHAIN,
   ExtractedConfig,
   RosenChainToken,
   RosenTokens,
 } from '@rosen-bridge/tokens';
-import { CorruptedConfigBoxError } from './errors';
-import { AbstractLogger } from '@rosen-bridge/abstract-logger';
-import { DummyLogger } from '@rosen-bridge/abstract-logger';
+
 import { ERGO_SIDE_TOKEN_ID_KEY, REQUIRED_FIELDS } from './constants';
+import { CorruptedConfigBoxError } from './errors';
 
 /**
  * set tokens config by token map boxes
@@ -88,7 +90,7 @@ export const parseTokenMapBoxes = (
           boxId,
           `Duplicate ergo token [${data[0]}] is found`,
         );
-
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const chainToken: Record<string, any> = { extra: {} };
       for (let i = 1; i < headers.length; i++) {
         if (REQUIRED_FIELDS.includes(headers[i]))
@@ -117,7 +119,8 @@ export const parseTokenMapBoxes = (
         );
       if (data[0] === '') {
         // this is an unbridgeable token
-        const chainToken: Record<string, any> = { extra: {} };
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const chainToken: any = { extra: {} };
         for (let i = 1; i < headers.length; i++) {
           if (REQUIRED_FIELDS.includes(headers[i]))
             chainToken[headers[i]] = data[i];
@@ -139,7 +142,7 @@ export const parseTokenMapBoxes = (
             boxId,
             `Ergo token [${data[0]}] is not found`,
           );
-
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const chainToken: Record<string, any> = { extra: {} };
         for (let i = 1; i < headers.length; i++) {
           if (REQUIRED_FIELDS.includes(headers[i]))

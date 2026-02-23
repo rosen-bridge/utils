@@ -1,10 +1,11 @@
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
+import JsonBigInt from '@rosen-bridge/json-bigint';
+import ergoNodeClientFactory from '@rosen-clients/ergo-node';
+
+import { FailedError } from '../errors';
+import handleApiError from '../handleApiError';
 import { ErgoBoxWrapper } from '../types';
 import { AbstractMinimumFeeNetwork } from './abstract';
-import ergoNodeClientFactory from '@rosen-clients/ergo-node';
-import JsonBigInt from '@rosen-bridge/json-bigint';
-import handleApiError from '../handleApiError';
-import { FailedError } from '../errors';
 
 class MinimumFeeNodeNetwork extends AbstractMinimumFeeNetwork {
   protected readonly BOX_FETCHING_PAGE_SIZE = 50;

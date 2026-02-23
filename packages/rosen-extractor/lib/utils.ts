@@ -1,4 +1,5 @@
 import { decodeAddress } from '@rosen-bridge/address-codec';
+
 import { SUPPORTED_CHAINS } from './getRosenData/const';
 import { MinimalOnChainRosenData } from './types';
 

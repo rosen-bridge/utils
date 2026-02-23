@@ -1,13 +1,15 @@
 import { Address, ErgoTree, NetworkPrefix } from 'ergo-lib-wasm-nodejs';
-import { ChainMinimumFee, ErgoBoxWrapper, Fee } from './types';
-import { FailedError, NotFoundError } from './errors';
-import JsonBigInt from '@rosen-bridge/json-bigint';
+
 import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
+import JsonBigInt from '@rosen-bridge/json-bigint';
+
+import { ERGO_NATIVE_TOKEN } from './constants';
+import { FailedError, NotFoundError } from './errors';
 import { MinimumFeeBoxBuilder } from './minimumFeeBoxBuilder';
 import { MinimumFeeConfig } from './minimumFeeConfig';
-import { ERGO_NATIVE_TOKEN } from './constants';
-import { extractFeeFromBox } from './utils';
 import { AbstractMinimumFeeNetwork } from './network/abstract';
+import { ChainMinimumFee, ErgoBoxWrapper, Fee } from './types';
+import { extractFeeFromBox } from './utils';
 
 export class MinimumFeeBox {
   protected readonly BOX_FETCHING_PAGE_SIZE = 50;

@@ -1,6 +1,7 @@
+import * as bitcoinLib from 'bitcoinjs-lib';
+
 import { HANDSHAKE_NETWORK, MIN_UTXO_VALUE } from './constants';
 import { DataExtractionOutput } from './types';
-import * as bitcoinLib from 'bitcoinjs-lib';
 
 /**
  * Extracts the hash from a Handshake address using bitcoinjs-lib

@@ -10,8 +10,10 @@ import path from 'path';
  * @return {{ defined: boolean; value: any }}
  */
 export const getValue = (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   obj: any,
   path: string[],
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): { defined: boolean; value: any } => {
   let value = obj;
   for (const key of path) {

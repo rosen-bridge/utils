@@ -34,6 +34,7 @@ export interface ActionPromise {
 export interface Action {
   resolve: (value: boolean | PromiseLike<boolean>) => void;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   reject: (reason?: any) => void;
   action: ServiceAction;
 }

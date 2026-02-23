@@ -1,7 +1,8 @@
-import TestUtils from '../testUtils';
 import * as addressCodec from '@rosen-bridge/address-codec';
-import { TestRosenDataExtractor } from './testRosenDataExtractor';
 import { TokenMap } from '@rosen-bridge/tokens';
+
+import TestUtils from '../testUtils';
+import { TestRosenDataExtractor } from './testRosenDataExtractor';
 
 vi.mock('@rosen-bridge/address-codec', async () => {
   const actual = await vi.importActual('@rosen-bridge/address-codec');

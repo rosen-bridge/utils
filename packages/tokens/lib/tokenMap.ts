@@ -1,13 +1,15 @@
 import { Semaphore } from 'await-semaphore';
+
 import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
+
 import { ERGO_CHAIN, NATIVE_RESIDENCY } from './constants';
+import { CorruptedConfigError } from './errors';
 import {
   CallbackFunction,
   RosenAmount,
   RosenChainToken,
   RosenTokens,
 } from './types';
-import { CorruptedConfigError } from './errors';
 
 /**
  * TokenMap class searches for different assets properties in different chains

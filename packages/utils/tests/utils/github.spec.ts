@@ -11,7 +11,6 @@ import {
   findLatestStableReleaseByPrefixTag,
   findLatestReleaseByPrefixTag,
 } from '../../lib/utils/github';
-
 import {
   mainNetPrereleaseRelease,
   mainNetStableRelease,
@@ -23,7 +22,6 @@ import {
   tssTag1,
   tssReleases,
 } from '../data/octokit.data';
-
 import { mockOctokit, mockOctokitGetReleaseByTag } from '../mocks/octokit.mock';
 
 describe('fetchReleasesPage', () => {

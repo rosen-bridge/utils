@@ -1,14 +1,15 @@
 import { Repository } from '@rosen-bridge/extended-typeorm';
-import { mockDataSource } from '../db/dataSource.mock';
+
 import {
   CallbackFunction,
   TransactionEntity,
   TransactionStatus,
   ValidatorFunction,
 } from '../../lib';
-import { TestTxPot } from './testTxPot';
-import * as testData from './testData';
+import { mockDataSource } from '../db/dataSource.mock';
 import { TestPotChainManager } from '../network/testPotChainManager';
+import * as testData from './testData';
+import { TestTxPot } from './testTxPot';
 
 describe('TxPot', () => {
   let txRepository: Repository<TransactionEntity>;

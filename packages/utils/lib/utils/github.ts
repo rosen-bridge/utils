@@ -1,13 +1,11 @@
 import { Octokit } from 'octokit';
 
-import { isValidAssetName } from './rosen';
-
 import {
   DEFAULT_RELEASES_FETCHING_PAGE_SIZE,
   ROSEN_BRIDGE_ORGANIZATION,
 } from '../constants';
-
 import { GithubRelease, SupportedRepo } from '../types';
+import { isValidAssetName } from './rosen';
 
 /**
  * Fetch a page of releases from Github Api in each iteration until there are no

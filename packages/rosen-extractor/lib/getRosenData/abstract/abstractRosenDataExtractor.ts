@@ -1,7 +1,8 @@
-import { TokenMap } from '@rosen-bridge/tokens';
-import { RosenData } from './types';
 import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
 import { validateAddress } from '@rosen-bridge/address-codec';
+import { TokenMap } from '@rosen-bridge/tokens';
+
+import { RosenData } from './types';
 
 export default abstract class AbstractRosenDataExtractor<TransactionType> {
   abstract readonly chain: string;

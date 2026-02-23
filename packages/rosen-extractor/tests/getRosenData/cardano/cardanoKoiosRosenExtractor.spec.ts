@@ -1,8 +1,9 @@
-import { CardanoKoiosRosenExtractor } from '../../../lib';
-import CardanoTestData from './cardanoTestData';
-import TestUtils from '../testUtils';
-import { ERGO_CHAIN } from '../../../lib/getRosenData/const';
 import { TokenMap } from '@rosen-bridge/tokens';
+
+import { CardanoKoiosRosenExtractor } from '../../../lib';
+import { ERGO_CHAIN } from '../../../lib/getRosenData/const';
+import TestUtils from '../testUtils';
+import CardanoTestData from './cardanoTestData';
 
 describe('KoiosRosenExtractor', () => {
   const tokenMap = new TokenMap();

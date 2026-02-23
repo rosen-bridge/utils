@@ -1,7 +1,8 @@
-import { ErgoRosenExtractor } from '../../../lib';
-import ErgoTestData from './ergoTestData';
-import TestUtils from '../testUtils';
 import { TokenMap } from '@rosen-bridge/tokens';
+
+import { ErgoRosenExtractor } from '../../../lib';
+import TestUtils from '../testUtils';
+import ErgoTestData from './ergoTestData';
 
 describe('ErgoRosenExtractor', () => {
   const tokenMap = new TokenMap();

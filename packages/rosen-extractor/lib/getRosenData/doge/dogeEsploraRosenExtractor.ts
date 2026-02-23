@@ -1,9 +1,10 @@
-import { RosenData, TokenTransformation } from '../abstract/types';
+import { AbstractLogger } from '@rosen-bridge/abstract-logger';
+import { TokenMap } from '@rosen-bridge/tokens';
+
 import AbstractRosenDataExtractor from '../abstract/abstractRosenDataExtractor';
+import { RosenData, TokenTransformation } from '../abstract/types';
 import { DOGE_CHAIN, DOGE_NATIVE_TOKEN } from '../const';
 import { DogeEsploraTransaction, EsploraTxOutput, OpReturnData } from './types';
-import { TokenMap } from '@rosen-bridge/tokens';
-import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import { parseRosenData, addressToOutputScript } from './utils';
 
 export class DogeEsploraRosenExtractor extends AbstractRosenDataExtractor<DogeEsploraTransaction> {

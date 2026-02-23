@@ -1,4 +1,7 @@
+import * as ergoLib from 'ergo-lib-wasm-nodejs';
+
 import JsonBigInt from '@rosen-bridge/json-bigint';
+
 import { RepoConfig } from '../lib';
 import {
   mockCollateralErg,
@@ -9,7 +12,6 @@ import {
   mockPercentage,
   repoConfigBox,
 } from './repoConfigTestData';
-import * as ergoLib from 'ergo-lib-wasm-nodejs';
 
 describe('RepoConfig', () => {
   let repoConfig: RepoConfig;

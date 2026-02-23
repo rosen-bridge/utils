@@ -1,9 +1,10 @@
-import { FiroRpcRosenExtractor } from '../../../lib';
-import * as testData from './rpcTestData';
-import TestUtils from '../testUtils';
-import { ETHEREUM_CHAIN, ERGO_CHAIN } from '../../../lib/getRosenData/const';
 import { TokenMap } from '@rosen-bridge/tokens';
+
+import { FiroRpcRosenExtractor } from '../../../lib';
+import { ETHEREUM_CHAIN, ERGO_CHAIN } from '../../../lib/getRosenData/const';
 import { FiroRpcTransaction } from '../../../lib/getRosenData/firo/types';
+import TestUtils from '../testUtils';
+import * as testData from './rpcTestData';
 
 describe('FiroRpcRosenExtractor', () => {
   const tokenMap = new TokenMap();

@@ -1,5 +1,4 @@
 import JsonBigInt from '../lib';
-
 import { jsonString, json } from './testData';
 
 describe('JsonBigInt', () => {

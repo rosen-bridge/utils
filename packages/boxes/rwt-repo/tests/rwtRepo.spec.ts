@@ -1,7 +1,9 @@
 import * as ergoLib from 'ergo-lib-wasm-nodejs';
+
+import JsonBigInt from '@rosen-bridge/json-bigint';
+
 import { RWTRepo, RWTRepoBuilder } from '../lib';
 import { boxInfo1 } from './rwtRepoTestData';
-import JsonBigInt from '@rosen-bridge/json-bigint';
 
 describe('RWTRepo', () => {
   let rwtRepo: RWTRepo;

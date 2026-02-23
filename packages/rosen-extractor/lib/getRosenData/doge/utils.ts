@@ -1,7 +1,9 @@
+import { address } from 'bitcoinjs-lib';
+
 import { decodeAddress } from '@rosen-bridge/address-codec';
+
 import { SUPPORTED_CHAINS } from '../const';
 import { OpReturnData } from './types';
-import { address } from 'bitcoinjs-lib';
 
 const dogecoinNetwork = {
   messagePrefix: '\x19Dogecoin Signed Message:\n',

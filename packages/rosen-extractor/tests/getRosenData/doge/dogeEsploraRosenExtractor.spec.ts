@@ -1,9 +1,10 @@
-import * as testData from './esploraTestData';
-import TestUtils from '../testUtils';
+import { TokenMap } from '@rosen-bridge/tokens';
+
+import { DogeEsploraRosenExtractor } from '../../../lib';
 import { ERGO_CHAIN, CARDANO_CHAIN } from '../../../lib/getRosenData/const';
 import { DogeEsploraTransaction } from '../../../lib/getRosenData/doge/types';
-import { DogeEsploraRosenExtractor } from '../../../lib';
-import { TokenMap } from '@rosen-bridge/tokens';
+import TestUtils from '../testUtils';
+import * as testData from './esploraTestData';
 
 describe('DogeEsploraRosenExtractor', () => {
   const tokenMap = new TokenMap();

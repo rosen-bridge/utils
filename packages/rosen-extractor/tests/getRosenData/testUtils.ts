@@ -1,8 +1,5 @@
 import { RosenTokens } from '@rosen-bridge/tokens';
-import {
-  BITCOIN_RUNES_CHAIN,
-  ETHEREUM_CHAIN,
-} from './../../lib/getRosenData/const';
+
 import {
   BITCOIN_CHAIN,
   BITCOIN_NATIVE_TOKEN,
@@ -17,6 +14,10 @@ import {
   HANDSHAKE_CHAIN,
   HANDSHAKE_NATIVE_TOKEN,
 } from '../../lib/getRosenData/const';
+import {
+  BITCOIN_RUNES_CHAIN,
+  ETHEREUM_CHAIN,
+} from './../../lib/getRosenData/const';
 
 export default class TestUtils {
   static tokens: RosenTokens = [

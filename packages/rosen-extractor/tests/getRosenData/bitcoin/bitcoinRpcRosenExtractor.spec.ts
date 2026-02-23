@@ -1,9 +1,10 @@
-import { BitcoinRpcRosenExtractor } from '../../../lib';
-import * as testData from './rpcTestData';
-import TestUtils from '../testUtils';
-import { ERGO_CHAIN, CARDANO_CHAIN } from '../../../lib/getRosenData/const';
-import { BitcoinRpcTransaction } from '../../../lib/getRosenData/bitcoin/types';
 import { TokenMap } from '@rosen-bridge/tokens';
+
+import { BitcoinRpcRosenExtractor } from '../../../lib';
+import { BitcoinRpcTransaction } from '../../../lib/getRosenData/bitcoin/types';
+import { ERGO_CHAIN, CARDANO_CHAIN } from '../../../lib/getRosenData/const';
+import TestUtils from '../testUtils';
+import * as testData from './rpcTestData';
 
 describe('BitcoinRpcRosenExtractor', () => {
   const tokenMap = new TokenMap();

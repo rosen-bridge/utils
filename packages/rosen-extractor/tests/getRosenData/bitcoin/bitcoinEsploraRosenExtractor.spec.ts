@@ -1,9 +1,10 @@
-import { BitcoinEsploraRosenExtractor } from '../../../lib';
-import * as testData from './esploraTestData';
-import TestUtils from '../testUtils';
-import { ERGO_CHAIN, CARDANO_CHAIN } from '../../../lib/getRosenData/const';
-import { BitcoinEsploraTransaction } from '../../../lib/getRosenData/bitcoin/types';
 import { TokenMap } from '@rosen-bridge/tokens';
+
+import { BitcoinEsploraRosenExtractor } from '../../../lib';
+import { BitcoinEsploraTransaction } from '../../../lib/getRosenData/bitcoin/types';
+import { ERGO_CHAIN, CARDANO_CHAIN } from '../../../lib/getRosenData/const';
+import TestUtils from '../testUtils';
+import * as testData from './esploraTestData';
 
 describe('BitcoinEsploraRosenExtractor', () => {
   const tokenMap = new TokenMap();

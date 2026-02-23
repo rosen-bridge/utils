@@ -1,12 +1,14 @@
-import { RosenData } from '../abstract/types';
-import AbstractRosenDataExtractor from '../abstract/abstractRosenDataExtractor';
-import { NodeTransaction } from './types';
-import { TokenMap } from '@rosen-bridge/tokens';
 import { Transaction } from 'ergo-lib-wasm-nodejs';
+
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
-import { ErgoNodeRosenExtractor } from './ergoNodeRosenExtractor';
 import JsonBigInt from '@rosen-bridge/json-bigint';
+import { TokenMap } from '@rosen-bridge/tokens';
+
+import AbstractRosenDataExtractor from '../abstract/abstractRosenDataExtractor';
+import { RosenData } from '../abstract/types';
 import { ERGO_CHAIN } from '../const';
+import { ErgoNodeRosenExtractor } from './ergoNodeRosenExtractor';
+import { NodeTransaction } from './types';
 
 export class ErgoRosenExtractor extends AbstractRosenDataExtractor<string> {
   readonly chain = ERGO_CHAIN;

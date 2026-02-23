@@ -1,9 +1,10 @@
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
+import JsonBigInt from '@rosen-bridge/json-bigint';
+import ergoExplorerClientFactory from '@rosen-clients/ergo-explorer';
+
+import handleApiError from '../handleApiError';
 import { ErgoBoxWrapper } from '../types';
 import { AbstractMinimumFeeNetwork } from './abstract';
-import ergoExplorerClientFactory from '@rosen-clients/ergo-explorer';
-import JsonBigInt from '@rosen-bridge/json-bigint';
-import handleApiError from '../handleApiError';
 
 class MinimumFeeExplorerNetwork extends AbstractMinimumFeeNetwork {
   protected readonly BOX_FETCHING_PAGE_SIZE = 50;

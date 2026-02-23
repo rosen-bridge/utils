@@ -1,9 +1,10 @@
-import { HandshakeRosenExtractor } from '../../../lib';
-import * as testData from './testData';
-import TestUtils from '../testUtils';
-import { ERGO_CHAIN, CARDANO_CHAIN } from '../../../lib/getRosenData/const';
 import JsonBigInt from '@rosen-bridge/json-bigint';
 import { TokenMap } from '@rosen-bridge/tokens';
+
+import { HandshakeRosenExtractor } from '../../../lib';
+import { ERGO_CHAIN, CARDANO_CHAIN } from '../../../lib/getRosenData/const';
+import TestUtils from '../testUtils';
+import * as testData from './testData';
 
 describe('HandshakeRosenExtractor', () => {
   const tokenMap = new TokenMap();

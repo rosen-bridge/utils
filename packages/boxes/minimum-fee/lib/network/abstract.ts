@@ -1,4 +1,5 @@
 import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
+
 import { ErgoBoxWrapper } from '../types';
 
 abstract class AbstractMinimumFeeNetwork {

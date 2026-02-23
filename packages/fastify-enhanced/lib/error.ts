@@ -1,9 +1,11 @@
-export class ResponseValidationError extends Error {
-  public details: Record<string, any>;
+import { ZodError } from 'zod';
 
-  constructor(validationResult: Record<string, any>) {
+export class ResponseValidationError extends Error {
+  public details: ZodError;
+
+  constructor(validationResult: ZodError) {
     super("Response doesn't match the schema");
     this.name = 'ResponseValidationError';
-    this.details = validationResult.error;
+    this.details = validationResult;
   }
 }

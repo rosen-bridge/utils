@@ -1,4 +1,5 @@
 import { AbstractLogger, LogLevel } from '@rosen-bridge/abstract-logger';
+
 import { LogCallback } from './types';
 
 /**

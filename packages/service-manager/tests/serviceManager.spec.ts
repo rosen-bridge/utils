@@ -1,12 +1,12 @@
 import { ServiceManager, ServiceStatus } from '../lib';
-import { sleep } from './testUtils';
-import { X0A, X0B, X0C, X0M } from './testData/hierarchicalTestData';
 import { X1A, X1B, X1M } from './testData/crashTestData';
-import { OneServiceA } from './testData/oneServiceTestData';
-import { X2A, X2B, X2C, X2D } from './testData/midwayFailureTestData';
 import { X3A, X3B, X3C, X3D } from './testData/diamondTestData';
+import { X0A, X0B, X0C, X0M } from './testData/hierarchicalTestData';
+import { X2A, X2B, X2C, X2D } from './testData/midwayFailureTestData';
+import { OneServiceA } from './testData/oneServiceTestData';
 import { X4A, X4B, X4C, X4D } from './testData/partialStartTestData';
 import { R1A, R1B } from './testData/simpleRunningTestData';
+import { sleep } from './testUtils';
 
 describe('ServiceManager', () => {
   /**

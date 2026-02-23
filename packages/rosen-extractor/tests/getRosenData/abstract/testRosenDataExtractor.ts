@@ -1,7 +1,8 @@
+import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import { TokenMap } from '@rosen-bridge/tokens';
+
 import { AbstractRosenDataExtractor, RosenData } from '../../../lib';
 import { ERGO_CHAIN, ERGO_NATIVE_TOKEN } from '../../../lib/getRosenData/const';
-import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 
 export class TestRosenDataExtractor extends AbstractRosenDataExtractor<string> {
   readonly chain = ERGO_CHAIN;

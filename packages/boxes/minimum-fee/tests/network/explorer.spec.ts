@@ -1,7 +1,8 @@
-import * as testData from '../testData';
 import ergoExplorerClientFactory from '@rosen-clients/ergo-explorer';
-import { TestMinimumFeeBox } from '../testMinimumFeeBox';
+
 import { MinimumFeeExplorerNetwork } from '../../lib/network/explorer';
+import * as testData from '../testData';
+import { TestMinimumFeeBox } from '../testMinimumFeeBox';
 
 describe('MinimumFeeExplorerNetwork', () => {
   const nativeTokenId = 'erg';

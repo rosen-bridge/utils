@@ -29,13 +29,14 @@ yarn add @rosen-bridge/fastify-enhanced
 To use the enhanced Fastify, import `createFastify` and use it to create a fastify instance and register routes. Use data types defined under `types` object, to define validation constraints for requests and responses:
 
 ```ts
+import { FastifyBaseLogger, FastifyInstance } from 'fastify';
+import { IncomingMessage, Server, ServerResponse } from 'http';
+
 import {
   ZodTypeProvider,
   createFastify,
   types,
 } from '@rosen-bridge/fastify-enhanced';
-import { FastifyBaseLogger, FastifyInstance } from 'fastify';
-import { IncomingMessage, Server, ServerResponse } from 'http';
 
 const addTokenPaymentRoute = (
   fastify: FastifyInstance<

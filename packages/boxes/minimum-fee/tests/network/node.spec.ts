@@ -1,7 +1,8 @@
-import * as testData from '../testData';
 import ergoNodeClientFactory from '@rosen-clients/ergo-node';
-import { TestMinimumFeeBox } from '../testMinimumFeeBox';
+
 import { MinimumFeeNodeNetwork } from '../../lib/network/node';
+import * as testData from '../testData';
+import { TestMinimumFeeBox } from '../testMinimumFeeBox';
 
 describe('MinimumFeeNodeNetwork', () => {
   const nativeTokenId = 'erg';

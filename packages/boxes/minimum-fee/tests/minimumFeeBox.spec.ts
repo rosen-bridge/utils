@@ -1,3 +1,5 @@
+import { Constant } from 'ergo-lib-wasm-nodejs';
+
 import {
   AdditionalRegisters,
   ChainMinimumFee,
@@ -5,10 +7,9 @@ import {
   NetworkError,
   NotFoundError,
 } from '../lib';
-import { TestMinimumFeeBox } from './testMinimumFeeBox';
-import * as testData from './testData';
 import TestNetwork from './network/testNetwork.mock';
-import { Constant } from 'ergo-lib-wasm-nodejs';
+import * as testData from './testData';
+import { TestMinimumFeeBox } from './testMinimumFeeBox';
 
 describe('MinimumFeeBox', () => {
   const nativeTokenId = 'erg';
