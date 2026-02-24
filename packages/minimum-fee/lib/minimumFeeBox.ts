@@ -1,12 +1,8 @@
-import { Address, ErgoTree, NetworkPrefix } from 'ergo-lib-wasm-nodejs';
-
 import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
 import JsonBigInt from '@rosen-bridge/json-bigint';
 
 import { ERGO_NATIVE_TOKEN } from './constants';
 import { FailedError, NotFoundError } from './errors';
-import { MinimumFeeBoxBuilder } from './minimumFeeBoxBuilder';
-import { MinimumFeeConfig } from './minimumFeeConfig';
 import { AbstractMinimumFeeNetwork } from './network/abstract';
 import { ChainMinimumFee, ErgoBoxWrapper, Fee } from './types';
 import { extractFeeFromBox } from './utils';
@@ -18,16 +14,19 @@ export class MinimumFeeBox {
   protected tokenId: string;
   protected minimumFeeNFT: string;
   protected network: AbstractMinimumFeeNetwork;
+  protected decodeRegister: (register: string) => unknown;
 
   constructor(
     tokenId: string,
     minimumFeeNFT: string,
     network: AbstractMinimumFeeNetwork,
+    decodeRegister: (register: string) => unknown,
     logger?: AbstractLogger,
   ) {
     this.tokenId = tokenId;
     this.minimumFeeNFT = minimumFeeNFT;
     this.network = network;
+    this.decodeRegister = decodeRegister;
     this.logger = logger ? logger : new DummyLogger();
   }
 
@@ -110,7 +109,7 @@ export class MinimumFeeBox {
    */
   getConfigs = (): Array<Fee> => {
     if (!this.box) throw Error(`Box is not fetched yet`);
-    const fee = extractFeeFromBox(this.box);
+    const fee = extractFeeFromBox(this.box, this.decodeRegister);
     this.logger.debug(
       `Extracted fee config from box [${
         this.box.boxId
@@ -153,42 +152,5 @@ export class MinimumFeeBox {
         this.box.boxId
       }]`,
     );
-  };
-
-  /**
-   * generates a MinimumFeeBoxBuilder using current box
-   *  note that 'height' parameter of builder won't be set
-   */
-  toBuilder = (): MinimumFeeBoxBuilder => {
-    if (!this.box) throw Error(`Box is not fetched yet`);
-
-    const builder = new MinimumFeeBoxBuilder(
-      this.minimumFeeNFT,
-      Address.recreate_from_ergo_tree(
-        ErgoTree.from_base16_bytes(this.box.ergoTree),
-      ).to_base58(NetworkPrefix.Mainnet),
-    )
-      .setValue(this.box.value)
-      .setToken(this.tokenId);
-
-    this.getConfigs().forEach((fee) => {
-      this.logger.debug(
-        `Extracted fee config from box [${this.box!.boxId}]: ${JsonBigInt.stringify(
-          fee,
-        )}`,
-      );
-      const chainFee = new MinimumFeeConfig();
-      Object.keys(fee.heights).forEach((chain) => {
-        if (Object.hasOwn(fee.configs, chain))
-          chainFee.setChainConfig(
-            chain,
-            fee.heights[chain],
-            fee.configs[chain],
-          );
-        else chainFee.setChainConfig(chain, fee.heights[chain], undefined);
-      });
-      builder.addConfig(chainFee);
-    });
-    return builder;
   };
 }

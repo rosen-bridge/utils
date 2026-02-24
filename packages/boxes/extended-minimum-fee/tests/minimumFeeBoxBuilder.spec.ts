@@ -1,6 +1,8 @@
 import { Address } from 'ergo-lib-wasm-nodejs';
 
-import { InvalidConfig, MinimumFeeBoxBuilder, MinimumFeeConfig } from '../lib';
+import { MinimumFeeConfig } from '@rosen-bridge/minimum-fee';
+
+import { InvalidConfig, MinimumFeeBoxBuilder } from '../lib';
 import * as testData from './testData';
 
 describe('MinimumFeeBoxBuilder', () => {
