@@ -8,9 +8,9 @@ describe('AddressManager', () => {
      * @scenario
      * - create AddressManager with validator for the chain
      * - run test
-     * - check returned value
+     * - check if any exception is thrown
      * @expected
-     * - it should return the validator result
+     * - no errors should be thrown
      */
     it('should validate the address successfully when the validator is registered for the chain', () => {
       const addressManager = new TestAddressManager(
@@ -20,8 +20,9 @@ describe('AddressManager', () => {
         },
         {},
       );
-      const res = addressManager.validateAddress('chain', 'address');
-      expect(res).toEqual(false);
+      expect(() => {
+        addressManager.validateAddress('chain', 'address');
+      }).not.toThrow();
     });
 
     /**

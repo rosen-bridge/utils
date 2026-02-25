@@ -6,7 +6,7 @@ export class AddressManager {
   protected chainValidators: Record<string, (address: string) => void>;
   protected chainDecoders: Record<string, (encodedAddress: string) => string>;
 
-  constructor(
+  protected constructor(
     chainValidators: Record<string, (address: string) => void>,
     chainDecoders: Record<string, (encodedAddress: string) => string>,
     logger: AbstractLogger = new DummyLogger(),
