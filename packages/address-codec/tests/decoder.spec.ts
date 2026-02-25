@@ -10,7 +10,7 @@ import {
   ERGO_CHAIN,
   ETHEREUM_CHAIN,
   HANDSHAKE_CHAIN,
-  RUNES_CHAIN,
+  BITCOIN_RUNES_CHAIN,
   FIRO_CHAIN,
 } from '../lib/const';
 import * as testData from './testData';
@@ -125,7 +125,7 @@ describe('decodeAddress', () => {
    */
   it('should decode Runes address successfully', () => {
     const res = decodeAddress(
-      RUNES_CHAIN,
+      BITCOIN_RUNES_CHAIN,
       testData.encodedTaprootBitcoinAddress,
     );
     expect(res).toEqual(testData.taprootBitcoinAddress);

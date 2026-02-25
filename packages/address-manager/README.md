@@ -45,7 +45,11 @@ const exampleChainDecoder = {
   },
 };
 
-AddressManager.init(exampleChainValidators, exampleChainDecoder, ConsoleLogger);
+AddressManager.init(
+  exampleChainValidators,
+  exampleChainDecoder,
+  new ConsoleLogger(),
+);
 const address = AddressManager.getInstance().decodeAddress(
   'chainX',
   'encoded-address',
@@ -59,5 +63,5 @@ import { ConsoleLogger } from '@rosen-bridge/abstract-logger';
 import { chainValidators, chainDecoders } from '@rosen-bridge/address-codec';
 import { AddressManager } from '@rosen-bridge/address-manager';
 
-AddressManager.init(chainValidators, chainDecoders, ConsoleLogger);
+AddressManager.init(chainValidators, chainDecoders, new ConsoleLogger());
 ```

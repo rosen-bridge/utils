@@ -54,9 +54,10 @@ export class AddressManager {
   validateAddress = (chain: string, address: string): void => {
     const validator = this.chainValidators[chain];
     if (validator) validator(address);
-    throw Error(
-      `No address validator is set for chain [${chain}] in AddressManager`,
-    );
+    else
+      throw Error(
+        `No address validator is set for chain [${chain}] in AddressManager`,
+      );
   };
 
   /**

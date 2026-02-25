@@ -1,11 +1,12 @@
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import { TokenMap } from '@rosen-bridge/tokens';
 
+import { MinimalOnChainRosenData } from '../../types';
 import AbstractRosenDataExtractor from '../abstract/abstractRosenDataExtractor';
 import { RosenData, TokenTransformation } from '../abstract/types';
 import { DOGE_CHAIN, DOGE_NATIVE_TOKEN } from '../const';
-import { DogeEsploraTransaction, EsploraTxOutput, OpReturnData } from './types';
-import { parseRosenData, addressToOutputScript } from './utils';
+import { DogeEsploraTransaction, EsploraTxOutput } from './types';
+import { parseOpReturn, addressToOutputScript } from './utils';
 
 export class DogeEsploraRosenExtractor extends AbstractRosenDataExtractor<DogeEsploraTransaction> {
   readonly chain = DOGE_CHAIN;
@@ -40,14 +41,14 @@ export class DogeEsploraRosenExtractor extends AbstractRosenDataExtractor<DogeEs
       let validLock = false; // a lock box is found with available asset transformation
 
       // parse rosen data from OP_RETURN box
-      let opReturnData: OpReturnData | undefined;
+      let opReturnData: MinimalOnChainRosenData | undefined;
       let rawData: string = '';
       for (let i = 0; i < outputs.length; i++) {
         const output = outputs[i];
         if (output.scriptpubkey.slice(0, 2) !== '6a') continue; // not an OP_RETURN utxo
 
         try {
-          opReturnData = parseRosenData(output.scriptpubkey);
+          opReturnData = parseOpReturn(output.scriptpubkey);
           rawData = output.scriptpubkey;
           validData = true;
           break;

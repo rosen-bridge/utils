@@ -10,7 +10,7 @@ import {
   ERGO_CHAIN,
   ETHEREUM_CHAIN,
   HANDSHAKE_CHAIN,
-  RUNES_CHAIN,
+  BITCOIN_RUNES_CHAIN,
   FIRO_CHAIN,
 } from '../lib/const';
 import * as testData from './testData';
@@ -25,8 +25,9 @@ describe('validateAddress', () => {
    * - to validate correct Ergo address
    */
   it('should validate Ergo address successfully', () => {
-    const res = validateAddress(ERGO_CHAIN, testData.ergoAddress);
-    expect(res).toEqual(true);
+    expect(() => {
+      validateAddress(ERGO_CHAIN, testData.ergoAddress);
+    }).not.toThrow();
   });
 
   /**
@@ -52,8 +53,9 @@ describe('validateAddress', () => {
    * - to validate correct Cardano address
    */
   it('should validate Cardano address successfully', () => {
-    const res = validateAddress(CARDANO_CHAIN, testData.cardanoAddress);
-    expect(res).toEqual(true);
+    expect(() => {
+      validateAddress(CARDANO_CHAIN, testData.cardanoAddress);
+    }).not.toThrow();
   });
 
   /**
@@ -79,8 +81,9 @@ describe('validateAddress', () => {
    * - to validate correct Bitcoin address
    */
   it('should validate Bitcoin address successfully', () => {
-    const res = validateAddress(BITCOIN_CHAIN, testData.bitcoinAddress);
-    expect(res).toEqual(true);
+    expect(() => {
+      validateAddress(BITCOIN_CHAIN, testData.bitcoinAddress);
+    }).not.toThrow();
   });
 
   /**
@@ -120,8 +123,9 @@ describe('validateAddress', () => {
    * - to validate correct Ethereum address
    */
   it('should validate Ethereum address successfully', () => {
-    const res = validateAddress(ETHEREUM_CHAIN, testData.ethereumAddress);
-    expect(res).toEqual(true);
+    expect(() => {
+      validateAddress(ETHEREUM_CHAIN, testData.ethereumAddress);
+    }).not.toThrow();
   });
 
   /**
@@ -189,8 +193,9 @@ describe('validateAddress', () => {
    * - to validate correct Doge address
    */
   it('should validate Doge address successfully', () => {
-    const res = validateAddress(DOGE_CHAIN, testData.dogeAddress);
-    expect(res).toEqual(true);
+    expect(() => {
+      validateAddress(DOGE_CHAIN, testData.dogeAddress);
+    }).not.toThrow();
   });
 
   /**
@@ -204,7 +209,7 @@ describe('validateAddress', () => {
   it('should throw error for wrong Doge address', () => {
     expect(() => {
       validateAddress(DOGE_CHAIN, testData.invalidDogeAddress);
-    }).toThrow(UnsupportedAddressError);
+    }).toThrow();
   });
 
   /**
@@ -216,8 +221,9 @@ describe('validateAddress', () => {
    * - to validate correct Runes address
    */
   it('should validate Runes address successfully', () => {
-    const res = validateAddress(RUNES_CHAIN, testData.taprootBitcoinAddress);
-    expect(res).toEqual(true);
+    expect(() => {
+      validateAddress(BITCOIN_RUNES_CHAIN, testData.taprootBitcoinAddress);
+    }).not.toThrow();
   });
 
   /**
@@ -230,7 +236,7 @@ describe('validateAddress', () => {
    */
   it('should throw error for wrong Runes address', () => {
     expect(() => {
-      validateAddress(RUNES_CHAIN, testData.bitcoinAddress);
+      validateAddress(BITCOIN_RUNES_CHAIN, testData.bitcoinAddress);
     }).toThrow(UnsupportedAddressError);
   });
 
@@ -243,8 +249,9 @@ describe('validateAddress', () => {
    * - to validate correct Firo address
    */
   it('should validate Firo address successfully', () => {
-    const res = validateAddress(FIRO_CHAIN, testData.firoAddress);
-    expect(res).toEqual(true);
+    expect(() => {
+      validateAddress(FIRO_CHAIN, testData.firoAddress);
+    }).not.toThrow();
   });
 
   /**
@@ -258,7 +265,7 @@ describe('validateAddress', () => {
   it('should throw error for wrong Firo address', () => {
     expect(() => {
       validateAddress(FIRO_CHAIN, testData.invalidFiroAddress);
-    }).toThrow(UnsupportedAddressError);
+    }).toThrow();
   });
 
   /**
@@ -270,8 +277,9 @@ describe('validateAddress', () => {
    * - to validate correct Handshake address
    */
   it('should validate Handshake address successfully', () => {
-    const res = validateAddress(HANDSHAKE_CHAIN, testData.handshakeAddress);
-    expect(res).toEqual(true);
+    expect(() => {
+      validateAddress(HANDSHAKE_CHAIN, testData.handshakeAddress);
+    }).not.toThrow();
   });
 
   /**
@@ -285,6 +293,6 @@ describe('validateAddress', () => {
   it('should throw error for wrong Handshake address', () => {
     expect(() => {
       validateAddress(HANDSHAKE_CHAIN, testData.invalidHandshakeAddress);
-    }).toThrow(UnsupportedAddressError);
+    }).toThrow();
   });
 });

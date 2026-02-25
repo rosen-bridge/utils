@@ -10,7 +10,7 @@ import {
   ERGO_CHAIN,
   ETHEREUM_CHAIN,
   HANDSHAKE_CHAIN,
-  RUNES_CHAIN,
+  BITCOIN_RUNES_CHAIN,
   FIRO_CHAIN,
 } from '../lib/const';
 import * as testData from './testData';
@@ -139,7 +139,10 @@ describe('encodeAddress', () => {
    * - it should be output script of given address in hex
    */
   it('should encode Runes address successfully', () => {
-    const res = encodeAddress(RUNES_CHAIN, testData.taprootBitcoinAddress);
+    const res = encodeAddress(
+      BITCOIN_RUNES_CHAIN,
+      testData.taprootBitcoinAddress,
+    );
     expect(res).toEqual(testData.encodedTaprootBitcoinAddress);
   });
 

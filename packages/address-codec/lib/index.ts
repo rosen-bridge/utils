@@ -3,6 +3,7 @@ import { initEccLib } from 'bitcoinjs-lib';
 
 initEccLib(ecc);
 
+export * from './chains';
 export * from './encoder';
 export * from './decoder';
 export * from './types';

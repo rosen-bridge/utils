@@ -78,7 +78,7 @@ describe('HandshakeRpcRosenExtractor', () => {
         testData.lockAddress,
         tokenMap,
       );
-      const result = extractor.get(invalidTx);
+      const result = extractor.get(invalidTx as any);
 
       expect(result).toBeUndefined();
     });
@@ -101,7 +101,7 @@ describe('HandshakeRpcRosenExtractor', () => {
         testData.lockAddress,
         tokenMap,
       );
-      const result = extractor.get(invalidTx);
+      const result = extractor.get(invalidTx as any);
 
       expect(result).toBeUndefined();
     });
@@ -124,7 +124,7 @@ describe('HandshakeRpcRosenExtractor', () => {
         testData.lockAddress,
         tokenMap,
       );
-      const result = extractor.get(invalidTx);
+      const result = extractor.get(invalidTx as any);
 
       expect(result).toBeUndefined();
     });
@@ -147,7 +147,7 @@ describe('HandshakeRpcRosenExtractor', () => {
         testData.lockAddress,
         tokenMap,
       );
-      const result = extractor.get(invalidTx);
+      const result = extractor.get(invalidTx as any);
 
       expect(result).toBeUndefined();
     });
