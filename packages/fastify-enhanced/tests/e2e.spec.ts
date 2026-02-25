@@ -47,6 +47,7 @@ describe('e2e', () => {
         },
       ],
       sum: '21099',
+      type: 'bigint',
     });
   });
 
