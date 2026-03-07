@@ -5,7 +5,6 @@ import fs from 'fs';
 import path from 'path';
 
 import { ConfigValidator } from '../lib';
-import { ConfigSchema } from '../lib/schema/types/fields';
 import * as testData from './configTestData';
 
 afterAll(() => {
@@ -23,6 +22,9 @@ beforeEach(() => {
 
 describe('ConfigValidator', () => {
   describe('generateDefault', () => {
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
     /**
      * @target generateDefault should return default values object for the
      * passed schema
@@ -34,9 +36,12 @@ describe('ConfigValidator', () => {
      * - correct default value object should have been returned
      */
     it(`should return default values object for the passed schema`, async () => {
-      const config = new ConfigValidator(
-        <ConfigSchema>testData.apiSchemaDefaultValuePairSample.schema,
-      );
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValue(testData.apiSchemaDefaultValuePairSample.schema);
+      const config = new ConfigValidator('whatever.json');
+
       expect(config.generateDefault()).toEqual(
         testData.apiSchemaDefaultValuePairSample.defaultVal,
       );
@@ -53,14 +58,14 @@ describe('ConfigValidator', () => {
      * - generateDefault with validate should throw
      */
     it(`should fail validate=true when defaults violate choices (primitive and nested)`, async () => {
-      const cv1 = new ConfigValidator(
-        <ConfigSchema>testData.wrongChoiceDefaultSchema.schema,
-      );
+      vi.spyOn(ConfigValidator.prototype as any, 'fromSchemaFile')
+        .mockReturnValueOnce(testData.wrongChoiceDefaultSchema.schema)
+        .mockReturnValueOnce(testData.nestedWrongChoiceDefaultSchema.schema);
+
+      const cv1 = new ConfigValidator('schema1.json');
       expect(() => cv1.generateDefault({ validate: true })).toThrow();
 
-      const cv2 = new ConfigValidator(
-        <ConfigSchema>testData.nestedWrongChoiceDefaultSchema.schema,
-      );
+      const cv2 = new ConfigValidator('schema2.json');
       expect(() => cv2.generateDefault({ validate: true })).toThrow();
     });
 
@@ -75,9 +80,11 @@ describe('ConfigValidator', () => {
      * - correct default value object should have been returned including arrays
      */
     it(`should return default values for array fields with string and number items`, async () => {
-      const config = new ConfigValidator(
-        <ConfigSchema>testData.arraySchemaDefaultValuePairSample.schema,
-      );
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(testData.arraySchemaDefaultValuePairSample.schema);
+      const config = new ConfigValidator('arraySchemaDefaultValuePairSample');
       expect(config.generateDefault()).toEqual(
         testData.arraySchemaDefaultValuePairSample.defaultVal,
       );
@@ -93,9 +100,11 @@ describe('ConfigValidator', () => {
      * - empty array should be included in default values
      */
     it(`should handle empty array defaults`, async () => {
-      const config = new ConfigValidator(
-        <ConfigSchema>testData.emptyArrayDefaultsPair.schema,
-      );
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(testData.emptyArrayDefaultsPair.schema);
+      const config = new ConfigValidator('empty-array');
       const result = config.generateDefault();
       expect(result).toEqual(testData.emptyArrayDefaultsPair.defaultVal);
     });
@@ -110,9 +119,11 @@ describe('ConfigValidator', () => {
      * - array field without default should be excluded from result
      */
     it(`should exclude arrays without default values`, async () => {
-      const config = new ConfigValidator(
-        <ConfigSchema>testData.arrayWithoutDefaultPair.schema,
-      );
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(testData.arrayWithoutDefaultPair.schema);
+      const config = new ConfigValidator('arrayWithoutDefaultPair');
       const result = config.generateDefault();
       expect(result).toEqual(testData.arrayWithoutDefaultPair.defaultVal);
       expect(result).not.toHaveProperty('arrayWithoutDefault');
@@ -129,9 +140,11 @@ describe('ConfigValidator', () => {
      * - each element is merged with object item defaults
      */
     it(`should merge array of object item defaults with provided elements`, async () => {
-      const config = new ConfigValidator(
-        <ConfigSchema>testData.logsArraySchemaDefaultsPair.schema,
-      );
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(testData.logsArraySchemaDefaultsPair.schema);
+      const config = new ConfigValidator('logsArraySchemaDefaultsPair');
       const result = config.generateDefault();
       expect(result).toEqual(testData.logsArraySchemaDefaultsPair.defaultVal);
     });
@@ -149,9 +162,11 @@ describe('ConfigValidator', () => {
      * - validateConfig should throw due to schema violations in defaults
      */
     it(`should not validate array item defaults; validateConfig should catch it`, async () => {
-      const confValidator = new ConfigValidator(
-        <ConfigSchema>testData.invalidLogsArrayDefaultsPair.schema,
-      );
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(testData.invalidLogsArrayDefaultsPair.schema);
+      const confValidator = new ConfigValidator('invalidLogsArrayDefaultsPair');
       const generated = confValidator.generateDefault();
       expect(generated).toEqual(
         testData.invalidLogsArrayDefaultsPair.defaultVal,
@@ -169,8 +184,14 @@ describe('ConfigValidator', () => {
      * - generation should throw due to validation
      */
     it(`should throw when generateDefault is called with validate option and defaults are invalid`, async () => {
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(
+        testData.invalidDefaultsValidateOptionSchema.schema,
+      );
       const confValidator = new ConfigValidator(
-        <ConfigSchema>testData.invalidDefaultsValidateOptionSchema.schema,
+        'invalidDefaultsValidateOptionSchema',
       );
       expect(() => confValidator.generateDefault({ validate: true })).toThrow();
     });
@@ -188,11 +209,12 @@ describe('ConfigValidator', () => {
      * - validateConfig does not throw
      */
     it(`should reject schema defaults with unknown keys at schema validation time`, async () => {
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(testData.unknownKeyLogsArrayDefaultsPair.schema);
       expect(
-        () =>
-          new ConfigValidator(
-            <ConfigSchema>testData.unknownKeyLogsArrayDefaultsPair.schema,
-          ),
+        () => new ConfigValidator('unknownKeyLogsArrayDefaultsPair'),
       ).toThrow('key is not found in the schema');
     });
 
@@ -209,8 +231,12 @@ describe('ConfigValidator', () => {
      * - nested array provided in defaults is preserved
      */
     it(`should handle nested array field inside array item objects`, async () => {
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(testData.nestedArrayInArrayDefaultsPair.schema);
       const confValidator = new ConfigValidator(
-        <ConfigSchema>testData.nestedArrayInArrayDefaultsPair.schema,
+        'nestedArrayInArrayDefaultsPair',
       );
       const result = confValidator.generateDefault();
       expect(result).toEqual(
@@ -230,9 +256,11 @@ describe('ConfigValidator', () => {
      * - validation throws
      */
     it(`should omit required fields without defaults and fail validation`, async () => {
-      const confValidator = new ConfigValidator(
-        <ConfigSchema>testData.requiredWithoutDefaultSchema.schema,
-      );
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(testData.requiredWithoutDefaultSchema.schema);
+      const confValidator = new ConfigValidator('requiredWithoutDefaultSchema');
       const defaults = confValidator.generateDefault();
       expect(defaults).toEqual({});
       expect(() => confValidator.validateConfig(defaults)).toThrow();
@@ -252,8 +280,12 @@ describe('ConfigValidator', () => {
      * - no errors should be thrown
      */
     it(`should not throw any exceptions when a correct schema is passed`, async () => {
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(testData.correctApiSchema);
       expect(() => {
-        new ConfigValidator(<ConfigSchema>testData.correctApiSchema);
+        new ConfigValidator('correctApiSchema');
       }).not.toThrow();
     });
 
@@ -269,13 +301,15 @@ describe('ConfigValidator', () => {
      */
     it(`should throw exception when a schema with incorrect default value type
     is passed`, async () => {
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(
+        testData.schemaWithIncorrectPortDefaultValueTypeSample,
+      );
       expect(
         () =>
-          new ConfigValidator(
-            <ConfigSchema>(
-              testData.schemaWithIncorrectPortDefaultValueTypeSample
-            ),
-          ),
+          new ConfigValidator('schemaWithIncorrectPortDefaultValueTypeSample'),
       ).toThrow();
     });
 
@@ -290,11 +324,12 @@ describe('ConfigValidator', () => {
      * - exception should be thrown
      */
     it(`should throw exception when array type doesn't have an item property`, async () => {
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(testData.arrayTypeSchemaWithoutItems);
       expect(
-        () =>
-          new ConfigValidator(
-            <ConfigSchema>testData.arrayTypeSchemaWithoutItems,
-          ),
+        () => new ConfigValidator('arrayTypeSchemaWithoutItems'),
       ).toThrow();
     });
 
@@ -309,11 +344,12 @@ describe('ConfigValidator', () => {
      * - exception should be thrown
      */
     it(`should throw exception when object type doesn't have a children property`, async () => {
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(testData.objectTypeSchemaWithoutChildren);
       expect(
-        () =>
-          new ConfigValidator(
-            <ConfigSchema>testData.objectTypeSchemaWithoutChildren,
-          ),
+        () => new ConfigValidator('objectTypeSchemaWithoutChildren'),
       ).toThrow();
     });
 
@@ -326,10 +362,12 @@ describe('ConfigValidator', () => {
      * - no error thrown
      */
     it(`should pass when array primitive defaults match items type`, async () => {
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(testData.arrayPrimitiveDefaultsValid.schema);
       expect(() => {
-        new ConfigValidator(
-          <ConfigSchema>testData.arrayPrimitiveDefaultsValid.schema,
-        );
+        new ConfigValidator('arrayPrimitiveDefaultsValid');
       }).not.toThrow();
     });
 
@@ -342,11 +380,12 @@ describe('ConfigValidator', () => {
      * - error thrown
      */
     it(`should fail when array primitive defaults mismatch items type`, async () => {
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(testData.arrayPrimitiveDefaultsInvalid.schema);
       expect(
-        () =>
-          new ConfigValidator(
-            <ConfigSchema>testData.arrayPrimitiveDefaultsInvalid.schema,
-          ),
+        () => new ConfigValidator('arrayPrimitiveDefaultsInvalid'),
       ).toThrow();
     });
 
@@ -359,11 +398,14 @@ describe('ConfigValidator', () => {
      * - error thrown
      */
     it(`should fail when array object defaults have invalid child types`, async () => {
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(
+        testData.arrayObjectDefaultsInvalidChildType.schema,
+      );
       expect(
-        () =>
-          new ConfigValidator(
-            <ConfigSchema>testData.arrayObjectDefaultsInvalidChildType.schema,
-          ),
+        () => new ConfigValidator('arrayObjectDefaultsInvalidChildType'),
       ).toThrow();
     });
 
@@ -376,12 +418,11 @@ describe('ConfigValidator', () => {
      * - error thrown
      */
     it(`should fail when nested array defaults have invalid element types`, async () => {
-      expect(
-        () =>
-          new ConfigValidator(
-            <ConfigSchema>testData.nestedArrayDefaultsInvalid.schema,
-          ),
-      ).toThrow();
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(testData.nestedArrayDefaultsInvalid.schema);
+      expect(() => new ConfigValidator('nestedArrayDefaultsInvalid')).toThrow();
     });
 
     /**
@@ -393,10 +434,12 @@ describe('ConfigValidator', () => {
      * - no error thrown
      */
     it(`should pass when nested array defaults are valid`, async () => {
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(testData.nestedArrayDefaultsValid.schema);
       expect(() => {
-        new ConfigValidator(
-          <ConfigSchema>testData.nestedArrayDefaultsValid.schema,
-        );
+        new ConfigValidator('nestedArrayDefaultsValid');
       }).not.toThrow();
     });
 
@@ -411,9 +454,11 @@ describe('ConfigValidator', () => {
      * - defaults merged as expected
      */
     it(`should pass for nested array of objects defaults`, async () => {
-      const cv = new ConfigValidator(
-        <ConfigSchema>testData.nestedArrayOfObjectsDefaultsValid.schema,
-      );
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(testData.nestedArrayOfObjectsDefaultsValid.schema);
+      const cv = new ConfigValidator('nestedArrayOfObjectsDefaultsValid');
       const defaults = cv.generateDefault();
       expect(defaults).toEqual(
         testData.nestedArrayOfObjectsDefaultsValid.defaultVal,
@@ -429,11 +474,14 @@ describe('ConfigValidator', () => {
      * - constructor throws
      */
     it(`should fail for nested array of objects defaults with invalid inner elements`, async () => {
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(
+        testData.nestedArrayOfObjectsDefaultsInvalid.schema,
+      );
       expect(
-        () =>
-          new ConfigValidator(
-            <ConfigSchema>testData.nestedArrayOfObjectsDefaultsInvalid.schema,
-          ),
+        () => new ConfigValidator('nestedArrayOfObjectsDefaultsInvalid'),
       ).toThrow();
     });
   });
@@ -450,9 +498,11 @@ describe('ConfigValidator', () => {
      * - no errors should be thrown
      */
     it(`should not throw any exceptions when a correct config is passed`, async () => {
-      const confValidator = new ConfigValidator(
-        <ConfigSchema>testData.apiSchemaConfigPair.schema,
-      );
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(testData.apiSchemaConfigPair.schema);
+      const confValidator = new ConfigValidator('apiSchemaConfigPair');
       expect(() =>
         confValidator.validateConfig(testData.apiSchemaConfigPair.config),
       ).not.toThrow();
@@ -470,8 +520,12 @@ describe('ConfigValidator', () => {
      */
     it(`should throw exception when a config violating choices constraint is
     passed`, async () => {
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(testData.apiSchemaConfigPairWrongChoice.schema);
       const confValidator = new ConfigValidator(
-        <ConfigSchema>testData.apiSchemaConfigPairWrongChoice.schema,
+        'apiSchemaConfigPairWrongChoice',
       );
 
       expect(() =>
@@ -493,8 +547,12 @@ describe('ConfigValidator', () => {
      */
     it(`should throw exception when a config violating regex constraint is
     passed`, async () => {
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(testData.apiSchemaConfigPairWrongRegex.schema);
       const confValidator = new ConfigValidator(
-        <ConfigSchema>testData.apiSchemaConfigPairWrongRegex.schema,
+        'apiSchemaConfigPairWrongRegex',
       );
 
       expect(() =>
@@ -516,8 +574,12 @@ describe('ConfigValidator', () => {
      */
     it(`should throw exception when a config violating the "required" constraint
     is passed`, async () => {
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(testData.apiSchemaConfigPairWrongRequired.schema);
       const confValidator = new ConfigValidator(
-        <ConfigSchema>testData.apiSchemaConfigPairWrongRequired.schema,
+        'apiSchemaConfigPairWrongRequired',
       );
 
       expect(() =>
@@ -538,8 +600,12 @@ describe('ConfigValidator', () => {
      * - exception should be thrown
      */
     it(`should throw exception when a config violating the value type is passed`, async () => {
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(testData.apiSchemaConfigPairWrongPortType.schema);
       const confValidator = new ConfigValidator(
-        <ConfigSchema>testData.apiSchemaConfigPairWrongPortType.schema,
+        'apiSchemaConfigPairWrongPortType',
       );
 
       expect(() =>
@@ -561,8 +627,12 @@ describe('ConfigValidator', () => {
      */
     it(`should throw exception when a config violating the "greater than"
     constraint, is passed`, async () => {
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(testData.apiSchemaConfigPairWrongGreater.schema);
       const confValidator = new ConfigValidator(
-        <ConfigSchema>testData.apiSchemaConfigPairWrongGreater.schema,
+        'apiSchemaConfigPairWrongGreater',
       );
 
       expect(() =>
@@ -584,8 +654,14 @@ describe('ConfigValidator', () => {
      */
     it(`should throw exception when a config violating the
     "greater than or equal" constraint, is passed`, async () => {
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(
+        testData.apiSchemaConfigPairWrongGreaterEqual.schema,
+      );
       const confValidator = new ConfigValidator(
-        <ConfigSchema>testData.apiSchemaConfigPairWrongGreaterEqual.schema,
+        'apiSchemaConfigPairWrongGreaterEqua',
       );
 
       expect(() =>
@@ -607,9 +683,11 @@ describe('ConfigValidator', () => {
      */
     it(`should throw exception when a config violating the "less than"
     constraint, is passed`, async () => {
-      const confValidator = new ConfigValidator(
-        <ConfigSchema>testData.apiSchemaConfigPairWrongLess.schema,
-      );
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(testData.apiSchemaConfigPairWrongLess.schema);
+      const confValidator = new ConfigValidator('apiSchemaConfigPairWrongLess');
 
       expect(() =>
         confValidator.validateConfig(
@@ -630,8 +708,12 @@ describe('ConfigValidator', () => {
      */
     it(`should throw exception when a config violating the "less than or equal"
     constraint, is passed`, async () => {
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(testData.apiSchemaConfigPairWrongLessEqual.schema);
       const confValidator = new ConfigValidator(
-        <ConfigSchema>testData.apiSchemaConfigPairWrongLessEqual.schema,
+        'apiSchemaConfigPairWrongLessEqual',
       );
 
       expect(() =>
@@ -653,8 +735,14 @@ describe('ConfigValidator', () => {
      */
     it(`should throw exception when a config violating the
     "greater than for bigint" constraint, is passed`, async () => {
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(
+        testData.apiSchemaConfigPairWrongGreaterBigInt.schema,
+      );
       const confValidator = new ConfigValidator(
-        <ConfigSchema>testData.apiSchemaConfigPairWrongGreaterBigInt.schema,
+        'apiSchemaConfigPairWrongGreaterBigInt',
       );
 
       expect(() =>
@@ -676,10 +764,14 @@ describe('ConfigValidator', () => {
      */
     it(`should throw exception when a config violating the
     "greater than or equal for bigint" constraint, is passed`, async () => {
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(
+        testData.apiSchemaConfigPairWrongGreaterEqualBigInt.schema,
+      );
       const confValidator = new ConfigValidator(
-        <ConfigSchema>(
-          testData.apiSchemaConfigPairWrongGreaterEqualBigInt.schema
-        ),
+        'apiSchemaConfigPairWrongGreaterEqualBigInt',
       );
 
       expect(() =>
@@ -701,8 +793,12 @@ describe('ConfigValidator', () => {
      */
     it(`should throw exception when a config violating the
     "less than for bigint" constraint, is passed`, async () => {
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(testData.apiSchemaConfigPairWrongLessBigInt.schema);
       const confValidator = new ConfigValidator(
-        <ConfigSchema>testData.apiSchemaConfigPairWrongLessBigInt.schema,
+        'apiSchemaConfigPairWrongLessBigInt',
       );
 
       expect(() =>
@@ -724,8 +820,14 @@ describe('ConfigValidator', () => {
      */
     it(`should throw exception when a config violating the
     "less than or equal for bigint" constraint, is passed`, async () => {
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(
+        testData.apiSchemaConfigPairWrongLessEqualBigInt.schema,
+      );
       const confValidator = new ConfigValidator(
-        <ConfigSchema>testData.apiSchemaConfigPairWrongLessEqualBigInt.schema,
+        'apiSchemaConfigPairWrongLessEqualBigInt',
       );
 
       expect(() =>
@@ -747,8 +849,14 @@ describe('ConfigValidator', () => {
      */
     it(`should not throw exception when config violates "required" validation
     but the "when" clause is false`, async () => {
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(
+        testData.apiSchemaConfigPairWrongRequiredFalseWhen.schema,
+      );
       const confValidator = new ConfigValidator(
-        <ConfigSchema>testData.apiSchemaConfigPairWrongRequiredFalseWhen.schema,
+        'apiSchemaConfigPairWrongRequiredFalseWhen',
       );
 
       expect(() =>
@@ -770,8 +878,14 @@ describe('ConfigValidator', () => {
      */
     it(`should not throw exception when config violates "regex" validation but
     the "when" clause is false`, async () => {
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(
+        testData.apiSchemaConfigPairWrongRegexFalseWhen.schema,
+      );
       const confValidator = new ConfigValidator(
-        <ConfigSchema>testData.apiSchemaConfigPairWrongRegexFalseWhen.schema,
+        'apiSchemaConfigPairWrongRegexFalseWhen',
       );
 
       expect(() =>
@@ -793,8 +907,14 @@ describe('ConfigValidator', () => {
      */
     it(`should not throw exception when config violates "choices" validation but
     the "when" clause is false`, async () => {
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(
+        testData.apiSchemaConfigPairWrongChoiceFalseWhen.schema,
+      );
       const confValidator = new ConfigValidator(
-        <ConfigSchema>testData.apiSchemaConfigPairWrongChoiceFalseWhen.schema,
+        'apiSchemaConfigPairWrongChoiceFalseWhen',
       );
 
       expect(() =>
@@ -816,8 +936,14 @@ describe('ConfigValidator', () => {
      */
     it(`should not throw exception when config violates "gt" validation but the
     "when" clause is false`, async () => {
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(
+        testData.apiSchemaConfigPairWrongGreaterFalseWhen.schema,
+      );
       const confValidator = new ConfigValidator(
-        <ConfigSchema>testData.apiSchemaConfigPairWrongGreaterFalseWhen.schema,
+        'apiSchemaConfigPairWrongGreaterFalseWhen',
       );
 
       expect(() =>
@@ -839,10 +965,14 @@ describe('ConfigValidator', () => {
      */
     it(`should not throw exception when config violates "gte" validation but
      the "when" clause is false`, async () => {
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(
+        testData.apiSchemaConfigPairWrongGreaterEqualFalseWhen.schema,
+      );
       const confValidator = new ConfigValidator(
-        <ConfigSchema>(
-          testData.apiSchemaConfigPairWrongGreaterEqualFalseWhen.schema
-        ),
+        'apiSchemaConfigPairWrongGreaterEqualFalseWhen',
       );
 
       expect(() =>
@@ -864,8 +994,14 @@ describe('ConfigValidator', () => {
      */
     it(`should not throw exception when config violates "lt" validation but the
     "when" clause is false`, async () => {
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(
+        testData.apiSchemaConfigPairWrongLessFalseWhen.schema,
+      );
       const confValidator = new ConfigValidator(
-        <ConfigSchema>testData.apiSchemaConfigPairWrongLessFalseWhen.schema,
+        'apiSchemaConfigPairWrongLessFalseWhen',
       );
 
       expect(() =>
@@ -887,10 +1023,14 @@ describe('ConfigValidator', () => {
      */
     it(`should not throw exception when config violates "lte" validation but the
     "when" clause is false`, async () => {
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(
+        testData.apiSchemaConfigPairWrongLessEqualFalseWhen.schema,
+      );
       const confValidator = new ConfigValidator(
-        <ConfigSchema>(
-          testData.apiSchemaConfigPairWrongLessEqualFalseWhen.schema
-        ),
+        'apiSchemaConfigPairWrongLessEqualFalseWhen',
       );
 
       expect(() =>
@@ -912,10 +1052,14 @@ describe('ConfigValidator', () => {
      */
     it(`should not throw exception when config violates "bigint gt" validation
      but the "when" clause is false`, async () => {
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(
+        testData.apiSchemaConfigPairWrongBigIntGreaterFalseWhen.schema,
+      );
       const confValidator = new ConfigValidator(
-        <ConfigSchema>(
-          testData.apiSchemaConfigPairWrongBigIntGreaterFalseWhen.schema
-        ),
+        'apiSchemaConfigPairWrongBigIntGreaterFalseWhen',
       );
 
       expect(() =>
@@ -937,10 +1081,14 @@ describe('ConfigValidator', () => {
      */
     it(`should not throw exception when config violates "bigint gte" validation
     but the "when" clause is false`, async () => {
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(
+        testData.apiSchemaConfigPairWrongBigIntGreaterEqualFalseWhen.schema,
+      );
       const confValidator = new ConfigValidator(
-        <ConfigSchema>(
-          testData.apiSchemaConfigPairWrongBigIntGreaterEqualFalseWhen.schema
-        ),
+        'apiSchemaConfigPairWrongBigIntGreaterEqualFalseWhen',
       );
 
       expect(() =>
@@ -962,10 +1110,14 @@ describe('ConfigValidator', () => {
      */
     it(`should not throw exception when config violates "bigint lt" validation
     but the "when" clause is false`, async () => {
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(
+        testData.apiSchemaConfigPairWrongBigIntLessFalseWhen.schema,
+      );
       const confValidator = new ConfigValidator(
-        <ConfigSchema>(
-          testData.apiSchemaConfigPairWrongBigIntLessFalseWhen.schema
-        ),
+        'apiSchemaConfigPairWrongBigIntLessFalseWhen',
       );
 
       expect(() =>
@@ -987,10 +1139,14 @@ describe('ConfigValidator', () => {
      */
     it(`should not throw exception when config violates "bigint lte" validation
     but the "when" clause is false`, async () => {
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(
+        testData.apiSchemaConfigPairWrongBigIntLessEqualFalseWhen.schema,
+      );
       const confValidator = new ConfigValidator(
-        <ConfigSchema>(
-          testData.apiSchemaConfigPairWrongBigIntLessEqualFalseWhen.schema
-        ),
+        'apiSchemaConfigPairWrongBigIntLessEqualFalseWhen',
       );
 
       expect(() =>
@@ -1012,8 +1168,12 @@ describe('ConfigValidator', () => {
      */
     it(`should throw exception using the custom message when the validation has
     error property set`, async () => {
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(testData.apiSchemaConfigPairWrongChoice.schema);
       const confValidator = new ConfigValidator(
-        <ConfigSchema>testData.apiSchemaConfigPairWrongChoice.schema,
+        'apiSchemaConfigPairWrongChoice',
       );
 
       expect(() =>
@@ -1037,8 +1197,14 @@ describe('ConfigValidator', () => {
      * - exception should not be thrown
      */
     it(`should not throw exception when "bigint" field is passed in string format in config and default field in schema`, async () => {
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(
+        testData.apiSchemaConfigPairWithStringBigInt.schema,
+      );
       const confValidator = new ConfigValidator(
-        <ConfigSchema>testData.apiSchemaConfigPairWithStringBigInt.schema,
+        'apiSchemaConfigPairWithStringBigInt',
       );
 
       expect(() => {
@@ -1060,8 +1226,14 @@ describe('ConfigValidator', () => {
      */
     it(`should not throw exception when "number" field is passed in string
     format`, async () => {
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(
+        testData.apiSchemaConfigPairWithStringNumber.schema,
+      );
       const confValidator = new ConfigValidator(
-        <ConfigSchema>testData.apiSchemaConfigPairWithStringNumber.schema,
+        'apiSchemaConfigPairWithStringNumber',
       );
 
       expect(() =>
@@ -1082,8 +1254,14 @@ describe('ConfigValidator', () => {
      * - exception should be thrown
      */
     it(`should throw exception when value doesn't match the schema array type`, async () => {
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(
+        testData.arraySchemaConfigPairWrongValueType.schema,
+      );
       const confValidator = new ConfigValidator(
-        <ConfigSchema>testData.arraySchemaConfigPairWrongValueType.schema,
+        'arraySchemaConfigPairWrongValueType',
       );
 
       expect(() =>
@@ -1173,9 +1351,11 @@ describe('ConfigValidator', () => {
      * - correct types string should be returned
      */
     it(`should return TypeScript interfaces for this.schema`, async () => {
-      const confValidator = new ConfigValidator(
-        <ConfigSchema>testData.schemaTypeScriptTypesPair.schema,
-      );
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(testData.schemaTypeScriptTypesPair.schema);
+      const confValidator = new ConfigValidator('schemaTypeScriptTypesPair');
       const types = confValidator.generateTSTypes('Infrastructure');
       expect(types).toEqual(testData.schemaTypeScriptTypesPair.types);
     });
@@ -1192,9 +1372,11 @@ describe('ConfigValidator', () => {
      * - types should not include numeric suffixes like Database1/Explorer1
      */
     it(`should generate unique path-based names without numeric suffixes`, async () => {
-      const confValidator = new ConfigValidator(
-        <ConfigSchema>testData.duplicateChildKeysSchema.schema,
-      );
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(testData.duplicateChildKeysSchema.schema);
+      const confValidator = new ConfigValidator('duplicateChildKeysSchema');
       const types = confValidator.generateTSTypes('Infrastructure');
 
       expect(types).toContain('export interface UserDatabase');
@@ -1214,9 +1396,11 @@ describe('ConfigValidator', () => {
      * - each interface name should be emitted only once
      */
     it(`should not emit duplicate interface declarations`, async () => {
-      const confValidator = new ConfigValidator(
-        <ConfigSchema>testData.duplicateChildKeysSchema.schema,
-      );
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(testData.duplicateChildKeysSchema.schema);
+      const confValidator = new ConfigValidator('duplicateChildKeysSchema');
       const types = confValidator.generateTSTypes('Infrastructure');
 
       const countName = (name: string) =>
@@ -1238,8 +1422,12 @@ describe('ConfigValidator', () => {
      * - distinct names should be generated (PrimaryConnection, BackupConnection)
      */
     it(`should generate distinct names for identical structures at different paths`, async () => {
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(testData.identicalStructurePathsSchema.schema);
       const confValidator = new ConfigValidator(
-        <ConfigSchema>testData.identicalStructurePathsSchema.schema,
+        'identicalStructurePathsSchema',
       );
       const types = confValidator.generateTSTypes('Infrastructure');
 
@@ -1258,9 +1446,11 @@ describe('ConfigValidator', () => {
      * - Logs array should reference Logs item interface and it should be emitted once
      */
     it(`should name array item object types based on path`, async () => {
-      const confValidator = new ConfigValidator(
-        <ConfigSchema>testData.arrayItemsAtRootSchema.schema,
-      );
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(testData.arrayItemsAtRootSchema.schema);
+      const confValidator = new ConfigValidator('arrayItemsAtRootSchema');
       const types = confValidator.generateTSTypes('Infrastructure');
 
       expect(types).toContain('export interface Logs');
@@ -1279,8 +1469,12 @@ describe('ConfigValidator', () => {
      * - property is quoted: "bitcoin-runes": ChainsBitcoinRunes
      */
     it(`should support hyphenated keys (bitcoin-runes -> ChainsBitcoinRunes, quoted prop)`, async () => {
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(testData.schemaHyphenatedKeysTypeScriptPair.schema);
       const confValidator = new ConfigValidator(
-        <ConfigSchema>testData.schemaHyphenatedKeysTypeScriptPair.schema,
+        'schemaHyphenatedKeysTypeScriptPair',
       );
       const types = confValidator.generateTSTypes('Root');
       expect(types).toEqual(testData.schemaHyphenatedKeysTypeScriptPair.types);
@@ -1300,9 +1494,11 @@ describe('ConfigValidator', () => {
      */
     it(`should return the correct characteristic object for passed level of node
     config package`, async () => {
-      const confValidator = new ConfigValidator(
-        <ConfigSchema>testData.schemaConfigCharPair.schema,
-      );
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(testData.schemaConfigCharPair.schema);
+      const confValidator = new ConfigValidator('schemaConfigCharPair');
       const configCharacteristic = confValidator.getConfigForLevel(
         config,
         'local',
@@ -1329,9 +1525,11 @@ describe('ConfigValidator', () => {
      */
     it(`should validate config when merged with passed object and write it to
     the appropriate config file`, async () => {
-      const confValidator = new ConfigValidator(
-        <ConfigSchema>testData.schemaConfigCharPair.schema,
-      );
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(testData.schemaConfigCharPair.schema);
+      const confValidator = new ConfigValidator('schemaConfigCharPair');
       const obj = { apiType: 'node' };
       confValidator.validateAndWriteConfig(obj, config, 'default', 'json');
       const savedObj = JSON.parse(
@@ -1356,9 +1554,11 @@ describe('ConfigValidator', () => {
      */
     it(`should throw exception when config after being merged with passed object
     is not valid and preserve the original config file`, async () => {
-      const confValidator = new ConfigValidator(
-        <ConfigSchema>testData.schemaConfigCharPair.schema,
-      );
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(testData.schemaConfigCharPair.schema);
+      const confValidator = new ConfigValidator('schemaConfigCharPair');
       const originalObj = JSON.parse(
         fs.readFileSync(path.join(configDir, 'local.json'), 'utf-8'),
       );
@@ -1390,9 +1590,11 @@ describe('ConfigValidator', () => {
      */
     it(`should throw exception when config after being merged with passed object
     is not valid and preserve the original config file (duplicate?!)`, async () => {
-      const confValidator = new ConfigValidator(
-        <ConfigSchema>testData.schemaConfigCharPair.schema,
-      );
+      vi.spyOn(
+        ConfigValidator.prototype as any,
+        'fromSchemaFile',
+      ).mockReturnValueOnce(testData.schemaConfigCharPair.schema);
+      const confValidator = new ConfigValidator('schemaConfigCharPair');
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const originalObj = JSON.parse(
         fs.readFileSync(path.join(configDir, 'local.json'), 'utf-8'),

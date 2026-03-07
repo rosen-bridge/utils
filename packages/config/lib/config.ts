@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as yaml from 'js-yaml';
 import path from 'path';
 
-import JsonBigInt from '@rosen-bridge/json-bigint';
+import JsonBigInt, { JsonBigIntFactory } from '@rosen-bridge/json-bigint';
 
 import { ConfigField, ConfigSchema, ValueType } from './schema/types/fields';
 import { When } from './schema/types/validations';
@@ -19,10 +19,23 @@ import {
 import { valueValidations, valueValidators } from './value/validators';
 
 export class ConfigValidator {
-  constructor(private schema: ConfigSchema) {
+  private schema: ConfigSchema;
+  constructor(schemaPath: string) {
+    this.schema = this.fromSchemaFile(schemaPath);
     this.validateSchema();
   }
 
+  /**
+   * create ConfigValidator from schema file path
+   */
+  private fromSchemaFile(schemaPath: string) {
+    const rawSchemaData = fs.readFileSync(schemaPath, 'utf-8');
+    const jsonBigInt = JsonBigIntFactory({
+      alwaysParseAsBig: false,
+      useNativeBigInt: true,
+    });
+    return jsonBigInt.parse(rawSchemaData);
+  }
   /**
    * validates the passed config against the instance's schema
    *
