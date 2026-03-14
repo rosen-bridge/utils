@@ -49,7 +49,7 @@ yargs(hideBin(process.argv))
       const rawSchemaData = fs.readFileSync(argv.schema, 'utf-8');
       const schema = JsonBigInt.parse(rawSchemaData);
 
-      const confValidator = new ConfigValidator(schema);
+      const confValidator = ConfigValidator.fromSchema(schema);
       const defaultConf = confValidator.generateDefault();
 
       let output = '';
@@ -101,7 +101,7 @@ yargs(hideBin(process.argv))
       const rawSchemaData = fs.readFileSync(argv.schema, 'utf-8');
       const schema = JsonBigInt.parse(rawSchemaData);
 
-      const confValidator = new ConfigValidator(schema);
+      const confValidator = ConfigValidator.fromSchema(schema);
       const tsTypes = confValidator.generateTSTypes(argv.rootType);
 
       fs.writeFileSync(argv.output, tsTypes);

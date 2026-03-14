@@ -1,4 +1,5 @@
 import { IConfig, IConfigSource } from 'config';
+import config from 'config';
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
 import path from 'path';
@@ -20,22 +21,116 @@ import { valueValidations, valueValidators } from './value/validators';
 
 export class ConfigValidator {
   private schema: ConfigSchema;
-  constructor(schemaPath: string) {
-    this.schema = this.fromSchemaFile(schemaPath);
+
+  private constructor(schema: ConfigSchema) {
+    this.schema = schema;
+    this.normalizeSchemaNumbers(schema);
     this.validateSchema();
   }
 
   /**
+   * Builds the final configuration object
+   *
+   * @returns {Record<string, any>} The normalized configuration object
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  buildConfigs = (): Record<string, any> => {
+    const raw = config.util.toObject();
+    return this.transformBySchema(raw, this.schema);
+  };
+
+  /**
+   * Recursively transforms a configuration object based on the provided schema.
+   * @param {Record<string, any>} data
+   * @param {ConfigSchema} schema
+   *
+   * @returns {Record<string, any>} A new object with transformed and normalized values
+   */
+  private transformBySchema = (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    data: Record<string, any>,
+    schema: ConfigSchema,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ): Record<string, any> => {
+    if (typeof data !== 'object' || data === null) return data;
+
+    const input = data as Record<string, unknown>;
+    const result: Record<string, unknown> = {};
+    for (const [key, field] of Object.entries(schema)) {
+      const value = input[key];
+      if (value === undefined) continue;
+
+      switch (field.type) {
+        case 'number':
+          result[key] = Number(value);
+          break;
+
+        case 'string':
+          result[key] = String(value);
+          break;
+
+        case 'object':
+          result[key] = this.transformBySchema(value!, field.children);
+          break;
+        default:
+          result[key] = value;
+      }
+    }
+
+    return result;
+  };
+
+  /**
    * create ConfigValidator from schema file path
    */
-  private fromSchemaFile(schemaPath: string) {
+  static fromFile = (schemaPath: string): ConfigValidator => {
     const rawSchemaData = fs.readFileSync(schemaPath, 'utf-8');
+
     const jsonBigInt = JsonBigIntFactory({
-      alwaysParseAsBig: false,
+      alwaysParseAsBig: true,
       useNativeBigInt: true,
     });
-    return jsonBigInt.parse(rawSchemaData);
+
+    const schema = jsonBigInt.parse(rawSchemaData);
+    return new ConfigValidator(schema);
+  };
+
+  /**
+   * Recursively normalizes numeric default values in a configuration schema.
+   *
+   * @param {ConfigSchema} schema
+   */
+  normalizeSchemaNumbers = (schema: ConfigSchema) => {
+    for (const key in schema) {
+      const field = schema[key];
+      if (field.type === 'number' && field.default !== undefined) {
+        if (
+          typeof field.default !== 'string' &&
+          typeof field.default !== 'boolean'
+        ) {
+          field.default = Number(field.default);
+        }
+      }
+
+      if (field.type === 'array' && field.items.type === 'object') {
+        this.normalizeSchemaNumbers(field.items.children);
+      }
+
+      if (field.type === 'object') {
+        this.normalizeSchemaNumbers(field.children);
+      }
+    }
+  };
+
+  /**
+   * create ConfigValidator from schema
+   *
+   * @param {ConfigSchema} schema
+   */
+  static fromSchema(schema: ConfigSchema): ConfigValidator {
+    return new ConfigValidator(schema);
   }
+
   /**
    * validates the passed config against the instance's schema
    *
