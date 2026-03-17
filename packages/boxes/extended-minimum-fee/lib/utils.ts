@@ -1,69 +1,6 @@
 import { Constant } from 'ergo-lib-wasm-nodejs';
 
-import { ErgoBoxWrapper, Fee } from './types';
-
-/**
- * extracts Fee config from box registers
- * @param box
- */
-export const extractFeeFromBox = (box: ErgoBoxWrapper): Array<Fee> => {
-  const R4 = box.additionalRegisters?.R4;
-  const R5 = box.additionalRegisters?.R5;
-  const R6 = box.additionalRegisters?.R6;
-  const R7 = box.additionalRegisters?.R7;
-  const R8 = box.additionalRegisters?.R8;
-  const R9 = box.additionalRegisters?.R9;
-
-  if (!R4 || !R5 || !R6 || !R7 || !R8 || !R9)
-    throw Error(
-      `Incomplete register data for minimum-fee config box [${box.boxId}]`,
-    );
-
-  const fees: Array<Fee> = [];
-  const chains = Constant.decode_from_base16(R4)
-    .to_coll_coll_byte()
-    .map((element) => Buffer.from(element).toString());
-  const heights = Constant.decode_from_base16(R5).to_js() as Array<
-    Array<number>
-  >;
-  const bridgeFees = Constant.decode_from_base16(R6).to_js() as Array<
-    Array<string>
-  >;
-  const networkFees = Constant.decode_from_base16(R7).to_js() as Array<
-    Array<string>
-  >;
-  const rsnRatios = Constant.decode_from_base16(R8).to_js() as Array<
-    Array<Array<string>>
-  >;
-  const feeRatios = Constant.decode_from_base16(R9).to_js() as Array<
-    Array<string>
-  >;
-
-  for (let feeIdx = 0; feeIdx < heights.length; feeIdx++) {
-    const fee: Fee = {
-      heights: {},
-      configs: {},
-    };
-    for (let chainIdx = 0; chainIdx < chains.length; chainIdx++) {
-      const chain = chains[chainIdx];
-
-      if (heights[feeIdx][chainIdx] === -1) continue;
-      fee.heights[chain] = heights[feeIdx][chainIdx];
-
-      if (bridgeFees[feeIdx][chainIdx] === '-1') continue;
-      fee.configs[chain] = {
-        bridgeFee: BigInt(bridgeFees[feeIdx][chainIdx]),
-        networkFee: BigInt(networkFees[feeIdx][chainIdx]),
-        rsnRatio: BigInt(rsnRatios[feeIdx][chainIdx][0]),
-        rsnRatioDivisor: BigInt(rsnRatios[feeIdx][chainIdx][1]),
-        feeRatio: BigInt(feeRatios[feeIdx][chainIdx]),
-      };
-    }
-    fees.push(fee);
-  }
-
-  return fees;
-};
+import { Fee } from '@rosen-bridge/minimum-fee';
 
 /**
  * converts fee config to register values
@@ -128,4 +65,13 @@ export const feeToRegisterValues = (fees: Array<Fee>) => {
     R8: Constant.from_js(rsnRatios),
     R9: Constant.from_js(feeRatios),
   };
+};
+
+/**
+ * decodes register values to its original type
+ * @param register
+ * @returns
+ */
+export const decodeRegister = (register: string) => {
+  return Constant.decode_from_base16(register).to_js();
 };

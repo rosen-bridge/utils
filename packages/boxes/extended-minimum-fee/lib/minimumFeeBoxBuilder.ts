@@ -9,10 +9,13 @@ import {
   ErgoBoxCandidate,
 } from 'ergo-lib-wasm-nodejs';
 
-import { ERGO_NATIVE_TOKEN } from './constants';
+import {
+  Fee,
+  MinimumFeeConfig,
+  ERGO_NATIVE_TOKEN,
+} from '@rosen-bridge/minimum-fee';
+
 import { InvalidConfig } from './errors';
-import { MinimumFeeConfig } from './minimumFeeConfig';
-import { Fee } from './types';
 import { feeToRegisterValues } from './utils';
 
 export class MinimumFeeBoxBuilder {
