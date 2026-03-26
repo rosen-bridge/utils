@@ -1,4 +1,7 @@
+import { ConsoleLogger } from '@rosen-bridge/abstract-logger';
+
 import { ServiceManager, ServiceStatus } from '../lib';
+import { R2A, R2B } from './testData/circularRunningTestData';
 import { X1A, X1B, X1M } from './testData/crashTestData';
 import { X3A, X3B, X3C, X3D } from './testData/diamondTestData';
 import { X0A, X0B, X0C, X0M } from './testData/hierarchicalTestData';
@@ -450,4 +453,79 @@ describe('ServiceManager', () => {
       ServiceStatus.started,
     );
   }, 2000);
+
+  /**
+   * @target ServiceManager: Circular Running Scenario
+   * second service enters the running status only when the first service is started, while the second service depends on it for it's start
+   * A should be started after B and B should enter running status after A
+   * @dependencies
+   * @scenario
+   * - generate test service manager
+   * - generate 2 test services of R2
+   * - start service R2A
+   * - wait 1.5 seconds
+   * - check status of two services
+   * - wait 3 seconds
+   * - check status of two services
+   * - wait 1 seconds
+   * - check status of two services
+   * - wait 2 seconds
+   * - check status of two services
+   * - check returned value
+   * @expected
+   * - returned value should be true
+   * - after first waiting
+   *   - R2A should be in dormant status
+   *   - R2B should be in started status
+   * - after second waiting
+   *   - R2A should be in started status
+   *   - R2B should be in started status
+   * - after third waiting
+   *   - R2A should be in started status
+   *   - R2B should be in running status
+   * - R2A and R2B services should be in running status after forth waiting
+   */
+  it('Circular Running Scenario', async () => {
+    const serviceManager = ServiceManager.setup(new ConsoleLogger());
+
+    const a = new R2A(ServiceStatus.dormant);
+    const b = new R2B(ServiceStatus.dormant, () =>
+      serviceManager.getStatus(a.name),
+    );
+    const services = [a, b];
+
+    services.forEach((service) => serviceManager.register(service));
+
+    const startPromise = serviceManager.start(a.getName());
+    await sleep(1.5);
+    expect(serviceManager.getStatus(a.getName())).toEqual(
+      ServiceStatus.dormant,
+    );
+    expect(serviceManager.getStatus(b.getName())).toEqual(
+      ServiceStatus.started,
+    );
+    await sleep(3);
+    expect(serviceManager.getStatus(a.getName())).toEqual(
+      ServiceStatus.started,
+    );
+    expect(serviceManager.getStatus(b.getName())).toEqual(
+      ServiceStatus.started,
+    );
+    await sleep(1);
+    expect(serviceManager.getStatus(a.getName())).toEqual(
+      ServiceStatus.started,
+    );
+    expect(serviceManager.getStatus(b.getName())).toEqual(
+      ServiceStatus.running,
+    );
+    await sleep(2);
+    expect(serviceManager.getStatus(a.getName())).toEqual(
+      ServiceStatus.running,
+    );
+    expect(serviceManager.getStatus(b.getName())).toEqual(
+      ServiceStatus.running,
+    );
+    const res = await startPromise;
+    expect(res).toEqual(true);
+  }, 9000);
 });
