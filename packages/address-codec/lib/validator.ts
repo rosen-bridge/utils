@@ -1,22 +1,34 @@
-import { validateBitcoinAddress } from './chains/bitcoin';
-import { validateBitcoinRunesAddress } from './chains/bitcoinRunes';
-import { validateCardanoAddress } from './chains/cardano';
-import { validateDogeAddress } from './chains/doge';
-import { validateErgoAddress } from './chains/ergo';
-import { generateEvmAddressValidator } from './chains/evm';
-import { validateFiroAddress } from './chains/firo';
-import { validateHandshakeAddress } from './chains/handshake';
 import {
-  BINANCE_CHAIN,
   BITCOIN_CHAIN,
-  CARDANO_CHAIN,
-  DOGE_CHAIN,
-  ERGO_CHAIN,
-  ETHEREUM_CHAIN,
-  HANDSHAKE_CHAIN,
+  validateBitcoinAddress,
+} from '@rosen-bridge/address-codec-bitcoin';
+import {
   BITCOIN_RUNES_CHAIN,
+  validateBitcoinRunesAddress,
+} from '@rosen-bridge/address-codec-bitcoin-runes';
+import {
+  CARDANO_CHAIN,
+  validateCardanoAddress,
+} from '@rosen-bridge/address-codec-cardano';
+import {
+  DOGE_CHAIN,
+  validateDogeAddress,
+} from '@rosen-bridge/address-codec-doge';
+import {
+  ERGO_CHAIN,
+  validateErgoAddress,
+} from '@rosen-bridge/address-codec-ergo';
+import { generateEvmAddressValidator } from '@rosen-bridge/address-codec-evm';
+import {
   FIRO_CHAIN,
-} from './const';
+  validateFiroAddress,
+} from '@rosen-bridge/address-codec-firo';
+import {
+  HANDSHAKE_CHAIN,
+  validateHandshakeAddress,
+} from '@rosen-bridge/address-codec-handshake';
+
+import { BINANCE_CHAIN, ETHEREUM_CHAIN } from './const';
 import { UnsupportedChainError } from './types';
 
 export const chainValidators: Record<string, (address: string) => void> = {

@@ -4,5 +4,15 @@
     "rootDir": "./lib",
     "outDir": "./dist"
   },
-  "exclude": ["tests", "vitest.config.ts"]
+  "exclude": ["tests", "vitest.config.ts"],
+  "references": [
+    { "path": "../address-codec-chains/bitcoin/tsconfig.build.json" },
+    { "path": "../address-codec-chains/bitcoin-runes/tsconfig.build.json" },
+    { "path": "../address-codec-chains/cardano/tsconfig.build.json" },
+    { "path": "../address-codec-chains/doge/tsconfig.build.json" },
+    { "path": "../address-codec-chains/ergo/tsconfig.build.json" },
+    { "path": "../address-codec-chains/evm/tsconfig.build.json" },
+    { "path": "../address-codec-chains/firo/tsconfig.build.json" },
+    { "path": "../address-codec-chains/handshake/tsconfig.build.json" }
+  ]
 }

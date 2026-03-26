@@ -1,9 +1,2 @@
-export const BITCOIN_CHAIN = 'bitcoin';
-export const BITCOIN_RUNES_CHAIN = 'bitcoin-runes';
-export const CARDANO_CHAIN = 'cardano';
-export const ERGO_CHAIN = 'ergo';
 export const ETHEREUM_CHAIN = 'ethereum';
 export const BINANCE_CHAIN = 'binance';
-export const DOGE_CHAIN = 'doge';
-export const FIRO_CHAIN = 'firo';
-export const HANDSHAKE_CHAIN = 'handshake';

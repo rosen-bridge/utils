@@ -4,6 +4,7 @@
   "workspaces": {
     "packages": [
       "packages/*",
+      "packages/address-codec-chains/*",
       "packages/boxes/*",
       "packages/loggers/*"
     ]

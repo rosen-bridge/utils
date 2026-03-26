@@ -2,4 +2,4 @@
 '@rosen-bridge/address-codec': minor
 ---
 
-Export chain-specific implementation of address encoder, decoder and validator
+Export 3 objects consists of the chain-specific implementation for the address encoder, decoder and validator

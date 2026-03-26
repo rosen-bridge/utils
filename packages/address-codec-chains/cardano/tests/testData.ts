@@ -1,0 +1,8 @@
+export const cardanoAddress =
+  'addr1qxxa3kfnnh40yqtepa5frt0tkw4a0rys7v33422lzt8glx43sqtd4vkhjzawajej8aujh27p5a54zx62xf3wvuplynqs3fsqet';
+export const encodedCardanoAddress =
+  '018dd8d9339deaf201790f6891adebb3abd78c90f3231aa95f12ce8f9ab18016dab2d790baeecb323f792babc1a769511b4a3262e6703f24c1';
+export const invalidCardanoAddress =
+  'addr1qxxa3kfnnh40yqtepa5frt0tkw4a0rys7v33422lzt8glx43sqtd4vkhjzawajej8aujh27p5a54zx62xf3wvuplynqs3fsqee';
+export const longEncodedAddress =
+  '001122334455667788990011223344556677889900112233445566778899001122334455667788990011223344556677889900112233445566778899aabb';
