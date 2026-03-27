@@ -5,7 +5,8 @@ export type Validation =
   | VString
   | VBoolean
   | VNumeric<number>
-  | VNumeric<bigint>;
+  | VNumeric<bigint>
+  | VUnion;
 
 export interface When {
   path: string;
@@ -60,4 +61,9 @@ export interface VLess<T extends number | bigint> extends VGeneric {
 
 export interface VLessEqual<T extends number | bigint> extends VGeneric {
   lte: T;
+}
+
+export interface VUnion extends VGeneric {
+  selectedIndex: number;
+  validations?: Validation[][];
 }
