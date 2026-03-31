@@ -1,9 +1,3 @@
-export class InvalidConfig extends Error {
-  constructor(msg: string) {
-    super('InvalidConfig: ' + msg);
-  }
-}
-
 export class FailedError extends Error {
   constructor(msg: string) {
     super('FailedError: ' + msg);

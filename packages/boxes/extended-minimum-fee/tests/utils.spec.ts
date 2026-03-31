@@ -1,23 +1,5 @@
-import { extractFeeFromBox, feeToRegisterValues } from '../lib';
+import { feeToRegisterValues } from '../lib';
 import * as testData from './testData';
-
-describe('extractFeeFromBox', () => {
-  /**
-   * @target extractFeeFromBox should build expected
-   * config box with normal config for Erg successfully
-   * @dependencies
-   * @scenario
-   * - mock test data
-   * - run test
-   * - check returned value
-   * @expected
-   * - it should return correct fee config
-   */
-  it('should build expected config box with normal config for Erg successfully', () => {
-    const result = extractFeeFromBox(testData.normalFeeBox);
-    expect(result).toEqual(testData.normalFee);
-  });
-});
 
 describe('feeToRegisterValues', () => {
   /**

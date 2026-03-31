@@ -6,7 +6,7 @@
   },
   "exclude": ["tests"],
   "references": [
-    { "path": "../../loggers/abstract-logger/tsconfig.build.json" },
-    { "path": "../../json-bigint/tsconfig.build.json" }
+    { "path": "../loggers/abstract-logger/tsconfig.build.json" },
+    { "path": "../json-bigint/tsconfig.build.json" }
   ]
 }

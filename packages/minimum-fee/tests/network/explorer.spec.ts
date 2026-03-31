@@ -1,3 +1,5 @@
+import * as wasm from 'ergo-lib-wasm-nodejs';
+
 import ergoExplorerClientFactory from '@rosen-clients/ergo-explorer';
 
 import { MinimumFeeExplorerNetwork } from '../../lib/network/explorer';
@@ -10,6 +12,22 @@ describe('MinimumFeeExplorerNetwork', () => {
     '6cbeec04af6a5047d8818eac2ac6e2b28e1e74a0d339cff96f7641a1a0c3ca9b';
   const defaultMinimumFeeNFT =
     'c597eac4db28f62419eab5639122f2bc4955dfedf958e7cdba5248ba2a81210a';
+
+  const decodeRegister = (register: string) => {
+    return wasm.Constant.decode_from_base16(register).to_js();
+  };
+
+  beforeAll(() => {
+    vi.mock('@rosen-clients/ergo-explorer', () => {
+      return {
+        default: vi.fn(() => ({
+          v1: {
+            getApiV1BoxesUnspentBytokenidP1: vi.fn(),
+          },
+        })),
+      };
+    });
+  });
 
   describe('getBoxesByTokenId', () => {
     /**
@@ -61,6 +79,7 @@ describe('MinimumFeeExplorerNetwork', () => {
         nativeTokenId,
         defaultMinimumFeeNFT,
         testNetwork,
+        decodeRegister,
       );
       const res = await minimumFeeBox.fetchBox();
       expect(res).toEqual(true);
@@ -89,6 +108,7 @@ describe('MinimumFeeExplorerNetwork', () => {
         tokenId,
         defaultMinimumFeeNFT,
         testNetwork,
+        decodeRegister,
       );
       const res = await minimumFeeBox.fetchBox();
       expect(res).toEqual(true);
