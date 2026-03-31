@@ -24,7 +24,6 @@ export class ConfigValidator {
 
   private constructor(schema: ConfigSchema) {
     this.schema = schema;
-    this.normalizeSchemaNumbers(schema);
     this.validateSchema();
   }
 
@@ -36,6 +35,7 @@ export class ConfigValidator {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   buildConfigs = (): Record<string, any> => {
     const raw = config.util.toObject();
+    this.validateConfig(raw);
     return this.transformBySchema(raw, this.schema);
   };
 
@@ -53,16 +53,25 @@ export class ConfigValidator {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): Record<string, any> => {
     if (typeof data !== 'object' || data === null) return data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const result: Record<string, any> = { ...data };
 
-    const input = data as Record<string, unknown>;
-    const result: Record<string, unknown> = {};
     for (const [key, field] of Object.entries(schema)) {
-      const value = input[key];
-      if (value === undefined) continue;
+      const value = data[key];
+      if (value === undefined || value === null) continue;
 
       switch (field.type) {
         case 'number':
-          result[key] = Number(value);
+          result[key] =
+            typeof value === 'bigint' ? Number(value) : Number(value);
+          break;
+
+        case 'bigint':
+          try {
+            result[key] = BigInt(value);
+          } catch {
+            result[key] = value;
+          }
           break;
 
         case 'string':
@@ -70,10 +79,18 @@ export class ConfigValidator {
           break;
 
         case 'object':
-          result[key] = this.transformBySchema(value!, field.children);
+          result[key] = this.transformBySchema(value, field.children);
           break;
-        default:
-          result[key] = value;
+
+        case 'array':
+          if (Array.isArray(value) && field.items) {
+            result[key] = value.map((item) =>
+              field.items.type === 'object'
+                ? this.transformBySchema(item, field.items.children)
+                : item,
+            );
+          }
+          break;
       }
     }
 
@@ -87,39 +104,12 @@ export class ConfigValidator {
     const rawSchemaData = fs.readFileSync(schemaPath, 'utf-8');
 
     const jsonBigInt = JsonBigIntFactory({
-      alwaysParseAsBig: true,
+      alwaysParseAsBig: false,
       useNativeBigInt: true,
     });
 
     const schema = jsonBigInt.parse(rawSchemaData);
     return new ConfigValidator(schema);
-  };
-
-  /**
-   * Recursively normalizes numeric default values in a configuration schema.
-   *
-   * @param {ConfigSchema} schema
-   */
-  normalizeSchemaNumbers = (schema: ConfigSchema) => {
-    for (const key in schema) {
-      const field = schema[key];
-      if (field.type === 'number' && field.default !== undefined) {
-        if (
-          typeof field.default !== 'string' &&
-          typeof field.default !== 'boolean'
-        ) {
-          field.default = Number(field.default);
-        }
-      }
-
-      if (field.type === 'array' && field.items.type === 'object') {
-        this.normalizeSchemaNumbers(field.items.children);
-      }
-
-      if (field.type === 'object') {
-        this.normalizeSchemaNumbers(field.children);
-      }
-    }
   };
 
   /**
@@ -251,9 +241,34 @@ export class ConfigValidator {
   ) => {
     if (value != undefined) {
       if (field.type === 'bigint') {
-        value = BigInt(value);
-      } else if (field.type === 'number' && value && !isNaN(value)) {
+        if (typeof value === 'number' && value > Number.MAX_SAFE_INTEGER) {
+          throw new Error(
+            `Field "${field.label}" is defined as BigInt but received a Number precision error. Numbers larger than 2^53 should be passed as strings or BigInt literals.`,
+          );
+        }
+        try {
+          value = BigInt(value);
+        } catch {
+          throw new Error(
+            `Cannot convert ${value} to a BigInt for field "${field.label}"`,
+          );
+        }
+      }
+      if (field.type === 'number') {
+        if (isNaN(Number(value))) {
+          throw new Error(
+            `Field "${field.label}" must be a valid number. Please provide a suitable format.`,
+          );
+        }
         value = Number(value);
+        if (
+          value > BigInt(Number.MAX_SAFE_INTEGER) ||
+          value < BigInt(Number.MIN_SAFE_INTEGER)
+        ) {
+          throw new Error(
+            `Field "${field.label}" is defined as Number, but the provided BigInt is too large. Please use a suitable format or change the field type to bigint.`,
+          );
+        }
       }
       valueValidators[field.type](value, field);
     }
