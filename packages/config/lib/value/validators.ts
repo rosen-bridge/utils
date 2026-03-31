@@ -28,6 +28,12 @@ export const valueValidators: Record<string, any> = {
     }
   },
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  union: (value: types.UnionField, _field: types.UnionField) => {
+    if (value === undefined) {
+      throw new Error(`value must be of array type`);
+    }
+  },
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   array: (value: Array<types.ValueType>, _field: types.ArrayField) => {
     if (!Array.isArray(value)) {
       throw new Error(`value must be of array type`);

@@ -6,7 +6,7 @@ import path from 'path';
 import JsonBigInt from '@rosen-bridge/json-bigint';
 
 import { ConfigField, ConfigSchema, ValueType } from './schema/types/fields';
-import { When } from './schema/types/validations';
+import { VUnion, When } from './schema/types/validations';
 import {
   propertyValidators,
   supportedTypes,
@@ -86,6 +86,21 @@ export class ConfigValidator {
               ConfigValidator.modifyObject(config, value, childPath);
             }
           }
+        } else if (field.type === 'union') {
+          const unionValidation = field.validations?.find(
+            (v) => 'selectedIndex' in v,
+          ) as VUnion;
+          if (unionValidation) {
+            const activeField = field.children[unionValidation.selectedIndex];
+            if (activeField.type === 'object') {
+              this.validateSubConfig(
+                config,
+                value,
+                activeField.children,
+                childPath,
+              );
+            }
+          }
         }
       } catch (error) {
         throw new Error(
@@ -153,6 +168,7 @@ export class ConfigValidator {
     if (
       field.type !== 'object' &&
       field.type !== 'array' &&
+      field.type !== 'union' &&
       field.validations
     ) {
       for (const validation of field.validations) {
@@ -263,6 +279,13 @@ export class ConfigValidator {
               subSchema: { [name]: field.items },
               parentPath: path,
             });
+          } else if (field.type === 'union') {
+            field.children.forEach((unionChild, index) => {
+              stack.push({
+                subSchema: { [`${name}_union_${index}`]: unionChild },
+                parentPath: path,
+              });
+            });
           }
         } catch (error) {
           throw new Error(
@@ -293,10 +316,7 @@ export class ConfigValidator {
     for (const key of Object.keys(field)) {
       if (
         !Object.hasOwn(propertyValidators.all, key) &&
-        !(
-          !['object', 'array'].includes(field.type) &&
-          Object.hasOwn(propertyValidators.primitive, key)
-        ) &&
+        !Object.hasOwn(propertyValidators.primitive, key) &&
         !Object.hasOwn(propertyValidators[field.type], key)
       ) {
         throw new Error(`schema field has unknown property "${key}"`);
@@ -307,7 +327,11 @@ export class ConfigValidator {
       validator(field, this);
     }
 
-    if (field.type !== 'object' && field.type !== 'array') {
+    if (
+      field.type !== 'object' &&
+      field.type !== 'array' &&
+      field.type !== 'union'
+    ) {
       for (const validator of Object.values(propertyValidators.primitive)) {
         validator(field, this);
       }
@@ -327,16 +351,33 @@ export class ConfigValidator {
   getSchemaField = (path: string[]): ConfigField | undefined => {
     let subTree: ConfigSchema | undefined = this.schema;
     let field: ConfigField | undefined = undefined;
+
     for (const part of path) {
       if (subTree != undefined && Object.hasOwn(subTree, part)) {
         field = subTree[part];
-        subTree =
-          'children' in field
-            ? field.children
-            : 'items' in field && 'children' in field.items
-              ? field.items.children
-              : undefined;
+
+        if (field.type === 'object') {
+          subTree = field.children;
+        } else if (field.type === 'array' && field.items.type === 'object') {
+          subTree = field.items.children;
+        } else if (field.type === 'union') {
+          subTree = undefined;
+        } else {
+          subTree = undefined;
+        }
       } else {
+        if (field?.type === 'union') {
+          for (const child of field.children) {
+            if (
+              child.type === 'object' &&
+              Object.hasOwn(child.children, part)
+            ) {
+              field = child.children[part];
+              subTree = field.type === 'object' ? field.children : undefined;
+              return field;
+            }
+          }
+        }
         return undefined;
       }
     }
@@ -389,6 +430,15 @@ export class ConfigValidator {
             });
           } else {
             defaults[key] = field.default;
+          }
+        }
+      } else if (field.type === 'union') {
+        const firstOption = field.children[0];
+        if (firstOption) {
+          if (firstOption.type === 'object') {
+            defaults[key] = this.buildDefaultsForSchema(firstOption.children);
+          } else if (firstOption.type === 'array') {
+            defaults[key] = firstOption.default || [];
           }
         }
       } else {
@@ -456,6 +506,7 @@ export class ConfigValidator {
           ? `"${childName}"`
           : childName;
         if (
+          field.type === 'union' ||
           field.type === 'object' ||
           (field.type === 'array' && field.items.type === 'object')
         ) {
@@ -503,6 +554,17 @@ export class ConfigValidator {
             isOptional ? `${childNameQuoted}?` : childNameQuoted,
             field.type === 'array' ? `${fieldType}[]` : fieldType,
           ]);
+        }
+        if (field.type === 'union') {
+          const unionTypes = field.children.map((child) => {
+            if (child.type === 'object') {
+              return (
+                path.concat([childName]).map(toPascalCase).join('') + 'Option'
+              );
+            }
+            return child.type;
+          });
+          attributes.push([childNameQuoted, unionTypes.join(' | ')]);
         }
       } catch (error) {
         throw new Error(
