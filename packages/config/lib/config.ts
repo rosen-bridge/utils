@@ -243,7 +243,7 @@ export class ConfigValidator {
       if (field.type === 'bigint') {
         if (typeof value === 'number' && value > Number.MAX_SAFE_INTEGER) {
           throw new Error(
-            `Field "${field.label}" is defined as BigInt but received a Number precision error. Numbers larger than 2^53 should be passed as strings or BigInt literals.`,
+            `Field "${field.label}" is declared as a BigInt, but a Number was provided with insufficient precision. Values exceeding 9007199254740991 must be supplied as a string to ensure accuracy.`,
           );
         }
         try {
