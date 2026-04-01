@@ -1,4 +1,4 @@
-import { ChainFee, MinimumFeeConfig } from '../lib';
+import { ChainFee, MinimumFeeConfig } from '@rosen-bridge/minimum-fee';
 
 describe('MinimumFeeConfig', () => {
   describe('setChainConfig', () => {

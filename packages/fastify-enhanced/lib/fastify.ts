@@ -2,6 +2,7 @@ import Fastify from 'fastify';
 import {
   type FastifyZodOpenApiTypeProvider,
   fastifyZodOpenApiPlugin,
+  serializerCompiler,
   validatorCompiler,
 } from 'fastify-zod-openapi';
 import 'zod-openapi/extend';
@@ -9,7 +10,6 @@ import 'zod-openapi/extend';
 import { JsonBigIntFactory } from '@rosen-bridge/json-bigint';
 
 import { makeJsonParser } from './jsonParser';
-import { makeSerializerCompiler } from './serializerCompiler';
 import { registerSwagger } from './swagger';
 import { FastifyWithZod, SwaggerOpts } from './types';
 
@@ -35,8 +35,6 @@ export const makeFastify = async (
     Fastify(opts).withTypeProvider<FastifyZodOpenApiTypeProvider>();
 
   fastify.setValidatorCompiler(validatorCompiler);
-
-  const serializerCompiler = makeSerializerCompiler(jsonHandler);
   fastify.setSerializerCompiler(serializerCompiler);
 
   await fastify.register(fastifyZodOpenApiPlugin);

@@ -1,20 +1,20 @@
 import swagger from '@fastify/swagger';
 import swaggerUi from '@fastify/swagger-ui';
 import {
+  FastifyPluginAsyncZodOpenApi,
   fastifyZodOpenApiTransform,
   fastifyZodOpenApiTransformObject,
 } from 'fastify-zod-openapi';
 import { ZodOpenApiVersion } from 'zod-openapi';
 
-import { FastifyWithZod, SwaggerOpts } from './types';
+import { SwaggerOpts } from './types';
 
 /**
  * adds swagger to the fastify instance
  */
-export const registerSwagger = async (
-  fastify: FastifyWithZod,
-  opts: SwaggerOpts,
-) => {
+export const registerSwagger: FastifyPluginAsyncZodOpenApi<
+  SwaggerOpts
+> = async (fastify, opts) => {
   await fastify.register(swagger, {
     openapi: {
       openapi: '3.1.0' as ZodOpenApiVersion,
