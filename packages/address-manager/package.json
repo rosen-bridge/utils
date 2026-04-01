@@ -27,11 +27,11 @@
     "test": "cross-env NODE_OPTIONS=\"--import tsx\" vitest",
     "type-check": "tsc --noEmit"
   },
+  "dependencies": {
+    "@rosen-bridge/abstract-logger": "^4.0.0"
+  },
   "engines": {
     "node": ">=22.18.0",
     "npm": "11.6.2"
-  },
-  "dependencies": {
-    "@rosen-bridge/abstract-logger": "^4.0.0"
   }
 }
