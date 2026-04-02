@@ -1,14 +1,14 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "rootDir": ".",
+    "outDir": "./dist",
     "types": ["node", "vitest/globals"]
   },
-  "include": ["lib/**/*"],
+  "include": ["tests", "lib"],
   "references": [
     { "path": "../loggers/abstract-logger" },
     { "path": "../tokens" },
     { "path": "../json-bigint" },
-    { "path": "../address-codec" }
+    { "path": "../address-manager" }
   ]
 }

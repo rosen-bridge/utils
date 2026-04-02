@@ -4,6 +4,7 @@
   "workspaces": {
     "packages": [
       "packages/*",
+      "packages/address-codec-chains/*",
       "packages/boxes/*",
       "packages/loggers/*"
     ]
@@ -19,6 +20,9 @@
     "test": "npm run test --if-present --workspaces",
     "type-check": "npm run type-check --workspaces",
     "version": "npx changeset version && npx changeset add --empty && npm i"
+  },
+  "dependencies": {
+    "cross-env": "^10.1.0"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.1",

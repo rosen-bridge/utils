@@ -1,0 +1,6 @@
+export const firoAddress = 'a41owUrDFUy7taaQjntHqUadXm49d4z65e';
+export const invalidFiroAddress = 'bc1qkgp89fjerymm5ltg0hygnumr0m2qa7n22gyw6h';
+export const encodedFiroAddress =
+  '76a91424304f7ac11d0bcb0de1ebc6e2ea6aae174aee8988ac';
+export const longEncodedAddress =
+  '001122334455667788990011223344556677889900112233445566778899001122334455667788990011223344556677889900112233445566778899aabb';

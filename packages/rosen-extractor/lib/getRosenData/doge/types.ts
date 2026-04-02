@@ -1,10 +1,3 @@
-export interface OpReturnData {
-  toChain: string;
-  toAddress: string;
-  bridgeFee: string;
-  networkFee: string;
-}
-
 export interface EsploraTxInput {
   txid: string;
   vout: number;
