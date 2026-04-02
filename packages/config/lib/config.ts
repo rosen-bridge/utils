@@ -228,8 +228,8 @@ export class ConfigValidator {
     if (value != undefined) {
       if (field.type === 'bigint') {
         if (
-          (typeof value === 'number' && value > Number.MAX_SAFE_INTEGER) ||
-          value < Number.MIN_SAFE_INTEGER
+          typeof value === 'number' &&
+          (value > Number.MAX_SAFE_INTEGER || value < Number.MIN_SAFE_INTEGER)
         ) {
           throw new Error(
             `Field "${path.join('.')}" is declared as a BigInt, but a Number was provided with insufficient precision. Values exceeding 9007199254740991 must be supplied as a string to ensure accuracy.`,
