@@ -1,12 +1,13 @@
 import { IConfig, IConfigSource } from 'config';
+import config from 'config';
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
 import path from 'path';
 
-import JsonBigInt from '@rosen-bridge/json-bigint';
+import JsonBigInt, { JsonBigIntFactory } from '@rosen-bridge/json-bigint';
 
 import { ConfigField, ConfigSchema, ValueType } from './schema/types/fields';
-import { VUnion, When } from './schema/types/validations';
+import { When } from './schema/types/validations';
 import {
   propertyValidators,
   supportedTypes,
@@ -19,9 +20,89 @@ import {
 import { valueValidations, valueValidators } from './value/validators';
 
 export class ConfigValidator {
-  constructor(private schema: ConfigSchema) {
+  private schema: ConfigSchema;
+
+  private constructor(schema: ConfigSchema) {
+    this.schema = schema;
     this.validateSchema();
   }
+
+  /**
+   * Builds the final configuration object
+   *
+   * @returns {Record<string, any>} The normalized configuration object
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  buildConfigs = (): Record<string, any> => {
+    const raw = config.util.toObject();
+    this.validateConfig(raw);
+    return this.transformBySchema(raw, this.schema);
+  };
+
+  /**
+   * Recursively transforms a configuration object based on the provided schema.
+   * @param {any} data
+   * @param {any} schema
+   *
+   * @returns {Record<string, any>} A new object with transformed and normalized values
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private transformBySchema = (data: any, schema: any): Record<string, any> => {
+    let result = data;
+    if ('type' in schema) {
+      switch (schema.type) {
+        case 'number':
+          result = Number(data);
+          break;
+        case 'bigint':
+          result = BigInt(data);
+          break;
+        case 'object':
+          result = this.transformBySchema(data, schema.children);
+          break;
+        case 'array':
+          if (Array.isArray(data)) {
+            result = data.map((item) =>
+              this.transformBySchema(item, schema.items),
+            );
+          }
+          break;
+      }
+    } else {
+      for (const key in schema) {
+        const field = schema[key];
+        const value = data[key];
+        if (value === undefined || value === null) continue;
+        result[key] = this.transformBySchema(value, field);
+      }
+    }
+
+    return result;
+  };
+
+  /**
+   * create ConfigValidator from schema file path
+   */
+  static fromFile = (schemaPath: string): ConfigValidator => {
+    const rawSchemaData = fs.readFileSync(schemaPath, 'utf-8');
+
+    const jsonBigInt = JsonBigIntFactory({
+      alwaysParseAsBig: false,
+      useNativeBigInt: true,
+    });
+
+    const schema = jsonBigInt.parse(rawSchemaData);
+    return new ConfigValidator(schema);
+  };
+
+  /**
+   * create ConfigValidator from schema
+   *
+   * @param {ConfigSchema} schema
+   */
+  static fromSchema = (schema: ConfigSchema): ConfigValidator => {
+    return new ConfigValidator(schema);
+  };
 
   /**
    * validates the passed config against the instance's schema
@@ -34,6 +115,7 @@ export class ConfigValidator {
       config,
       { type: 'object', children: this.schema },
       config,
+      [],
     );
 
     this.validateSubConfig(config, config, this.schema, []);
@@ -67,8 +149,7 @@ export class ConfigValidator {
         if (subConfig != undefined && Object.hasOwn(subConfig, name)) {
           value = subConfig[name];
         }
-
-        this.validateValue(value, field, config);
+        this.validateValue(value, field, config, childPath);
 
         // if a node/field is of type object and thus is a subtree, traverse it
         if (field.type === 'object') {
@@ -87,19 +168,47 @@ export class ConfigValidator {
             }
           }
         } else if (field.type === 'union') {
-          const unionValidation = field.validations?.find(
-            (v) => 'selectedIndex' in v,
-          ) as VUnion;
-          if (unionValidation) {
-            const activeField = field.children[unionValidation.selectedIndex];
-            if (activeField.type === 'object') {
-              this.validateSubConfig(
-                config,
-                value,
-                activeField.children,
-                childPath,
-              );
+          let isMatched = false;
+          field.children.map((activeField) => {
+            try {
+              if (
+                activeField.type === 'object' &&
+                typeof value === 'object' &&
+                value != null
+              ) {
+                this.validateSubConfig(
+                  config,
+                  { [name]: value },
+                  { [name]: activeField },
+                  childPath,
+                );
+                isMatched = true;
+              } else if (activeField.type === 'array' && Array.isArray(value)) {
+                for (const item of value) {
+                  ConfigValidator.modifyObject(config, item, childPath);
+                  this.validateSubConfig(
+                    config,
+                    { [name]: item },
+                    { [name]: activeField.items },
+                    childPath,
+                  );
+                  ConfigValidator.modifyObject(config, value, childPath);
+                  isMatched = true;
+                }
+              } else {
+                if (activeField.type === typeof value) {
+                  this.validateValue(value, activeField, config, childPath);
+                  isMatched = true;
+                }
+              }
+            } catch {
+              isMatched = isMatched === true;
             }
+          });
+          if (!isMatched) {
+            throw new Error(
+              `Value for "${childPath.join('.')}" does not match any of the union types. Please provide a valid value.`,
+            );
           }
         }
       } catch (error) {
@@ -155,12 +264,42 @@ export class ConfigValidator {
     field: ConfigField,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     config: Record<string, any>,
+    path: string[],
   ) => {
+    path = path.concat([field.label || '']);
     if (value != undefined) {
       if (field.type === 'bigint') {
-        value = BigInt(value);
-      } else if (field.type === 'number' && value && !isNaN(value)) {
+        if (
+          typeof value === 'number' &&
+          (value > Number.MAX_SAFE_INTEGER || value < Number.MIN_SAFE_INTEGER)
+        ) {
+          throw new Error(
+            `Field "${path.join('.')}" is declared as a BigInt, but a Number was provided with insufficient precision. Values exceeding 9007199254740991 must be supplied as a string to ensure accuracy.`,
+          );
+        }
+        try {
+          value = BigInt(value);
+        } catch {
+          throw new Error(
+            `Cannot convert ${value} to a BigInt for field "${path.join('.')}"`,
+          );
+        }
+      }
+      if (field.type === 'number') {
+        if (isNaN(Number(value))) {
+          throw new Error(
+            `Field "${path.join('.')}" must be a valid number. Please provide a suitable format.`,
+          );
+        }
         value = Number(value);
+        if (
+          value > Number.MAX_SAFE_INTEGER ||
+          value < Number.MIN_SAFE_INTEGER
+        ) {
+          throw new Error(
+            `Value for "${path.join('.')}" is too large or too small. Please enter a valid number.`,
+          );
+        }
       }
       valueValidators[field.type](value, field);
     }
@@ -351,11 +490,9 @@ export class ConfigValidator {
   getSchemaField = (path: string[]): ConfigField | undefined => {
     let subTree: ConfigSchema | undefined = this.schema;
     let field: ConfigField | undefined = undefined;
-
     for (const part of path) {
       if (subTree != undefined && Object.hasOwn(subTree, part)) {
         field = subTree[part];
-
         if (field.type === 'object') {
           subTree = field.children;
         } else if (field.type === 'array' && field.items.type === 'object') {

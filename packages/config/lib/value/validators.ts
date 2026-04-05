@@ -30,7 +30,7 @@ export const valueValidators: Record<string, any> = {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   union: (value: types.UnionField, _field: types.UnionField) => {
     if (value === undefined) {
-      throw new Error(`value must be of array type`);
+      throw new Error(`value must be of union type`);
     }
   },
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

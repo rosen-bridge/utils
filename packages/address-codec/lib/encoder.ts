@@ -1,72 +1,55 @@
-import * as cardanoLib from '@emurgo/cardano-serialization-lib-nodejs';
-import * as bitcoinLib from 'bitcoinjs-lib';
-import * as ergoLib from 'ergo-lib-wasm-nodejs';
-
 import {
-  BINANCE_CHAIN,
   BITCOIN_CHAIN,
+  encodeBitcoinAddress,
+} from '@rosen-bridge/address-codec-bitcoin';
+import {
+  BITCOIN_RUNES_CHAIN,
+  encodeBitcoinRunesAddress,
+} from '@rosen-bridge/address-codec-bitcoin-runes';
+import {
   CARDANO_CHAIN,
+  encodeCardanoAddress,
+} from '@rosen-bridge/address-codec-cardano';
+import {
   DOGE_CHAIN,
-  DOGE_NETWORK,
+  encodeDogeAddress,
+} from '@rosen-bridge/address-codec-doge';
+import {
   ERGO_CHAIN,
-  ETHEREUM_CHAIN,
-  HANDSHAKE_CHAIN,
-  HANDSHAKE_NETWORK,
-  RUNES_CHAIN,
+  encodeErgoAddress,
+} from '@rosen-bridge/address-codec-ergo';
+import { generateEvmAddressEncoder } from '@rosen-bridge/address-codec-evm';
+import {
   FIRO_CHAIN,
-  FIRO_NETWORK,
-} from './const';
-import { UnsupportedAddressError, UnsupportedChainError } from './types';
+  encodeFiroAddress,
+} from '@rosen-bridge/address-codec-firo';
+import {
+  HANDSHAKE_CHAIN,
+  encodeHandshakeAddress,
+} from '@rosen-bridge/address-codec-handshake';
+
+import { BINANCE_CHAIN, ETHEREUM_CHAIN } from './const';
+import { UnsupportedChainError } from './types';
+
+export const chainEncoders: Record<string, (address: string) => string> = {
+  [ERGO_CHAIN]: encodeErgoAddress,
+  [CARDANO_CHAIN]: encodeCardanoAddress,
+  [BITCOIN_CHAIN]: encodeBitcoinAddress,
+  [ETHEREUM_CHAIN]: generateEvmAddressEncoder(ETHEREUM_CHAIN),
+  [BINANCE_CHAIN]: generateEvmAddressEncoder(BINANCE_CHAIN),
+  [DOGE_CHAIN]: encodeDogeAddress,
+  [BITCOIN_RUNES_CHAIN]: encodeBitcoinRunesAddress,
+  [FIRO_CHAIN]: encodeFiroAddress,
+  [HANDSHAKE_CHAIN]: encodeHandshakeAddress,
+};
 
 /**
  * encodes address of a chain to hex string
- *  throws error if encoded address length is more than 60 bytes
  * @param chain
  * @param address
  */
 export const encodeAddress = (chain: string, address: string): string => {
-  let encoded: string;
-  switch (chain) {
-    case ERGO_CHAIN:
-      encoded = Buffer.from(
-        ergoLib.Address.from_base58(address).content_bytes(),
-      ).toString('hex');
-      break;
-    case CARDANO_CHAIN:
-      encoded = Buffer.from(
-        cardanoLib.Address.from_bech32(address).to_bytes(),
-      ).toString('hex');
-      break;
-    case RUNES_CHAIN:
-    case BITCOIN_CHAIN:
-      encoded = bitcoinLib.address.toOutputScript(address).toString('hex');
-      break;
-    case BINANCE_CHAIN:
-    case ETHEREUM_CHAIN:
-      if (address.length != 42 || address.substring(0, 2) != '0x') {
-        throw new UnsupportedAddressError(chain, address);
-      }
-      encoded = address.substring(2);
-      break;
-    case DOGE_CHAIN:
-      encoded = bitcoinLib.address
-        .toOutputScript(address, DOGE_NETWORK)
-        .toString('hex');
-      break;
-    case FIRO_CHAIN:
-      encoded = bitcoinLib.address
-        .toOutputScript(address, FIRO_NETWORK)
-        .toString('hex');
-      break;
-    case HANDSHAKE_CHAIN:
-      encoded = bitcoinLib.address
-        .toOutputScript(address, HANDSHAKE_NETWORK)
-        .toString('hex');
-      break;
-    default:
-      throw new UnsupportedChainError(chain);
-  }
-  if (encoded.length > 60 * 2)
-    throw new UnsupportedAddressError(chain, address);
-  return encoded;
+  const encoder = chainEncoders[chain];
+  if (encoder) return encoder(address);
+  throw new UnsupportedChainError(chain);
 };

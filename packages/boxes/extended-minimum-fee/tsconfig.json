@@ -1,0 +1,13 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "types": ["node", "vitest/globals"]
+  },
+  "include": ["tests", "lib"],
+  "references": [
+    { "path": "../../loggers/abstract-logger" },
+    { "path": "../../json-bigint" },
+    { "path": "../../minimum-fee" }
+  ]
+}

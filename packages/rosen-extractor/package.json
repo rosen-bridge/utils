@@ -39,7 +39,7 @@
     "@cardano-ogmios/schema": "^6.0.3",
     "@emurgo/cardano-serialization-lib-nodejs": "^13.2.1",
     "@rosen-bridge/abstract-logger": "^4.0.0",
-    "@rosen-bridge/address-codec": "^1.2.0",
+    "@rosen-bridge/address-manager": "^0.0.0",
     "@rosen-bridge/json-bigint": "^1.1.0",
     "@rosen-bridge/tokens": "^6.0.0",
     "bitcoinjs-lib": "^6.1.5",
@@ -48,6 +48,7 @@
     "lodash-es": "^4.17.21"
   },
   "devDependencies": {
+    "@rosen-bridge/address-codec": "^1.2.0",
     "@types/lodash-es": "^4.17.6"
   },
   "engines": {

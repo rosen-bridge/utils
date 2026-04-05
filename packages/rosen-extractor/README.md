@@ -55,6 +55,16 @@ npm i @rosen-bridge/rosen-extractor
 
 ## Usage
 
+This package requires the `@rosen-bridge/address-manager` package for the decoding and validation of addresses in the bridge request. Please make sure to initialize the `AddressManager` before using any of the extractor classes. You can define the validator and decoder functions based on your needs. Alternatively, you can initialize it with the implementations of `address-codec` package:
+
+```ts
+import { ConsoleLogger } from '@rosen-bridge/abstract-logger';
+import { chainValidators, chainDecoders } from '@rosen-bridge/address-codec';
+import { AddressManager } from '@rosen-bridge/address-manager';
+
+AddressManager.init(chainValidators, chainDecoders, new ConsoleLogger());
+```
+
 To use the class, The transaction data must be provided in the format expected by the specific extractor class being used. Here's a basic example of how to use this package:
 
 ```typescript

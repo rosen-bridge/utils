@@ -4,5 +4,15 @@
     "rootDir": ".",
     "types": ["node", "vitest/globals"]
   },
-  "include": ["tests", "lib"]
+  "include": ["tests", "lib"],
+  "references": [
+    { "path": "../address-codec-chains/bitcoin" },
+    { "path": "../address-codec-chains/bitcoin-runes" },
+    { "path": "../address-codec-chains/cardano" },
+    { "path": "../address-codec-chains/doge" },
+    { "path": "../address-codec-chains/ergo" },
+    { "path": "../address-codec-chains/evm" },
+    { "path": "../address-codec-chains/firo" },
+    { "path": "../address-codec-chains/handshake" }
+  ]
 }

@@ -2,7 +2,6 @@ import { TokenMap } from '@rosen-bridge/tokens';
 
 import { FiroRpcRosenExtractor } from '../../../lib';
 import { ETHEREUM_CHAIN, ERGO_CHAIN } from '../../../lib/getRosenData/const';
-import { FiroRpcTransaction } from '../../../lib/getRosenData/firo/types';
 import TestUtils from '../testUtils';
 import * as testData from './rpcTestData';
 
@@ -32,7 +31,7 @@ describe('FiroRpcRosenExtractor', () => {
         testData.lockAddress,
         tokenMap,
       );
-      const result = extractor.get(validLockTx as FiroRpcTransaction);
+      const result = extractor.get(validLockTx as any);
 
       expect(result).toStrictEqual(testData.rosenData);
     });
@@ -55,7 +54,7 @@ describe('FiroRpcRosenExtractor', () => {
         testData.lockAddress,
         tokenMap,
       );
-      const result = extractor.get(invalidTx);
+      const result = extractor.get(invalidTx as any);
 
       expect(result).toBeUndefined();
     });
@@ -78,7 +77,7 @@ describe('FiroRpcRosenExtractor', () => {
         testData.lockAddress,
         tokenMap,
       );
-      const result = extractor.get(invalidTx);
+      const result = extractor.get(invalidTx as any);
 
       expect(result).toBeUndefined();
     });
@@ -101,7 +100,7 @@ describe('FiroRpcRosenExtractor', () => {
         testData.lockAddress,
         tokenMap,
       );
-      const result = extractor.get(invalidTx);
+      const result = extractor.get(invalidTx as any);
 
       expect(result).toBeUndefined();
     });
@@ -124,7 +123,7 @@ describe('FiroRpcRosenExtractor', () => {
         testData.lockAddress,
         tokenMap,
       );
-      const result = extractor.get(invalidTx);
+      const result = extractor.get(invalidTx as any);
 
       expect(result).toBeUndefined();
     });
@@ -150,7 +149,7 @@ describe('FiroRpcRosenExtractor', () => {
         testData.lockAddress,
         noNativeTokenMap,
       );
-      const result = extractor.get(invalidTx);
+      const result = extractor.get(invalidTx as any);
 
       expect(result).toBeUndefined();
     });

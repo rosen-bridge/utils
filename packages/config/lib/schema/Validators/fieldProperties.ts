@@ -207,8 +207,10 @@ export const propertyValidators = {
           `union field must have a "children" property of type "array"`,
         );
       }
-      if (field.children.length === 0) {
-        throw new Error(`union field "children" cannot be empty`);
+      if (field.children.length < 2) {
+        throw new Error(
+          `union field "children" must have at least 2 child nodes`,
+        );
       }
     },
   },
