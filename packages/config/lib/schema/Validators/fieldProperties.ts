@@ -212,6 +212,12 @@ export const propertyValidators = {
         );
       }
     },
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    secret: (field: types.StringField, _config: ConfigValidator) => {
+      if (Object.hasOwn(field, 'secret') && typeof field.secret !== 'boolean') {
+        throw new Error('"secret" must be boolean');
+      }
+    },
   },
   boolean: {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -225,6 +231,12 @@ export const propertyValidators = {
         );
       }
     },
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    secret: (field: types.StringField, _config: ConfigValidator) => {
+      if (Object.hasOwn(field, 'secret') && typeof field.secret !== 'boolean') {
+        throw new Error('"secret" must be boolean');
+      }
+    },
   },
   number: {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -236,6 +248,12 @@ export const propertyValidators = {
         throw new Error(
           `default value=[${field.default}] doesn't match field type=[${field.type}]`,
         );
+      }
+    },
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    secret: (field: types.StringField, _config: ConfigValidator) => {
+      if (Object.hasOwn(field, 'secret') && typeof field.secret !== 'boolean') {
+        throw new Error('"secret" must be boolean');
       }
     },
   },
@@ -256,6 +274,12 @@ export const propertyValidators = {
         );
       }
     },
+  },
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  secret: (field: types.StringField, _config: ConfigValidator) => {
+    if (Object.hasOwn(field, 'secret') && typeof field.secret !== 'boolean') {
+      throw new Error('"secret" must be boolean');
+    }
   },
 };
 
