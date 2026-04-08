@@ -16,12 +16,18 @@ npm:
 
 ```sh
 npm i @rosen-bridge/fastify-enhanced
+
+# install compatible zod version
+npm i zod@3.25.76
 ```
 
 yarn:
 
 ```sh
 yarn add @rosen-bridge/fastify-enhanced
+
+# install compatible zod version
+yarn add zod@3.25.76
 ```
 
 ## Usage

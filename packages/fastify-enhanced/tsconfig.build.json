@@ -4,6 +4,5 @@
     "rootDir": "./lib",
     "outDir": "./dist"
   },
-  "exclude": ["tests", "vitest.config.ts"],
-  "references": [{ "path": "../json-bigint/tsconfig.build.json" }]
+  "exclude": ["tests", "vitest.config.ts"]
 }
