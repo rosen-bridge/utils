@@ -1,5 +1,11 @@
 # @rosen-bridge/tx-pot
 
+## 2.0.4
+
+### Patch Changes
+
+- Use FindOptionsWhere to enforce type safety and avoid any
+
 ## 2.0.3
 
 ### Patch Changes

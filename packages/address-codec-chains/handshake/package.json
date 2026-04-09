@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/address-codec-handshake",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "A Typescript package for encoding and decoding of Handshake addresses in Rosen bridge",
   "repository": {
     "type": "git",

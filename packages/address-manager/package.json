@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/address-manager",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "A Typescript package used by Rosen extractors to validate and decode addresses",
   "repository": {
     "type": "git",

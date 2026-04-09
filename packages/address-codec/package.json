@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/address-codec",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "description": "A Typescript package for encoding and decoding of addresses in Rosen bridge supported chains",
   "repository": {
     "type": "git",
@@ -27,14 +27,14 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@rosen-bridge/address-codec-bitcoin": "^0.0.0",
-    "@rosen-bridge/address-codec-bitcoin-runes": "^0.0.0",
-    "@rosen-bridge/address-codec-cardano": "^0.0.0",
-    "@rosen-bridge/address-codec-doge": "^0.0.0",
-    "@rosen-bridge/address-codec-ergo": "^0.0.0",
-    "@rosen-bridge/address-codec-evm": "^0.0.0",
-    "@rosen-bridge/address-codec-firo": "^0.0.0",
-    "@rosen-bridge/address-codec-handshake": "^0.0.0"
+    "@rosen-bridge/address-codec-bitcoin": "^0.1.0",
+    "@rosen-bridge/address-codec-bitcoin-runes": "^0.1.0",
+    "@rosen-bridge/address-codec-cardano": "^0.1.0",
+    "@rosen-bridge/address-codec-doge": "^0.1.0",
+    "@rosen-bridge/address-codec-ergo": "^0.1.0",
+    "@rosen-bridge/address-codec-evm": "^0.1.0",
+    "@rosen-bridge/address-codec-firo": "^0.1.0",
+    "@rosen-bridge/address-codec-handshake": "^0.1.0"
   },
   "engines": {
     "node": ">=22.18.0",
