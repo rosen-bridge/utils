@@ -5,10 +5,10 @@
 ### Patch Changes
 
 - Fix swagger types to enforce type safety and avoid any
-- - Replace makeSerializerCompiler function with serializerCompiler from the fastify-zod-openapi package
-  - Remove redundant ResponseValidationError class
-  - Remove redundant utils file
-  - Use FastifyPluginAsyncZodOpenApi for swagger plugin type
+- Replace makeSerializerCompiler function with serializerCompiler from the fastify-zod-openapi package
+- Remove redundant ResponseValidationError class
+- Remove redundant utils file
+- Use FastifyPluginAsyncZodOpenApi for swagger plugin type
 
 ## 2.0.1
 
