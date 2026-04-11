@@ -111,5 +111,64 @@ yargs(hideBin(process.argv))
       );
     },
   )
+  .command(
+    'generate-env',
+    'generates custom-environment-variables file from schema',
+    (yargs) =>
+      yargs
+        .option('schema', {
+          alias: 's',
+          demandOption: true,
+          description: 'input schema file path which should be in json format',
+          type: 'string',
+        })
+        .option('output', {
+          alias: 'o',
+          demandOption: true,
+          description: 'generated env output path',
+          type: 'string',
+        })
+        .option('format', {
+          alias: 'f',
+          demandOption: true,
+          description: 'output format',
+          choices: ['json', 'yaml'],
+          default: 'yaml',
+          type: 'string',
+        })
+        .option('all-env', {
+          type: 'boolean',
+          default: false,
+          description:
+            'generate environment variables for all fields regardless of secret',
+        }),
+    async (argv) => {
+      const spinner = ora();
+      spinner.start(`Generating custom environment variables`);
+
+      const rawSchemaData = fs.readFileSync(argv.schema, 'utf-8');
+      const schema = JsonBigInt.parse(rawSchemaData);
+
+      const confValidator = ConfigValidator.fromSchema(schema);
+
+      const envConfig = confValidator.generateCustomEnvFile(argv['all-env']);
+
+      let output = '';
+      switch (argv.format) {
+        case 'json': {
+          output = JSON.stringify(envConfig, null, 2);
+          break;
+        }
+        case 'yaml': {
+          output = yaml.dump(envConfig);
+          break;
+        }
+      }
+
+      fs.writeFileSync(argv.output, output);
+
+      spinner.succeed(chalk.green(`env config was output at "${argv.output}"`));
+    },
+  )
   .demandCommand(1)
   .parse();

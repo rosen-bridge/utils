@@ -36,28 +36,25 @@ export interface GenericField<T> {
   default?: T;
   description?: string;
   label?: string;
+  secret?: boolean;
 }
 
 export interface StringField extends GenericField<string> {
   type: 'string';
-  secret?: boolean;
   validations?: VString[];
 }
 
 export interface NumberField extends GenericField<number> {
   type: 'number';
-  secret?: boolean;
   validations?: VNumeric<number>[];
 }
 
 export interface BigIntField extends GenericField<bigint> {
   type: 'bigint';
-  secret?: boolean;
   validations?: VNumeric<bigint>[];
 }
 
 export interface BooleanField extends GenericField<boolean> {
   type: 'boolean';
-  secret?: boolean;
   validations?: VBoolean[];
 }

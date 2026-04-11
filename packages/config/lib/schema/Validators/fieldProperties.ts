@@ -183,6 +183,9 @@ export const propertyValidators = {
           `array field type must have a "items" property of type "object"`,
         );
       }
+      if (Object.hasOwn(field.items, 'secret')) {
+        throw new Error(`array items should not have "secret" property`);
+      }
     },
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     default: (field: types.ArrayField, _config: ConfigValidator) => {
@@ -232,7 +235,7 @@ export const propertyValidators = {
       }
     },
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    secret: (field: types.StringField, _config: ConfigValidator) => {
+    secret: (field: types.BooleanField, _config: ConfigValidator) => {
       if (Object.hasOwn(field, 'secret') && typeof field.secret !== 'boolean') {
         throw new Error('"secret" must be boolean');
       }
@@ -251,7 +254,7 @@ export const propertyValidators = {
       }
     },
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    secret: (field: types.StringField, _config: ConfigValidator) => {
+    secret: (field: types.NumberField, _config: ConfigValidator) => {
       if (Object.hasOwn(field, 'secret') && typeof field.secret !== 'boolean') {
         throw new Error('"secret" must be boolean');
       }
@@ -274,9 +277,14 @@ export const propertyValidators = {
         );
       }
     },
+    secret: (field: types.BigIntField) => {
+      if (Object.hasOwn(field, 'secret') && typeof field.secret !== 'boolean') {
+        throw new Error('"secret" must be boolean');
+      }
+    },
   },
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  secret: (field: types.StringField, _config: ConfigValidator) => {
+  secret: (field: types.BigIntField, _config: ConfigValidator) => {
     if (Object.hasOwn(field, 'secret') && typeof field.secret !== 'boolean') {
       throw new Error('"secret" must be boolean');
     }

@@ -738,11 +738,80 @@ export class ConfigValidator {
           higherLevelSources,
           childPath,
         );
+        if ('secret' in field) {
+          value[childName]['secret'] = field.secret;
+        } else {
+          value[childName]['secret'] = false;
+        }
       }
     }
 
     return value;
   }
+
+  /**
+   * Generates a custom environment file based on the provided schema.
+   *
+   * @param {boolean} [options.allEnv] If true, includes all environment variables, otherwise only includes non-secret fields.
+   *
+   * @returns {Record<string, any>}
+   */
+  generateCustomEnvFile = (
+    allEnv?: boolean,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ): Record<string, any> => {
+    return this.buildCustomEnvFile(this.schema, [], allEnv === true);
+  };
+
+  /**
+   * Recursively builds a custom environment file from the schema.
+   *
+   * @param {ConfigSchema} schema The configuration schema containing field definitions.
+   * @param {string[]} path The current path of keys in the schema (used for nested schemas).
+   * @param {boolean} allEnv Flag to determine whether to include all fields or only non-secret ones.
+   *
+   * @returns {Record<string, any>}
+   */
+  private buildCustomEnvFile = (
+    schema: ConfigSchema,
+    path: string[],
+    allEnv: boolean,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ): Record<string, any> => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const out: Record<string, any> = Object.create(null);
+
+    for (const key of Object.keys(schema)) {
+      const field = schema[key];
+      const currentPath = [...path, key];
+
+      if (field.type === 'object') {
+        const child = this.buildCustomEnvFile(
+          field.children,
+          currentPath,
+          allEnv,
+        );
+
+        if (Object.keys(child).length > 0) {
+          out[key] = child;
+        }
+
+        continue;
+      }
+
+      if (field.type === 'array') {
+        continue;
+      }
+
+      if (!(allEnv || field.secret === true)) continue;
+
+      const envKey = currentPath.map((p) => p.toUpperCase()).join('_');
+
+      out[key] = envKey;
+    }
+
+    return out;
+  };
 
   /**
    * returns a list of config sources used by node config package, ordered from
