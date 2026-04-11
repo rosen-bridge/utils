@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/fastify-enhanced",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "a wrapper around fastify web framework to make it even better",
   "repository": {
     "type": "git",

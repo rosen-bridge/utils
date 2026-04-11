@@ -1,5 +1,16 @@
 # @rosen-bridge/minimum-fee
 
+## 4.0.0
+
+### Major Changes
+
+- Extract toBuilder method from MinimumFeeBox to child classes, remove MinimumFeeBoxBuilder class
+- Update MinimumFeeBox to require an instantiated network instead of network type and URL
+
+### Minor Changes
+
+- Implement AbstractMinimumFeeNetwork and two concrete network classes for ergo explorer and node that implement the abstract class
+
 ## 3.1.2
 
 ### Patch Changes
