@@ -29,8 +29,19 @@ export const valueValidators: Record<string, any> = {
   },
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   union: (value: types.UnionField, _field: types.UnionField) => {
-    if (value === undefined) {
-      throw new Error(`value must be of union type`);
+    const validUnionTypes = [
+      'object',
+      'array',
+      'boolean',
+      'union',
+      'string',
+      'number',
+      'bigint',
+    ];
+    if (!validUnionTypes.includes(typeof value)) {
+      throw new Error(
+        'Value does not match any of the valid union children types.',
+      );
     }
   },
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -28,56 +28,15 @@ export class ConfigValidator {
   }
 
   /**
-   * Builds the final configuration object
+   * Builds and returns the final configuration object by transforming and validating
    *
-   * @returns {Record<string, any>} The normalized configuration object
+   *  T - The type of the final normalized configuration object.
+   * @returns {T} The normalized configuration object
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  buildConfigs = (): Record<string, any> => {
+  buildConfigs = <T>(): T => {
     const raw = config.util.toObject();
     this.validateConfig(raw);
-    return this.transformBySchema(raw, this.schema);
-  };
-
-  /**
-   * Recursively transforms a configuration object based on the provided schema.
-   * @param {any} data
-   * @param {any} schema
-   *
-   * @returns {Record<string, any>} A new object with transformed and normalized values
-   */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private transformBySchema = (data: any, schema: any): Record<string, any> => {
-    let result = data;
-    if ('type' in schema) {
-      switch (schema.type) {
-        case 'number':
-          result = Number(data);
-          break;
-        case 'bigint':
-          result = BigInt(data);
-          break;
-        case 'object':
-          result = this.transformBySchema(data, schema.children);
-          break;
-        case 'array':
-          if (Array.isArray(data)) {
-            result = data.map((item) =>
-              this.transformBySchema(item, schema.items),
-            );
-          }
-          break;
-      }
-    } else {
-      for (const key in schema) {
-        const field = schema[key];
-        const value = data[key];
-        if (value === undefined || value === null) continue;
-        result[key] = this.transformBySchema(value, field);
-      }
-    }
-
-    return result;
+    return raw;
   };
 
   /**
@@ -169,7 +128,8 @@ export class ConfigValidator {
           }
         } else if (field.type === 'union') {
           let isMatched = false;
-          field.children.map((activeField) => {
+          let errorMessage = '';
+          for (const activeField of field.children) {
             try {
               if (
                 activeField.type === 'object' &&
@@ -196,18 +156,18 @@ export class ConfigValidator {
                   isMatched = true;
                 }
               } else {
-                if (activeField.type === typeof value) {
-                  this.validateValue(value, activeField, config, childPath);
-                  isMatched = true;
-                }
+                this.validateValue(value, activeField, config, childPath);
+                isMatched = true;
               }
-            } catch {
+              if (isMatched) break;
+            } catch (e) {
+              errorMessage = `${e instanceof Error ? e.message : e}`;
               isMatched = isMatched === true;
             }
-          });
+          }
           if (!isMatched) {
             throw new Error(
-              `Value for "${childPath.join('.')}" does not match any of the union types. Please provide a valid value.`,
+              `Value for "${childPath.join('.')}" does not match any of the union types for this error:  ${errorMessage}. Please provide a valid value.`,
             );
           }
         }
@@ -243,7 +203,6 @@ export class ConfigValidator {
         return;
       }
     }
-
     const lastKey = path.at(-1);
     if (lastKey != undefined) {
       value[lastKey] = newValue;
@@ -266,7 +225,9 @@ export class ConfigValidator {
     config: Record<string, any>,
     path: string[],
   ) => {
-    path = path.concat([field.label || '']);
+    if (field.label) {
+      path = path.concat([field.label]);
+    }
     if (value != undefined) {
       if (field.type === 'bigint') {
         if (
@@ -279,6 +240,8 @@ export class ConfigValidator {
         }
         try {
           value = BigInt(value);
+
+          ConfigValidator.modifyObject(config, value, path);
         } catch {
           throw new Error(
             `Cannot convert ${value} to a BigInt for field "${path.join('.')}"`,
@@ -300,6 +263,7 @@ export class ConfigValidator {
             `Value for "${path.join('.')}" is too large or too small. Please enter a valid number.`,
           );
         }
+        ConfigValidator.modifyObject(config, value, path);
       }
       valueValidators[field.type](value, field);
     }
@@ -570,12 +534,24 @@ export class ConfigValidator {
           }
         }
       } else if (field.type === 'union') {
-        const firstOption = field.children[0];
-        if (firstOption) {
-          if (firstOption.type === 'object') {
-            defaults[key] = this.buildDefaultsForSchema(firstOption.children);
-          } else if (firstOption.type === 'array') {
-            defaults[key] = firstOption.default || [];
+        for (const option of field.children) {
+          if (option.type === 'object') {
+            const obj = this.buildDefaultsForSchema(option.children);
+            if (Object.keys(obj).length > 0) {
+              defaults[key] = obj;
+              break;
+            }
+          } else if (option.type === 'array' && option.items.type == 'object') {
+            const obj = this.buildDefaultsForSchema(option.items.children);
+            if (Object.keys(obj).length > 0) {
+              defaults[key] = obj;
+              break;
+            }
+          } else if (option.type != 'union') {
+            if (option.default) {
+              defaults[key] = option.default;
+              break;
+            }
           }
         }
       } else {
@@ -594,16 +570,13 @@ export class ConfigValidator {
    * @return {string}
    */
   generateTSTypes = (name: string): string => {
-    const errorPreamble = (path: Array<string>) =>
-      `TypeScript type generation failed for "${path.join('.')}" field`;
-
-    const types: Array<string> = [];
-    const emittedTypeNames: Set<string> = new Set<string>();
+    const types: string[] = [];
+    const emittedTypeNames: Set<string> = new Set();
 
     const stack: Array<{
       subSchema: ConfigSchema;
       children: string[];
-      parentPath: Array<string>;
+      parentPath: string[];
       typeName: string;
       attributes: Array<[string, string]>;
     }> = [
@@ -616,98 +589,122 @@ export class ConfigValidator {
       },
     ];
 
-    // Traverses the schema object tree depth first
     while (stack.length > 0) {
-      const { subSchema, children, parentPath, typeName, attributes } =
-        stack.at(-1)!;
-      let path: string[] = parentPath;
-      try {
-        // if a subtree's processing is finished go to the previous level
-        if (children.length == 0) {
-          if (!emittedTypeNames.has(typeName)) {
-            types.push(this.genTSInterface(typeName, attributes));
-            emittedTypeNames.add(typeName);
-          }
-          stack.pop();
-          continue;
+      const current = stack[stack.length - 1];
+      const { subSchema, children, parentPath, typeName, attributes } = current;
+
+      if (children.length === 0) {
+        if (!emittedTypeNames.has(typeName)) {
+          types.push(this.genTSInterface(typeName, attributes));
+          emittedTypeNames.add(typeName);
         }
+        stack.pop();
+        continue;
+      }
 
-        const childName = children.pop()!;
-        path = parentPath.concat([childName]);
-        const field = subSchema[childName];
+      const childName = children.pop()!;
+      const field = subSchema[childName];
+      const path = parentPath.concat(childName);
 
-        // if a node/field is of type object and thus is a subtree, add it to
-        // the stack to be traversed later. Otherwise it's a leaf and needs no
-        // traversal.
-        const childNameQuoted = childName.includes('-')
-          ? `"${childName}"`
-          : childName;
-        if (
-          field.type === 'union' ||
-          field.type === 'object' ||
-          (field.type === 'array' && field.items.type === 'object')
-        ) {
-          // Create unique type name from schema path (supports hyphens: bitcoin-runes -> BitcoinRunes)
-          const pathParts = path;
-          const childTypeName = pathParts
-            .map((part) => toPascalCase(part))
-            .join('');
+      const childNameQuoted = childName.includes('-')
+        ? `"${childName}"`
+        : childName;
+      if (field.type === 'union') {
+        const unionTypes: string[] = [];
 
-          const children =
-            field.type === 'array' && field.items.type === 'object'
-              ? field.items.children
-              : field.type === 'object'
-                ? field.children
-                : {};
+        field.children.forEach((child, index) => {
+          if (child.type === 'object') {
+            const typeName = path
+              .concat([`Option${index}`])
+              .map(toPascalCase)
+              .join('');
+
+            stack.push({
+              subSchema: child.children,
+              children: Object.keys(child.children).reverse(),
+              parentPath: path,
+              typeName,
+              attributes: [],
+            });
+
+            unionTypes.push(typeName);
+            return;
+          }
+          if (child.type === 'array') {
+            if (child.items.type === 'object') {
+              const typeName = path
+                .concat([`Item${index}`])
+                .map(toPascalCase)
+                .join('');
+
+              stack.push({
+                subSchema: child.items.children,
+                children: Object.keys(child.items.children).reverse(),
+                parentPath: path,
+                typeName,
+                attributes: [],
+              });
+
+              unionTypes.push(`${typeName}[]`);
+            } else {
+              unionTypes.push(`${child.items.type}[]`);
+            }
+            return;
+          }
+          unionTypes.push(child.type);
+        });
+        attributes.push([childNameQuoted, unionTypes.join(' | ')]);
+        continue;
+      }
+      if (field.type === 'object') {
+        const typeName = path.map(toPascalCase).join('');
+
+        stack.push({
+          subSchema: field.children,
+          children: Object.keys(field.children).reverse(),
+          parentPath: path,
+          typeName,
+          attributes: [],
+        });
+
+        attributes.push([childNameQuoted, typeName]);
+        continue;
+      }
+      if (field.type === 'array') {
+        if (field.items.type === 'object') {
+          const typeName = path.map(toPascalCase).join('');
 
           stack.push({
-            subSchema: children,
-            children: Object.keys(children).reverse(),
+            subSchema: field.items.children,
+            children: Object.keys(field.items.children).reverse(),
             parentPath: path,
-            typeName: childTypeName,
+            typeName,
             attributes: [],
           });
 
-          attributes.push([
-            childNameQuoted,
-            field.type === 'array' ? `${childTypeName}[]` : childTypeName,
-          ]);
+          attributes.push([childNameQuoted, `${typeName}[]`]);
         } else {
-          let fieldType: string =
-            field.type === 'array' ? field.items.type : field.type;
-          let isOptional = true;
-          if (field.type !== 'array' && field.validations != undefined) {
-            for (const validation of field.validations) {
-              if (field.type === 'string' && 'choices' in validation) {
-                fieldType = validation.choices.map((c) => `'${c}'`).join(' | ');
-              }
-
-              if ('required' in validation && !('when' in validation)) {
-                isOptional = false;
-              }
-            }
-          }
-          attributes.push([
-            isOptional ? `${childNameQuoted}?` : childNameQuoted,
-            field.type === 'array' ? `${fieldType}[]` : fieldType,
-          ]);
+          attributes.push([childNameQuoted, `${field.items.type}[]`]);
         }
-        if (field.type === 'union') {
-          const unionTypes = field.children.map((child) => {
-            if (child.type === 'object') {
-              return (
-                path.concat([childName]).map(toPascalCase).join('') + 'Option'
-              );
-            }
-            return child.type;
-          });
-          attributes.push([childNameQuoted, unionTypes.join(' | ')]);
-        }
-      } catch (error) {
-        throw new Error(
-          `${errorPreamble(path)}: ${error instanceof Error ? error.message : error}`,
-        );
+        continue;
       }
+      let fieldType: string = field.type;
+      let isOptional = true;
+      if (field.validations) {
+        for (const validation of field.validations) {
+          if (field.type === 'string' && 'choices' in validation) {
+            fieldType = validation.choices.map((c) => `'${c}'`).join(' | ');
+          }
+
+          if ('required' in validation && !('when' in validation)) {
+            isOptional = false;
+          }
+        }
+      }
+      attributes.push([
+        isOptional ? `${childNameQuoted}?` : childNameQuoted,
+        fieldType,
+      ]);
     }
 
     return types.reverse().join('\n\n') + '\n';

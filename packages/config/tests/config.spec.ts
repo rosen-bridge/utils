@@ -240,6 +240,24 @@ describe('ConfigValidator', () => {
     });
 
     /**
+     * @target generateDefault should handle union Primitive field
+     * @dependencies
+     * @scenario
+     * - define an union Primitive fields
+     * - provide default values for the union field
+     * - call generateDefault
+     * @expected
+     * - the correct default value for the union is returned
+     */
+    it(`should handle union Primitive field`, async () => {
+      const confValidator = ConfigValidator.fromSchema(
+        <ConfigSchema>testData.unionDefaultsPrimitiveField.schema,
+      );
+      const result = confValidator.generateDefault();
+      expect(result).toEqual(testData.unionDefaultsPrimitiveField.defaultVal);
+    });
+
+    /**
      * @target generateDefault should omit required fields without defaults and validation should fail
      * @dependencies
      * @scenario

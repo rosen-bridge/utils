@@ -401,7 +401,7 @@ export const unionSchemaConfigPairWrongChoice = {
     },
   },
   config: {
-    value: true,
+    value: 'true',
   },
 };
 
@@ -1572,6 +1572,27 @@ export const unionDefaultsPair = {
       type: 'A',
       a: 30,
     },
+  },
+};
+
+export const unionDefaultsPrimitiveField = {
+  schema: {
+    config: {
+      type: 'union',
+      children: [
+        {
+          type: 'string',
+          validations: [{ choices: ['A'] }],
+          default: 'A',
+        },
+        {
+          type: 'number',
+        },
+      ],
+    },
+  },
+  defaultVal: {
+    config: 'A',
   },
 };
 
