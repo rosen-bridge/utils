@@ -9,6 +9,7 @@ export class OneServiceA extends TestAbstractService {
 
   protected dependencies: Dependency[] = [];
 
+  init = (): Promise<boolean> => this.initAfter();
   start = (): Promise<boolean> =>
     new Promise<boolean>((resolve) => {
       setTimeout(() => {

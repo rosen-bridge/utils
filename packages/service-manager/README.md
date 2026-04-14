@@ -29,15 +29,38 @@ yarn add @rosen-bridge/service-manager
 
 ## Implementation Details
 
-Before diving into the implementation details, it is important to understand the concept of actions in this context. In this system, actions refer to the operations of starting and stopping a service. These actions are requested by various components and are stored in a `Map` data structure called `pendingActions`. This map keeps track of the requested actions for each service id.
+Before diving into the implementation details, it is important to understand the concept of actions in this context. In this system, actions refer to the three operations of the service lifecycle: **initialize**, **start**, and **stop**. These actions are requested by various components and are stored in a `Map` data structure called `pendingActions`. This map keeps track of the requested actions for each service id.
 
-Each action has some requirements which oversees service dependencies or dependants based on the action operation, i.e. "start" action requires service dependencies to be in appropriate state and "stop" requires service dependants to be stopped. For instance, if service A depends on service B, starting A requires service B to be in "running" state.
+Each action has requirements that govern its execution. The `initialize` action requires its `initialize`-typed dependencies to be in the appropriate state. The `start` action requires all of its dependencies (both `initialize`- and `start`-typed) to be in the appropriate state. The `stop` action requires all `start`-typed dependants to be stopped first.
 
-The concept of dependency entails a service requiring another service or services to be in the specified state and it's hardcoded into the service implementation. Additionally, each service has `startService` and `stopService` methods which are only called after all requirements of their action are satisfied.
+### Service Lifecycle
+
+Every service passes through the following statuses in order:
+
+| Status    | Meaning                                                  |
+| --------- | -------------------------------------------------------- |
+| `raw`     | Initial state – the service has not yet been initialized |
+| `dormant` | Initialized and ready, but not yet started               |
+| `started` | Start sequence in progress                               |
+| `running` | Fully operational                                        |
+
+A service must be initialized (`raw` → `dormant`) before it can be started (`dormant` → `started` / `running`). Note that it cannot return back to `raw`.
+
+### Dependency
+
+Each dependency entry in a service has three fields:
+
+- **`serviceName`** – the name of the required service.
+- **`allowedStatuses`** – the set of statuses the required service must be in for the dependency to be considered satisfied.
+- **`action`** – which action this requirement belongs to:
+  - `ServiceAction.initialize` – this dependency must be satisfied before the service can be **initialized**. It is also checked when the service is being **started**, but the dependency is only _initialized_ (not started) to satisfy the requirement.
+  - `ServiceAction.start` – this dependency must be satisfied before the service can be **started**. When the required service goes dormant, dependants with a `start`-typed dependency on it are automatically stopped.
+
+Each service has `initService`, `startService`, and `stopService` methods which are only called after all requirements of their respective actions are satisfied.
 
 ### Action
 
-The process of starting and stopping services in this system follows a hierarchical structure. This means that the start and stop operations of services are performed in a cascading manner, where starting a service triggers the start of its dependent services, and stopping a service also stops its dependants. Service manager checks and behaviors includes:
+Actions follow a cascading pattern. Service manager checks and behaviors include:
 
 - Pending Action Check:
   - Before any action is initiated, a check is performed to determine if there are any pending actions for the corresponding service in the `pendingActions` map.
@@ -47,6 +70,7 @@ The process of starting and stopping services in this system follows a hierarchi
 
 - Action Collision Handling:
   - If there is already a different pending action for the same service in the `pendingActions` map, an appropriate error is returned to prevent a potential action collision.
+  - Exception: calling `initialize` when `start` or `stop` is already pending is treated as a no-op (the service is already past the `raw` state).
 
 - Dependency Resolution:
   - If the same action is already present in the `pendingActions`, the dependencies are re-evaluated.
@@ -55,29 +79,42 @@ The process of starting and stopping services in this system follows a hierarchi
 
 - Dependency Handling:
   - Dependencies are handled through action requirements.
-  - For instance, if Service B depends on Service C and Service M, the status of these two services is checked for the "start" operation.
-  - If either Service C or Service M is not in the "running" state, the "start" operation for Service B is held off until both reach the specified state.
-  - Conversely, when both Service C and Service M reach the appropriate states, the `startService` method is invoked for Service B.
-  - Similarly, for the "stop" operation, stopping Service M necessitates stopping Service B first, which in turn requires stopping Service A beforehand. This sequential dependency ensures a proper shutdown sequence.
+  - For the `initialize` action: only `initialize`-typed dependencies are checked. Each unsatisfied one triggers a recursive `initialize` call on that dependency.
+  - For the `start` action: all dependencies (both `initialize`- and `start`-typed) are checked. Each unsatisfied `initialize`-typed dependency triggers `initialize` on it, while each unsatisfied `start`-typed dependency triggers `start` on it.
+    - For instance, if Service B has a `start` dependency on Service C (allowedStatuses: `[running]`) and an `initialize` dependency on Service M (allowedStatuses: `[dormant, started, running]`), starting B requires C to be running and M to be at least initialized. If M is not yet initialized, `initialize(M)` is called; if C is not yet running, `start(C)` is called.
+  - For the `stop` action: only `start`-typed dependants block the stop. `initialize`-typed dependants are left running because they only needed the service to be initialized, not kept alive.
 
-By overseeing the functionalities described above, we ensure that the system starts and stops services in a controlled and cascading manner, taking into account their dependencies and maintaining the integrity of the system.
+By overseeing the functionalities described above, we ensure that the system manages services in a controlled and cascading manner, taking into account their dependencies and maintaining the integrity of the system.
 
 ### Service Status Change
 
-ServiceManager works not only by performing actions, but also by changes in service statuses. When a service undergoes a status change, the ServiceManager becomes aware of it through the `callbackHandler` function. In such cases, depending on the next status, the following actions should take place:
+ServiceManager works not only by performing actions, but also by changes in service statuses. When a service undergoes a status change, the ServiceManager becomes aware of it through the `callbackHandler` function. In such cases, depending on the next status, the following actions take place:
 
-- If the next status is "started" or "running," the dependants of the service need to be examined. If they have a pending "start" operation in the `pendingActions` map and all their dependencies are ready, the operation is executed along with resolving or rejecting the pending action.
+- If the new status is included in a dependant's `allowedStatuses` for its dependency on this service, that dependant is examined:
+  - If it has a pending `start` action and all of its dependencies are satisfied, `startService` is invoked.
+  - If it has a pending `initialize` action, its `initialize`-typed dependency on this service is satisfied, and all other `initialize`-typed dependencies are also satisfied, `initService` is invoked.
+  - This check correctly handles the case where an `initialize`-typed dependency becomes `dormant` and `dormant` is listed in the dependant's `allowedStatuses` — which would unblock any service waiting to start or initialize.
 
-- If the next status is "dormant," all dependants of the service must be stopped. Additionally, all dependencies of the service should be checked, and if there are pending "stop" operations in the `pendingActions` map and their requirements are satisfied, `stopService` is invoked. It is important to note that the responsibility of managing a service that is already stopped and should not be stopped again lies with the `AbstractService` itself.
+- If the new status is `dormant`:
+  - All `start`-typed dependants of the service are stopped. `initialize`-typed dependants are left running — they only depended on this service being initialized, not on it remaining active.
+  - All `start`-typed dependencies of the service are examined: if they have a pending `stop` action and all of their `start`-typed dependants are now dormant, `stopService` is invoked on them.
+  - It is important to note that the responsibility of managing a service that is already stopped and should not be stopped again lies with the `AbstractService` itself.
 
 By implementing these actions based on the service status change, we ensure that the dependents are appropriately handled and that the system maintains the desired state and behavior.
 
 ## Usage
 
-First you need to define your services while inheriting `AbstractService` class. Don't forget to define dependencies. In this example, service `X1A` depends on `X1B`.
+First you need to define your services while inheriting `AbstractService` class. Each dependency entry now requires an `action` field (`ServiceAction.start` or `ServiceAction.initialize`) that controls which lifecycle phase the dependency belongs to.
+
+In this example, `X1A` has a `start` dependency on `X1B` (X1B must be running before X1A can start), while `X1B` has an `initialize` dependency on `X1C` (X1C only needs to be initialized before X1B can be initialized).
 
 ```ts
-import { AbstractService } from '@rosen-chains/service-manager';
+import {
+  AbstractService,
+  Dependency,
+  ServiceAction,
+  ServiceStatus,
+} from '@rosen-bridge/service-manager';
 
 class X1A extends AbstractService {
   name = 'X1A';
@@ -86,6 +123,7 @@ class X1A extends AbstractService {
     {
       serviceName: 'X1B',
       allowedStatuses: [ServiceStatus.running],
+      action: ServiceAction.start,
     },
   ];
 
@@ -103,10 +141,10 @@ class X1B extends AbstractService {
 }
 ```
 
-Then initialize `ServiceManager` instance and register your services.
+Then initialize a `ServiceManager` instance and register your services.
 
 ```ts
-import { ServiceManager } from '@rosen-chains/service-manager';
+import { ServiceManager } from '@rosen-bridge/service-manager';
 
 const serviceManager = ServiceManager.setup();
 const serviceX1A = new X1A();
@@ -115,13 +153,22 @@ const serviceX1B = new X1B();
 serviceManager.register(serviceX1B);
 ```
 
-Then you can start and stop services using service manager.
+You can initialize, start, and stop services using the service manager.
 
 ```ts
+// Initialize a service (raw → dormant). Cascades to initialize-typed dependencies.
+serviceManager.initialize(serviceX1C.getName());
+```
+
+```ts
+// Start a service (dormant → started/running). Cascades to all dependencies:
+// initialize-typed ones are initialized, start-typed ones are started.
 serviceManager.start(serviceX1A.getName());
 ```
 
 ```ts
+// Stop a service. Only start-typed dependants are stopped first;
+// initialize-typed dependants are left running.
 serviceManager.stop(serviceX1A.getName());
 ```
 

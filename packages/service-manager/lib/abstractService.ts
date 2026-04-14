@@ -27,7 +27,7 @@ export abstract class AbstractService {
   protected logger: AbstractLogger;
 
   constructor(logger?: AbstractLogger) {
-    this.status = ServiceStatus.dormant;
+    this.status = ServiceStatus.raw;
     this.logger = logger ?? new DummyLogger();
   }
 
@@ -62,6 +62,8 @@ export abstract class AbstractService {
    * sets service status
    */
   protected setStatus = (status: ServiceStatus): void => {
+    if (status === ServiceStatus.raw)
+      throw Error(`Cannot change service status back to "raw"`);
     const previousStatus = this.status;
     this.status = status;
     this.logger.info(
@@ -172,4 +174,60 @@ export abstract class AbstractService {
    * @returns true if service stopped successfully, otherwise false
    */
   protected abstract stop: () => Promise<boolean>;
+
+  /**
+   * initializes the service, if service is initializing returns current active promise
+   * @returns true if service initialized successfully, otherwise false
+   */
+  initService = async (): Promise<boolean> => {
+    this.logger.debug(`request to initialize [${this.getName()}]`);
+    if (this.actionPromise) {
+      if (this.actionPromise.action === ServiceAction.initialize) {
+        this.logger.debug(
+          `there is already an active request to initialize service [${this.getName()}]`,
+        );
+        return this.actionPromise.promise;
+      } else {
+        this.logger.debug(
+          `service [${this.getName()}] is already initialized since it's pending [${this.actionPromise.action}] action`,
+        );
+        return true;
+      }
+    }
+    return this.actionSemaphore.acquire().then((release) => {
+      const currentStatus = this.getStatus();
+      if (currentStatus !== ServiceStatus.raw) {
+        this.logger.debug(
+          `service [${this.getName()}] is already initialized and in [${currentStatus}] status`,
+        );
+        release();
+        return true;
+      }
+      this.logger.debug(`initializing service [${this.getName()}]`);
+      this.actionPromise = {
+        action: ServiceAction.initialize,
+        promise: this.init(),
+      };
+      return this.actionPromise.promise
+        .then((res) => {
+          this.logger.debug(`service [${this.getName()}] is initialized`);
+          this.actionPromise = undefined;
+          release();
+          return res;
+        })
+        .catch((error) => {
+          this.logger.warn(
+            `An error occurred while initializing service [${this.name}]: ${error}`,
+          );
+          release();
+          return false;
+        });
+    });
+  };
+
+  /**
+   * initializes the service
+   * @returns true if service initialized successfully, otherwise false
+   */
+  protected abstract init: () => Promise<boolean>;
 }

@@ -1,4 +1,5 @@
 import { ServiceManager, ServiceStatus } from '../lib';
+import { I0A, I0B } from './testData/cascadingInitializeTestData';
 import { X1A, X1B, X1M } from './testData/crashTestData';
 import { X3A, X3B, X3C, X3D } from './testData/diamondTestData';
 import { X0A, X0B, X0C, X0M } from './testData/hierarchicalTestData';
@@ -6,6 +7,8 @@ import { X2A, X2B, X2C, X2D } from './testData/midwayFailureTestData';
 import { OneServiceA } from './testData/oneServiceTestData';
 import { X4A, X4B, X4C, X4D } from './testData/partialStartTestData';
 import { R1A, R1B } from './testData/simpleRunningTestData';
+import { I1A, I1B } from './testData/stopEffectOnInitializeRelationTestData';
+import { X5A, X5B, X5C } from './testData/validCircularTestData';
 import { sleep } from './testUtils';
 
 describe('ServiceManager', () => {
@@ -450,4 +453,246 @@ describe('ServiceManager', () => {
       ServiceStatus.started,
     );
   }, 2000);
+
+  /**
+   * @target ServiceManager: Cascading Initialize Scenario
+   * I0A has an initialize-typed dependency on I0B; both start in raw status
+   * calling initialize on I0A should first initialize I0B, then I0A
+   * @dependencies
+   * @scenario
+   * - generate test service manager
+   * - generate 2 test services (I0A, I0B) both starting in raw status
+   * - call initialize on I0A
+   * - wait 0.5 seconds
+   * - check returned value
+   * - check status of both services
+   * @expected
+   * - returned value should be true
+   * - both I0A and I0B should be in dormant status
+   */
+  it('Cascading Initialize Scenario', async () => {
+    const serviceManager = ServiceManager.setup();
+
+    const a = new I0A();
+    const b = new I0B();
+    const services = [a, b];
+
+    services.forEach((service) => serviceManager.register(service));
+
+    const initPromise = serviceManager.initialize(a.getName());
+    await sleep(2.5);
+    const res = await initPromise;
+    expect(res).toEqual(true);
+    expect(serviceManager.getStatus(a.getName())).toEqual(
+      ServiceStatus.dormant,
+    );
+    expect(serviceManager.getStatus(b.getName())).toEqual(
+      ServiceStatus.dormant,
+    );
+  }, 3500);
+
+  /**
+   * @target ServiceManager: Initialize on Start Scenario
+   * I0A and I0B both start in raw status; I0A has an initialize-typed dependency on I0B
+   * calling start on I0A should: initialize I0B (init dep), then auto-initialize I0A
+   * (because it is raw), and finally start I0A
+   * I0B must only reach dormant – it must NOT be started
+   * @dependencies
+   * @scenario
+   * - generate test service manager
+   * - generate 2 test services: I0A (raw) and I0B (raw)
+   * - call start on I0A
+   * - wait 2.5 seconds
+   * - check returned value
+   * - check status of both services
+   * @expected
+   * - returned value should be true
+   * - I0A should be in running status
+   * - I0B should be in dormant status (initialized but not started)
+   */
+  it('Initialize on Start Scenario', async () => {
+    const serviceManager = ServiceManager.setup();
+
+    const a = new I0A();
+    const b = new I0B();
+    const services = [a, b];
+    services.forEach((service) => serviceManager.register(service));
+
+    const startPromise = serviceManager.start(a.getName());
+    await sleep(2.5);
+    const res = await startPromise;
+    expect(res).toEqual(true);
+    expect(serviceManager.getStatus(a.getName())).toEqual(
+      ServiceStatus.running,
+    );
+    expect(serviceManager.getStatus(b.getName())).toEqual(
+      ServiceStatus.dormant,
+    );
+  }, 3500);
+
+  /**
+   * @target ServiceManager: Stop Propagation Relation with Initialize Scenario
+   * I1A is running and has an initialize-typed dependency on I1B which is running
+   * stopping I1B must not stop I1A since I1A only needed I1B to be initialized
+   * @dependencies
+   * @scenario
+   * - generate test service manager
+   * - generate 2 test services: I1A (running) and I1B (running)
+   * - call stop on I1B
+   * - wait 1 second
+   * - check returned value
+   * - check status of both services
+   * @expected
+   * - returned value should be true
+   * - I1B should be in dormant status
+   * - I1A should remain in running status (not stopped)
+   */
+  it('Stop Propagation Relation with Initialize Scenario', async () => {
+    const serviceManager = ServiceManager.setup();
+
+    const a = new I1A();
+    const b = new I1B();
+    const services = [a, b];
+    services.forEach((service) => serviceManager.register(service));
+
+    const stopPromise = serviceManager.stop(b.getName());
+    await sleep(1);
+    const res = await stopPromise;
+    expect(res).toEqual(true);
+    expect(serviceManager.getStatus(b.getName())).toEqual(
+      ServiceStatus.dormant,
+    );
+    expect(serviceManager.getStatus(a.getName())).toEqual(
+      ServiceStatus.running,
+    );
+  }, 2000);
+
+  /**
+   * @target ServiceManager: Valid Circular Scenario
+   * X5A, X5B and X5C all start in raw status; X5A has a start-typed dependency on X5B
+   * while X5B has initialize-typed dependency on X5A and X5C
+   * calling start on X5A should: first initialize X5A, then initialize X5C, then initialize
+   * X5B, then start X5B (wait to become running), and finally start X5A
+   * @dependencies
+   * @scenario
+   * - generate test service manager
+   * - generate 3 test services of X5
+   * - call start on X5A
+   * - wait 0.5 seconds
+   * - check status of three services
+   * - wait 1 second
+   * - check status of three services
+   * - wait 1 second
+   * - check status of three services
+   * - wait 1 second
+   * - check status of three services
+   * - wait 1 second
+   * - check status of three services
+   * - wait 1 second
+   * - check status of three services
+   * - wait 1 second
+   * - check returned value
+   * - check status of three services
+   * @expected
+   * - after 1st waiting
+   *   - X5A should be in raw status
+   *   - X5B should be in raw status
+   *   - X5C should be in raw status
+   * - after 2nd waiting
+   *   - X5A should be in dormant status
+   *   - X5B should be in raw status
+   *   - X5C should be in raw status
+   * - after 3rd waiting
+   *   - X5A should be in dormant status
+   *   - X5B should be in raw status
+   *   - X5C should be in dormant status
+   * - after 4th waiting
+   *   - X5A should be in dormant status
+   *   - X5B should be in dormant status
+   *   - X5C should be in dormant status
+   * - after 5th waiting
+   *   - X5A should be in dormant status
+   *   - X5B should be in started status
+   *   - X5C should be in dormant status
+   * - after 6th waiting
+   *   - X5A should be in raw status
+   *   - X5B should be in running status
+   *   - X5C should be in dormant status
+   * - at the end (after 7th waiting)
+   *   - X5A should be in running status
+   *   - X5B should be in running status
+   *   - X5C should be in dormant status
+   * - returned value should be true
+   */
+  it('Valid Circular Scenario', async () => {
+    const serviceManager = ServiceManager.setup();
+
+    const a = new X5A();
+    const b = new X5B();
+    const c = new X5C();
+    const services = [a, b, c];
+    services.forEach((service) => serviceManager.register(service));
+
+    const stopPromise = serviceManager.start(a.getName());
+    await sleep(0.5);
+    expect(serviceManager.getStatus(a.getName())).toEqual(ServiceStatus.raw);
+    expect(serviceManager.getStatus(b.getName())).toEqual(ServiceStatus.raw);
+    expect(serviceManager.getStatus(c.getName())).toEqual(ServiceStatus.raw);
+    await sleep(1);
+    expect(serviceManager.getStatus(a.getName())).toEqual(
+      ServiceStatus.dormant,
+    );
+    expect(serviceManager.getStatus(b.getName())).toEqual(ServiceStatus.raw);
+    expect(serviceManager.getStatus(c.getName())).toEqual(ServiceStatus.raw);
+    await sleep(1);
+    expect(serviceManager.getStatus(a.getName())).toEqual(
+      ServiceStatus.dormant,
+    );
+    expect(serviceManager.getStatus(b.getName())).toEqual(ServiceStatus.raw);
+    expect(serviceManager.getStatus(c.getName())).toEqual(
+      ServiceStatus.dormant,
+    );
+    await sleep(1);
+    expect(serviceManager.getStatus(a.getName())).toEqual(
+      ServiceStatus.dormant,
+    );
+    expect(serviceManager.getStatus(b.getName())).toEqual(
+      ServiceStatus.dormant,
+    );
+    expect(serviceManager.getStatus(c.getName())).toEqual(
+      ServiceStatus.dormant,
+    );
+    await sleep(1);
+    expect(serviceManager.getStatus(a.getName())).toEqual(
+      ServiceStatus.dormant,
+    );
+    expect(serviceManager.getStatus(b.getName())).toEqual(
+      ServiceStatus.started,
+    );
+    expect(serviceManager.getStatus(c.getName())).toEqual(
+      ServiceStatus.dormant,
+    );
+    await sleep(1);
+    expect(serviceManager.getStatus(a.getName())).toEqual(
+      ServiceStatus.dormant,
+    );
+    expect(serviceManager.getStatus(b.getName())).toEqual(
+      ServiceStatus.running,
+    );
+    expect(serviceManager.getStatus(c.getName())).toEqual(
+      ServiceStatus.dormant,
+    );
+    await sleep(1);
+    const res = await stopPromise;
+    expect(res).toEqual(true);
+    expect(serviceManager.getStatus(a.getName())).toEqual(
+      ServiceStatus.running,
+    );
+    expect(serviceManager.getStatus(b.getName())).toEqual(
+      ServiceStatus.running,
+    );
+    expect(serviceManager.getStatus(c.getName())).toEqual(
+      ServiceStatus.dormant,
+    );
+  }, 10000);
 });

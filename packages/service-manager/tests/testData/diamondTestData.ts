@@ -1,4 +1,4 @@
-import { Dependency, ServiceStatus } from '../../lib';
+import { Dependency, ServiceAction, ServiceStatus } from '../../lib';
 import { TestAbstractService } from '../testAbstractService';
 
 export class X3A extends TestAbstractService {
@@ -11,13 +11,16 @@ export class X3A extends TestAbstractService {
     {
       serviceName: 'X3B',
       allowedStatuses: [ServiceStatus.running],
+      action: ServiceAction.start,
     },
     {
       serviceName: 'X3C',
       allowedStatuses: [ServiceStatus.running],
+      action: ServiceAction.start,
     },
   ];
 
+  init = (): Promise<boolean> => this.initAfter();
   start = (): Promise<boolean> => this.startAfter();
   stop = (): Promise<boolean> => this.stopAfter();
 }
@@ -32,9 +35,11 @@ export class X3B extends TestAbstractService {
     {
       serviceName: 'X3D',
       allowedStatuses: [ServiceStatus.running],
+      action: ServiceAction.start,
     },
   ];
 
+  init = (): Promise<boolean> => this.initAfter();
   start = (): Promise<boolean> => this.startAfter();
   stop = (): Promise<boolean> => this.stopAfter();
 }
@@ -49,9 +54,11 @@ export class X3C extends TestAbstractService {
     {
       serviceName: 'X3D',
       allowedStatuses: [ServiceStatus.running],
+      action: ServiceAction.start,
     },
   ];
 
+  init = (): Promise<boolean> => this.initAfter();
   start = (): Promise<boolean> => this.startAfter();
   stop = (): Promise<boolean> => this.stopAfter();
 }
@@ -64,6 +71,7 @@ export class X3D extends TestAbstractService {
 
   protected dependencies: Dependency[] = [];
 
+  init = (): Promise<boolean> => this.initAfter();
   start = (): Promise<boolean> => this.startAfter();
   stop = (): Promise<boolean> => this.stopAfter();
 }

@@ -1,4 +1,4 @@
-import { Dependency, ServiceStatus } from '../../lib';
+import { Dependency, ServiceAction, ServiceStatus } from '../../lib';
 import { TestAbstractService } from '../testAbstractService';
 
 export class X2A extends TestAbstractService {
@@ -11,9 +11,11 @@ export class X2A extends TestAbstractService {
     {
       serviceName: 'X2B',
       allowedStatuses: [ServiceStatus.running],
+      action: ServiceAction.start,
     },
   ];
 
+  init = (): Promise<boolean> => this.initAfter();
   start = (): Promise<boolean> => this.startAfter();
   stop = (): Promise<boolean> => this.stopAfter();
 }
@@ -28,9 +30,11 @@ export class X2B extends TestAbstractService {
     {
       serviceName: 'X2C',
       allowedStatuses: [ServiceStatus.running],
+      action: ServiceAction.start,
     },
   ];
 
+  init = (): Promise<boolean> => this.initAfter();
   start = (): Promise<boolean> => this.startAfter();
   stop = (): Promise<boolean> =>
     new Promise<boolean>((resolve) => {
@@ -50,9 +54,11 @@ export class X2C extends TestAbstractService {
     {
       serviceName: 'X2D',
       allowedStatuses: [ServiceStatus.running],
+      action: ServiceAction.start,
     },
   ];
 
+  init = (): Promise<boolean> => this.initAfter();
   start = (): Promise<boolean> =>
     new Promise<boolean>((resolve) => {
       setTimeout(() => {
@@ -70,6 +76,7 @@ export class X2D extends TestAbstractService {
 
   protected dependencies: Dependency[] = [];
 
+  init = (): Promise<boolean> => this.initAfter();
   start = (): Promise<boolean> => this.startAfter();
   stop = (): Promise<boolean> => this.stopAfter();
 }
