@@ -15,7 +15,7 @@ export class X4A extends TestAbstractService {
     },
   ];
 
-  init = (): Promise<boolean> => this.initAfter();
+  assemble = (): Promise<boolean> => this.assembleAfter();
   start = (): Promise<boolean> => this.startAfter();
   stop = (): Promise<boolean> => this.stopAfter();
 }
@@ -34,7 +34,7 @@ export class X4B extends TestAbstractService {
     },
   ];
 
-  init = (): Promise<boolean> => this.initAfter();
+  assemble = (): Promise<boolean> => this.assembleAfter();
   start = (): Promise<boolean> => this.startAfter();
   stop = (): Promise<boolean> => this.stopAfter();
 }
@@ -53,7 +53,7 @@ export class X4C extends TestAbstractService {
     },
   ];
 
-  init = (): Promise<boolean> => this.initAfter();
+  assemble = (): Promise<boolean> => this.assembleAfter();
   start = (): Promise<boolean> => this.startAfter();
   stop = (): Promise<boolean> => this.stopAfter();
 }
@@ -66,7 +66,7 @@ export class X4D extends TestAbstractService {
 
   protected dependencies: Dependency[] = [];
 
-  init = (): Promise<boolean> => this.initAfter();
+  assemble = (): Promise<boolean> => this.assembleAfter();
   start = (): Promise<boolean> => this.startAfter();
   stop = (): Promise<boolean> => this.stopAfter();
 }

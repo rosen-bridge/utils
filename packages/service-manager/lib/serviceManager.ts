@@ -55,12 +55,12 @@ export class ServiceManager {
         // A 'start'-typed dep going dormant (after having been active) means
         // the dependant can no longer operate and must be stopped.
         // The extra `previousStatus !== raw` guard ensures that the normal
-        // raw → dormant initialization transition does not wrongly cascade
+        // raw → dormant assembly transition does not wrongly cascade
         // a stop to dependants that haven't even started yet.
         this.getService(dependant.serviceName).stopService();
       } else if (dependant.allowedStatuses.includes(newStatus)) {
         // The dep just entered a status that satisfies the dependant's
-        // requirement. This includes the case where an initialize-typed dep
+        // requirement. This includes the case where an assemble-typed dep
         // becomes dormant and dormant is listed in the dependant's
         // allowedStatuses – something the old `newStatus !== dormant` guard
         // would have missed entirely.
@@ -69,7 +69,7 @@ export class ServiceManager {
         );
         if (dependantsPending) {
           if (dependantsPending.action === ServiceAction.start) {
-            // Check ALL dependencies (both start- and initialize-typed) because
+            // Check ALL dependencies (both start- and assemble-typed) because
             // starting a service requires every dependency to be satisfied.
             const dependenciesNotPassed = this.getService(dependant.serviceName)
               .getDependencies()
@@ -85,13 +85,13 @@ export class ServiceManager {
                 .catch(dependantsPending.reject);
             }
           } else if (
-            dependantsPending.action === ServiceAction.initialize &&
-            dependant.action === ServiceAction.initialize
+            dependantsPending.action === ServiceAction.assemble &&
+            dependant.action === ServiceAction.assemble
           ) {
-            // This dependant only needs init-typed deps satisfied.
+            // This dependant only needs assemble-typed deps satisfied.
             const dependenciesNotPassed = this.getService(dependant.serviceName)
               .getDependencies()
-              .filter((dep) => dep.action === ServiceAction.initialize)
+              .filter((dep) => dep.action === ServiceAction.assemble)
               .some(
                 (dependency) =>
                   !dependency.allowedStatuses.includes(
@@ -99,7 +99,7 @@ export class ServiceManager {
                   ),
               );
             if (!dependenciesNotPassed) {
-              this.initialize(dependant.serviceName)
+              this.assemble(dependant.serviceName)
                 .then(dependantsPending.resolve)
                 .catch(dependantsPending.reject);
             }
@@ -113,7 +113,7 @@ export class ServiceManager {
       previousStatus !== ServiceStatus.raw
     ) {
       // Only trigger the stop cascade for a genuine stop/failure transition.
-      // A raw → dormant transition is initialization, not a stop, so it must
+      // A raw → dormant transition is assembly, not a stop, so it must
       // not kick off pending 'stop' actions on the service's dependencies.
       service
         .getDependencies()
@@ -127,7 +127,7 @@ export class ServiceManager {
             dependencyPending.action === ServiceAction.stop
           ) {
             // A dependency can be stopped only when all its 'start' dependants
-            // are dormant (initialize-only dependants don't block the stop).
+            // are dormant (assemble-only dependants don't block the stop).
             const dependenciesNotPassed = this.getServiceDependants(
               dependency.serviceName,
             )
@@ -157,12 +157,12 @@ export class ServiceManager {
   };
 
   /**
-   * initializes a service and its initialize-typed dependencies
+   * assembles a service and its assemble-typed dependencies
    * @param serviceName
    */
-  initialize = (serviceName: string): Promise<boolean> => {
+  assemble = (serviceName: string): Promise<boolean> => {
     this.logger.debug(
-      `request to initialize [${serviceName}] in service manager`,
+      `request to assemble [${serviceName}] in service manager`,
     );
     const service = this.getService(serviceName);
 
@@ -173,41 +173,39 @@ export class ServiceManager {
         const serviceAction: Action = {
           resolve,
           reject,
-          action: ServiceAction.initialize,
+          action: ServiceAction.assemble,
         };
         this.pendingActions.set(serviceName, serviceAction);
 
-        const allDependenciesPassed = this.initializeDependencies(
+        const allDependenciesPassed = this.assembleDependencies(
           service,
           serviceAction,
         );
 
         if (allDependenciesPassed) {
-          resolve(this.executeServiceAction(service, ServiceAction.initialize));
+          resolve(this.executeServiceAction(service, ServiceAction.assemble));
         }
       });
       this.pendingPromises.set(serviceName, actionPromise);
       return actionPromise;
-    } else if (servicePendingAction.action !== ServiceAction.initialize) {
+    } else if (servicePendingAction.action !== ServiceAction.assemble) {
       // A pending 'start' or 'stop' means the service is already past 'raw'
-      // state, so it has already been initialized.
+      // state, so it has already been assembled.
       this.logger.debug(
-        `service [${serviceName}] is already initialized since it's pending [${servicePendingAction.action}] action`,
+        `service [${serviceName}] is already assembled since it's pending [${servicePendingAction.action}] action`,
       );
       return Promise.resolve(true);
     } else {
-      // Reprocess current pending initialize action.
-      this.logger.debug(
-        `service [${serviceName}] is already pending initialize`,
-      );
+      // Reprocess current pending assemble action.
+      this.logger.debug(`service [${serviceName}] is already pending assemble`);
 
-      const allDependenciesPassed = this.initializeDependencies(
+      const allDependenciesPassed = this.assembleDependencies(
         service,
         servicePendingAction,
       );
 
       if (allDependenciesPassed) {
-        return this.executeServiceAction(service, ServiceAction.initialize);
+        return this.executeServiceAction(service, ServiceAction.assemble);
       } else {
         return servicePendingPromise!;
       }
@@ -226,23 +224,23 @@ export class ServiceManager {
     // A 'raw' service has never been initialized. Initialize it first so that
     // the pending 'start' action is not registered until the service is at
     // least 'dormant'. Registering 'start' while still 'raw' would cause any
-    // subsequent call to `initialize(this service)` (e.g. from a circular
-    // dependency's initializeDependencies) to short-circuit and return true
+    // subsequent call to `assemble(this service)` (e.g. from a circular
+    // dependency's assembleDependencies) to short-circuit and return true
     // prematurely, because it sees the pending 'start' and assumes the service
-    // is already initialized.
+    // is already assembled.
     if (service.getStatus() === ServiceStatus.raw) {
       this.logger.debug(
-        `Service [${serviceName}] is still raw, activating initialize action`,
+        `Service [${serviceName}] is still raw, activating assemble action`,
       );
-      return this.initialize(serviceName).then((initRes) => {
+      return this.assemble(serviceName).then((initRes) => {
         if (!initRes) {
           this.logger.debug(
-            `Service [${serviceName}] failed to initialize before start`,
+            `Service [${serviceName}] failed to assemble before start`,
           );
           return false;
         }
         this.logger.debug(
-          `Service [${serviceName}] is now initialized, activating start action`,
+          `Service [${serviceName}] is now assembled, activating start action`,
         );
         return this.start(serviceName);
       });
@@ -412,8 +410,8 @@ export class ServiceManager {
         const service = this.getService(serviceName);
 
         let allDependenciesPassed: boolean;
-        if (pendingAction.action === ServiceAction.initialize) {
-          allDependenciesPassed = this.initializeDependencies(
+        if (pendingAction.action === ServiceAction.assemble) {
+          allDependenciesPassed = this.assembleDependencies(
             service,
             pendingAction,
           );
@@ -484,21 +482,21 @@ export class ServiceManager {
   };
 
   /**
-   * initializes service initialize-typed dependencies, returns true if all are ready
+   * assembles service assemble-typed dependencies, returns true if all are ready
    * @param service
    * @param action
    * @returns
    */
-  protected initializeDependencies = (
+  protected assembleDependencies = (
     service: AbstractService,
     action: Action,
   ): boolean => {
     const serviceName = service.getName();
-    this.logger.debug(`initializing dependencies of [${serviceName}]`);
+    this.logger.debug(`assembling dependencies of [${serviceName}]`);
     let allDependenciesPassed = true;
     service
       .getDependencies()
-      .filter((dep) => dep.action === ServiceAction.initialize)
+      .filter((dep) => dep.action === ServiceAction.assemble)
       .forEach((dependency) => {
         const serviceDependency = this.getService(dependency.serviceName);
 
@@ -506,7 +504,7 @@ export class ServiceManager {
           !dependency.allowedStatuses.includes(serviceDependency.getStatus())
         ) {
           allDependenciesPassed = false;
-          this.initialize(dependency.serviceName)
+          this.assemble(dependency.serviceName)
             .then((res) => {
               if (res === false) {
                 this.deletePendingAction(serviceName);
@@ -522,7 +520,7 @@ export class ServiceManager {
 
   /**
    * starts service dependencies, returns true if all are ready.
-   * Dispatches to initialize() or start() based on each dependency's action.
+   * Dispatches to assemble() or start() based on each dependency's action.
    * @param service
    * @param action
    * @returns
@@ -540,8 +538,8 @@ export class ServiceManager {
       if (!dependency.allowedStatuses.includes(serviceDependency.getStatus())) {
         allDependenciesPassed = false;
         const depPromise =
-          dependency.action === ServiceAction.initialize
-            ? this.initialize(dependency.serviceName)
+          dependency.action === ServiceAction.assemble
+            ? this.assemble(dependency.serviceName)
             : this.start(dependency.serviceName);
         depPromise
           .then((res) => {
@@ -560,7 +558,7 @@ export class ServiceManager {
   /**
    * stops service start-typed dependants, returns true if all are stopped.
    * Only 'start'-action dependants are stopped – services that merely had an
-   * 'initialize' dependency don't need to stop when their dep goes dormant.
+   * 'assemble' dependency don't need to stop when their dep goes dormant.
    * @param service
    * @param action
    * @returns
@@ -594,7 +592,7 @@ export class ServiceManager {
   };
 
   /**
-   * initializes, starts, or stops a service
+   * assembles, starts, or stops a service
    * @param service
    * @param action
    * @returns
@@ -605,12 +603,12 @@ export class ServiceManager {
   ): Promise<boolean> => {
     const serviceName = service.getName();
 
-    if (action === ServiceAction.initialize) {
-      return service.initService().then((res) => {
+    if (action === ServiceAction.assemble) {
+      return service.assembleService().then((res) => {
         if (res === false) {
-          this.logger.debug(`Service [${serviceName}] failed to initialize`);
+          this.logger.debug(`Service [${serviceName}] failed to assemble`);
         } else {
-          this.logger.debug(`Service [${serviceName}] is initialized`);
+          this.logger.debug(`Service [${serviceName}] is assembled`);
         }
         this.deletePendingAction(serviceName);
         return res;

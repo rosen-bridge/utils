@@ -8,7 +8,7 @@ export enum ServiceStatus {
 export enum ServiceAction {
   start = 'start',
   stop = 'stop',
-  initialize = 'initialize',
+  assemble = 'assemble',
 }
 
 export interface Task {

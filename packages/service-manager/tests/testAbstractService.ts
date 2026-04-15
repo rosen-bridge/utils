@@ -10,7 +10,7 @@ export abstract class TestAbstractService extends AbstractService {
     this.setStatus(status);
   };
 
-  initAfter = (seconds = 1): Promise<boolean> =>
+  assembleAfter = (seconds = 1): Promise<boolean> =>
     new Promise<boolean>((resolve) => {
       setTimeout(() => {
         this.setStatus(ServiceStatus.dormant);

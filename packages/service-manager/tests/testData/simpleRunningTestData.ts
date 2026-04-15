@@ -15,7 +15,7 @@ export class R1A extends TestAbstractService {
     },
   ];
 
-  init = (): Promise<boolean> => this.initAfter();
+  assemble = (): Promise<boolean> => this.assembleAfter();
   start = (): Promise<boolean> => this.startAfter();
   stop = (): Promise<boolean> => this.stopAfter();
 }
@@ -28,7 +28,7 @@ export class R1B extends TestAbstractService {
 
   protected dependencies: Dependency[] = [];
 
-  init = (): Promise<boolean> => this.initAfter();
+  assemble = (): Promise<boolean> => this.assembleAfter();
   start = (): Promise<boolean> =>
     new Promise<boolean>((resolve) => {
       setTimeout(() => {

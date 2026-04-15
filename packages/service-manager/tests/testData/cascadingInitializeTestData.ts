@@ -15,11 +15,11 @@ export class I0A extends TestAbstractService {
         ServiceStatus.started,
         ServiceStatus.dormant,
       ],
-      action: ServiceAction.initialize,
+      action: ServiceAction.assemble,
     },
   ];
 
-  init = (): Promise<boolean> => this.initAfter();
+  assemble = (): Promise<boolean> => this.assembleAfter();
   start = (): Promise<boolean> => this.startAfter();
   stop = (): Promise<boolean> => this.stopAfter();
 }
@@ -32,7 +32,7 @@ export class I0B extends TestAbstractService {
 
   protected dependencies: Dependency[] = [];
 
-  init = (): Promise<boolean> => this.initAfter();
+  assemble = (): Promise<boolean> => this.assembleAfter();
   start = (): Promise<boolean> => this.startAfter();
   stop = (): Promise<boolean> => this.stopAfter();
 }

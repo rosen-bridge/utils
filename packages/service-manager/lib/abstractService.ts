@@ -176,20 +176,20 @@ export abstract class AbstractService {
   protected abstract stop: () => Promise<boolean>;
 
   /**
-   * initializes the service, if service is initializing returns current active promise
-   * @returns true if service initialized successfully, otherwise false
+   * assembles the service, if service is assembling returns current active promise
+   * @returns true if service assembled successfully, otherwise false
    */
-  initService = async (): Promise<boolean> => {
-    this.logger.debug(`request to initialize [${this.getName()}]`);
+  assembleService = async (): Promise<boolean> => {
+    this.logger.debug(`request to assemble [${this.getName()}]`);
     if (this.actionPromise) {
-      if (this.actionPromise.action === ServiceAction.initialize) {
+      if (this.actionPromise.action === ServiceAction.assemble) {
         this.logger.debug(
-          `there is already an active request to initialize service [${this.getName()}]`,
+          `there is already an active request to assemble service [${this.getName()}]`,
         );
         return this.actionPromise.promise;
       } else {
         this.logger.debug(
-          `service [${this.getName()}] is already initialized since it's pending [${this.actionPromise.action}] action`,
+          `service [${this.getName()}] is already assembled since it's pending [${this.actionPromise.action}] action`,
         );
         return true;
       }
@@ -198,26 +198,26 @@ export abstract class AbstractService {
       const currentStatus = this.getStatus();
       if (currentStatus !== ServiceStatus.raw) {
         this.logger.debug(
-          `service [${this.getName()}] is already initialized and in [${currentStatus}] status`,
+          `service [${this.getName()}] is already assembled and in [${currentStatus}] status`,
         );
         release();
         return true;
       }
-      this.logger.debug(`initializing service [${this.getName()}]`);
+      this.logger.debug(`assembling service [${this.getName()}]`);
       this.actionPromise = {
-        action: ServiceAction.initialize,
-        promise: this.init(),
+        action: ServiceAction.assemble,
+        promise: this.assemble(),
       };
       return this.actionPromise.promise
         .then((res) => {
-          this.logger.debug(`service [${this.getName()}] is initialized`);
+          this.logger.debug(`service [${this.getName()}] is assembled`);
           this.actionPromise = undefined;
           release();
           return res;
         })
         .catch((error) => {
           this.logger.warn(
-            `An error occurred while initializing service [${this.name}]: ${error}`,
+            `An error occurred while assembling service [${this.name}]: ${error}`,
           );
           release();
           return false;
@@ -226,8 +226,8 @@ export abstract class AbstractService {
   };
 
   /**
-   * initializes the service
-   * @returns true if service initialized successfully, otherwise false
+   * assembles the service
+   * @returns true if service assembled successfully, otherwise false
    */
-  protected abstract init: () => Promise<boolean>;
+  protected abstract assemble: () => Promise<boolean>;
 }

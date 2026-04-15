@@ -455,14 +455,14 @@ describe('ServiceManager', () => {
   }, 2000);
 
   /**
-   * @target ServiceManager: Cascading Initialize Scenario
-   * I0A has an initialize-typed dependency on I0B; both start in raw status
-   * calling initialize on I0A should first initialize I0B, then I0A
+   * @target ServiceManager: Cascading Assemble Scenario
+   * I0A has an assemble-typed dependency on I0B; both start in raw status
+   * calling assemble on I0A should first assemble I0B, then I0A
    * @dependencies
    * @scenario
    * - generate test service manager
    * - generate 2 test services (I0A, I0B) both starting in raw status
-   * - call initialize on I0A
+   * - call assemble on I0A
    * - wait 0.5 seconds
    * - check returned value
    * - check status of both services
@@ -470,7 +470,7 @@ describe('ServiceManager', () => {
    * - returned value should be true
    * - both I0A and I0B should be in dormant status
    */
-  it('Cascading Initialize Scenario', async () => {
+  it('Cascading Assemble Scenario', async () => {
     const serviceManager = ServiceManager.setup();
 
     const a = new I0A();
@@ -479,7 +479,7 @@ describe('ServiceManager', () => {
 
     services.forEach((service) => serviceManager.register(service));
 
-    const initPromise = serviceManager.initialize(a.getName());
+    const initPromise = serviceManager.assemble(a.getName());
     await sleep(2.5);
     const res = await initPromise;
     expect(res).toEqual(true);
@@ -492,9 +492,9 @@ describe('ServiceManager', () => {
   }, 3500);
 
   /**
-   * @target ServiceManager: Initialize on Start Scenario
-   * I0A and I0B both start in raw status; I0A has an initialize-typed dependency on I0B
-   * calling start on I0A should: initialize I0B (init dep), then auto-initialize I0A
+   * @target ServiceManager: Assemble on Start Scenario
+   * I0A and I0B both start in raw status; I0A has an assemble-typed dependency on I0B
+   * calling start on I0A should: assemble I0B (assemble dep), then auto-assemble I0A
    * (because it is raw), and finally start I0A
    * I0B must only reach dormant – it must NOT be started
    * @dependencies
@@ -508,9 +508,9 @@ describe('ServiceManager', () => {
    * @expected
    * - returned value should be true
    * - I0A should be in running status
-   * - I0B should be in dormant status (initialized but not started)
+   * - I0B should be in dormant status (assembled but not started)
    */
-  it('Initialize on Start Scenario', async () => {
+  it('Assemble on Start Scenario', async () => {
     const serviceManager = ServiceManager.setup();
 
     const a = new I0A();
@@ -531,9 +531,9 @@ describe('ServiceManager', () => {
   }, 3500);
 
   /**
-   * @target ServiceManager: Stop Propagation Relation with Initialize Scenario
-   * I1A is running and has an initialize-typed dependency on I1B which is running
-   * stopping I1B must not stop I1A since I1A only needed I1B to be initialized
+   * @target ServiceManager: Stop Propagation Relation with Assemble Scenario
+   * I1A is running and has an assemble-typed dependency on I1B which is running
+   * stopping I1B must not stop I1A since I1A only needed I1B to be assembled
    * @dependencies
    * @scenario
    * - generate test service manager
@@ -547,7 +547,7 @@ describe('ServiceManager', () => {
    * - I1B should be in dormant status
    * - I1A should remain in running status (not stopped)
    */
-  it('Stop Propagation Relation with Initialize Scenario', async () => {
+  it('Stop Propagation Relation with Assemble Scenario', async () => {
     const serviceManager = ServiceManager.setup();
 
     const a = new I1A();
@@ -570,8 +570,8 @@ describe('ServiceManager', () => {
   /**
    * @target ServiceManager: Valid Circular Scenario
    * X5A, X5B and X5C all start in raw status; X5A has a start-typed dependency on X5B
-   * while X5B has initialize-typed dependency on X5A and X5C
-   * calling start on X5A should: first initialize X5A, then initialize X5C, then initialize
+   * while X5B has assemble-typed dependency on X5A and X5C
+   * calling start on X5A should: first assemble X5A, then assemble X5C, then assemble
    * X5B, then start X5B (wait to become running), and finally start X5A
    * @dependencies
    * @scenario

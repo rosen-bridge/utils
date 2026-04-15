@@ -15,7 +15,7 @@ export class X5A extends TestAbstractService {
     },
   ];
 
-  init = (): Promise<boolean> => this.initAfter();
+  assemble = (): Promise<boolean> => this.assembleAfter();
   start = (): Promise<boolean> => this.startAfter();
   stop = (): Promise<boolean> => this.stopAfter();
 }
@@ -34,7 +34,7 @@ export class X5B extends TestAbstractService {
         ServiceStatus.started,
         ServiceStatus.dormant,
       ],
-      action: ServiceAction.initialize,
+      action: ServiceAction.assemble,
     },
     {
       serviceName: 'X5C',
@@ -43,11 +43,11 @@ export class X5B extends TestAbstractService {
         ServiceStatus.started,
         ServiceStatus.dormant,
       ],
-      action: ServiceAction.initialize,
+      action: ServiceAction.assemble,
     },
   ];
 
-  init = (): Promise<boolean> => this.initAfter();
+  assemble = (): Promise<boolean> => this.assembleAfter();
   start = (): Promise<boolean> =>
     new Promise<boolean>((resolve) => {
       setTimeout(() => {
@@ -70,7 +70,7 @@ export class X5C extends TestAbstractService {
 
   protected dependencies: Dependency[] = [];
 
-  init = (): Promise<boolean> => this.initAfter();
+  assemble = (): Promise<boolean> => this.assembleAfter();
   start = (): Promise<boolean> => this.startAfter();
   stop = (): Promise<boolean> => this.stopAfter();
 }

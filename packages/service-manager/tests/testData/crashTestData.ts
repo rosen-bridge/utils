@@ -15,7 +15,7 @@ export class X1A extends TestAbstractService {
     },
   ];
 
-  init = (): Promise<boolean> => this.initAfter();
+  assemble = (): Promise<boolean> => this.assembleAfter();
   start = (): Promise<boolean> => this.startAfter();
   stop = (): Promise<boolean> => this.stopAfter();
 }
@@ -34,7 +34,7 @@ export class X1B extends TestAbstractService {
     },
   ];
 
-  init = (): Promise<boolean> => this.initAfter();
+  assemble = (): Promise<boolean> => this.assembleAfter();
   start = (): Promise<boolean> => this.startAfter();
   stop = async (): Promise<boolean> => this.stopAfter(1);
 }
@@ -47,7 +47,7 @@ export class X1M extends TestAbstractService {
 
   protected dependencies: Dependency[] = [];
 
-  init = (): Promise<boolean> => this.initAfter();
+  assemble = (): Promise<boolean> => this.assembleAfter();
 
   start = (): Promise<boolean> =>
     new Promise((resolve) => {
