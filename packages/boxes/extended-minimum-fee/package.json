@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/extended-minimum-fee",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "this project gets minimum fee of the bridge for supported tokens from blockchain",
   "keywords": [
     "rosen"
@@ -36,7 +36,7 @@
   "dependencies": {
     "@rosen-bridge/abstract-logger": "^4.0.0",
     "@rosen-bridge/json-bigint": "^1.1.0",
-    "@rosen-bridge/minimum-fee": "^4.0.0",
+    "@rosen-bridge/minimum-fee": "^4.0.1",
     "ergo-lib-wasm-nodejs": "^0.24.1"
   },
   "engines": {
