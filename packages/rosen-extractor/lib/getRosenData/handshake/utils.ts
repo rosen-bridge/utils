@@ -1,5 +1,9 @@
 import { HANDSHAKE_NETWORK, MIN_UTXO_VALUE } from './constants';
-import { DataExtractionOutput } from './types';
+import {
+  DataExtractionOutput,
+  HandshakeRpcTxOutput,
+  HandshakeTxOutput,
+} from './types';
 import * as bitcoinLib from 'bitcoinjs-lib';
 
 /**
@@ -15,6 +19,21 @@ export const addressToHash = (addr: string): string => {
   // Output script format for witness v0: OP_0 <length> <hash>
   // We want just the hash part (skip first 2 bytes: OP_0 and length)
   return outputScript.subarray(2).toString('hex');
+};
+
+/**
+ * Checks if a Handshake output uses the NONE covenant
+ * @param output The output to validate
+ * @returns true when covenant type is 0
+ */
+export const hasNoneCovenant = (
+  output: HandshakeTxOutput | HandshakeRpcTxOutput,
+): boolean => {
+  const covenantType = output.covenant.type as number | bigint;
+  return (
+    (typeof covenantType === 'bigint' ? Number(covenantType) : covenantType) ===
+    0
+  );
 };
 
 /**
