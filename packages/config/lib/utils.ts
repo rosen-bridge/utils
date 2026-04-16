@@ -10,8 +10,10 @@ import path from 'path';
  * @return {{ defined: boolean; value: any }}
  */
 export const getValue = (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   obj: any,
   path: string[],
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): { defined: boolean; value: any } => {
   let value = obj;
   for (const key of path) {
@@ -65,4 +67,17 @@ export const getValueFromConfigSources = (
     }
   }
   return null;
+};
+
+/**
+ * Converts a kebab-case or lowercase string to PascalCase (e.g. 'bitcoin-runes' -> 'BitcoinRunes').
+ * Used when generating TypeScript type names from schema path keys.
+ */
+export const toPascalCase = (segment: string): string => {
+  return segment
+    .split('-')
+    .map((part) =>
+      part.length > 0 ? part[0].toUpperCase() + part.slice(1) : '',
+    )
+    .join('');
 };

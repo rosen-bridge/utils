@@ -1,6 +1,7 @@
-import { SqliteDriver } from 'typeorm/driver/sqlite/SqliteDriver';
 import { Mutex } from 'async-mutex';
 import { DataSource, QueryRunner, ReplicationMode } from 'typeorm';
+import { SqliteDriver } from 'typeorm/driver/sqlite/SqliteDriver';
+
 import { CustomQueryRunner } from './customQueryRunner';
 
 class CustomSqliteDriver extends SqliteDriver {

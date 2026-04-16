@@ -1,15 +1,17 @@
-import { RosenData } from '../abstract/types';
-import AbstractRosenDataExtractor from '../abstract/abstractRosenDataExtractor';
-import { BITCOIN_RUNES_CHAIN } from '../const';
-import { BitcoinRpcTransaction, BitcoinRpcTxOutput } from '../bitcoin/types';
-import { TokenMap } from '@rosen-bridge/tokens';
-import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import { address } from 'bitcoinjs-lib';
-import { parseAggregatedData } from './utils';
+
+import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import JsonBigInt from '@rosen-bridge/json-bigint';
-import { LockDataChunk } from './types';
+import { TokenMap } from '@rosen-bridge/tokens';
+
 import { MinimalOnChainRosenData } from '../../types';
+import AbstractRosenDataExtractor from '../abstract/abstractRosenDataExtractor';
+import { RosenData } from '../abstract/types';
+import { BitcoinRpcTransaction, BitcoinRpcTxOutput } from '../bitcoin/types';
+import { BITCOIN_RUNES_CHAIN } from '../const';
 import { minUtxoValue } from './constants';
+import { LockDataChunk } from './types';
+import { parseAggregatedData } from './utils';
 
 export class BitcoinRunesRpcRosenExtractor extends AbstractRosenDataExtractor<BitcoinRpcTransaction> {
   readonly chain = BITCOIN_RUNES_CHAIN;

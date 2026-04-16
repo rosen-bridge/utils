@@ -1,7 +1,9 @@
 import * as ergoLib from 'ergo-lib-wasm-nodejs';
+
+import JsonBigInt from '@rosen-bridge/json-bigint';
+
 import { CollateralBox, CollateralBoxBuilder } from '../lib';
 import { collateralBoxInfo } from './collateralBoxTestData';
-import JsonBigInt from '@rosen-bridge/json-bigint';
 
 describe('CollateralBox', () => {
   let collateralBox: CollateralBox;

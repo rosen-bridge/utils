@@ -1,7 +1,8 @@
 import * as ergoLib from 'ergo-lib-wasm-nodejs';
-import * as testData from './permitTestData';
+
 import { createPermit } from '../lib';
 import { hexToUint8Array } from '../lib/utils';
+import * as testData from './permitTestData';
 
 describe('createPermit', () => {
   /**

@@ -1,5 +1,22 @@
 # @rosen-bridge/config
 
+## 2.0.0
+
+### Major Changes
+
+- Add `fromSchemaFile` method for loading and parsing a `schema.json` file from a specified path.
+- Add `buildConfigs` method to load configs, validate them, and return final config object.
+
+### Patch Changes
+
+- Add ValueType to enforce type safety and avoid any
+
+## 1.2.0
+
+### Minor Changes
+
+- Support kebab-case keys in schema
+
 ## 1.1.0
 
 ### Minor Changes

@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import { FilterParser, FILTER_CONFIG_DEFAULT, FilterField } from '../lib';
 
 describe('FilterParser', () => {

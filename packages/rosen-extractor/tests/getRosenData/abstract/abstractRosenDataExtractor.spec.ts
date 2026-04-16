@@ -1,14 +1,9 @@
-import TestUtils from '../testUtils';
-import * as addressCodec from '@rosen-bridge/address-codec';
-import { TestRosenDataExtractor } from './testRosenDataExtractor';
+import { AddressManager } from '@rosen-bridge/address-manager';
 import { TokenMap } from '@rosen-bridge/tokens';
 
-vi.mock('@rosen-bridge/address-codec', async () => {
-  const actual = await vi.importActual('@rosen-bridge/address-codec');
-  return {
-    ...actual,
-  };
-});
+import TestUtils from '../testUtils';
+import { TestRosenDataExtractor } from './testRosenDataExtractor';
+
 describe('AbstractRosenDataExtractor', () => {
   const tokenMap = new TokenMap();
 
@@ -21,6 +16,7 @@ describe('AbstractRosenDataExtractor', () => {
      * @target `AbstractRosenDataExtractor.get` should wrap amount successfully
      * @dependencies
      * @scenario
+     * - initialize RosenExtractor with Ergo chain
      * - run test
      * - check returned value
      * @expected
@@ -38,16 +34,14 @@ describe('AbstractRosenDataExtractor', () => {
    * @target `AbstractRosenDataExtractor.get` should wrap amount successfully
    * @dependencies
    * @scenario
-   * - mock `validateAddress` to throw error
+   * - initialize AddressManager with no validator
    * - run test
    * - check returned value
    * @expected
    * - to return undefined
    */
   it('should return undefined when validateAddress throws error', () => {
-    vi.spyOn(addressCodec, 'validateAddress').mockImplementation(() => {
-      throw addressCodec.UnsupportedAddressError;
-    });
+    AddressManager.init({}, {});
     const extractor = new TestRosenDataExtractor('', tokenMap);
     const result = extractor.get('');
 

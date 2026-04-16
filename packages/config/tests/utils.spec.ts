@@ -1,5 +1,6 @@
 import { IConfigSource } from 'config';
 import path from 'path';
+
 import {
   getSourceName,
   getValue,

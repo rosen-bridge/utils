@@ -1,4 +1,5 @@
 import { ErgoBox } from 'ergo-lib-wasm-nodejs';
+
 import { CorruptedConfigBoxError, parseTokenMapBoxes } from '../lib';
 import {
   configBoxes,

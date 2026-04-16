@@ -26,14 +26,11 @@
     "test": "NODE_OPTIONS='--import tsx' vitest",
     "type-check": "tsc --noEmit"
   },
-  "devDependencies": {
-    "@types/json-bigint": "^1.0.2",
-    "@vitest/coverage-istanbul": "^3.1.4",
-    "tsx": "^4.20.5",
-    "vitest": "^3.1.4"
-  },
   "dependencies": {
     "json-bigint": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/json-bigint": "^1.0.2"
   },
   "engines": {
     "node": ">=22.18.0",

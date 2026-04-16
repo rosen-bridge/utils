@@ -1,8 +1,9 @@
-import { CardanoBlockFrostRosenExtractor } from '../../../lib';
-import * as testData from './blockFrostTestData';
-import TestUtils from '../testUtils';
-import { ERGO_CHAIN } from '../../../lib/getRosenData/const';
 import { TokenMap } from '@rosen-bridge/tokens';
+
+import { CardanoBlockFrostRosenExtractor } from '../../../lib';
+import { ERGO_CHAIN } from '../../../lib/getRosenData/const';
+import TestUtils from '../testUtils';
+import * as testData from './blockFrostTestData';
 
 describe('BlockFrostRosenExtractor', () => {
   const tokenMap = new TokenMap();

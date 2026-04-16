@@ -30,6 +30,7 @@ Here's a basic example of how to use this package:
 
 ```typescript
 import * as wasm from 'ergo-lib-wasm-nodejs';
+
 import { parseTokenMapBoxes } from '@rosen-bridge/extended-tokens';
 import JsonBigInt from '@rosen-bridge/json-bigint';
 import ergoNodeClientFactory from '@rosen-clients/ergo-node';

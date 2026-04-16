@@ -4,7 +4,7 @@
     "rootDir": ".",
     "types": ["node", "vitest/globals"]
   },
-  "include": ["lib"],
+  "include": ["lib", "tests"],
   "references": [
     { "path": "../../loggers/abstract-logger" },
     { "path": "../../json-bigint" }

@@ -1,13 +1,12 @@
 import download from 'download';
 
+import { RosenAssetsDownloadError } from './error';
 import {
   findLatestReleaseByPrefixTag,
   findLatestStableReleaseByPrefixTag,
   getReleaseByTag,
 } from './utils/github';
 import { isValidOS } from './utils/rosen';
-
-import { RosenAssetsDownloadError } from './error';
 
 const repo = 'sign-protocols';
 

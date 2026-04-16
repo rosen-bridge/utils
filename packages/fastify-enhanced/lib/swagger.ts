@@ -1,20 +1,20 @@
 import swagger from '@fastify/swagger';
 import swaggerUi from '@fastify/swagger-ui';
 import {
+  FastifyPluginAsyncZodOpenApi,
   fastifyZodOpenApiTransform,
   fastifyZodOpenApiTransformObject,
 } from 'fastify-zod-openapi';
 import { ZodOpenApiVersion } from 'zod-openapi';
 
-import { FastifyWithZod, SwaggerOpts } from './types';
+import { SwaggerOpts } from './types';
 
 /**
  * adds swagger to the fastify instance
  */
-export const registerSwagger = async (
-  fastify: FastifyWithZod,
-  opts: SwaggerOpts,
-) => {
+export const registerSwagger: FastifyPluginAsyncZodOpenApi<
+  SwaggerOpts
+> = async (fastify, opts) => {
   await fastify.register(swagger, {
     openapi: {
       openapi: '3.1.0' as ZodOpenApiVersion,
@@ -35,17 +35,17 @@ export const registerSwagger = async (
       deepLinking: false,
     },
     uiHooks: {
-      onRequest: (request: any, reply: any, next: () => void) => {
+      onRequest: (request, reply, next: () => void) => {
         next();
       },
-      preHandler: (request: any, reply: any, next: () => void) => {
+      preHandler: (request, reply, next: () => void) => {
         next();
       },
     },
     staticCSP: true,
-    transformStaticCSP: (header: any) => header,
+    transformStaticCSP: (header) => header,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    transformSpecification: (swaggerObject: any, request: any, reply: any) => {
+    transformSpecification: (swaggerObject, request, reply) => {
       return swaggerObject;
     },
     transformSpecificationClone: true,

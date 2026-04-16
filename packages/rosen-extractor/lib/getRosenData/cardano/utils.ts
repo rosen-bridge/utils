@@ -5,6 +5,7 @@ import { isArray, isString, isPlainObject } from 'lodash-es';
  * @param data
  * @returns Rosen data or undefined if metadata is invalid
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const parseRosenData = (data: any) => {
   if (
     data &&

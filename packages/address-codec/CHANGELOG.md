@@ -1,5 +1,34 @@
 # @rosen-bridge/address-codec
 
+## 2.0.0
+
+### Major Changes
+
+- The `validateAddress` no longer return anything (in case of invalid or unsupported address, it throws error)
+- Change `RUNES_CHAIN` variable name to `BITCOIN_RUNES_CHAIN`
+
+### Minor Changes
+
+- Export 3 objects consists of the chain-specific implementation for the address encoder, decoder and validator
+
+### Patch Changes
+
+- Add dependencies
+  - @rosen-bridge/address-codec-bitcoin@0.1.0
+  - @rosen-bridge/address-codec-bitcoin-runes@0.1.0
+  - @rosen-bridge/address-codec-cardano@0.1.0
+  - @rosen-bridge/address-codec-doge@0.1.0
+  - @rosen-bridge/address-codec-ergo@0.1.0
+  - @rosen-bridge/address-codec-evm@0.1.0
+  - @rosen-bridge/address-codec-firo@0.1.0
+  - @rosen-bridge/address-codec-handshake@0.1.0
+
+## 1.2.0
+
+### Minor Changes
+
+- Add support for Handshake chain
+
 ## 1.1.1
 
 ### Patch Changes

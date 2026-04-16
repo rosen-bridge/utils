@@ -1,9 +1,10 @@
-import { HandshakeRpcRosenExtractor } from '../../../lib';
-import * as testData from './rpcTestData';
-import TestUtils from '../testUtils';
-import { ERGO_CHAIN, CARDANO_CHAIN } from '../../../lib/getRosenData/const';
 import { TokenMap } from '@rosen-bridge/tokens';
+
+import { HandshakeRpcRosenExtractor } from '../../../lib';
+import { ERGO_CHAIN, CARDANO_CHAIN } from '../../../lib/getRosenData/const';
 import { HandshakeRpcTransaction } from '../../../lib/getRosenData/handshake/types';
+import TestUtils from '../testUtils';
+import * as testData from './rpcTestData';
 
 describe('HandshakeRpcRosenExtractor', () => {
   const tokenMap = new TokenMap();
@@ -77,7 +78,7 @@ describe('HandshakeRpcRosenExtractor', () => {
         testData.lockAddress,
         tokenMap,
       );
-      const result = extractor.get(invalidTx);
+      const result = extractor.get(invalidTx as any);
 
       expect(result).toBeUndefined();
     });
@@ -100,7 +101,7 @@ describe('HandshakeRpcRosenExtractor', () => {
         testData.lockAddress,
         tokenMap,
       );
-      const result = extractor.get(invalidTx);
+      const result = extractor.get(invalidTx as any);
 
       expect(result).toBeUndefined();
     });
@@ -123,7 +124,7 @@ describe('HandshakeRpcRosenExtractor', () => {
         testData.lockAddress,
         tokenMap,
       );
-      const result = extractor.get(invalidTx);
+      const result = extractor.get(invalidTx as any);
 
       expect(result).toBeUndefined();
     });
@@ -146,7 +147,7 @@ describe('HandshakeRpcRosenExtractor', () => {
         testData.lockAddress,
         tokenMap,
       );
-      const result = extractor.get(invalidTx);
+      const result = extractor.get(invalidTx as any);
 
       expect(result).toBeUndefined();
     });

@@ -1,13 +1,12 @@
 import download from 'download';
 
+import { RosenAssetsDownloadError } from './error';
 import {
   findLatestRelease,
   findLatestStableRelease,
   getReleaseByTag,
 } from './utils/github';
 import { isValidAssetName, truncateAssetName } from './utils/rosen';
-
-import { RosenAssetsDownloadError } from './error';
 
 const repo = 'contract';
 

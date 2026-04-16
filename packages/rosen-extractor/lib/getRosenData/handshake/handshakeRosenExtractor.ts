@@ -1,16 +1,17 @@
-import { RosenData, TokenTransformation } from '../abstract/types';
+import { AbstractLogger } from '@rosen-bridge/abstract-logger';
+import JsonBigInt from '@rosen-bridge/json-bigint';
+import { TokenMap } from '@rosen-bridge/tokens';
+
+import { parseRosenData } from '../../utils';
 import AbstractRosenDataExtractor from '../abstract/abstractRosenDataExtractor';
+import { RosenData, TokenTransformation } from '../abstract/types';
 import { HANDSHAKE_CHAIN, HANDSHAKE_NATIVE_TOKEN } from '../const';
 import { HandshakeTx, HandshakeTxOutput, HandshakeRosenData } from './types';
-import { TokenMap } from '@rosen-bridge/tokens';
-import { AbstractLogger } from '@rosen-bridge/abstract-logger';
 import {
   addressToHash,
   extractDataFromOutputs,
   hasNoneCovenant,
 } from './utils';
-import { parseRosenData } from '../../utils';
-import JsonBigInt from '@rosen-bridge/json-bigint';
 
 export class HandshakeRosenExtractor extends AbstractRosenDataExtractor<string> {
   readonly chain = HANDSHAKE_CHAIN;

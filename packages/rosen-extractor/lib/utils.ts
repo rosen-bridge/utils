@@ -1,4 +1,5 @@
-import { decodeAddress } from '@rosen-bridge/address-codec';
+import { AddressManager } from '@rosen-bridge/address-manager';
+
 import { SUPPORTED_CHAINS } from './getRosenData/const';
 import { MinimalOnChainRosenData } from './types';
 
@@ -32,7 +33,10 @@ export const parseRosenData = (
     36,
     36 + parseInt(addressLengthCode, 16) * 2,
   );
-  const toAddress = decodeAddress(toChain, addressHex);
+  const toAddress = AddressManager.getInstance().decodeAddress(
+    toChain,
+    addressHex,
+  );
 
   return {
     toChain,

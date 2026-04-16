@@ -1,7 +1,9 @@
-import { configDir } from './configEnvSetup';
+import { configDir } from './bootstrap';
+
 import config from 'config';
 import fs from 'fs';
 import path from 'path';
+
 import { ConfigValidator } from '../lib';
 import { ConfigSchema } from '../lib/schema/types/fields';
 import * as testData from './configTestData';
@@ -21,6 +23,9 @@ beforeEach(() => {
 
 describe('ConfigValidator', () => {
   describe('generateDefault', () => {
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
     /**
      * @target generateDefault should return default values object for the
      * passed schema
@@ -32,9 +37,10 @@ describe('ConfigValidator', () => {
      * - correct default value object should have been returned
      */
     it(`should return default values object for the passed schema`, async () => {
-      const config = new ConfigValidator(
+      const config = ConfigValidator.fromSchema(
         <ConfigSchema>testData.apiSchemaDefaultValuePairSample.schema,
       );
+
       expect(config.generateDefault()).toEqual(
         testData.apiSchemaDefaultValuePairSample.defaultVal,
       );
@@ -51,12 +57,12 @@ describe('ConfigValidator', () => {
      * - generateDefault with validate should throw
      */
     it(`should fail validate=true when defaults violate choices (primitive and nested)`, async () => {
-      const cv1 = new ConfigValidator(
+      const cv1 = ConfigValidator.fromSchema(
         <ConfigSchema>testData.wrongChoiceDefaultSchema.schema,
       );
       expect(() => cv1.generateDefault({ validate: true })).toThrow();
 
-      const cv2 = new ConfigValidator(
+      const cv2 = ConfigValidator.fromSchema(
         <ConfigSchema>testData.nestedWrongChoiceDefaultSchema.schema,
       );
       expect(() => cv2.generateDefault({ validate: true })).toThrow();
@@ -73,7 +79,7 @@ describe('ConfigValidator', () => {
      * - correct default value object should have been returned including arrays
      */
     it(`should return default values for array fields with string and number items`, async () => {
-      const config = new ConfigValidator(
+      const config = ConfigValidator.fromSchema(
         <ConfigSchema>testData.arraySchemaDefaultValuePairSample.schema,
       );
       expect(config.generateDefault()).toEqual(
@@ -91,7 +97,7 @@ describe('ConfigValidator', () => {
      * - empty array should be included in default values
      */
     it(`should handle empty array defaults`, async () => {
-      const config = new ConfigValidator(
+      const config = ConfigValidator.fromSchema(
         <ConfigSchema>testData.emptyArrayDefaultsPair.schema,
       );
       const result = config.generateDefault();
@@ -108,7 +114,7 @@ describe('ConfigValidator', () => {
      * - array field without default should be excluded from result
      */
     it(`should exclude arrays without default values`, async () => {
-      const config = new ConfigValidator(
+      const config = ConfigValidator.fromSchema(
         <ConfigSchema>testData.arrayWithoutDefaultPair.schema,
       );
       const result = config.generateDefault();
@@ -127,7 +133,7 @@ describe('ConfigValidator', () => {
      * - each element is merged with object item defaults
      */
     it(`should merge array of object item defaults with provided elements`, async () => {
-      const config = new ConfigValidator(
+      const config = ConfigValidator.fromSchema(
         <ConfigSchema>testData.logsArraySchemaDefaultsPair.schema,
       );
       const result = config.generateDefault();
@@ -147,7 +153,7 @@ describe('ConfigValidator', () => {
      * - validateConfig should throw due to schema violations in defaults
      */
     it(`should not validate array item defaults; validateConfig should catch it`, async () => {
-      const confValidator = new ConfigValidator(
+      const confValidator = ConfigValidator.fromSchema(
         <ConfigSchema>testData.invalidLogsArrayDefaultsPair.schema,
       );
       const generated = confValidator.generateDefault();
@@ -167,7 +173,7 @@ describe('ConfigValidator', () => {
      * - generation should throw due to validation
      */
     it(`should throw when generateDefault is called with validate option and defaults are invalid`, async () => {
-      const confValidator = new ConfigValidator(
+      const confValidator = ConfigValidator.fromSchema(
         <ConfigSchema>testData.invalidDefaultsValidateOptionSchema.schema,
       );
       expect(() => confValidator.generateDefault({ validate: true })).toThrow();
@@ -186,11 +192,10 @@ describe('ConfigValidator', () => {
      * - validateConfig does not throw
      */
     it(`should reject schema defaults with unknown keys at schema validation time`, async () => {
-      expect(
-        () =>
-          new ConfigValidator(
-            <ConfigSchema>testData.unknownKeyLogsArrayDefaultsPair.schema,
-          ),
+      expect(() =>
+        ConfigValidator.fromSchema(
+          <ConfigSchema>testData.unknownKeyLogsArrayDefaultsPair.schema,
+        ),
       ).toThrow('key is not found in the schema');
     });
 
@@ -207,7 +212,7 @@ describe('ConfigValidator', () => {
      * - nested array provided in defaults is preserved
      */
     it(`should handle nested array field inside array item objects`, async () => {
-      const confValidator = new ConfigValidator(
+      const confValidator = ConfigValidator.fromSchema(
         <ConfigSchema>testData.nestedArrayInArrayDefaultsPair.schema,
       );
       const result = confValidator.generateDefault();
@@ -228,7 +233,7 @@ describe('ConfigValidator', () => {
      * - validation throws
      */
     it(`should omit required fields without defaults and fail validation`, async () => {
-      const confValidator = new ConfigValidator(
+      const confValidator = ConfigValidator.fromSchema(
         <ConfigSchema>testData.requiredWithoutDefaultSchema.schema,
       );
       const defaults = confValidator.generateDefault();
@@ -251,7 +256,7 @@ describe('ConfigValidator', () => {
      */
     it(`should not throw any exceptions when a correct schema is passed`, async () => {
       expect(() => {
-        new ConfigValidator(<ConfigSchema>testData.correctApiSchema);
+        ConfigValidator.fromSchema(<ConfigSchema>testData.correctApiSchema);
       }).not.toThrow();
     });
 
@@ -267,13 +272,10 @@ describe('ConfigValidator', () => {
      */
     it(`should throw exception when a schema with incorrect default value type
     is passed`, async () => {
-      expect(
-        () =>
-          new ConfigValidator(
-            <ConfigSchema>(
-              testData.schemaWithIncorrectPortDefaultValueTypeSample
-            ),
-          ),
+      expect(() =>
+        ConfigValidator.fromSchema(
+          <ConfigSchema>testData.schemaWithIncorrectPortDefaultValueTypeSample,
+        ),
       ).toThrow();
     });
 
@@ -288,11 +290,10 @@ describe('ConfigValidator', () => {
      * - exception should be thrown
      */
     it(`should throw exception when array type doesn't have an item property`, async () => {
-      expect(
-        () =>
-          new ConfigValidator(
-            <ConfigSchema>testData.arrayTypeSchemaWithoutItems,
-          ),
+      expect(() =>
+        ConfigValidator.fromSchema(
+          <ConfigSchema>testData.arrayTypeSchemaWithoutItems,
+        ),
       ).toThrow();
     });
 
@@ -307,11 +308,10 @@ describe('ConfigValidator', () => {
      * - exception should be thrown
      */
     it(`should throw exception when object type doesn't have a children property`, async () => {
-      expect(
-        () =>
-          new ConfigValidator(
-            <ConfigSchema>testData.objectTypeSchemaWithoutChildren,
-          ),
+      expect(() =>
+        ConfigValidator.fromSchema(
+          <ConfigSchema>testData.objectTypeSchemaWithoutChildren,
+        ),
       ).toThrow();
     });
 
@@ -325,7 +325,7 @@ describe('ConfigValidator', () => {
      */
     it(`should pass when array primitive defaults match items type`, async () => {
       expect(() => {
-        new ConfigValidator(
+        ConfigValidator.fromSchema(
           <ConfigSchema>testData.arrayPrimitiveDefaultsValid.schema,
         );
       }).not.toThrow();
@@ -340,11 +340,10 @@ describe('ConfigValidator', () => {
      * - error thrown
      */
     it(`should fail when array primitive defaults mismatch items type`, async () => {
-      expect(
-        () =>
-          new ConfigValidator(
-            <ConfigSchema>testData.arrayPrimitiveDefaultsInvalid.schema,
-          ),
+      expect(() =>
+        ConfigValidator.fromSchema(
+          <ConfigSchema>testData.arrayPrimitiveDefaultsInvalid.schema,
+        ),
       ).toThrow();
     });
 
@@ -357,11 +356,10 @@ describe('ConfigValidator', () => {
      * - error thrown
      */
     it(`should fail when array object defaults have invalid child types`, async () => {
-      expect(
-        () =>
-          new ConfigValidator(
-            <ConfigSchema>testData.arrayObjectDefaultsInvalidChildType.schema,
-          ),
+      expect(() =>
+        ConfigValidator.fromSchema(
+          <ConfigSchema>testData.arrayObjectDefaultsInvalidChildType.schema,
+        ),
       ).toThrow();
     });
 
@@ -374,11 +372,10 @@ describe('ConfigValidator', () => {
      * - error thrown
      */
     it(`should fail when nested array defaults have invalid element types`, async () => {
-      expect(
-        () =>
-          new ConfigValidator(
-            <ConfigSchema>testData.nestedArrayDefaultsInvalid.schema,
-          ),
+      expect(() =>
+        ConfigValidator.fromSchema(
+          <ConfigSchema>testData.nestedArrayDefaultsInvalid.schema,
+        ),
       ).toThrow();
     });
 
@@ -392,7 +389,7 @@ describe('ConfigValidator', () => {
      */
     it(`should pass when nested array defaults are valid`, async () => {
       expect(() => {
-        new ConfigValidator(
+        ConfigValidator.fromSchema(
           <ConfigSchema>testData.nestedArrayDefaultsValid.schema,
         );
       }).not.toThrow();
@@ -409,7 +406,7 @@ describe('ConfigValidator', () => {
      * - defaults merged as expected
      */
     it(`should pass for nested array of objects defaults`, async () => {
-      const cv = new ConfigValidator(
+      const cv = ConfigValidator.fromSchema(
         <ConfigSchema>testData.nestedArrayOfObjectsDefaultsValid.schema,
       );
       const defaults = cv.generateDefault();
@@ -427,11 +424,10 @@ describe('ConfigValidator', () => {
      * - constructor throws
      */
     it(`should fail for nested array of objects defaults with invalid inner elements`, async () => {
-      expect(
-        () =>
-          new ConfigValidator(
-            <ConfigSchema>testData.nestedArrayOfObjectsDefaultsInvalid.schema,
-          ),
+      expect(() =>
+        ConfigValidator.fromSchema(
+          <ConfigSchema>testData.nestedArrayOfObjectsDefaultsInvalid.schema,
+        ),
       ).toThrow();
     });
   });
@@ -448,7 +444,7 @@ describe('ConfigValidator', () => {
      * - no errors should be thrown
      */
     it(`should not throw any exceptions when a correct config is passed`, async () => {
-      const confValidator = new ConfigValidator(
+      const confValidator = ConfigValidator.fromSchema(
         <ConfigSchema>testData.apiSchemaConfigPair.schema,
       );
       expect(() =>
@@ -468,7 +464,7 @@ describe('ConfigValidator', () => {
      */
     it(`should throw exception when a config violating choices constraint is
     passed`, async () => {
-      const confValidator = new ConfigValidator(
+      const confValidator = ConfigValidator.fromSchema(
         <ConfigSchema>testData.apiSchemaConfigPairWrongChoice.schema,
       );
 
@@ -491,7 +487,7 @@ describe('ConfigValidator', () => {
      */
     it(`should throw exception when a config violating regex constraint is
     passed`, async () => {
-      const confValidator = new ConfigValidator(
+      const confValidator = ConfigValidator.fromSchema(
         <ConfigSchema>testData.apiSchemaConfigPairWrongRegex.schema,
       );
 
@@ -514,7 +510,7 @@ describe('ConfigValidator', () => {
      */
     it(`should throw exception when a config violating the "required" constraint
     is passed`, async () => {
-      const confValidator = new ConfigValidator(
+      const confValidator = ConfigValidator.fromSchema(
         <ConfigSchema>testData.apiSchemaConfigPairWrongRequired.schema,
       );
 
@@ -536,7 +532,7 @@ describe('ConfigValidator', () => {
      * - exception should be thrown
      */
     it(`should throw exception when a config violating the value type is passed`, async () => {
-      const confValidator = new ConfigValidator(
+      const confValidator = ConfigValidator.fromSchema(
         <ConfigSchema>testData.apiSchemaConfigPairWrongPortType.schema,
       );
 
@@ -559,7 +555,7 @@ describe('ConfigValidator', () => {
      */
     it(`should throw exception when a config violating the "greater than"
     constraint, is passed`, async () => {
-      const confValidator = new ConfigValidator(
+      const confValidator = ConfigValidator.fromSchema(
         <ConfigSchema>testData.apiSchemaConfigPairWrongGreater.schema,
       );
 
@@ -582,7 +578,7 @@ describe('ConfigValidator', () => {
      */
     it(`should throw exception when a config violating the
     "greater than or equal" constraint, is passed`, async () => {
-      const confValidator = new ConfigValidator(
+      const confValidator = ConfigValidator.fromSchema(
         <ConfigSchema>testData.apiSchemaConfigPairWrongGreaterEqual.schema,
       );
 
@@ -605,10 +601,9 @@ describe('ConfigValidator', () => {
      */
     it(`should throw exception when a config violating the "less than"
     constraint, is passed`, async () => {
-      const confValidator = new ConfigValidator(
+      const confValidator = ConfigValidator.fromSchema(
         <ConfigSchema>testData.apiSchemaConfigPairWrongLess.schema,
       );
-
       expect(() =>
         confValidator.validateConfig(
           testData.apiSchemaConfigPairWrongLess.config,
@@ -628,7 +623,7 @@ describe('ConfigValidator', () => {
      */
     it(`should throw exception when a config violating the "less than or equal"
     constraint, is passed`, async () => {
-      const confValidator = new ConfigValidator(
+      const confValidator = ConfigValidator.fromSchema(
         <ConfigSchema>testData.apiSchemaConfigPairWrongLessEqual.schema,
       );
 
@@ -651,10 +646,9 @@ describe('ConfigValidator', () => {
      */
     it(`should throw exception when a config violating the
     "greater than for bigint" constraint, is passed`, async () => {
-      const confValidator = new ConfigValidator(
+      const confValidator = ConfigValidator.fromSchema(
         <ConfigSchema>testData.apiSchemaConfigPairWrongGreaterBigInt.schema,
       );
-
       expect(() =>
         confValidator.validateConfig(
           testData.apiSchemaConfigPairWrongGreaterBigInt.config,
@@ -674,7 +668,7 @@ describe('ConfigValidator', () => {
      */
     it(`should throw exception when a config violating the
     "greater than or equal for bigint" constraint, is passed`, async () => {
-      const confValidator = new ConfigValidator(
+      const confValidator = ConfigValidator.fromSchema(
         <ConfigSchema>(
           testData.apiSchemaConfigPairWrongGreaterEqualBigInt.schema
         ),
@@ -699,7 +693,7 @@ describe('ConfigValidator', () => {
      */
     it(`should throw exception when a config violating the
     "less than for bigint" constraint, is passed`, async () => {
-      const confValidator = new ConfigValidator(
+      const confValidator = ConfigValidator.fromSchema(
         <ConfigSchema>testData.apiSchemaConfigPairWrongLessBigInt.schema,
       );
 
@@ -722,7 +716,7 @@ describe('ConfigValidator', () => {
      */
     it(`should throw exception when a config violating the
     "less than or equal for bigint" constraint, is passed`, async () => {
-      const confValidator = new ConfigValidator(
+      const confValidator = ConfigValidator.fromSchema(
         <ConfigSchema>testData.apiSchemaConfigPairWrongLessEqualBigInt.schema,
       );
 
@@ -745,7 +739,7 @@ describe('ConfigValidator', () => {
      */
     it(`should not throw exception when config violates "required" validation
     but the "when" clause is false`, async () => {
-      const confValidator = new ConfigValidator(
+      const confValidator = ConfigValidator.fromSchema(
         <ConfigSchema>testData.apiSchemaConfigPairWrongRequiredFalseWhen.schema,
       );
 
@@ -768,7 +762,7 @@ describe('ConfigValidator', () => {
      */
     it(`should not throw exception when config violates "regex" validation but
     the "when" clause is false`, async () => {
-      const confValidator = new ConfigValidator(
+      const confValidator = ConfigValidator.fromSchema(
         <ConfigSchema>testData.apiSchemaConfigPairWrongRegexFalseWhen.schema,
       );
 
@@ -791,7 +785,7 @@ describe('ConfigValidator', () => {
      */
     it(`should not throw exception when config violates "choices" validation but
     the "when" clause is false`, async () => {
-      const confValidator = new ConfigValidator(
+      const confValidator = ConfigValidator.fromSchema(
         <ConfigSchema>testData.apiSchemaConfigPairWrongChoiceFalseWhen.schema,
       );
 
@@ -814,7 +808,7 @@ describe('ConfigValidator', () => {
      */
     it(`should not throw exception when config violates "gt" validation but the
     "when" clause is false`, async () => {
-      const confValidator = new ConfigValidator(
+      const confValidator = ConfigValidator.fromSchema(
         <ConfigSchema>testData.apiSchemaConfigPairWrongGreaterFalseWhen.schema,
       );
 
@@ -837,7 +831,7 @@ describe('ConfigValidator', () => {
      */
     it(`should not throw exception when config violates "gte" validation but
      the "when" clause is false`, async () => {
-      const confValidator = new ConfigValidator(
+      const confValidator = ConfigValidator.fromSchema(
         <ConfigSchema>(
           testData.apiSchemaConfigPairWrongGreaterEqualFalseWhen.schema
         ),
@@ -862,7 +856,7 @@ describe('ConfigValidator', () => {
      */
     it(`should not throw exception when config violates "lt" validation but the
     "when" clause is false`, async () => {
-      const confValidator = new ConfigValidator(
+      const confValidator = ConfigValidator.fromSchema(
         <ConfigSchema>testData.apiSchemaConfigPairWrongLessFalseWhen.schema,
       );
 
@@ -885,7 +879,7 @@ describe('ConfigValidator', () => {
      */
     it(`should not throw exception when config violates "lte" validation but the
     "when" clause is false`, async () => {
-      const confValidator = new ConfigValidator(
+      const confValidator = ConfigValidator.fromSchema(
         <ConfigSchema>(
           testData.apiSchemaConfigPairWrongLessEqualFalseWhen.schema
         ),
@@ -910,7 +904,7 @@ describe('ConfigValidator', () => {
      */
     it(`should not throw exception when config violates "bigint gt" validation
      but the "when" clause is false`, async () => {
-      const confValidator = new ConfigValidator(
+      const confValidator = ConfigValidator.fromSchema(
         <ConfigSchema>(
           testData.apiSchemaConfigPairWrongBigIntGreaterFalseWhen.schema
         ),
@@ -935,7 +929,7 @@ describe('ConfigValidator', () => {
      */
     it(`should not throw exception when config violates "bigint gte" validation
     but the "when" clause is false`, async () => {
-      const confValidator = new ConfigValidator(
+      const confValidator = ConfigValidator.fromSchema(
         <ConfigSchema>(
           testData.apiSchemaConfigPairWrongBigIntGreaterEqualFalseWhen.schema
         ),
@@ -960,12 +954,11 @@ describe('ConfigValidator', () => {
      */
     it(`should not throw exception when config violates "bigint lt" validation
     but the "when" clause is false`, async () => {
-      const confValidator = new ConfigValidator(
+      const confValidator = ConfigValidator.fromSchema(
         <ConfigSchema>(
           testData.apiSchemaConfigPairWrongBigIntLessFalseWhen.schema
         ),
       );
-
       expect(() =>
         confValidator.validateConfig(
           testData.apiSchemaConfigPairWrongBigIntLessFalseWhen.config,
@@ -985,7 +978,7 @@ describe('ConfigValidator', () => {
      */
     it(`should not throw exception when config violates "bigint lte" validation
     but the "when" clause is false`, async () => {
-      const confValidator = new ConfigValidator(
+      const confValidator = ConfigValidator.fromSchema(
         <ConfigSchema>(
           testData.apiSchemaConfigPairWrongBigIntLessEqualFalseWhen.schema
         ),
@@ -1010,7 +1003,7 @@ describe('ConfigValidator', () => {
      */
     it(`should throw exception using the custom message when the validation has
     error property set`, async () => {
-      const confValidator = new ConfigValidator(
+      const confValidator = ConfigValidator.fromSchema(
         <ConfigSchema>testData.apiSchemaConfigPairWrongChoice.schema,
       );
 
@@ -1035,7 +1028,7 @@ describe('ConfigValidator', () => {
      * - exception should not be thrown
      */
     it(`should not throw exception when "bigint" field is passed in string format in config and default field in schema`, async () => {
-      const confValidator = new ConfigValidator(
+      const confValidator = ConfigValidator.fromSchema(
         <ConfigSchema>testData.apiSchemaConfigPairWithStringBigInt.schema,
       );
 
@@ -1058,7 +1051,7 @@ describe('ConfigValidator', () => {
      */
     it(`should not throw exception when "number" field is passed in string
     format`, async () => {
-      const confValidator = new ConfigValidator(
+      const confValidator = ConfigValidator.fromSchema(
         <ConfigSchema>testData.apiSchemaConfigPairWithStringNumber.schema,
       );
 
@@ -1080,7 +1073,7 @@ describe('ConfigValidator', () => {
      * - exception should be thrown
      */
     it(`should throw exception when value doesn't match the schema array type`, async () => {
-      const confValidator = new ConfigValidator(
+      const confValidator = ConfigValidator.fromSchema(
         <ConfigSchema>testData.arraySchemaConfigPairWrongValueType.schema,
       );
 
@@ -1171,7 +1164,7 @@ describe('ConfigValidator', () => {
      * - correct types string should be returned
      */
     it(`should return TypeScript interfaces for this.schema`, async () => {
-      const confValidator = new ConfigValidator(
+      const confValidator = ConfigValidator.fromSchema(
         <ConfigSchema>testData.schemaTypeScriptTypesPair.schema,
       );
       const types = confValidator.generateTSTypes('Infrastructure');
@@ -1190,7 +1183,7 @@ describe('ConfigValidator', () => {
      * - types should not include numeric suffixes like Database1/Explorer1
      */
     it(`should generate unique path-based names without numeric suffixes`, async () => {
-      const confValidator = new ConfigValidator(
+      const confValidator = ConfigValidator.fromSchema(
         <ConfigSchema>testData.duplicateChildKeysSchema.schema,
       );
       const types = confValidator.generateTSTypes('Infrastructure');
@@ -1212,7 +1205,7 @@ describe('ConfigValidator', () => {
      * - each interface name should be emitted only once
      */
     it(`should not emit duplicate interface declarations`, async () => {
-      const confValidator = new ConfigValidator(
+      const confValidator = ConfigValidator.fromSchema(
         <ConfigSchema>testData.duplicateChildKeysSchema.schema,
       );
       const types = confValidator.generateTSTypes('Infrastructure');
@@ -1236,7 +1229,7 @@ describe('ConfigValidator', () => {
      * - distinct names should be generated (PrimaryConnection, BackupConnection)
      */
     it(`should generate distinct names for identical structures at different paths`, async () => {
-      const confValidator = new ConfigValidator(
+      const confValidator = ConfigValidator.fromSchema(
         <ConfigSchema>testData.identicalStructurePathsSchema.schema,
       );
       const types = confValidator.generateTSTypes('Infrastructure');
@@ -1256,7 +1249,7 @@ describe('ConfigValidator', () => {
      * - Logs array should reference Logs item interface and it should be emitted once
      */
     it(`should name array item object types based on path`, async () => {
-      const confValidator = new ConfigValidator(
+      const confValidator = ConfigValidator.fromSchema(
         <ConfigSchema>testData.arrayItemsAtRootSchema.schema,
       );
       const types = confValidator.generateTSTypes('Infrastructure');
@@ -1264,6 +1257,24 @@ describe('ConfigValidator', () => {
       expect(types).toContain('export interface Logs');
       expect((types.match(/export interface Logs\b/g) || []).length).toBe(1);
       expect(types).toContain('logs: Logs[]');
+    });
+
+    /**
+     * @target generateTSTypes should support hyphenated keys (kebab-case) in type names and quoted props
+     * @dependencies
+     * @scenario
+     * - define a schema with a key like "bitcoin-runes" under "chains"
+     * - call generateTSTypes
+     * @expected
+     * - interface name is PascalCase without hyphen (ChainsBitcoinRunes)
+     * - property is quoted: "bitcoin-runes": ChainsBitcoinRunes
+     */
+    it(`should support hyphenated keys (bitcoin-runes -> ChainsBitcoinRunes, quoted prop)`, async () => {
+      const confValidator = ConfigValidator.fromSchema(
+        <ConfigSchema>testData.schemaHyphenatedKeysTypeScriptPair.schema,
+      );
+      const types = confValidator.generateTSTypes('Root');
+      expect(types).toEqual(testData.schemaHyphenatedKeysTypeScriptPair.types);
     });
   });
 
@@ -1280,7 +1291,7 @@ describe('ConfigValidator', () => {
      */
     it(`should return the correct characteristic object for passed level of node
     config package`, async () => {
-      const confValidator = new ConfigValidator(
+      const confValidator = ConfigValidator.fromSchema(
         <ConfigSchema>testData.schemaConfigCharPair.schema,
       );
       const configCharacteristic = confValidator.getConfigForLevel(
@@ -1309,7 +1320,7 @@ describe('ConfigValidator', () => {
      */
     it(`should validate config when merged with passed object and write it to
     the appropriate config file`, async () => {
-      const confValidator = new ConfigValidator(
+      const confValidator = ConfigValidator.fromSchema(
         <ConfigSchema>testData.schemaConfigCharPair.schema,
       );
       const obj = { apiType: 'node' };
@@ -1336,7 +1347,7 @@ describe('ConfigValidator', () => {
      */
     it(`should throw exception when config after being merged with passed object
     is not valid and preserve the original config file`, async () => {
-      const confValidator = new ConfigValidator(
+      const confValidator = ConfigValidator.fromSchema(
         <ConfigSchema>testData.schemaConfigCharPair.schema,
       );
       const originalObj = JSON.parse(
@@ -1370,7 +1381,7 @@ describe('ConfigValidator', () => {
      */
     it(`should throw exception when config after being merged with passed object
     is not valid and preserve the original config file (duplicate?!)`, async () => {
-      const confValidator = new ConfigValidator(
+      const confValidator = ConfigValidator.fromSchema(
         <ConfigSchema>testData.schemaConfigCharPair.schema,
       );
       // eslint-disable-next-line @typescript-eslint/no-unused-vars

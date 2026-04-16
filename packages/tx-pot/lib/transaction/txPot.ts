@@ -1,6 +1,8 @@
-import { DataSource, Repository } from '@rosen-bridge/extended-typeorm';
-import { TransactionEntity } from '../db/entities/transactionEntity';
 import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
+import { DataSource, Repository } from '@rosen-bridge/extended-typeorm';
+
+import { TransactionEntity } from '../db/entities/transactionEntity';
+import { AbstractPotChainManager } from '../network/abstractPotChainManager';
 import {
   CallbackFunction,
   SigningStatus,
@@ -10,7 +12,6 @@ import {
   ValidatorFunction,
 } from './types';
 import { txOptionToClause } from './utils';
-import { AbstractPotChainManager } from '../network/abstractPotChainManager';
 
 export class TxPot {
   protected static instance: TxPot;

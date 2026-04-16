@@ -1,9 +1,10 @@
-import { ErgoNodeRosenExtractor } from '../../../lib';
-import ErgoTestData from './ergoTestData';
-import TestUtils from '../testUtils';
-import { NodeTransaction } from '../../../lib/getRosenData/ergo/types';
-import { CARDANO_CHAIN } from '../../../lib/getRosenData/const';
 import { TokenMap } from '@rosen-bridge/tokens';
+
+import { ErgoNodeRosenExtractor } from '../../../lib';
+import { CARDANO_CHAIN } from '../../../lib/getRosenData/const';
+import { NodeTransaction } from '../../../lib/getRosenData/ergo/types';
+import TestUtils from '../testUtils';
+import ErgoTestData from './ergoTestData';
 
 describe('ErgoNodeRosenExtractor', () => {
   const tokenMap = new TokenMap();

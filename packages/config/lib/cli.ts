@@ -1,13 +1,15 @@
 #!/usr/bin/env -S node --experimental-specifier-resolution=node
 
-import yargs from 'yargs';
-import { hideBin } from 'yargs/helpers';
 import chalk from 'chalk';
-import ora from 'ora';
-import { ConfigValidator } from './index';
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
+import ora from 'ora';
+import yargs from 'yargs';
+import { hideBin } from 'yargs/helpers';
+
 import { JsonBigIntFactory } from '@rosen-bridge/json-bigint';
+
+import { ConfigValidator } from './index';
 
 const JsonBigInt = JsonBigIntFactory({
   alwaysParseAsBig: false,
@@ -47,7 +49,7 @@ yargs(hideBin(process.argv))
       const rawSchemaData = fs.readFileSync(argv.schema, 'utf-8');
       const schema = JsonBigInt.parse(rawSchemaData);
 
-      const confValidator = new ConfigValidator(schema);
+      const confValidator = ConfigValidator.fromSchema(schema);
       const defaultConf = confValidator.generateDefault();
 
       let output = '';
@@ -99,7 +101,7 @@ yargs(hideBin(process.argv))
       const rawSchemaData = fs.readFileSync(argv.schema, 'utf-8');
       const schema = JsonBigInt.parse(rawSchemaData);
 
-      const confValidator = new ConfigValidator(schema);
+      const confValidator = ConfigValidator.fromSchema(schema);
       const tsTypes = confValidator.generateTSTypes(argv.rootType);
 
       fs.writeFileSync(argv.output, tsTypes);

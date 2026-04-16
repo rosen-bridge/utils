@@ -1,7 +1,8 @@
-import { TokenMap } from '@rosen-bridge/tokens';
-import { RosenData } from './types';
 import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
-import { validateAddress } from '@rosen-bridge/address-codec';
+import { AddressManager } from '@rosen-bridge/address-manager';
+import { TokenMap } from '@rosen-bridge/tokens';
+
+import { RosenData } from './types';
 
 export default abstract class AbstractRosenDataExtractor<TransactionType> {
   abstract readonly chain: string;
@@ -20,7 +21,10 @@ export default abstract class AbstractRosenDataExtractor<TransactionType> {
     const data = this.extractData(transaction);
     if (data) {
       try {
-        validateAddress(data.toChain, data.toAddress);
+        AddressManager.getInstance().validateAddress(
+          data.toChain,
+          data.toAddress,
+        );
       } catch (e) {
         this.logger.debug(
           `Receiver address validation failed (address [${data.toAddress}] on chain [${data.toChain}]) with error: ${e}`,

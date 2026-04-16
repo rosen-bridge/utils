@@ -2,6 +2,9 @@
   "name": "@rosen-bridge/tokens",
   "version": "6.0.0",
   "description": "this project manage supported tokens",
+  "keywords": [
+    "rosen"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rosen-bridge/utils.git"
@@ -16,28 +19,20 @@
     "CHANGELOG.md"
   ],
   "scripts": {
-    "prettify": "prettier --write . --ignore-path ../../.gitignore",
-    "prettify:check": "prettier --check . --ignore-path ../../.gitignore",
+    "build": "tsc --build tsconfig.build.json",
+    "coverage": "npm run test -- --run --coverage",
     "lint": "eslint --fix . && npm run prettify",
     "lint:check": "eslint . && npm run prettify:check",
-    "build": "tsc --build tsconfig.build.json",
-    "type-check": "tsc --noEmit",
+    "prettify": "prettier --write . --ignore-path ../../.gitignore",
+    "prettify:check": "prettier --check . --ignore-path ../../.gitignore",
+    "release": "npm run test -- --run && npm run build && npm publish --access public",
     "test": "NODE_OPTIONS='--import tsx' vitest",
-    "coverage": "npm run test -- --run --coverage",
-    "release": "npm run test -- --run && npm run build && npm publish --access public"
-  },
-  "devDependencies": {
-    "@vitest/coverage-istanbul": "^3.1.4",
-    "tsx": "^4.20.5",
-    "vitest": "^3.1.4"
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@rosen-bridge/abstract-logger": "^4.0.0",
     "await-semaphore": "^0.1.3"
   },
-  "keywords": [
-    "rosen"
-  ],
   "engines": {
     "node": ">=22.18.0",
     "npm": "11.6.2"

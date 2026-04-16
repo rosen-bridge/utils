@@ -1,13 +1,17 @@
-import { In, Not } from '@rosen-bridge/extended-typeorm';
+import { FindOptionsWhere, In, Not } from '@rosen-bridge/extended-typeorm';
+
+import { TransactionEntity } from '../db/entities/transactionEntity';
 import { TxOptions } from './types';
 
 /**
  * converts options for fetching txs to typeorm clause
  * @param options
- * @returns
+ * @returns typeorm clause to be used in find options where
  */
-export const txOptionToClause = (options: TxOptions) => {
-  const clause: Record<string, any> = {};
+export const txOptionToClause = (
+  options: TxOptions,
+): FindOptionsWhere<TransactionEntity> => {
+  const clause: FindOptionsWhere<TransactionEntity> = {};
 
   // add txId clause
   if (typeof options.txId === 'string') {

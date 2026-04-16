@@ -118,6 +118,7 @@ export class FilterParser {
 
     const schema = zod
       .array(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         zod.discriminatedUnion('key', items as any, {
           error: (iss) =>
             `The filter '${(iss.input as FilterField).key}' is not valid`,
@@ -248,6 +249,7 @@ export class FilterParser {
 
     const schema = zod
       .array(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         zod.discriminatedUnion('key', items as any, {
           error: (iss) =>
             `The sort '${(iss.input as FilterSort).key}' is not valid`,

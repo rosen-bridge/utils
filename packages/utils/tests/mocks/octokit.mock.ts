@@ -1,8 +1,7 @@
 import { Octokit } from 'octokit';
 
-import { PartialReleases } from '../data/octokit.data';
-
 import { DEFAULT_RELEASES_FETCHING_PAGE_SIZE } from '../../lib/constants';
+import { PartialReleases } from '../data/octokit.data';
 
 export const mockOctokit = (releases: any[]) =>
   vi.mocked(Octokit).mockImplementation(() => {

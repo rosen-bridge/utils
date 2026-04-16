@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/tx-pot",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "description": "a Typescript package to manage transactions storage, sign, submit and related processes",
   "repository": {
     "type": "git",
@@ -25,11 +25,6 @@
     "release": "npm run test -- --run && npm run build && npm publish --access public",
     "test": "NODE_OPTIONS='--import tsx' vitest",
     "type-check": "tsc --noEmit"
-  },
-  "devDependencies": {
-    "@vitest/coverage-istanbul": "^3.1.4",
-    "tsx": "^4.20.5",
-    "vitest": "^3.1.4"
   },
   "dependencies": {
     "@rosen-bridge/abstract-logger": "^4.0.0",

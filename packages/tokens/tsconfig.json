@@ -4,6 +4,6 @@
     "rootDir": ".",
     "types": ["node", "vitest/globals"]
   },
-  "include": ["lib/**/*", "vitest.config.ts"],
+  "include": ["lib/**/*", "tests"],
   "references": [{ "path": "../loggers/abstract-logger" }]
 }

@@ -1,4 +1,5 @@
 import * as ergoLib from 'ergo-lib-wasm-nodejs';
+
 import { CollateralBoxBuilder } from '../lib';
 import { collateralBoxInfo } from './collateralBoxTestData';
 
