@@ -193,6 +193,83 @@ export const txUtxos = {
       },
     ],
   },
+  invalidLockCovenant: {
+    vout: [
+      {
+        value: 0.001,
+        n: 0,
+        address: {
+          version: 0,
+          hash: dataChunk0,
+          string:
+            'hs1qqqqqqqqqq0pdypgslz72mqqyqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq3v2yzd',
+        },
+        covenant: {
+          type: 0,
+          action: '',
+          items: [],
+        },
+      },
+      {
+        value: 0.001001,
+        n: 1,
+        address: {
+          version: 0,
+          hash: dataChunk1,
+          string:
+            'hs1qqgqqq7gzvh5gw6gvqq5gvqq5gvqq5gvqq5gvqq5gvqq5gvqq5gvqq5gq0tymtt',
+        },
+        covenant: {
+          type: 0,
+          action: '',
+          items: [],
+        },
+      },
+      {
+        value: 0.001002,
+        n: 2,
+        address: {
+          version: 0,
+          hash: dataChunk2,
+          string:
+            'hs1qqepqz7p9qqvq9qqvq9qqvq9qqvq9qqvq9qqvq9qqvq9qqvq9qqvq9qq0mh80w',
+        },
+        covenant: {
+          type: 0,
+          action: '',
+          items: [],
+        },
+      },
+      {
+        value: 0.1,
+        n: 3,
+        address: {
+          version: 0,
+          hash: lockAddressHash,
+          string: lockAddress,
+        },
+        covenant: {
+          type: 1,
+          action: '',
+          items: [],
+        },
+      },
+      {
+        value: 0.05,
+        n: 4,
+        address: {
+          version: 0,
+          hash: 'abcdef0123456789abcdef0123456789abcdef01',
+          string: 'hs1q5cd7v36rvmt9pmcn9zznuaqfd70j2c303y50ve',
+        },
+        covenant: {
+          type: 0,
+          action: '',
+          items: [],
+        },
+      },
+    ],
+  },
   unorderedTx: {
     vout: [
       // Data output 1: chunk 1 at value 0.001001 (1001 dollarydoos, out of order)
@@ -297,6 +374,10 @@ export const txs = {
   invalidData: {
     ...baseTx,
     ...txUtxos.invalidData,
+  },
+  invalidLockCovenant: {
+    ...baseTx,
+    ...txUtxos.invalidLockCovenant,
   },
   unorderedTx: {
     ...baseTx,
