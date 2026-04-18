@@ -253,6 +253,8 @@ export class TokenMap {
         amount: amount,
         decimals: 0,
       };
+    } else if (!tokens[chain]) {
+      throw Error(`Token [${tokenId}] is not supported on chain [${chain}]`);
     } else {
       const significantDecimals = Math.min(
         ...Object.keys(tokens).map(
@@ -289,6 +291,8 @@ export class TokenMap {
         amount: amount,
         decimals: 0,
       };
+    } else if (!tokens[toChain]) {
+      throw Error(`Token [${tokenId}] is not supported on chain [${toChain}]`);
     } else {
       const significantDecimals = Math.min(
         ...Object.keys(tokens).map((chain) => tokens[chain].decimals),
