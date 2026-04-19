@@ -50,7 +50,6 @@
     "reflect-metadata": "0.2.2",
     "typeorm": "0.3.26",
     "ora": "^8.0.1",
-    "yargs": "^17.7.2",
     "chalk": "^5.3.0"
   },
   "peerDependencies": {
