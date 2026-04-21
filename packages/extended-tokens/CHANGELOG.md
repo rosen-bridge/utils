@@ -1,5 +1,12 @@
 # @rosen-bridge/extended-tokens
 
+## 0.1.3
+
+### Patch Changes
+
+- Update dependencies
+  - @rosen-bridge/tokens@6.0.1
+
 ## 0.1.2
 
 ### Patch Changes

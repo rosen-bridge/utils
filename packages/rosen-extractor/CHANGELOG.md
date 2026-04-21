@@ -1,5 +1,13 @@
 # @rosen-bridge/rosen-extractor
 
+## 12.0.1
+
+### Patch Changes
+
+- Require Handshake lock UTXOs to use covenant type 0
+- Update dependencies
+  - @rosen-bridge/tokens@6.0.1
+
 ## 12.0.0
 
 ### Major Changes
