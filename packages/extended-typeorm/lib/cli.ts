@@ -9,5 +9,5 @@ try {
     stdio: 'inherit',
   });
 } catch (error) {
-  process.exit((error as unknown as { status?: number }).status || 1);
+  process.exit((error as { status?: number }).status || 1);
 }
