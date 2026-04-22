@@ -23,6 +23,15 @@ export const registerSwagger: FastifyPluginAsyncZodOpenApi<
         description: opts.description,
         version: opts.version,
       },
+      components: {
+        securitySchemes: {
+          apiKey: {
+            type: 'apiKey',
+            name: 'Api-Key',
+            in: 'header',
+          },
+        },
+      },
     },
     transform: fastifyZodOpenApiTransform,
     transformObject: fastifyZodOpenApiTransformObject,
@@ -44,10 +53,7 @@ export const registerSwagger: FastifyPluginAsyncZodOpenApi<
     },
     staticCSP: true,
     transformStaticCSP: (header) => header,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    transformSpecification: (swaggerObject, request, reply) => {
-      return swaggerObject;
-    },
+    transformSpecification: (swaggerObject) => swaggerObject,
     transformSpecificationClone: true,
   });
 };

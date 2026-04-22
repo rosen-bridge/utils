@@ -4,6 +4,5 @@
     "rootDir": ".",
     "types": ["node", "vitest/globals"]
   },
-  "include": ["tests", "lib"],
-  "references": [{ "path": "../json-bigint" }]
+  "include": ["tests", "lib"]
 }

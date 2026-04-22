@@ -1,4 +1,4 @@
-import Fastify from 'fastify';
+import Fastify, { FastifyBaseLogger, FastifyHttpOptions } from 'fastify';
 import {
   type FastifyZodOpenApiTypeProvider,
   fastifyZodOpenApiPlugin,
@@ -7,11 +7,8 @@ import {
 } from 'fastify-zod-openapi';
 import 'zod-openapi/extend';
 
-import { JsonBigIntFactory } from '@rosen-bridge/json-bigint';
-
-import { makeJsonParser } from './jsonParser';
 import { registerSwagger } from './swagger';
-import { FastifyWithZod, SwaggerOpts } from './types';
+import { FastifyWithZod, FastifyWithZodServer, SwaggerOpts } from './types';
 
 /**
  * creates an instance of Fastify with Zod validation library as validator and
@@ -24,12 +21,9 @@ export const makeFastify = async (
     description: '',
     version: '0.0.1',
   },
-  opts = { logger: true },
-  jsonHandler = JsonBigIntFactory({
-    alwaysParseAsBig: false,
-    useNativeBigInt: true,
-    storeAsString: true,
-  }),
+  opts: FastifyHttpOptions<FastifyWithZodServer, FastifyBaseLogger> = {
+    logger: true,
+  },
 ): Promise<FastifyWithZod> => {
   const fastify =
     Fastify(opts).withTypeProvider<FastifyZodOpenApiTypeProvider>();
@@ -38,12 +32,6 @@ export const makeFastify = async (
   fastify.setSerializerCompiler(serializerCompiler);
 
   await fastify.register(fastifyZodOpenApiPlugin);
-
-  fastify.addContentTypeParser<string>(
-    'application/json',
-    { parseAs: 'string' },
-    makeJsonParser(jsonHandler),
-  );
 
   await registerSwagger(fastify, swaggerOpts);
 
