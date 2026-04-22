@@ -27,7 +27,7 @@ export abstract class AbstractService {
   protected logger: AbstractLogger;
 
   constructor(logger?: AbstractLogger) {
-    this.status = ServiceStatus.dormant;
+    this.status = ServiceStatus.raw;
     this.logger = logger ?? new DummyLogger();
   }
 
@@ -62,6 +62,8 @@ export abstract class AbstractService {
    * sets service status
    */
   protected setStatus = (status: ServiceStatus): void => {
+    if (status === ServiceStatus.raw)
+      throw Error(`Cannot change service status back to "raw"`);
     const previousStatus = this.status;
     this.status = status;
     this.logger.info(
@@ -172,4 +174,60 @@ export abstract class AbstractService {
    * @returns true if service stopped successfully, otherwise false
    */
   protected abstract stop: () => Promise<boolean>;
+
+  /**
+   * assembles the service, if service is assembling returns current active promise
+   * @returns true if service assembled successfully, otherwise false
+   */
+  assembleService = async (): Promise<boolean> => {
+    this.logger.debug(`request to assemble [${this.getName()}]`);
+    if (this.actionPromise) {
+      if (this.actionPromise.action === ServiceAction.assemble) {
+        this.logger.debug(
+          `there is already an active request to assemble service [${this.getName()}]`,
+        );
+        return this.actionPromise.promise;
+      } else {
+        this.logger.debug(
+          `service [${this.getName()}] is already assembled since it's pending [${this.actionPromise.action}] action`,
+        );
+        return true;
+      }
+    }
+    return this.actionSemaphore.acquire().then((release) => {
+      const currentStatus = this.getStatus();
+      if (currentStatus !== ServiceStatus.raw) {
+        this.logger.debug(
+          `service [${this.getName()}] is already assembled and in [${currentStatus}] status`,
+        );
+        release();
+        return true;
+      }
+      this.logger.debug(`assembling service [${this.getName()}]`);
+      this.actionPromise = {
+        action: ServiceAction.assemble,
+        promise: this.assemble(),
+      };
+      return this.actionPromise.promise
+        .then((res) => {
+          this.logger.debug(`service [${this.getName()}] is assembled`);
+          this.actionPromise = undefined;
+          release();
+          return res;
+        })
+        .catch((error) => {
+          this.logger.warn(
+            `An error occurred while assembling service [${this.name}]: ${error}`,
+          );
+          release();
+          return false;
+        });
+    });
+  };
+
+  /**
+   * assembles the service
+   * @returns true if service assembled successfully, otherwise false
+   */
+  protected abstract assemble: () => Promise<boolean>;
 }
