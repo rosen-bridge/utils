@@ -1,5 +1,11 @@
 # @rosen-bridge/winston-logger
 
+## 3.0.1
+
+### Patch Changes
+
+- Fix path computation for Winston logger
+
 ## 3.0.0
 
 ### Major Changes

@@ -1,5 +1,16 @@
 # @rosen-bridge/service-manager
 
+## 2.0.0
+
+### Major Changes
+
+- Add `Assemble` feature: Services now should have a new function, `assemble`, which performs a one-time action, such as initializing the service hyper parameters and classes. Additionally, the `ServiceManager` handles it, requesting to assemble services in the `raw` status (the new status representing the non-assembled services) when they are going to be started or required.
+- Add `action` to `Dependency` interface: Now dependency definition requires the action and the relation is checked only when the corresponding action is being performed.
+
+### Patch Changes
+
+- Fix a bug where the dependant won't be stopped when it's dependency becomes `started` from `running` status
+
 ## 1.0.2
 
 ### Patch Changes
