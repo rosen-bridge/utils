@@ -1,5 +1,5 @@
 import { ServiceManager, ServiceStatus } from '../lib';
-import { I0A, I0B } from './testData/cascadingInitializeTestData';
+import { I0A, I0B } from './testData/cascadingAssembleTestData';
 import { X1A, X1B, X1M } from './testData/crashTestData';
 import { X3A, X3B, X3C, X3D } from './testData/diamondTestData';
 import { X0A, X0B, X0C, X0M } from './testData/hierarchicalTestData';
@@ -7,17 +7,18 @@ import { X2A, X2B, X2C, X2D } from './testData/midwayFailureTestData';
 import { OneServiceA } from './testData/oneServiceTestData';
 import { X4A, X4B, X4C, X4D } from './testData/partialStartTestData';
 import { R1A, R1B } from './testData/simpleRunningTestData';
-import { I1A, I1B } from './testData/stopEffectOnInitializeRelationTestData';
 import { X5A, X5B, X5C } from './testData/validCircularTestData';
 import { sleep } from './testUtils';
 
 describe('ServiceManager', () => {
   /**
-   * @target ServiceManager: Hierarchical Start Scenario
-   * 4 services are depend on each other in hierarchical structure
-   * where one service depends on two services (B depends on C and M)
-   * starting A should start all of them
+   * @target ServiceManager should perform the Hierarchical Start Scenario successfully
    * @dependencies
+   * - 4 dormant services
+   *   - A depends on B for start
+   *   - B depends on C and M for start
+   *   - C has no dependency
+   *   - M has no dependency
    * @scenario
    * - generate test service manager
    * - generate 4 test services of X0
@@ -29,7 +30,7 @@ describe('ServiceManager', () => {
    * - returned value should be true
    * - all 4 services should be in running status
    */
-  it('Hierarchical Start Scenario', async () => {
+  it('should perform the Hierarchical Start Scenario successfully', async () => {
     const serviceManager = ServiceManager.setup();
 
     const a = new X0A(ServiceStatus.dormant);
@@ -59,12 +60,13 @@ describe('ServiceManager', () => {
   }, 5500);
 
   /**
-   * @target ServiceManager: Crash After Start Scenario
-   * 3 services are depend on each other in hierarchical structure
-   * where a service depends on next service in sequential structure
-   * last service will crash a few seconds after being started
-   * all services should still be dormant after starting A
+   * @target ServiceManager should perform the Crash After Start Scenario successfully
    * @dependencies
+   * - 3 dormant services
+   *   - A depends on B for start
+   *   - B depends on C for start
+   *   - C has no dependency
+   *   - C crashes a few seconds after being started
    * @scenario
    * - generate test service manager
    * - generate 3 test services of X1
@@ -76,7 +78,7 @@ describe('ServiceManager', () => {
    * - returned value should be true
    * - all 3 services should be in dormant status
    */
-  it('Crash After Start Scenario', async () => {
+  it('should perform the Crash After Start Scenario successfully', async () => {
     const serviceManager = ServiceManager.setup();
 
     const a = new X1A();
@@ -102,9 +104,9 @@ describe('ServiceManager', () => {
   }, 5500);
 
   /**
-   * @target ServiceManager: One Service Start Failure Scenario
-   * response should be false when service failed to start
+   * @target ServiceManager should perform the One Service Start Failure Scenario successfully
    * @dependencies
+   * - 1 dormant service, which fails to start
    * @scenario
    * - generate test service manager
    * - generate 1 test service (OneServiceA)
@@ -116,7 +118,7 @@ describe('ServiceManager', () => {
    * - returned value should be false
    * - service should be in dormant status
    */
-  it('One Service Start Failure Scenario', async () => {
+  it('should perform the One Service Start Failure Scenario successfully', async () => {
     const serviceManager = ServiceManager.setup();
 
     const a = new OneServiceA();
@@ -131,12 +133,14 @@ describe('ServiceManager', () => {
   }, 3000);
 
   /**
-   * @target ServiceManager: Midway Start Failure Scenario
-   * 4 services are depend on each other in hierarchical structure
-   * where a service depends on next service in sequential structure
-   * third service fails to start
-   * all services except last service (D) should still be dormant after starting A
+   * @target ServiceManager should perform the Midway Start Failure Scenario successfully
    * @dependencies
+   * - 4 dormant services
+   *   - A depends on B for start
+   *   - B depends on C for start
+   *   - C depends on D for start
+   *   - C fails to start
+   *   - D has no dependency
    * @scenario
    * - generate test service manager
    * - generate 4 test services of X2
@@ -149,7 +153,7 @@ describe('ServiceManager', () => {
    * - 3 services should be in dormant status
    * - last service should be in running status
    */
-  it('Midway Start Failure Scenario', async () => {
+  it('should perform the Midway Start Failure Scenario successfully', async () => {
     const serviceManager = ServiceManager.setup();
 
     const a = new X2A(ServiceStatus.dormant);
@@ -180,12 +184,13 @@ describe('ServiceManager', () => {
   }, 5500);
 
   /**
-   * @target ServiceManager: Diamond Structure Scenario
-   * 4 services are depend on each other in diamond structure
-   * where a service depends on two services where they depends
-   * on last service
-   * starting A should start all of them
+   * @target ServiceManager should perform the Diamond Structure Scenario successfully
    * @dependencies
+   * - 4 dormant services
+   *   - A depends on B and C for start
+   *   - B depends on D for start
+   *   - C depends on D for start
+   *   - D has no dependency
    * @scenario
    * - generate test service manager
    * - generate 4 test services of X3
@@ -197,7 +202,7 @@ describe('ServiceManager', () => {
    * - returned value should be true
    * - all 4 services should be in running status
    */
-  it('Diamond Structure Scenario', async () => {
+  it('should perform the Diamond Structure Scenario successfully', async () => {
     const serviceManager = ServiceManager.setup();
 
     const a = new X3A();
@@ -227,11 +232,13 @@ describe('ServiceManager', () => {
   }, 5500);
 
   /**
-   * @target ServiceManager: Partial Start Scenario
-   * 4 services are depend on each other in tree structure
-   * where 3 services depend on last service
-   * starting A should only start last service and itself
+   * @target ServiceManager should perform the Partial Start Scenario successfully
    * @dependencies
+   * - 4 dormant services
+   *   - A depends on D for start
+   *   - B depends on D for start
+   *   - C depends on D for start
+   *   - D has no dependency
    * @scenario
    * - generate test service manager
    * - generate 4 test services of X4
@@ -244,7 +251,7 @@ describe('ServiceManager', () => {
    * - X4A and X4D services should be in running status
    * - X4B and X4C services should be in dormant status
    */
-  it('Partial Start Scenario', async () => {
+  it('should perform the Partial Start Scenario successfully', async () => {
     const serviceManager = ServiceManager.setup();
 
     const a = new X4A();
@@ -275,10 +282,15 @@ describe('ServiceManager', () => {
   }, 3500);
 
   /**
-   * @target ServiceManager: Simple Running Scenario
+   * @target ServiceManager should perform the Simple Running Scenario successfully
    * one service depends on another which has two step start
    * A should be started after B entered running status
    * @dependencies
+   * - 2 dormant services
+   *   - A depends on B for start (only running status allowed)
+   *   - B has no dependency
+   *   - B starts after a few seconds
+   *   - B enters running status after a few more seconds
    * @scenario
    * - generate test service manager
    * - generate 2 test services of R1
@@ -294,7 +306,7 @@ describe('ServiceManager', () => {
    * - R1B should be in started status after first waiting
    * - R1A and R1B services should be in running status after second waiting
    */
-  it('Simple Running Scenario', async () => {
+  it('should perform the Simple Running Scenario successfully', async () => {
     const serviceManager = ServiceManager.setup();
 
     const a = new R1A(ServiceStatus.dormant);
@@ -323,11 +335,13 @@ describe('ServiceManager', () => {
   }, 5000);
 
   /**
-   * @target ServiceManager: Hierarchical Stop Scenario
-   * 4 services are depend on each other in hierarchical structure
-   * where one service depends on two services (B depends on C and M)
-   * stopping C should only stop B and A
+   * @target ServiceManager should perform the Hierarchical Stop Scenario successfully
    * @dependencies
+   * - 4 running services
+   *   - A depends on B for start
+   *   - B depends on C and M for start
+   *   - C has no dependency
+   *   - M has no dependency
    * @scenario
    * - generate test service manager
    * - generate 4 test services of X0
@@ -340,7 +354,7 @@ describe('ServiceManager', () => {
    * - 3 services should be in dormant status
    * - service M should be in running status
    */
-  it('Hierarchical Stop Scenario', async () => {
+  it('should perform the Hierarchical Stop Scenario successfully', async () => {
     const serviceManager = ServiceManager.setup();
 
     const a = new X0A(ServiceStatus.running);
@@ -371,12 +385,14 @@ describe('ServiceManager', () => {
   }, 3000);
 
   /**
-   * @target ServiceManager: Midway Stop Failure Scenario
-   * 4 services are depend on each other in hierarchical structure
-   * where a service depends on next service in sequential structure
-   * second service fails to stop
-   * all services except first service (A) should still be running after stopping D
+   * @target ServiceManager should perform the Midway Stop Failure Scenario successfully
    * @dependencies
+   * - 4 running services
+   *   - A depends on B for start
+   *   - B depends on C for start
+   *   - B fails to stop
+   *   - C depends on D for start
+   *   - D has no dependency
    * @scenario
    * - generate test service manager
    * - generate 4 test services of X2
@@ -389,7 +405,7 @@ describe('ServiceManager', () => {
    * - 3 services should be in running status
    * - first service should be in dormant status
    */
-  it('Midway Stop Failure Scenario', async () => {
+  it('should perform the Midway Stop Failure Scenario successfully', async () => {
     const serviceManager = ServiceManager.setup();
 
     const a = new X2A(ServiceStatus.running);
@@ -420,32 +436,35 @@ describe('ServiceManager', () => {
   }, 3500);
 
   /**
-   * @target ServiceManager: Running Downgrade Scenario
+   * @target ServiceManager should perform the Running Downgrade Scenario successfully
    * one service depends on another
    * on downgrading B status from running to started service manager
    * should stop service A
    * @dependencies
+   * - 2 running services
+   *   - A depends on B for start (only running status allowed)
+   *   - B has no dependency
    * @scenario
    * - generate test service manager
    * - generate 2 test services of R1
    * - change service R1B status to started
-   * - wait 0.5 seconds
+   * - wait 1.5 seconds
    * - check status of two services
    * @expected
    * - R1A should be in dormant status
    * - R1B should be in started status
    */
-  it('Running Downgrade Scenario', async () => {
+  it('should perform the Running Downgrade Scenario successfully', async () => {
     const serviceManager = ServiceManager.setup();
 
-    const a = new R1A(ServiceStatus.dormant);
-    const b = new R1B(ServiceStatus.dormant);
+    const a = new R1A(ServiceStatus.running);
+    const b = new R1B(ServiceStatus.running);
     const services = [a, b];
 
     services.forEach((service) => serviceManager.register(service));
 
     b.callSetStatus(ServiceStatus.started);
-    await sleep(0.5);
+    await sleep(1.5);
     expect(serviceManager.getStatus(a.getName())).toEqual(
       ServiceStatus.dormant,
     );
@@ -455,22 +474,23 @@ describe('ServiceManager', () => {
   }, 2000);
 
   /**
-   * @target ServiceManager: Cascading Assemble Scenario
-   * I0A has an assemble-typed dependency on I0B; both start in raw status
-   * calling assemble on I0A should first assemble I0B, then I0A
+   * @target ServiceManager should perform the Cascading Assemble Scenario successfully
    * @dependencies
+   * - 2 raw services
+   *   - A depends on B for assemble
+   *   - B has no dependency
    * @scenario
    * - generate test service manager
-   * - generate 2 test services (I0A, I0B) both starting in raw status
+   * - generate 2 test services of I0
    * - call assemble on I0A
-   * - wait 0.5 seconds
+   * - wait 2.5 seconds
    * - check returned value
    * - check status of both services
    * @expected
    * - returned value should be true
    * - both I0A and I0B should be in dormant status
    */
-  it('Cascading Assemble Scenario', async () => {
+  it('should perform the Cascading Assemble Scenario successfully', async () => {
     const serviceManager = ServiceManager.setup();
 
     const a = new I0A();
@@ -492,15 +512,14 @@ describe('ServiceManager', () => {
   }, 3500);
 
   /**
-   * @target ServiceManager: Assemble on Start Scenario
-   * I0A and I0B both start in raw status; I0A has an assemble-typed dependency on I0B
-   * calling start on I0A should: assemble I0B (assemble dep), then auto-assemble I0A
-   * (because it is raw), and finally start I0A
-   * I0B must only reach dormant – it must NOT be started
+   * @target ServiceManager should perform the Assemble on Start Scenario successfully
    * @dependencies
+   * - 2 raw services
+   *   - A depends on B for assemble
+   *   - B has no dependency
    * @scenario
    * - generate test service manager
-   * - generate 2 test services: I0A (raw) and I0B (raw)
+   * - generate 2 test services of I0
    * - call start on I0A
    * - wait 2.5 seconds
    * - check returned value
@@ -510,7 +529,7 @@ describe('ServiceManager', () => {
    * - I0A should be in running status
    * - I0B should be in dormant status (assembled but not started)
    */
-  it('Assemble on Start Scenario', async () => {
+  it('should perform the Assemble on Start Scenario successfully', async () => {
     const serviceManager = ServiceManager.setup();
 
     const a = new I0A();
@@ -531,10 +550,11 @@ describe('ServiceManager', () => {
   }, 3500);
 
   /**
-   * @target ServiceManager: Stop Propagation Relation with Assemble Scenario
-   * I1A is running and has an assemble-typed dependency on I1B which is running
-   * stopping I1B must not stop I1A since I1A only needed I1B to be assembled
+   * @target ServiceManager should perform the Stop Propagation Relation with Assemble Scenario successfully
    * @dependencies
+   * - 2 running services
+   *   - A depends on B for assemble
+   *   - B has no dependency
    * @scenario
    * - generate test service manager
    * - generate 2 test services: I1A (running) and I1B (running)
@@ -547,11 +567,11 @@ describe('ServiceManager', () => {
    * - I1B should be in dormant status
    * - I1A should remain in running status (not stopped)
    */
-  it('Stop Propagation Relation with Assemble Scenario', async () => {
+  it('should perform the Stop Propagation Relation with Assemble Scenario successfully', async () => {
     const serviceManager = ServiceManager.setup();
 
-    const a = new I1A();
-    const b = new I1B();
+    const a = new I0A(ServiceStatus.running);
+    const b = new I0B(ServiceStatus.running);
     const services = [a, b];
     services.forEach((service) => serviceManager.register(service));
 
@@ -568,12 +588,12 @@ describe('ServiceManager', () => {
   }, 2000);
 
   /**
-   * @target ServiceManager: Valid Circular Scenario
-   * X5A, X5B and X5C all start in raw status; X5A has a start-typed dependency on X5B
-   * while X5B has assemble-typed dependency on X5A and X5C
-   * calling start on X5A should: first assemble X5A, then assemble X5C, then assemble
-   * X5B, then start X5B (wait to become running), and finally start X5A
+   * @target ServiceManager should perform the Valid Circular Scenario successfully
    * @dependencies
+   * - 3 raw services
+   *   - A depends on B for start
+   *   - B depends on A and C for assemble
+   *   - C has no dependency
    * @scenario
    * - generate test service manager
    * - generate 3 test services of X5
@@ -624,7 +644,7 @@ describe('ServiceManager', () => {
    *   - X5C should be in dormant status
    * - returned value should be true
    */
-  it('Valid Circular Scenario', async () => {
+  it('should perform the Valid Circular Scenario successfully', async () => {
     const serviceManager = ServiceManager.setup();
 
     const a = new X5A();

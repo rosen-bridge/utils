@@ -1,19 +1,19 @@
 import { Dependency, ServiceAction, ServiceStatus } from '../../lib';
 import { TestAbstractService } from '../testAbstractService';
 
-export class I1A extends TestAbstractService {
-  name = 'I1A';
-  constructor() {
-    super(ServiceStatus.running);
+export class I0A extends TestAbstractService {
+  name = 'I0A';
+  constructor(initialStatus?: ServiceStatus) {
+    super(initialStatus);
   }
 
   protected dependencies: Dependency[] = [
     {
-      serviceName: 'I1B',
+      serviceName: 'I0B',
       allowedStatuses: [
-        ServiceStatus.dormant,
-        ServiceStatus.started,
         ServiceStatus.running,
+        ServiceStatus.started,
+        ServiceStatus.dormant,
       ],
       action: ServiceAction.assemble,
     },
@@ -24,10 +24,10 @@ export class I1A extends TestAbstractService {
   stop = (): Promise<boolean> => this.stopAfter();
 }
 
-export class I1B extends TestAbstractService {
-  name = 'I1B';
-  constructor() {
-    super(ServiceStatus.running);
+export class I0B extends TestAbstractService {
+  name = 'I0B';
+  constructor(initialStatus?: ServiceStatus) {
+    super(initialStatus);
   }
 
   protected dependencies: Dependency[] = [];
