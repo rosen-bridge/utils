@@ -48,9 +48,9 @@ export class ServiceManager {
   ): void => {
     this.getServiceDependants(service.getName()).forEach((dependant) => {
       if (
-        newStatus === ServiceStatus.dormant &&
         previousStatus !== ServiceStatus.raw &&
-        dependant.action === ServiceAction.start
+        dependant.action === ServiceAction.start &&
+        !dependant.allowedStatuses.includes(newStatus)
       ) {
         // A 'start'-typed dep going dormant (after having been active) means
         // the dependant can no longer operate and must be stopped.
