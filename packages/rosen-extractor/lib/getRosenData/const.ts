@@ -2,6 +2,7 @@ export const CARDANO_NATIVE_TOKEN = 'ada';
 export const ERGO_NATIVE_TOKEN = 'erg';
 export const BITCOIN_NATIVE_TOKEN = 'btc';
 export const BITCOIN_CHAIN = 'bitcoin';
+export const BASE_CHAIN = 'base';
 export const ETHEREUM_CHAIN = 'ethereum';
 export const BINANCE_CHAIN = 'binance';
 export const CARDANO_CHAIN = 'cardano';
@@ -23,4 +24,5 @@ export const SUPPORTED_CHAINS = [
   BITCOIN_RUNES_CHAIN,
   FIRO_CHAIN,
   HANDSHAKE_CHAIN,
+  BASE_CHAIN,
 ];

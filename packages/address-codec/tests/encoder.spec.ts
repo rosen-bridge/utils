@@ -1,4 +1,5 @@
 import { UnsupportedChainError, encodeAddress } from '../lib';
+import { BASE_CHAIN } from '../lib/const';
 
 describe('encodeAddress', () => {
   /**
@@ -13,5 +14,11 @@ describe('encodeAddress', () => {
     expect(() => {
       encodeAddress('unsupported-chain', 'address');
     }).toThrow(UnsupportedChainError);
+  });
+
+  it('should encode base addresses using the shared EVM encoder', () => {
+    expect(
+      encodeAddress(BASE_CHAIN, '0x4200000000000000000000000000000000000006'),
+    ).toBe('4200000000000000000000000000000000000006');
   });
 });

@@ -28,13 +28,14 @@ import {
   decodeHandshakeAddress,
 } from '@rosen-bridge/address-codec-handshake';
 
-import { BINANCE_CHAIN, ETHEREUM_CHAIN } from './const';
+import { BASE_CHAIN, BINANCE_CHAIN, ETHEREUM_CHAIN } from './const';
 import { UnsupportedChainError } from './types';
 
 export const chainDecoders: Record<string, (address: string) => string> = {
   [ERGO_CHAIN]: decodeErgoAddress,
   [CARDANO_CHAIN]: decodeCardanoAddress,
   [BITCOIN_CHAIN]: decodeBitcoinAddress,
+  [BASE_CHAIN]: generateEvmAddressDecoder(BASE_CHAIN),
   [ETHEREUM_CHAIN]: generateEvmAddressDecoder(ETHEREUM_CHAIN),
   [BINANCE_CHAIN]: generateEvmAddressDecoder(BINANCE_CHAIN),
   [DOGE_CHAIN]: decodeDogeAddress,
