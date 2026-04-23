@@ -1,5 +1,14 @@
 # @rosen-bridge/fastify-enhanced
 
+## 3.0.0
+
+### Major Changes
+
+- Remove @rosen-bridge/json-bigint dependency and jsonParser in facvor of zod's coerce functionality
+- Add apiKey securityScheme to swagger
+- Update the type of fastify-options argument of makeFastify to FastifyHttpOptions
+- Re-export fastify request and reply types
+
 ## 2.0.2
 
 ### Patch Changes

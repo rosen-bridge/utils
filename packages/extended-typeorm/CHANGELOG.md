@@ -1,5 +1,15 @@
 # @rosen-bridge/extended-typeorm
 
+## 1.1.0
+
+### Minor Changes
+
+- Introduces a CLI feature to @rosen-bridge/extended-typeorm
+
+### Patch Changes
+
+- Fix a bug that caused BigIntValueTransformer to raise errors for null values
+
 ## 1.0.1
 
 ### Patch Changes
