@@ -6,3 +6,4 @@ export type {
   FastifyReply,
   HookHandlerDoneFunction,
 } from 'fastify';
+export * from './logger';

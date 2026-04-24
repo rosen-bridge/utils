@@ -204,3 +204,23 @@ curl --request POST \
 }'
 */
 ```
+
+In order to use an instance of **AbstractLogger** instead of the default fastify logger, set the `logger` property of the fastify options to `false` and pass the **AbstractLogger** instance (wrapped in **FastifyLogger** class) to the `loggerInstance` property. **FastifyLogger** is an adapter for Pino interface compliance used in fastify.
+
+```ts
+import { ConsoleLogger } from '@rosen-bridge/abstract-logger';
+import { makeFastify, FastifyLogger } from '@rosen-bridge/fastify-enhanced';
+
+const fastify = await makeFastify(
+  {
+    path: '/swagger',
+    title: '',
+    description: '',
+    version: '0.0.1',
+  },
+  {
+    logger: false,
+    loggerInstance: new FastifyLogger(new ConsoleLogger()),
+  },
+);
+```
