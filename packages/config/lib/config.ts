@@ -613,16 +613,22 @@ export class ConfigValidator {
         const unionTypes: string[] = [];
 
         field.children.forEach((child, index) => {
+          if (child.type === 'union') {
+            child.children.forEach((nestedChild) => {
+              unionTypes.push(nestedChild.type);
+            });
+
+            return;
+          }
+
           if (child.type === 'object') {
-            const typeName = path
-              .concat([`Option${index}`])
-              .map(toPascalCase)
-              .join('');
+            const optionPath = path.concat([`Option${index}`]);
+            const typeName = optionPath.map(toPascalCase).join('');
 
             stack.push({
               subSchema: child.children,
               children: Object.keys(child.children).reverse(),
-              parentPath: path,
+              parentPath: optionPath,
               typeName,
               attributes: [],
             });
@@ -630,17 +636,16 @@ export class ConfigValidator {
             unionTypes.push(typeName);
             return;
           }
+
           if (child.type === 'array') {
             if (child.items.type === 'object') {
-              const typeName = path
-                .concat([`Item${index}`])
-                .map(toPascalCase)
-                .join('');
+              const itemPath = path.concat([`Item${index}`]);
+              const typeName = itemPath.map(toPascalCase).join('');
 
               stack.push({
                 subSchema: child.items.children,
                 children: Object.keys(child.items.children).reverse(),
-                parentPath: path,
+                parentPath: itemPath,
                 typeName,
                 attributes: [],
               });
@@ -649,10 +654,13 @@ export class ConfigValidator {
             } else {
               unionTypes.push(`${child.items.type}[]`);
             }
+
             return;
           }
+
           unionTypes.push(child.type);
         });
+
         attributes.push([childNameQuoted, unionTypes.join(' | ')]);
         continue;
       }
@@ -683,9 +691,45 @@ export class ConfigValidator {
           });
 
           attributes.push([childNameQuoted, `${typeName}[]`]);
+        } else if (field.items.type === 'union') {
+          const unionTypes: string[] = [];
+
+          field.items.children.forEach((child, index) => {
+            if (child.type === 'union') {
+              child.children.forEach((nestedChild) => {
+                if (nestedChild.type === 'array') {
+                  unionTypes.push(`${nestedChild.items.type}[]`);
+                  return;
+                }
+
+                unionTypes.push(nestedChild.type);
+              });
+
+              return;
+            }
+
+            if (child.type === 'object') {
+              const optionPath = path.concat([`Option${index}`]);
+              const typeName = optionPath.map(toPascalCase).join('');
+
+              stack.push({
+                subSchema: child.children,
+                children: Object.keys(child.children).reverse(),
+                parentPath: optionPath,
+                typeName,
+                attributes: [],
+              });
+
+              unionTypes.push(typeName);
+              return;
+            }
+          });
+
+          attributes.push([childNameQuoted, `(${unionTypes.join(' | ')})[]`]);
         } else {
           attributes.push([childNameQuoted, `${field.items.type}[]`]);
         }
+
         continue;
       }
       let fieldType: string = field.type;
