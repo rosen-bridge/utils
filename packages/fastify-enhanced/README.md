@@ -32,37 +32,26 @@ yarn add zod@^3.21.4
 
 ## Usage
 
-To use the enhanced Fastify, import `createFastify` and use it to create a fastify instance and register routes. Use data types defined under `types` object, to define validation constraints for requests and responses:
+To use the enhanced Fastify, import `makeFastify` and use it to create a fastify instance and register routes. Install and use zod to define schemas for validating requests and responses:
+
+> Note: For **BigInt** field types, since JSON does not support the BigInt data type, you should use `z.coerce.bigint()` in the schema, and the value in the data transfer object (DTO) should be either a **number** or a **string**; `coerce` allows Zod to validate and transform the number or string value into a BigInt. Also its preferred to use string for bigint types in the response schemas.
 
 ```ts
-import { FastifyBaseLogger, FastifyInstance } from 'fastify';
-import { IncomingMessage, Server, ServerResponse } from 'http';
+import { z } from 'zod';
 
-import {
-  ZodTypeProvider,
-  createFastify,
-  types,
-} from '@rosen-bridge/fastify-enhanced';
+import { FastifyWithZod, makeFastify } from '@rosen-bridge/fastify-enhanced';
 
-const addTokenPaymentRoute = (
-  fastify: FastifyInstance<
-    Server<typeof IncomingMessage, typeof ServerResponse>,
-    IncomingMessage,
-    ServerResponse<IncomingMessage>,
-    FastifyBaseLogger,
-    ZodTypeProvider
-  >,
-) => {
-  const bodySchema = types.object({
-    tokenName: types.string(),
-    tokenAmount: types.bigint(),
-    tokenDecimals: types.number(),
+const addTokenPaymentRoute = (fastify: FastifyWithZod) => {
+  const bodySchema = z.object({
+    tokenName: z.string(),
+    tokenAmount: z.coerce.bigint(),
+    tokenDecimals: z.number(),
   });
 
-  const res200Schema = types.object({
-    name: types.string(),
-    amount: types.bigint(),
-    decimal: types.number(),
+  const res200Schema = z.object({
+    name: z.string(),
+    amount: z.string(),
+    decimal: z.number(),
   });
 
   const payTokenOpts = {
@@ -77,15 +66,89 @@ const addTokenPaymentRoute = (
   fastify.post('/payToken', payTokenOpts, async (request, reply) => {
     return reply.status(200).send({
       name: request.body.tokenName,
-      amount: request.body.tokenAmount,
+      amount: request.body.tokenAmount.toString(),
       decimal: request.body.tokenDecimals,
     });
   });
-
-  return fastify;
 };
 
-const fastify = await createFastify(
+const addDemoRoute = (fastify: FastifyWithZod) => {
+  const bodySchema = z.object({
+    numberField: z.number(),
+    bigintField: z.coerce.bigint(),
+    booleanField: z.boolean(),
+    stringField: z.string(),
+    optionalStringField: z.optional(z.string()),
+    objectField: z.object({
+      bigintField: z.coerce.bigint(),
+      // ...
+    }),
+    numberArrayField: z.array(z.number()),
+    stringArrayField: z.array(z.string()),
+    unionField: z.union([
+      z.string(),
+      z.object({
+        stringArrayField: z.array(z.string()),
+        // ...
+      }),
+    ]),
+  });
+
+  const qsSchema = z.object({
+    qs: z.union([z.string().transform((i) => [i]), z.array(z.string())]),
+  });
+
+  const res200Schema = z.object({
+    qs: z.array(z.string()),
+    numberField: z.number(),
+    bigintField: z.string(),
+    booleanField: z.boolean(),
+    stringField: z.string(),
+    optionalStringField: z.optional(z.string()),
+    objectField: z.object({
+      bigintField: z.string(),
+      // ...
+    }),
+    numberArrayField: z.array(z.number()),
+    stringArrayField: z.array(z.string()),
+    unionField: z.union([
+      z.string(),
+      z.object({
+        stringArrayField: z.array(z.string()),
+        // ...
+      }),
+    ]),
+  });
+
+  const routeOpts = {
+    schema: {
+      querystring: qsSchema,
+      body: bodySchema,
+      response: {
+        200: res200Schema,
+      },
+    },
+  };
+
+  fastify.post('/demo', routeOpts, async (request, reply) => {
+    return reply.status(200).send({
+      qs: request.query.qs,
+      numberField: request.body.numberField,
+      bigintField: request.body.bigintField.toString(),
+      booleanField: request.body.booleanField,
+      stringField: request.body.stringField,
+      optionalStringField: request.body.optionalStringField,
+      objectField: {
+        bigintField: request.body.objectField.bigintField.toString(),
+      },
+      numberArrayField: request.body.numberArrayField,
+      stringArrayField: request.body.stringArrayField,
+      unionField: request.body.unionField,
+    });
+  });
+};
+
+const fastify = await makeFastify(
   {
     path: '/swagger',
     title: '',
@@ -95,27 +158,49 @@ const fastify = await createFastify(
   { logger: false },
 );
 addTokenPaymentRoute(fastify);
+// Or fastify.register(addTokenPaymentRoute);
+addDemoRoute(fastify);
 
 const start = async () => {
   try {
-    await fastify.listen({ port: 8000 });
+    await fastify.ready();
+    await fastify.listen({ host: '127.0.0.1', port: 8000 });
+    console.log(`listening http://127.0.0.1:8000`);
   } catch (err) {
-    console.log(err);
+    console.error(err);
     process.exit(1);
   }
 };
+
 start();
-```
 
-To define a nested route don't forget to add `ZodTypeProvider` to the Fastify instance that is passed to the `register` method, to enable Zod typing validation:
-
-```ts
-fastify.register(
-  (instance, opts, next) => {
-    const subFastify = instance.withTypeProvider<ZodTypeProvider>();
-    addTokenPaymentRoute(subFastify);
-    next();
+/*
+curl --request POST \
+  --url 'http://localhost:8000/demo?qs=key1&qs=key2' \
+  --header 'content-type: application/json' \
+  --data '{
+  "numberField": 10,
+  "bigintField": "10000",
+  "booleanField": true,
+  "stringField": "str",
+  "objectField": {
+    "bigintField": 10
   },
-  { prefix: 'subroute' },
-);
+  "numberArrayField": [
+    0,
+    100,
+    1000
+  ],
+  "stringArrayField": [
+    "str1",
+    "str2"
+  ],
+  "unionField": {
+    "stringArrayField": [
+      "str1",
+      "str2"
+    ]
+  }
+}'
+*/
 ```
