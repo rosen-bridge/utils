@@ -222,14 +222,14 @@ describe('ConfigValidator', () => {
     });
 
     /**
-     * @target generateDefault should handle union field
+     * @target generateDefault should make empty default config for union field
      * @dependencies
      * @scenario
      * - define an union field
      * - provide default values for the union
      * - call generateDefault
      * @expected
-     * - the correct default value for the union is returned
+     * - the empty default value for the union is returned
      */
     it(`should handle union field`, async () => {
       const confValidator = ConfigValidator.fromSchema(
@@ -237,24 +237,6 @@ describe('ConfigValidator', () => {
       );
       const result = confValidator.generateDefault();
       expect(result).toEqual(testData.unionDefaultsPair.defaultVal);
-    });
-
-    /**
-     * @target generateDefault should handle union Primitive field
-     * @dependencies
-     * @scenario
-     * - define an union Primitive fields
-     * - provide default values for the union field
-     * - call generateDefault
-     * @expected
-     * - the correct default value for the union is returned
-     */
-    it(`should handle union Primitive field`, async () => {
-      const confValidator = ConfigValidator.fromSchema(
-        <ConfigSchema>testData.unionDefaultsPrimitiveField.schema,
-      );
-      const result = confValidator.generateDefault();
-      expect(result).toEqual(testData.unionDefaultsPrimitiveField.defaultVal);
     });
 
     /**

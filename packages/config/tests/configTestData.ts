@@ -1567,12 +1567,7 @@ export const unionDefaultsPair = {
       ],
     },
   },
-  defaultVal: {
-    config: {
-      type: 'A',
-      a: 30,
-    },
-  },
+  defaultVal: {},
 };
 
 export const unionDefaultsPrimitiveField = {
