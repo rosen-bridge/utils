@@ -51,7 +51,7 @@ export const registerSwagger: FastifyPluginAsyncZodOpenApi<
         next();
       },
     },
-    staticCSP: true,
+    staticCSP: opts.enableCSP,
     transformStaticCSP: (header) => header,
     transformSpecification: (swaggerObject) => swaggerObject,
     transformSpecificationClone: true,

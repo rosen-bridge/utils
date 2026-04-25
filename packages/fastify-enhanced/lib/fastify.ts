@@ -20,6 +20,7 @@ export const makeFastify = async (
     title: 'api',
     description: '',
     version: '0.0.1',
+    enableCSP: false,
   },
   opts: FastifyHttpOptions<FastifyWithZodServer, FastifyBaseLogger> = {
     logger: true,
