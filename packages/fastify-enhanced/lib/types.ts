@@ -20,4 +20,5 @@ export type SwaggerOpts = {
   title: string;
   description: string;
   version: string;
+  enableCSP: boolean;
 };
