@@ -1,5 +1,11 @@
 # @rosen-bridge/fastify-enhanced
 
+## 3.1.0
+
+### Minor Changes
+
+- Add enableCSP option to swagger options of makeFastify
+
 ## 3.0.0
 
 ### Major Changes

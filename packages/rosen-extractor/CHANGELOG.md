@@ -1,5 +1,11 @@
 # @rosen-bridge/rosen-extractor
 
+## 12.0.2
+
+### Patch Changes
+
+- Add store raw data param to Handshake
+
 ## 12.0.1
 
 ### Patch Changes
