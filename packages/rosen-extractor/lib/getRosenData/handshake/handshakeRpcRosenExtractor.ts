@@ -21,8 +21,13 @@ export class HandshakeRpcRosenExtractor extends AbstractRosenDataExtractor<Hands
   readonly chain = HANDSHAKE_CHAIN;
   protected lockAddressHash: string;
 
-  constructor(lockAddress: string, tokens: TokenMap, logger?: AbstractLogger) {
-    super(lockAddress, tokens, logger);
+  constructor(
+    lockAddress: string,
+    tokens: TokenMap,
+    logger?: AbstractLogger,
+    storeRawData = true,
+  ) {
+    super(lockAddress, tokens, logger, storeRawData);
     this.lockAddressHash = addressToHash(lockAddress);
   }
 
