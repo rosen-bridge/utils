@@ -117,6 +117,8 @@ export class FastifyLogger implements FastifyBaseLogger {
    * @returns A new FastifyBaseLogger instance (child logger)
    */
   child = (bindings: Record<string, unknown>): FastifyBaseLogger => {
+    if (Object.keys(bindings).length === 0) return this;
+
     const childLogger = this.logger.child(JSON.stringify(bindings));
     return new FastifyLogger(childLogger, this.level);
   };
