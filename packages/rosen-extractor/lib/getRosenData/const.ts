@@ -4,6 +4,7 @@ export const BITCOIN_NATIVE_TOKEN = 'btc';
 export const BITCOIN_CHAIN = 'bitcoin';
 export const ETHEREUM_CHAIN = 'ethereum';
 export const BINANCE_CHAIN = 'binance';
+export const BASE_CHAIN = 'base';
 export const CARDANO_CHAIN = 'cardano';
 export const ERGO_CHAIN = 'ergo';
 export const DOGE_CHAIN = 'doge';
@@ -19,6 +20,7 @@ export const SUPPORTED_CHAINS = [
   BITCOIN_CHAIN,
   ETHEREUM_CHAIN,
   BINANCE_CHAIN,
+  BASE_CHAIN,
   DOGE_CHAIN,
   BITCOIN_RUNES_CHAIN,
   FIRO_CHAIN,
