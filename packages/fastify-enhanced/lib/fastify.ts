@@ -1,4 +1,4 @@
-import Fastify, { FastifyBaseLogger, FastifyHttpOptions } from 'fastify';
+import Fastify from 'fastify';
 import {
   type FastifyZodOpenApiTypeProvider,
   fastifyZodOpenApiPlugin,
@@ -7,8 +7,11 @@ import {
 } from 'fastify-zod-openapi';
 import 'zod-openapi/extend';
 
+import { DummyLogger } from '@rosen-bridge/abstract-logger';
+
+import { FastifyLogger } from './logger';
 import { registerSwagger } from './swagger';
-import { FastifyWithZod, FastifyWithZodServer, SwaggerOpts } from './types';
+import { FastifyOpts, FastifyWithZod, SwaggerOpts } from './types';
 
 /**
  * creates an instance of Fastify with Zod validation library as validator and
@@ -21,12 +24,13 @@ export const makeFastify = async (
     description: '',
     version: '0.0.1',
   },
-  opts: FastifyHttpOptions<FastifyWithZodServer, FastifyBaseLogger> = {
-    logger: true,
-  },
+  opts: FastifyOpts = {},
 ): Promise<FastifyWithZod> => {
-  const fastify =
-    Fastify(opts).withTypeProvider<FastifyZodOpenApiTypeProvider>();
+  const fastify = Fastify({
+    ...opts,
+    logger: false,
+    loggerInstance: new FastifyLogger(opts.logger ?? new DummyLogger()),
+  }).withTypeProvider<FastifyZodOpenApiTypeProvider>();
 
   fastify.setValidatorCompiler(validatorCompiler);
   fastify.setSerializerCompiler(serializerCompiler);

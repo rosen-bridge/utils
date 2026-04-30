@@ -1,6 +1,4 @@
 import { FastifyBaseLogger, LogLevel } from 'fastify';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { FastifyLogFn } from 'fastify';
 import { serializers } from 'fastify/lib/logger-pino.js';
 
 import { AbstractLogger } from '@rosen-bridge/abstract-logger';
@@ -28,9 +26,6 @@ export class FastifyLogger implements FastifyBaseLogger {
   /**
    * logs a trace-level message
    *
-   * the LogFn used in fastify logger has multiple signatures, for
-   *  more info see {@link FastifyLogFn}
-   *
    * @param obj: object to be serialized
    * @param msg: the log message to write
    */
@@ -41,9 +36,6 @@ export class FastifyLogger implements FastifyBaseLogger {
 
   /**
    * logs a debug-level message
-   *
-   * the LogFn used in fastify logger has multiple signatures, for
-   *  more info see {@link FastifyLogFn}
    *
    * @param obj: object to be serialized
    * @param msg: the log message to write
@@ -56,9 +48,6 @@ export class FastifyLogger implements FastifyBaseLogger {
   /**
    * logs an info-level message
    *
-   * the LogFn used in fastify logger has multiple signatures, for
-   *  more info see {@link FastifyLogFn}
-   *
    * @param obj: object to be serialized
    * @param msg: the log message to write
    */
@@ -69,9 +58,6 @@ export class FastifyLogger implements FastifyBaseLogger {
 
   /**
    * logs a warning-level message
-   *
-   * the LogFn used in fastify logger has multiple signatures, for
-   *  more info see {@link FastifyLogFn}
    *
    * @param obj: object to be serialized
    * @param msg: the log message to write
@@ -84,9 +70,6 @@ export class FastifyLogger implements FastifyBaseLogger {
   /**
    * logs an error-level message
    *
-   * the LogFn used in fastify logger has multiple signatures, for
-   *  more info see {@link FastifyLogFn}
-   *
    * @param obj: object to be serialized
    * @param msg: the log message to write
    */
@@ -97,9 +80,6 @@ export class FastifyLogger implements FastifyBaseLogger {
 
   /**
    * logs a critical/fatal-level message
-   *
-   * the LogFn used in fastify logger has multiple signatures, for
-   *  more info see {@link FastifyLogFn}
    *
    * @param obj: object to be serialized
    * @param msg: the log message to write
@@ -125,13 +105,9 @@ export class FastifyLogger implements FastifyBaseLogger {
 
   /**
    * utility function to map and serialize the arguments of fastify logger functions
-   *
-   * the LogFn used in fastify logger has multiple signatures, for
-   *  more info see {@link FastifyLogFn}
    */
   private parseArgs = (...args: unknown[]): Record<string, unknown> => {
     const [arg0, arg1] = args;
-    if (!arg0) throw new Error('Fastify log parse failed');
 
     let info: Record<string, unknown> = {};
 
@@ -140,7 +116,7 @@ export class FastifyLogger implements FastifyBaseLogger {
       info.message = arg0;
     } else {
       // format: meta [message] [...splat]
-      info = arg0 as Record<string, unknown>;
+      info = (arg0 ?? {}) as Record<string, unknown>;
 
       if (arg0 instanceof Error) info = { err: arg0, message: arg0.message };
 
