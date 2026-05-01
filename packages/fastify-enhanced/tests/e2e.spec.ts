@@ -7,7 +7,6 @@ describe('e2e', () => {
 
   beforeEach(async () => {
     mockServer = await makeFastify(undefined, {
-      logger: false,
       bodyLimit: 10 * 1024 * 1024, // value in MB
     });
     await mockServer.register(mockRoutes);

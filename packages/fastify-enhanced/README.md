@@ -204,3 +204,22 @@ curl --request POST \
 }'
 */
 ```
+
+In order to use an instance of **AbstractLogger** for logging, use the `logger` property of the fastify options.
+
+```ts
+import { ConsoleLogger } from '@rosen-bridge/abstract-logger';
+import { makeFastify } from '@rosen-bridge/fastify-enhanced';
+
+const fastify = await makeFastify(
+  {
+    path: '/swagger',
+    title: '',
+    description: '',
+    version: '0.0.1',
+  },
+  {
+    logger: new ConsoleLogger(),
+  },
+);
+```
