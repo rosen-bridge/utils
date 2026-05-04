@@ -102,6 +102,8 @@ export class ConfigValidator {
     subConfig: Record<string, any>,
     subSchema: ConfigSchema,
     path: string[],
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    context?: Record<string, any>,
   ) {
     const errorPreamble = (path: Array<string>) =>
       `config validation failed for "${path.join('.')}" field`;
@@ -114,11 +116,16 @@ export class ConfigValidator {
         if (subConfig != undefined && Object.hasOwn(subConfig, name)) {
           value = subConfig[name];
         }
-
-        this.validateValue(value, field, config, childPath);
+        this.validateValue(value, field, config, childPath, context);
         // if a node/field is of type object and thus is a subtree, traverse it
         if (field.type === 'object') {
-          this.validateSubConfig(config, value, field.children, childPath);
+          this.validateSubConfig(
+            config,
+            value,
+            field.children,
+            childPath,
+            context,
+          );
         } else if (field.type === 'array') {
           if (Array.isArray(value)) {
             for (let i = 0; i < value.length; i++) {
@@ -131,6 +138,7 @@ export class ConfigValidator {
                   item,
                   field.items.children,
                   itemPath,
+                  { [name]: item },
                 );
               } else if (field.items.type === 'array') {
                 this.validateSubConfig(
@@ -146,6 +154,7 @@ export class ConfigValidator {
                   config,
                   itemPath,
                   name,
+                  { [name]: item },
                 );
               } else {
                 // for primitive fields
@@ -198,6 +207,8 @@ export class ConfigValidator {
     config: Record<string, any>,
     childPath: string[],
     name: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    context?: Record<string, any>,
   ) {
     let isMatched = false;
     let errorMessage = '';
@@ -214,6 +225,7 @@ export class ConfigValidator {
             value,
             activeField.children,
             childPath,
+            context,
           );
           isMatched = true;
         } else if (activeField.type === 'array' && Array.isArray(value)) {
@@ -227,6 +239,7 @@ export class ConfigValidator {
                 item,
                 activeField.items.children,
                 itemPath,
+                item,
               );
             } else if (activeField.items.type === 'union') {
               this.validateUnionValue(
@@ -235,24 +248,41 @@ export class ConfigValidator {
                 config,
                 itemPath,
                 name,
+                item,
               );
             } else {
-              this.validateValue(item, activeField.items, config, itemPath);
+              this.validateValue(
+                item,
+                activeField.items,
+                config,
+                itemPath,
+                item,
+              );
             }
           }
           ConfigValidator.modifyObject(config, value, childPath);
           isMatched = true;
         } else if (activeField.type === 'union') {
-          this.validateUnionValue(value, activeField, config, childPath, name);
+          this.validateUnionValue(
+            value,
+            activeField,
+            config,
+            childPath,
+            name,
+            context,
+          );
           isMatched = true;
         } else {
-          this.validateValue(value, activeField, config, childPath);
+          this.validateValue(value, activeField, config, childPath, context);
           isMatched = true;
         }
 
         if (isMatched) break;
       } catch (e) {
         errorMessage = `${e instanceof Error ? e.message : e}`;
+        console.debug(
+          `Value for "${childPath.join('.')}" has this error: ${errorMessage}.`,
+        );
         isMatched = isMatched === true;
       }
     }
@@ -309,6 +339,8 @@ export class ConfigValidator {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     config: Record<string, any>,
     path: string[],
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    context?: Record<string, any>,
   ) => {
     if (value != undefined) {
       if (field.type === 'bigint') {
@@ -361,7 +393,13 @@ export class ConfigValidator {
         )[0];
         if (Object.hasOwn(valueValidations[field.type], name)) {
           try {
-            valueValidations[field.type][name](value, validation, config, this);
+            valueValidations[field.type][name](
+              value,
+              validation,
+              config,
+              this,
+              context,
+            );
           } catch (error) {
             if (validation.error != undefined) {
               throw new Error(validation.error);
@@ -386,19 +424,15 @@ export class ConfigValidator {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     config: Record<string, any>,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    localConfig?: Record<string, any>,
-    localPath?: string[],
+    context?: Record<string, any>,
   ): boolean => {
-    const pathParts = when.path.split('.');
-    if (localConfig != undefined && localPath != undefined) {
-      const isUnderLocal = localPath.every((p, i) => pathParts[i] === p);
-      if (isUnderLocal) {
-        const relativeParts = pathParts.slice(localPath.length);
-        const localValue = ConfigValidator.valueAt(localConfig, relativeParts);
-        if (localValue != undefined) return localValue === when.value;
+    let pathParts = when.path.split('.');
+    if (context != undefined) {
+      const localValue = ConfigValidator.valueAt(context, pathParts);
+      if (localValue !== undefined) {
+        return localValue === when.value;
       }
     }
-
     const value = ConfigValidator.valueAt(config, pathParts);
     return value != undefined && value === when.value;
   };
@@ -412,11 +446,13 @@ export class ConfigValidator {
    * @return {*}
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  static valueAt = (config: Record<string, any>, path: string[]) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let value: any = config;
+  static valueAt = (config: any, path: string[]) => {
+    let value = config;
+
     for (const key of path) {
-      if (value != undefined && Object.hasOwn(value, key)) {
+      if (Array.isArray(value)) {
+        value = value.map((item) => item?.[key]).find((v) => v !== undefined);
+      } else if (value != undefined && Object.hasOwn(value, key)) {
         value = value[key];
       } else {
         return undefined;
@@ -550,32 +586,92 @@ export class ConfigValidator {
   getSchemaField = (path: string[]): ConfigField | undefined => {
     let subTree: ConfigSchema | undefined = this.schema;
     let field: ConfigField | undefined = undefined;
+
     for (const part of path) {
-      if (subTree != undefined && Object.hasOwn(subTree, part)) {
-        field = subTree[part];
-        if (field.type === 'object') {
-          subTree = field.children;
-        } else if (field.type === 'array' && field.items.type === 'object') {
-          subTree = field.items.children;
-        } else {
-          subTree = undefined;
-        }
-      } else {
+      if (!subTree) {
         if (field?.type === 'union') {
+          let found: ConfigField | undefined;
+
           for (const child of field.children) {
             if (
               child.type === 'object' &&
               Object.hasOwn(child.children, part)
             ) {
-              field = child.children[part];
-              subTree = field.type === 'object' ? field.children : undefined;
-              return field;
+              found = child.children[part];
+              break;
             }
           }
+
+          if (!found) return undefined;
+
+          field = found;
+
+          if (field.type === 'object') {
+            subTree = field.children;
+          } else if (
+            field.type === 'array' &&
+            (field.items.type === 'object' || field.items.type === 'union')
+          ) {
+            subTree =
+              field.items.type === 'object' ? field.items.children : undefined;
+          } else {
+            subTree = undefined;
+          }
+
+          continue;
         }
+
         return undefined;
       }
+
+      if (Object.hasOwn(subTree, part)) {
+        field = subTree[part];
+
+        if (field.type === 'object') {
+          subTree = field.children;
+        } else if (field.type === 'array') {
+          if (field.items.type === 'object') {
+            subTree = field.items.children;
+          } else if (field.items.type === 'union') {
+            subTree = undefined;
+            field = field.items;
+          } else {
+            subTree = undefined;
+          }
+        } else if (field.type === 'union') {
+          subTree = undefined;
+        } else {
+          subTree = undefined;
+        }
+      } else {
+        if (field?.type === 'union') {
+          let found: ConfigField | undefined;
+
+          for (const child of field.children) {
+            if (
+              child.type === 'object' &&
+              Object.hasOwn(child.children, part)
+            ) {
+              found = child.children[part];
+              break;
+            }
+          }
+
+          if (!found) return undefined;
+
+          field = found;
+
+          if (field.type === 'object') {
+            subTree = field.children;
+          } else {
+            subTree = undefined;
+          }
+        } else {
+          return undefined;
+        }
+      }
     }
+
     return field;
   };
 
@@ -768,16 +864,12 @@ export class ConfigValidator {
           const unionTypes: string[] = [];
 
           field.items.children.forEach((child, index) => {
-            if (child.type === 'union') {
-              child.children.forEach((nestedChild) => {
-                if (nestedChild.type === 'array') {
-                  unionTypes.push(`${nestedChild.items.type}[]`);
-                  return;
-                }
-
-                unionTypes.push(nestedChild.type);
-              });
-
+            if (
+              child.type === 'string' ||
+              child.type === 'number' ||
+              child.type === 'boolean'
+            ) {
+              unionTypes.push(child.type);
               return;
             }
 
@@ -796,6 +888,29 @@ export class ConfigValidator {
               unionTypes.push(typeName);
               return;
             }
+
+            if (child.type === 'array') {
+              if (child.items.type === 'object') {
+                const itemPath = path.concat([`Option${index}Item`]);
+                const typeName = itemPath.map(toPascalCase).join('');
+
+                stack.push({
+                  subSchema: child.items.children,
+                  children: Object.keys(child.items.children).reverse(),
+                  parentPath: itemPath,
+                  typeName,
+                  attributes: [],
+                });
+
+                unionTypes.push(`${typeName}[]`);
+              } else {
+                unionTypes.push(`${child.items.type}[]`);
+              }
+
+              return;
+            }
+
+            unionTypes.push(child.type);
           });
 
           attributes.push([childNameQuoted, `(${unionTypes.join(' | ')})[]`]);

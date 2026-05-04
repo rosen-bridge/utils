@@ -82,8 +82,13 @@ const required = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   config: Record<string, any>,
   configValidator: ConfigValidator,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  context?: Record<string, any>,
 ) => {
-  if (validation.when && !configValidator.isWhenTrue(validation.when, config)) {
+  if (
+    validation.when &&
+    !configValidator.isWhenTrue(validation.when, config, context)
+  ) {
     return;
   }
 
