@@ -91,7 +91,6 @@ const required = (
   ) {
     return;
   }
-
   if (validation.required && value == undefined) {
     throw new Error('value is required but not found in config');
   }
@@ -313,4 +312,5 @@ export const valueValidations: Record<string, Record<string, any>> = {
       }
     },
   },
+  union: { required },
 };

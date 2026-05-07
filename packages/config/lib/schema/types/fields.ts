@@ -41,6 +41,7 @@ export interface UnionField {
   description?: string;
   label?: string;
   children: ConfigField[];
+  validations?: VNumeric<bigint>[];
 }
 
 export interface GenericField<T> {
