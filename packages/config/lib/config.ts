@@ -166,20 +166,6 @@ export class ConfigValidator {
         } else if (field.type === 'union') {
           this.validateUnionValue(value, field, config, childPath, name);
         }
-        if (
-          value === undefined &&
-          field.type !== 'object' &&
-          field.type !== 'array' &&
-          field.type !== 'union'
-        ) {
-          if (field.default !== undefined) {
-            value = field.default;
-            ConfigValidator.modifyObject(config, value, childPath);
-            if (subConfig != undefined) {
-              subConfig[name] = value;
-            }
-          }
-        }
       } catch (error) {
         throw new Error(
           `${errorPreamble(childPath)}: ${error instanceof Error ? error.message : error}`,
@@ -380,11 +366,19 @@ export class ConfigValidator {
       }
       valueValidators[field.type](value, field);
     }
-
     if (
+      value == undefined &&
       field.type !== 'object' &&
       field.type !== 'array' &&
       field.type !== 'union' &&
+      field.default
+    ) {
+      value = field.default;
+      ConfigValidator.modifyObject(config, field.default, path);
+    }
+    if (
+      field.type !== 'object' &&
+      field.type !== 'array' &&
       field.validations
     ) {
       for (const validation of field.validations) {
