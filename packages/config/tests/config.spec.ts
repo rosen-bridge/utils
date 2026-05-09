@@ -222,16 +222,16 @@ describe('ConfigValidator', () => {
     });
 
     /**
-     * @target generateDefault should make empty default config for union field
-     * @dependencies
+     * @target generateDefault should create a default config for union fields
+     * @dependencies ConfigValidator, testData
      * @scenario
-     * - define an union field
-     * - provide default values for the union
-     * - call generateDefault
+     * - define a union field in the schema
+     * - provide expected default values
+     * - call generateDefault()
      * @expected
-     * - the empty default value for the union is returned
+     * - the generated default value should match the expected union default
      */
-    it(`should handle union field`, async () => {
+    it(`should generate correct default values for union fields`, async () => {
       const confValidator = ConfigValidator.fromSchema(
         <ConfigSchema>testData.unionDefaultsPair.schema,
       );
@@ -494,17 +494,15 @@ describe('ConfigValidator', () => {
     });
 
     /**
-     * @target validateConfig should throw exception when a config union choices is not
-    matched
+     * @target validateConfig should throw an error when the provided union choice is invalid
      * @dependencies
      * @scenario
-     * - call validateConfig with the config
-     * - check if any exception is thrown
+     * - call validateConfig with a config that does not match any union options
+     * - wait for exceptions during validation
      * @expected
-     * - exception should be thrown
+     * - an exception must be thrown
      */
-    it(`should throw exception when a config union choices is not
-    matched`, async () => {
+    it(`should throw an error when the provided union choice is invalid`, async () => {
       const confValidator = ConfigValidator.fromSchema(
         <ConfigSchema>testData.unionSchemaConfigPairWrongChoice.schema,
       );

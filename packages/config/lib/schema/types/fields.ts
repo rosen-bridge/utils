@@ -1,4 +1,4 @@
-import { VBoolean, VNumeric, VString } from './validations';
+import { VBoolean, VNumeric, VRequired, VString } from './validations';
 
 export type PrimitiveValue = string | boolean | number | bigint;
 
@@ -41,7 +41,7 @@ export interface UnionField {
   description?: string;
   label?: string;
   children: ConfigField[];
-  validations?: VNumeric<bigint>[];
+  validations?: VRequired[];
 }
 
 export interface GenericField<T> {
