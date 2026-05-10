@@ -54,7 +54,7 @@ npx @rosen-bridge/cli download-assets --chain-type mainnet --out rosen
 docker solution:
 
 ```shell
-docker run -it --rm -v "$PWD"/rosen:/usr/src/app/rosen -w /usr/src/app node:20.11 npx --yes @rosen-bridge/cli download-assets --chain-type mainnet --out rosen
+docker run -it --rm -v "$PWD"/rosen:/usr/src/app/rosen -w /usr/src/app node:22.18.0 npx --yes @rosen-bridge/cli download-assets --chain-type mainnet --out rosen
 ```
 
 Download assets for testnet into a `rosen` directory. If some pre-releases are
@@ -77,7 +77,7 @@ npx @rosen-bridge/cli tss-secret -t eddsa generate
 docker solution for `ecdsa`:
 
 ```shell
-docker run -it --rm node:20.11 npx --yes @rosen-bridge/cli tss-secret -t ecdsa generate
+docker run -it --rm node:22.18.0 npx --yes @rosen-bridge/cli tss-secret -t ecdsa generate
 ```
 
 Convert secret to pk:
@@ -90,7 +90,7 @@ npx @rosen-bridge/cli tss-secret -t eddsa convert-to-pk YOUR_TSS_SECRET
 docker solution for `ecdsa`:
 
 ```shell
-docker run -it --rm node:20.11 npx --yes @rosen-bridge/cli tss-secret -t ecdsa convert-to-pk YOUR_TSS_SECRET
+docker run -it --rm node:22.18.0 npx --yes @rosen-bridge/cli tss-secret -t ecdsa convert-to-pk YOUR_TSS_SECRET
 ```
 
 ### `blake2b-hash`
@@ -112,5 +112,5 @@ npx @rosen-bridge/cli blake2b-hash hello
 docker solution:
 
 ```shell
-docker run -it --rm node:20.11 npx --yes @rosen-bridge/cli blake2b-hash hello
+docker run -it --rm node:22.18.0 npx --yes @rosen-bridge/cli blake2b-hash hello
 ```
