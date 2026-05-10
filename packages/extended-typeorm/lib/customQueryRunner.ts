@@ -1,7 +1,7 @@
 import { Mutex, MutexInterface } from 'async-mutex';
-import { SqliteDriver } from 'typeorm/driver/sqlite/SqliteDriver';
-import { SqliteQueryRunner } from 'typeorm/driver/sqlite/SqliteQueryRunner';
-import { IsolationLevel } from 'typeorm/driver/types/IsolationLevel';
+import { SqliteDriver } from 'typeorm/driver/sqlite/SqliteDriver.js';
+import { SqliteQueryRunner } from 'typeorm/driver/sqlite/SqliteQueryRunner.js';
+import { IsolationLevel } from 'typeorm/driver/types/IsolationLevel.js';
 
 class CustomQueryRunner extends SqliteQueryRunner {
   releaseMutex: MutexInterface.Releaser | null;
