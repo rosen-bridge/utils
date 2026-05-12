@@ -90,8 +90,8 @@ export class ConfigValidator {
    *
    * @private
    * @param {Record<string, any>} config
-   * @param {Record<string, any>} subConfig
-   * @param {ConfigSchema} subSchema
+   * @param {any} value
+   * @param {ConfigSchema | ConfigField} schemaOrField
    * @param {string[]} path
    * @param {Record<string, any>} context
    * @memberof ConfigValidator
@@ -100,64 +100,77 @@ export class ConfigValidator {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     config: Record<string, any>,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    subConfig: Record<string, any>,
-    subSchema: ConfigSchema,
+    value: any,
+    schemaOrField: ConfigSchema | ConfigField,
     path: string[],
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     context?: Record<string, any>,
   ) {
-    const errorPreamble = (path: Array<string>) =>
-      `config validation failed for "${path.join('.')}" field`;
+    const errorPreamble = `config validation failed for "${path.join('.')}"`;
 
-    for (const name of Object.keys(subSchema)) {
-      let childPath = path.concat([name]);
-      try {
-        const field = subSchema[name];
-        let value = undefined;
-        if (subConfig != undefined && Object.hasOwn(subConfig, name)) {
-          value = subConfig[name];
-        }
-        this.validateValue(value, field, config, childPath, context);
-        // if a node/field is of type object and thus is a subtree, traverse it
-        if (field.type === 'object') {
+    try {
+      const isField =
+        schemaOrField &&
+        typeof schemaOrField === 'object' &&
+        'type' in schemaOrField &&
+        typeof schemaOrField.type === 'string';
+
+      if (!isField) {
+        const schema = schemaOrField as ConfigSchema;
+        for (const name of Object.keys(schema)) {
+          const childField = schema[name];
+          const childPath = [...path, name];
+
+          const childValue =
+            value !== undefined && value !== null && Object.hasOwn(value, name)
+              ? value[name]
+              : undefined;
+
           this.validateSubConfig(
             config,
-            value,
-            field.children,
+            childValue,
+            childField,
             childPath,
-            context,
-          );
-        } else if (field.type === 'array') {
-          if (Array.isArray(value)) {
-            for (let i = 0; i < value.length; i++) {
-              const item = value[i];
-              childPath.pop();
-              this.validateSubConfig(
-                config,
-                { [name]: item },
-                { [name]: field.items },
-                childPath,
-                { [name]: item },
-              );
-            }
-            ConfigValidator.modifyObject(config, value, childPath);
-          }
-        } else if (field.type === 'union') {
-          value = subConfig[name];
-          this.validateUnionValue(
-            value,
-            field,
-            config,
-            childPath,
-            name,
             context,
           );
         }
-      } catch (error) {
-        throw new Error(
-          `${errorPreamble(childPath)}: ${error instanceof Error ? error.message : error}`,
-        );
+        return;
       }
+
+      const field = schemaOrField as ConfigField;
+      this.validateValue(value, field, config, path, context);
+
+      switch (field.type) {
+        case 'object':
+          if (field.children) {
+            this.validateSubConfig(config, value, field.children, path, value);
+          }
+          break;
+
+        case 'array':
+          if (Array.isArray(value) && field.items) {
+            value.forEach((item, index) => {
+              this.validateSubConfig(
+                config,
+                item,
+                field.items,
+                [...path, index.toString()],
+                item,
+              );
+            });
+            ConfigValidator.modifyObject(config, value, path);
+          }
+          break;
+
+        case 'union':
+          this.validateUnionValue(value, field, config, path, context);
+          break;
+      }
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : String(error);
+      throw new Error(
+        msg.includes(errorPreamble) ? msg : `${errorPreamble}: ${msg}`,
+      );
     }
   }
 
@@ -168,9 +181,7 @@ export class ConfigValidator {
    * @param {any} value
    * @param {UnionField} field
    * @param {Record<string, any>} config
-   * @param {ConfigSchema} subSchema
    * @param {string[]} childPath
-   * @param {string} name
    * @param {Record<string, any>} context
    */
   private validateUnionValue(
@@ -180,64 +191,58 @@ export class ConfigValidator {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     config: Record<string, any>,
     childPath: string[],
-    name: string,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     context?: Record<string, any>,
   ) {
     let isMatched = false;
-    let errorMessage = '';
-    let path = [...childPath];
-    path.pop();
+    let lastErrorMessage = '';
+
     for (const activeField of field.children) {
       try {
-        this.validateSubConfig(
-          config,
-          { [name]: value },
-          { [name]: activeField },
-          path,
-          context,
-        );
-
-        ConfigValidator.modifyObject(config, value, path);
+        this.validateSubConfig(config, value, activeField, childPath, context);
         isMatched = true;
-        if (isMatched) break;
       } catch (e) {
-        errorMessage = `${e instanceof Error ? e.message : e}`;
+        lastErrorMessage = e instanceof Error ? e.message : String(e);
         console.debug(
-          `Value for "${childPath.join('.')}" has this error: ${errorMessage}.`,
+          `Union branch for "${childPath.join('.')}" not matched: ${lastErrorMessage}`,
         );
-        isMatched = isMatched === true;
       }
     }
+
+    if (!isMatched) {
+      throw new Error(
+        `Value for "${childPath.join('.')}" does not match any of the union types. Last error: ${lastErrorMessage}`,
+      );
+    }
+
     if (field.validations) {
-      value =
-        value != undefined ? value : ConfigValidator.valueAt(config, childPath);
+      const currentValue =
+        value !== undefined
+          ? value
+          : ConfigValidator.valueAt(config, childPath);
+
       for (const validation of field.validations) {
-        const name = Object.keys(validation).filter(
+        const validationName = Object.keys(validation).find(
           (key) => key !== 'when' && key !== 'error',
-        )[0];
-        if (Object.hasOwn(valueValidations[field.type], name)) {
+        );
+
+        if (validationName && valueValidations[field.type]?.[validationName]) {
           try {
-            valueValidations[field.type][name](
-              value,
+            valueValidations[field.type][validationName](
+              currentValue,
               validation,
               config,
               this,
               context,
             );
           } catch (error) {
-            if (validation.error != undefined) {
-              throw new Error(validation.error);
-            }
-            throw error;
+            throw new Error(
+              validation.error ||
+                (error instanceof Error ? error.message : String(error)),
+            );
           }
         }
       }
-    }
-    if (!isMatched) {
-      throw new Error(
-        `Value for "${childPath.join('.')}" does not match any of the union types for this error: ${errorMessage}. Please provide a valid value.`,
-      );
     }
   }
 
@@ -341,7 +346,8 @@ export class ConfigValidator {
     ) {
       value = field.default;
       if (context) {
-        ConfigValidator.modifyObject(context, field.default, path);
+        const fieldName = path[path.length - 1];
+        context[fieldName] = field.default;
       } else {
         ConfigValidator.modifyObject(config, field.default, path);
       }
@@ -393,12 +399,20 @@ export class ConfigValidator {
     context?: Record<string, any>,
   ): boolean => {
     let pathParts = when.path.split('.');
+
     if (context != undefined) {
       const localValue = ConfigValidator.valueAt(context, pathParts);
       if (localValue !== undefined) {
         return localValue === when.value;
       }
+
+      const relativeParts = pathParts.slice(-1);
+      const relativeValue = ConfigValidator.valueAt(context, relativeParts);
+      if (relativeValue !== undefined) {
+        return relativeValue === when.value;
+      }
     }
+
     const value = ConfigValidator.valueAt(config, pathParts);
     return value != undefined && value === when.value;
   };
