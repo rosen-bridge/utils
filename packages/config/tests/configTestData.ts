@@ -383,6 +383,28 @@ export const apiSchemaConfigPairWrongChoice = {
   },
 };
 
+export const unionSchemaConfigPairWrongChoice = {
+  schema: {
+    value: {
+      type: 'union',
+      label: 'primitive union',
+      children: [
+        {
+          type: 'number',
+          validations: [{ gte: 0 }],
+        },
+        {
+          type: 'string',
+          validations: [{ choices: ['low', 'medium', 'high'] }],
+        },
+      ],
+    },
+  },
+  config: {
+    value: 'true',
+  },
+};
+
 export const arraySchemaConfigPairWrongValueType = {
   schema: {
     logs: {
@@ -1513,6 +1535,59 @@ export const nestedArrayInArrayDefaultsPair = {
       { name: 'file', tags: ['t1', 't2'], labels: ['L1'] },
       { name: 'file', tags: ['custom'], labels: [] },
     ],
+  },
+};
+
+export const unionDefaultsPair = {
+  schema: {
+    config: {
+      type: 'union',
+      children: [
+        {
+          type: 'object',
+          children: {
+            type: {
+              type: 'string',
+              validations: [{ choices: ['A'] }],
+              default: 'A',
+            },
+            a: { type: 'number', default: 30 },
+          },
+        },
+        {
+          type: 'object',
+          children: {
+            model: {
+              type: 'string',
+              validations: [{ choices: ['B'] }],
+            },
+            b: { type: 'string' },
+          },
+        },
+      ],
+    },
+  },
+  defaultVal: {},
+};
+
+export const unionDefaultsPrimitiveField = {
+  schema: {
+    config: {
+      type: 'union',
+      children: [
+        {
+          type: 'string',
+          validations: [{ choices: ['A'] }],
+          default: 'A',
+        },
+        {
+          type: 'number',
+        },
+      ],
+    },
+  },
+  defaultVal: {
+    config: 'A',
   },
 };
 

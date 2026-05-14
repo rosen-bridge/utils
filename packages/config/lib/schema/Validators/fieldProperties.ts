@@ -200,6 +200,20 @@ export const propertyValidators = {
       }
     },
   },
+  union: {
+    children: (field: types.ConfigField) => {
+      if (!('children' in field) || !Array.isArray(field.children)) {
+        throw new Error(
+          `union field must have a "children" property of type "array"`,
+        );
+      }
+      if (field.children.length < 2) {
+        throw new Error(
+          `union field "children" must have at least 2 child nodes`,
+        );
+      }
+    },
+  },
   string: {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     default: (field: types.StringField, _config: ConfigValidator) => {
