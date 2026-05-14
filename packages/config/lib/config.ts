@@ -111,10 +111,7 @@ export class ConfigValidator {
     const errorPreamble = (path: Array<string>) =>
       `config validation failed for "${path.join('.')}" field`;
     for (const name of Object.keys(subSchema)) {
-      let childPath: string[];
-
-      childPath = path.concat([name]);
-
+      const childPath: string[] = path.concat([name]);
       try {
         const field = subSchema[name];
         let value = undefined;
