@@ -177,6 +177,78 @@ export const txUtxos = {
       },
     ],
   },
+  invalidLockCovenant: {
+    outputs: [
+      {
+        value: 1000n,
+        address: {
+          version: 0,
+          hash: dataChunk0,
+          string:
+            'hs1qqqqqqqqqq0pdypgslz72mqqyqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq3v2yzd',
+        },
+        covenant: {
+          type: 0,
+          action: '',
+          items: [],
+        },
+      },
+      {
+        value: 1001n,
+        address: {
+          version: 0,
+          hash: dataChunk1,
+          string:
+            'hs1qqgqqq7gzvh5gw6gvqq5gvqq5gvqq5gvqq5gvqq5gvqq5gvqq5gvqq5gq0tymtt',
+        },
+        covenant: {
+          type: 0,
+          action: '',
+          items: [],
+        },
+      },
+      {
+        value: 1002n,
+        address: {
+          version: 0,
+          hash: dataChunk2,
+          string:
+            'hs1qqepqz7p9qqvq9qqvq9qqvq9qqvq9qqvq9qqvq9qqvq9qqvq9qqvq9qq0mh80w',
+        },
+        covenant: {
+          type: 0,
+          action: '',
+          items: [],
+        },
+      },
+      {
+        value: 100000n,
+        address: {
+          version: 0,
+          hash: lockAddressHash,
+          string: lockAddress,
+        },
+        covenant: {
+          type: 1,
+          action: '',
+          items: [],
+        },
+      },
+      {
+        value: 50000n,
+        address: {
+          version: 0,
+          hash: changeAddressHash,
+          string: changeAddress,
+        },
+        covenant: {
+          type: 0,
+          action: '',
+          items: [],
+        },
+      },
+    ],
+  },
   unorderedTx: {
     outputs: [
       // Data output 1: chunk 1 at value 1001 (out of order)
@@ -276,6 +348,10 @@ export const txs = {
   invalidData: {
     ...baseTx,
     ...txUtxos.invalidData,
+  },
+  invalidLockCovenant: {
+    ...baseTx,
+    ...txUtxos.invalidLockCovenant,
   },
   unorderedTx: {
     ...baseTx,

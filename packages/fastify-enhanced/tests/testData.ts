@@ -1,6 +1,11 @@
 export const apiSpec = {
   openapi: '3.1.0',
   info: { title: 'api', description: '', version: '0.0.1' },
+  components: {
+    securitySchemes: {
+      apiKey: { type: 'apiKey', name: 'Api-Key', in: 'header' },
+    },
+  },
   paths: {
     '/health': {
       get: {

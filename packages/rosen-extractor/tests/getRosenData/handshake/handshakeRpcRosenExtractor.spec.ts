@@ -154,6 +154,29 @@ describe('HandshakeRpcRosenExtractor', () => {
 
     /**
      * @target `HandshakeRpcRosenExtractor.get` should return undefined when
+     * lock output covenant type is not zero
+     * @dependencies
+     * @scenario
+     * - mock tx with lock output covenant type set to non-zero
+     * - run test
+     * - check returned value
+     * @expected
+     * - it should return undefined
+     */
+    it('should return undefined when lock output covenant type is not zero', () => {
+      const invalidTx = testData.txs.invalidLockCovenant;
+
+      const extractor = new HandshakeRpcRosenExtractor(
+        testData.lockAddress,
+        tokenMap,
+      );
+      const result = extractor.get(invalidTx);
+
+      expect(result).toBeUndefined();
+    });
+
+    /**
+     * @target `HandshakeRpcRosenExtractor.get` should return undefined when
      * token transformation is not possible
      * @dependencies
      * @scenario

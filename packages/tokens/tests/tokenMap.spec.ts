@@ -447,6 +447,23 @@ describe('TokenMap', () => {
     });
 
     /**
+     * @target TokenMap.wrapAmount should throw error when token is supported but not available on the specified chain
+     * @dependencies
+     * - RosenToken json
+     * @scenario
+     * - call wrapAmount for unsupported chain & expect exception thrown
+     * @expected
+     * - should throw Error
+     */
+    it('should throw error when token is supported but not available on the specified chain', async function () {
+      const tokenMap = new TokenMap();
+      await tokenMap.updateConfigByJson(multiDecimalTokenMap);
+      expect(() => {
+        tokenMap.wrapAmount('policyId3.assetName3', 123456789n, 'unsupported');
+      }).toThrow(Error);
+    });
+
+    /**
      * @target TokenMap.wrapAmount should consider unbridgeable tokens
      * @dependencies
      * - RosenToken json
@@ -518,6 +535,23 @@ describe('TokenMap', () => {
       const result = tokenMap.unwrapAmount('not.supported', 123456789n, 'ergo');
       expect(result.amount).toEqual(123456789n);
       expect(result.decimals).toEqual(0);
+    });
+
+    /**
+     * @target TokenMap.unwrapAmount should throw error when token is supported but not available on the specified chain
+     * @dependencies
+     * - RosenToken json
+     * @scenario
+     * - call unwrapAmount for unsupported chain & expect exception thrown
+     * @expected
+     * - should throw error
+     */
+    it('should throw error when token is supported but not available on the specified chain', async function () {
+      const tokenMap = new TokenMap();
+      await tokenMap.updateConfigByJson(multiDecimalTokenMap);
+      expect(() => {
+        tokenMap.unwrapAmount('policyId3.assetName3', 1234n, 'unsupported');
+      }).toThrow(Error);
     });
 
     /**

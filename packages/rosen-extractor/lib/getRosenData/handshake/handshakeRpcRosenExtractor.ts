@@ -14,14 +14,20 @@ import {
   addressToHash,
   convertHnsToDollarydoos,
   extractDataFromOutputs,
+  hasNoneCovenant,
 } from './utils';
 
 export class HandshakeRpcRosenExtractor extends AbstractRosenDataExtractor<HandshakeRpcTransaction> {
   readonly chain = HANDSHAKE_CHAIN;
   protected lockAddressHash: string;
 
-  constructor(lockAddress: string, tokens: TokenMap, logger?: AbstractLogger) {
-    super(lockAddress, tokens, logger);
+  constructor(
+    lockAddress: string,
+    tokens: TokenMap,
+    logger?: AbstractLogger,
+    storeRawData = true,
+  ) {
+    super(lockAddress, tokens, logger, storeRawData);
     this.lockAddressHash = addressToHash(lockAddress);
   }
 
@@ -42,7 +48,9 @@ export class HandshakeRpcRosenExtractor extends AbstractRosenDataExtractor<Hands
 
       // Find lock output first (need to use original RPC output for value)
       const lockOutputIndex = outputs.findIndex(
-        (output) => output.address?.hash === this.lockAddressHash,
+        (output) =>
+          output.address?.hash === this.lockAddressHash &&
+          hasNoneCovenant(output),
       );
 
       if (lockOutputIndex === -1) {

@@ -1,10 +1,14 @@
-import { VBoolean, VNumeric, VString } from './validations';
+import { VBoolean, VNumeric, VRequired, VString } from './validations';
 
 export type PrimitiveValue = string | boolean | number | bigint;
 
 export type ConfigSchema = Record<string, ConfigField>;
 
-export type ConfigField = ObjectField | ArrayField | PrimitiveField;
+export type ConfigField =
+  | ObjectField
+  | ArrayField
+  | PrimitiveField
+  | UnionField;
 
 export type PrimitiveField =
   | StringField
@@ -30,6 +34,14 @@ export interface ArrayField {
   label?: string;
   default?: ValueType[];
   items: ConfigField;
+}
+
+export interface UnionField {
+  type: 'union';
+  description?: string;
+  label?: string;
+  children: ConfigField[];
+  validations?: VRequired[];
 }
 
 export interface GenericField<T> {

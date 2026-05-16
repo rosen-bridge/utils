@@ -1,5 +1,11 @@
 # @rosen-bridge/tokens
 
+## 6.0.1
+
+### Patch Changes
+
+- Improve the `wrapAmount` and `unwrapAmount` functions to throw appropriate error when token is supported but not available on the specified chain
+
 ## 6.0.0
 
 ### Major Changes

@@ -1,4 +1,4 @@
-import path from 'node:path';
+import nodePath from 'node:path';
 import winston, { format } from 'winston';
 import 'winston-daily-rotate-file';
 import LokiTransport from 'winston-loki';
@@ -90,8 +90,12 @@ class WinstonLogger extends AbstractLogger {
   /**
    * Creates a new WinstonLogger instance.
    * @param logger - The underlying winston Logger instance
+   * @param path
    */
-  protected constructor(protected logger: CustomLogger) {
+  protected constructor(
+    protected logger: CustomLogger,
+    protected path: string = '',
+  ) {
     super();
   }
 
@@ -128,9 +132,9 @@ class WinstonLogger extends AbstractLogger {
    * @returns A new WinstonLogger instance with the specified path
    */
   child = (filePath: string) => {
-    return new WinstonLogger(
-      this.logger.child({ fileName: path.parse(filePath).name }),
-    );
+    const name = nodePath.parse(filePath).name;
+    const fileName = this.path === '' ? name : `${this.path}-${name}`;
+    return new WinstonLogger(this.logger.child({ fileName }), fileName);
   };
 
   /**

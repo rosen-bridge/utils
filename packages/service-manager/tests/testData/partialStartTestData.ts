@@ -1,4 +1,4 @@
-import { Dependency, ServiceStatus } from '../../lib';
+import { Dependency, ServiceAction, ServiceStatus } from '../../lib';
 import { TestAbstractService } from '../testAbstractService';
 
 export class X4A extends TestAbstractService {
@@ -11,9 +11,11 @@ export class X4A extends TestAbstractService {
     {
       serviceName: 'X4D',
       allowedStatuses: [ServiceStatus.running],
+      action: ServiceAction.start,
     },
   ];
 
+  assemble = (): Promise<boolean> => this.assembleAfter();
   start = (): Promise<boolean> => this.startAfter();
   stop = (): Promise<boolean> => this.stopAfter();
 }
@@ -28,9 +30,11 @@ export class X4B extends TestAbstractService {
     {
       serviceName: 'X4D',
       allowedStatuses: [ServiceStatus.running],
+      action: ServiceAction.start,
     },
   ];
 
+  assemble = (): Promise<boolean> => this.assembleAfter();
   start = (): Promise<boolean> => this.startAfter();
   stop = (): Promise<boolean> => this.stopAfter();
 }
@@ -45,9 +49,11 @@ export class X4C extends TestAbstractService {
     {
       serviceName: 'X4D',
       allowedStatuses: [ServiceStatus.running],
+      action: ServiceAction.start,
     },
   ];
 
+  assemble = (): Promise<boolean> => this.assembleAfter();
   start = (): Promise<boolean> => this.startAfter();
   stop = (): Promise<boolean> => this.stopAfter();
 }
@@ -60,6 +66,7 @@ export class X4D extends TestAbstractService {
 
   protected dependencies: Dependency[] = [];
 
+  assemble = (): Promise<boolean> => this.assembleAfter();
   start = (): Promise<boolean> => this.startAfter();
   stop = (): Promise<boolean> => this.stopAfter();
 }

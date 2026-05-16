@@ -5,5 +5,5 @@
     "types": ["node", "vitest/globals"]
   },
   "include": ["tests", "lib"],
-  "references": [{ "path": "../json-bigint" }]
+  "references": [{ "path": "../loggers/abstract-logger" }]
 }

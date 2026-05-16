@@ -1,9 +1,14 @@
 export enum ServiceStatus {
+  raw = 'raw',
   dormant = 'dormant',
-
   started = 'started',
-
   running = 'running',
+}
+
+export enum ServiceAction {
+  start = 'start',
+  stop = 'stop',
+  assemble = 'assemble',
 }
 
 export interface Task {
@@ -18,12 +23,7 @@ export interface TaskManager extends Task {
 export interface Dependency {
   serviceName: string;
   allowedStatuses: Array<ServiceStatus>;
-}
-
-export enum ServiceAction {
-  start = 'start',
-
-  stop = 'stop',
+  action: ServiceAction;
 }
 
 export interface ActionPromise {

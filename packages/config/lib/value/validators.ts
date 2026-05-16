@@ -28,6 +28,23 @@ export const valueValidators: Record<string, any> = {
     }
   },
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  union: (value: types.UnionField, _field: types.UnionField) => {
+    const validUnionTypes = [
+      'object',
+      'array',
+      'boolean',
+      'union',
+      'string',
+      'number',
+      'bigint',
+    ];
+    if (!validUnionTypes.includes(typeof value)) {
+      throw new Error(
+        'Value does not match any of the valid union children types.',
+      );
+    }
+  },
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   array: (value: Array<types.ValueType>, _field: types.ArrayField) => {
     if (!Array.isArray(value)) {
       throw new Error(`value must be of array type`);
@@ -65,11 +82,15 @@ const required = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   config: Record<string, any>,
   configValidator: ConfigValidator,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  context?: Record<string, any>,
 ) => {
-  if (validation.when && !configValidator.isWhenTrue(validation.when, config)) {
+  if (
+    validation.when &&
+    !configValidator.isWhenTrue(validation.when, config, context)
+  ) {
     return;
   }
-
   if (validation.required && value == undefined) {
     throw new Error('value is required but not found in config');
   }
@@ -291,4 +312,5 @@ export const valueValidations: Record<string, Record<string, any>> = {
       }
     },
   },
+  union: { required },
 };

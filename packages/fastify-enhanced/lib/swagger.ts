@@ -1,20 +1,20 @@
 import swagger from '@fastify/swagger';
 import swaggerUi from '@fastify/swagger-ui';
 import {
-  FastifyPluginAsyncZodOpenApi,
   fastifyZodOpenApiTransform,
   fastifyZodOpenApiTransformObject,
 } from 'fastify-zod-openapi';
 import { ZodOpenApiVersion } from 'zod-openapi';
 
-import { SwaggerOpts } from './types';
+import { FastifyWithZod, SwaggerOpts } from './types';
 
 /**
  * adds swagger to the fastify instance
  */
-export const registerSwagger: FastifyPluginAsyncZodOpenApi<
-  SwaggerOpts
-> = async (fastify, opts) => {
+export const registerSwagger = async (
+  fastify: FastifyWithZod,
+  opts: SwaggerOpts,
+) => {
   await fastify.register(swagger, {
     openapi: {
       openapi: '3.1.0' as ZodOpenApiVersion,
@@ -22,6 +22,15 @@ export const registerSwagger: FastifyPluginAsyncZodOpenApi<
         title: opts.title,
         description: opts.description,
         version: opts.version,
+      },
+      components: {
+        securitySchemes: {
+          apiKey: {
+            type: 'apiKey',
+            name: 'Api-Key',
+            in: 'header',
+          },
+        },
       },
     },
     transform: fastifyZodOpenApiTransform,
@@ -42,12 +51,9 @@ export const registerSwagger: FastifyPluginAsyncZodOpenApi<
         next();
       },
     },
-    staticCSP: true,
+    staticCSP: opts.enableCSP,
     transformStaticCSP: (header) => header,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    transformSpecification: (swaggerObject, request, reply) => {
-      return swaggerObject;
-    },
+    transformSpecification: (swaggerObject) => swaggerObject,
     transformSpecificationClone: true,
   });
 };

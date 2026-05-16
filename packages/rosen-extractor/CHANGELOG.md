@@ -1,5 +1,32 @@
 # @rosen-bridge/rosen-extractor
 
+## 12.0.2
+
+### Patch Changes
+
+- Add store raw data param to Handshake
+
+## 12.0.1
+
+### Patch Changes
+
+- Require Handshake lock UTXOs to use covenant type 0
+- Update dependencies
+  - @rosen-bridge/tokens@6.0.1
+
+## 12.0.0
+
+### Major Changes
+
+- Remove `@rosen-bridge/address-codec` from dependency. All Rosen extractors now depend on the `AddressManager` class from `@rosen-bridge/address-manager` for the decoding and validation of addresses. It should be initialized independently (Please check [README](README.md) for it's usage).
+
+### Patch Changes
+
+- Fix Firo index in `SUPPORTED_CHAINS` list
+- Remove GraphQLBlockTxsQuery from types
+- Update dependencies
+  - @rosen-bridge/address-manager@0.1.0
+
 ## 11.3.0
 
 ### Minor Changes

@@ -6,8 +6,10 @@ describe('e2e', () => {
   let mockServer: FastifyWithZod;
 
   beforeEach(async () => {
-    mockServer = await makeFastify();
-    await mockServer.register(async () => mockRoutes(mockServer));
+    mockServer = await makeFastify(undefined, {
+      bodyLimit: 10 * 1024 * 1024, // value in MB
+    });
+    await mockServer.register(mockRoutes);
   });
 
   afterEach(async () => {

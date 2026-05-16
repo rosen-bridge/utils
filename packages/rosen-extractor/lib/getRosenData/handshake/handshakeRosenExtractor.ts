@@ -7,14 +7,23 @@ import AbstractRosenDataExtractor from '../abstract/abstractRosenDataExtractor';
 import { RosenData, TokenTransformation } from '../abstract/types';
 import { HANDSHAKE_CHAIN, HANDSHAKE_NATIVE_TOKEN } from '../const';
 import { HandshakeTx, HandshakeTxOutput, HandshakeRosenData } from './types';
-import { addressToHash, extractDataFromOutputs } from './utils';
+import {
+  addressToHash,
+  extractDataFromOutputs,
+  hasNoneCovenant,
+} from './utils';
 
 export class HandshakeRosenExtractor extends AbstractRosenDataExtractor<string> {
   readonly chain = HANDSHAKE_CHAIN;
   protected lockAddressHash: string;
 
-  constructor(lockAddress: string, tokens: TokenMap, logger?: AbstractLogger) {
-    super(lockAddress, tokens, logger);
+  constructor(
+    lockAddress: string,
+    tokens: TokenMap,
+    logger?: AbstractLogger,
+    storeRawData = true,
+  ) {
+    super(lockAddress, tokens, logger, storeRawData);
     this.lockAddressHash = addressToHash(lockAddress);
   }
 
@@ -42,7 +51,9 @@ export class HandshakeRosenExtractor extends AbstractRosenDataExtractor<string> 
 
       // Find lock output and position
       const lockOutputIndex = outputs.findIndex(
-        (output) => output.address?.hash === this.lockAddressHash,
+        (output) =>
+          output.address?.hash === this.lockAddressHash &&
+          hasNoneCovenant(output),
       );
 
       if (lockOutputIndex === -1) {

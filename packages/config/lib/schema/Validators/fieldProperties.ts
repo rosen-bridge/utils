@@ -183,7 +183,7 @@ export const propertyValidators = {
           `array field type must have a "items" property of type "object"`,
         );
       }
-      if (Object.hasOwn(field.items, 'secret')) {
+      if (JSON.stringify(field.items).includes('"secret":true')) {
         throw new Error(`array items should not have "secret" property`);
       }
     },
@@ -200,6 +200,20 @@ export const propertyValidators = {
 
       for (const elem of field.default) {
         assertShapeMatchesField(elem, field.items);
+      }
+    },
+  },
+  union: {
+    children: (field: types.ConfigField) => {
+      if (!('children' in field) || !Array.isArray(field.children)) {
+        throw new Error(
+          `union field must have a "children" property of type "array"`,
+        );
+      }
+      if (field.children.length < 2) {
+        throw new Error(
+          `union field "children" must have at least 2 child nodes`,
+        );
       }
     },
   },
@@ -275,11 +289,6 @@ export const propertyValidators = {
         throw new Error(
           `default value=[${field.default}] doesn't match field type=[${field.type}]`,
         );
-      }
-    },
-    secret: (field: types.BigIntField) => {
-      if (Object.hasOwn(field, 'secret') && typeof field.secret !== 'boolean') {
-        throw new Error('"secret" must be boolean');
       }
     },
   },

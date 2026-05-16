@@ -1,5 +1,12 @@
 # @rosen-bridge/cli
 
+## 2.1.3
+
+### Patch Changes
+
+- Update dependencies
+  - @rosen-bridge/utils@3.0.0
+
 ## 2.1.2
 
 ### Patch Changes
