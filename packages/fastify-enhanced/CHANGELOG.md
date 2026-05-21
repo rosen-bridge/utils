@@ -1,5 +1,11 @@
 # @rosen-bridge/fastify-enhanced
 
+## 3.2.0
+
+### Minor Changes
+
+- Add support for using AbstractLogger in place of the default Fastify logger
+
 ## 3.1.0
 
 ### Minor Changes
