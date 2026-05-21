@@ -1,7 +1,6 @@
 {
   "name": "@rosen-bridge/semaphore",
-  "version": "0.0.0",
-  "private": true,
+  "version": "0.1.0",
   "description": "A promise-based Semaphore utility to limit async concurrency",
   "repository": {
     "type": "git",
