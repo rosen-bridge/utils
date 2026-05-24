@@ -29,10 +29,12 @@ export const parseRosenData = (
 
   // parse toAddress
   const addressLengthCode = scriptPubKeyHex.slice(34, 36);
-  const addressHex = scriptPubKeyHex.slice(
-    36,
-    36 + parseInt(addressLengthCode, 16) * 2,
-  );
+  const addressHexLength = parseInt(addressLengthCode, 16) * 2;
+  const addressHex = scriptPubKeyHex.slice(36, 36 + addressHexLength);
+  if (addressHex.length !== addressHexLength)
+    throw Error(
+      `invalid address length code, expected address hex string to be length of [${addressHexLength}] but found [${addressHex.length}]`,
+    );
   const toAddress = AddressManager.getInstance().decodeAddress(
     toChain,
     addressHex,
