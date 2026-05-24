@@ -1,0 +1,41 @@
+{
+  "name": "@rosen-bridge/service-manager-cli",
+  "version": "0.0.0",
+  "description": "A utility package for services that uses @rosen-bridge/service-manager containing tools such as draw the dependency graph of services",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rosen-bridge/utils.git",
+    "directory": "./packages/service-manager-cli"
+  },
+  "license": "MIT",
+  "author": "Rosen Team",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": "dist/index.js",
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "tsc --build tsconfig.build.json",
+    "clean": "rimraf dist && rimraf tsconfig.build.tsbuildinfo",
+    "lint": "eslint --fix . && npm run prettify",
+    "lint:check": "eslint . && npm run prettify:check",
+    "prettify": "prettier --write . --ignore-path ../../.gitignore",
+    "prettify:check": "prettier --check . --ignore-path ../../.gitignore",
+    "release": "npm run clean && npm run build && npm publish --access public",
+    "type-check": "tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=22.18.0",
+    "npm": "11.6.2"
+  },
+  "dependencies": {
+    "@hpcc-js/wasm": "^2.33.8",
+    "chalk": "^4.1.2",
+    "fast-glob": "^3.3.3",
+    "tsx": "^4.20.5",
+    "typescript": "^5.8.3",
+    "yargs": "^17.7.2"
+  }
+}
