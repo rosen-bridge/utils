@@ -5,12 +5,20 @@ import fs from 'node:fs';
 import path from 'node:path';
 import ts from 'typescript';
 
+let verbose = false;
+
 const log = {
-  debug: (msg: string) => console.log(chalk.gray(`[*] ${msg}`)),
-  info: (msg: string) => console.log(`[*] ${msg}`),
+  debug: (msg: string) => {
+    if (verbose) console.log(chalk.gray(`[*] ${msg}`));
+  },
+  info: (msg: string) => {
+    if (verbose) console.log(`[*] ${msg}`);
+  },
   success: (msg: string) => console.log(chalk.green(`[+] ${msg}`)),
   error: (msg: string) => console.log(chalk.red(`[-] ${msg}`)),
-  warn: (msg: string) => console.warn(chalk.yellow(`[!] ${msg}`)),
+  warn: (msg: string) => {
+    if (verbose) console.warn(chalk.yellow(`[!] ${msg}`));
+  },
 };
 
 type ActionType = 'assemble' | 'start';
@@ -35,6 +43,7 @@ export interface DependencyGraphOptions {
   serviceFilter?: string;
   outputName?: string;
   formats?: OutputFormat[];
+  verbose?: boolean;
 }
 
 /**
@@ -206,7 +215,7 @@ function collectStaticNames(
           if (member.initializer && ts.isStringLiteral(member.initializer)) {
             const key = `${node.name!.text}.${memberName}`;
             map.set(key, member.initializer.text);
-            log.success(
+            log.debug(
               `Collected static name [${key} = "${member.initializer.text}"] from ${path.relative(projectRoot, filePath)}`,
             );
           }
@@ -305,10 +314,13 @@ function extractServiceName(
  * found within it.
  *
  * The file is parsed into an AST and walked recursively. Every class
- * declaration is inspected: its service name is extracted via
- * {@link extractServiceName} and its `dependencies` property (if present) is
- * parsed via {@link extractDependenciesFromArray}. Classes for which a service
- * name cannot be determined are skipped.
+ * declaration is inspected with the following rules:
+ * - Abstract classes are skipped (logged at debug level).
+ * - Classes whose service name cannot be determined are skipped.
+ * - Concrete classes with no explicit `dependencies` member are skipped with a
+ *   warning, as they are not considered full service definitions.
+ * - Qualifying classes are parsed via {@link extractServiceName} and
+ *   {@link extractDependenciesFromArray}.
  *
  * @param filePath - Absolute path to the TypeScript file to parse.
  * @param staticNames - Pre-collected map of `ClassName.member` → string value,
@@ -340,61 +352,68 @@ function parseFile(
   function visit(node: ts.Node) {
     if (ts.isClassDeclaration(node)) {
       classCount++;
-      const serviceName = extractServiceName(node, staticNames);
 
-      if (serviceName) {
-        log.success(`Extracted service name: ${serviceName}`);
-        let assembleDeps: string[] = [];
-        let startDeps: string[] = [];
-        let dependenciesFound = false;
+      const isAbstract =
+        node.modifiers?.some((m) => m.kind === ts.SyntaxKind.AbstractKeyword) ??
+        false;
 
-        for (const member of node.members) {
-          if (!ts.isPropertyDeclaration(member)) {
-            continue;
+      if (isAbstract) {
+        log.debug(
+          `Skipping abstract class [${node.name?.text ?? '<anonymous>'}]`,
+        );
+      } else {
+        const serviceName = extractServiceName(node, staticNames);
+
+        if (serviceName) {
+          log.success(`Extracted service name: ${serviceName}`);
+          let assembleDeps: string[] = [];
+          let startDeps: string[] = [];
+          let dependenciesFound = false;
+
+          for (const member of node.members) {
+            if (!ts.isPropertyDeclaration(member)) {
+              continue;
+            }
+
+            const memberName = member.name.getText();
+
+            if (memberName !== 'dependencies') {
+              continue;
+            }
+            dependenciesFound = true;
+            log.debug(`Trying to extract dependencies...`);
+
+            if (
+              member.initializer &&
+              ts.isArrayLiteralExpression(member.initializer)
+            ) {
+              const deps = extractDependenciesFromArray(
+                member.initializer,
+                staticNames,
+              );
+
+              assembleDeps = deps.assembleDeps;
+              startDeps = deps.startDeps;
+              log.success(
+                `Extracted dependency. Assemble: [${assembleDeps.join(',')}] & Start: [${startDeps.join(',')}]`,
+              );
+            } else if (member.initializer) {
+              log.error(
+                `Failed [dependencies initializer is not an array, kind: ${ts.SyntaxKind[member.initializer.kind]}, text: ${member.initializer.getText()}]`,
+              );
+            } else {
+              log.error(`Failed [dependencies member has no initializer]`);
+            }
           }
 
-          const memberName = member.name.getText();
-
-          if (memberName !== 'dependencies') {
-            continue;
-          }
-          dependenciesFound = true;
-          log.debug(`Trying to extract dependencies...`);
-
-          if (
-            member.initializer &&
-            ts.isArrayLiteralExpression(member.initializer)
-          ) {
-            const deps = extractDependenciesFromArray(
-              member.initializer,
-              staticNames,
-            );
-
-            assembleDeps = deps.assembleDeps;
-            startDeps = deps.startDeps;
-            log.success(
-              `Extracted dependency. Assemble: [${assembleDeps.join(',')}] & Start: [${startDeps.join(',')}]`,
-            );
-          } else if (member.initializer) {
-            log.error(
-              `Failed [dependencies initializer is not an array, kind: ${ts.SyntaxKind[member.initializer.kind]}, text: ${member.initializer.getText()}]`,
+          if (!dependenciesFound) {
+            log.warn(
+              `Skipping class [${serviceName}] - no explicit 'dependencies' member found`,
             );
           } else {
-            log.error(`Failed [dependencies member has no initializer]`);
+            services.push({ name: serviceName, assembleDeps, startDeps });
           }
         }
-
-        if (!dependenciesFound) {
-          log.warn(
-            `No 'dependencies' member found on service [${serviceName}]`,
-          );
-        }
-
-        services.push({
-          name: serviceName,
-          assembleDeps,
-          startDeps,
-        });
       }
     }
 
@@ -517,7 +536,10 @@ export async function generateDependencyGraph(
     serviceFilter,
     outputName = 'graph',
     formats = ['svg'],
+    verbose: verboseOption = false,
   } = options;
+
+  verbose = verboseOption;
 
   const outputDir = process.cwd();
 
