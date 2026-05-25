@@ -114,5 +114,30 @@ describe('Semaphore', () => {
 
       expect(executionOrder).toEqual([1, 2, 3]);
     });
+
+    /**
+     * @target Semaphore should look for setImmediate when process.nextTick is unavailable
+     * @dependencies
+     * - `process.nextTick` mocked as undefined
+     * - A global spy on `setImmediate`
+     * - A Semaphore instance with a concurrency limit of 1
+     * @scenario
+     * - Disable `process.nextTick` by setting it to undefined.
+     * - Execute an asynchronous task through `semaphore.use()`.
+     * @expected
+     * - The internal scheduler triggers `setImmediate` instead of `nextTick`.
+     */
+    it('should look for setImmediate when process.nextTick is unavailable', async () => {
+      if (global.process) {
+        (global.process as any).nextTick = undefined;
+      }
+      const setImmediateSpy = vi.spyOn(global, 'setImmediate');
+      const semaphore = new Semaphore(1);
+      const createTask = () => async () => {
+        await delay(10);
+      };
+      await Promise.all([semaphore.use(createTask())]);
+      expect(setImmediateSpy).toHaveBeenCalled();
+    });
   });
 });
