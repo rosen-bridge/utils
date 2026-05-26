@@ -1,5 +1,4 @@
 import { Graphviz } from '@hpcc-js/wasm';
-import chalk from 'chalk';
 import fg from 'fast-glob';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -9,15 +8,15 @@ let verbose = false;
 
 const log = {
   debug: (msg: string) => {
-    if (verbose) console.log(chalk.gray(`[*] ${msg}`));
+    if (verbose) console.log(`[*] ${msg}`);
   },
   info: (msg: string) => {
     if (verbose) console.log(`[*] ${msg}`);
   },
-  success: (msg: string) => console.log(chalk.green(`[+] ${msg}`)),
-  error: (msg: string) => console.log(chalk.red(`[-] ${msg}`)),
+  success: (msg: string) => console.log(`[+] ${msg}`),
+  error: (msg: string) => console.log(`[-] ${msg}`),
   warn: (msg: string) => {
-    if (verbose) console.warn(chalk.yellow(`[!] ${msg}`));
+    if (verbose) console.warn(`[!] ${msg}`);
   },
 };
 
@@ -61,13 +60,13 @@ export interface DependencyGraphOptions {
  * @returns An object with two arrays: `assembleDeps` and `startDeps`,
  *   each containing the resolved service names for that action type.
  */
-function extractDependenciesFromArray(
+const extractDependenciesFromArray = (
   arrayNode: ts.ArrayLiteralExpression,
   staticNames: Map<string, string>,
 ): {
   assembleDeps: string[];
   startDeps: string[];
-} {
+} => {
   const result = {
     assembleDeps: [] as string[],
     startDeps: [] as string[],
@@ -161,7 +160,58 @@ function extractDependenciesFromArray(
   }
 
   return result;
-}
+};
+
+/**
+ * Recursively walks a TypeScript AST and collects static string property
+ * declarations on class nodes into the provided map.
+ *
+ * Only static properties whose initializer is a string literal are recorded,
+ * keyed as `ClassName.memberName`.
+ *
+ * @param node - The AST node to visit.
+ * @param map - Map to populate with `"ClassName.memberName"` → string value entries.
+ * @param projectRoot - Absolute path to the project root, used only for
+ *   relative-path log messages.
+ * @param filePath - Absolute path of the source file being scanned, used for
+ *   relative-path log messages.
+ */
+const visitStaticNames = (
+  node: ts.Node,
+  map: Map<string, string>,
+  projectRoot: string,
+  filePath: string,
+): void => {
+  if (ts.isClassDeclaration(node) && node.name) {
+    for (const member of node.members) {
+      if (!ts.isPropertyDeclaration(member)) {
+        continue;
+      }
+
+      const isStatic = member.modifiers?.some(
+        (m) => m.kind === ts.SyntaxKind.StaticKeyword,
+      );
+
+      if (!isStatic) {
+        continue;
+      }
+
+      const memberName = member.name.getText();
+
+      if (member.initializer && ts.isStringLiteral(member.initializer)) {
+        const key = `${node.name!.text}.${memberName}`;
+        map.set(key, member.initializer.text);
+        log.debug(
+          `Collected static name [${key} = "${member.initializer.text}"] from ${path.relative(projectRoot, filePath)}`,
+        );
+      }
+    }
+  }
+
+  ts.forEachChild(node, (child) =>
+    visitStaticNames(child, map, projectRoot, filePath),
+  );
+};
 
 /**
  * Scans all given TypeScript source files and builds a map of every static
@@ -177,10 +227,10 @@ function extractDependenciesFromArray(
  * @returns A map of `"ClassName.memberName"` → `string value` for every
  *   static string property found across all files.
  */
-function collectStaticNames(
+const collectStaticNames = (
   filePaths: string[],
   projectRoot: string,
-): Map<string, string> {
+): Map<string, string> => {
   log.debug(`Collecting static names across ${filePaths.length} file(s)`);
   const map = new Map<string, string>();
 
@@ -195,42 +245,12 @@ function collectStaticNames(
       ts.ScriptKind.TS,
     );
 
-    function visit(node: ts.Node) {
-      if (ts.isClassDeclaration(node) && node.name) {
-        for (const member of node.members) {
-          if (!ts.isPropertyDeclaration(member)) {
-            continue;
-          }
-
-          const isStatic = member.modifiers?.some(
-            (m) => m.kind === ts.SyntaxKind.StaticKeyword,
-          );
-
-          if (!isStatic) {
-            continue;
-          }
-
-          const memberName = member.name.getText();
-
-          if (member.initializer && ts.isStringLiteral(member.initializer)) {
-            const key = `${node.name!.text}.${memberName}`;
-            map.set(key, member.initializer.text);
-            log.debug(
-              `Collected static name [${key} = "${member.initializer.text}"] from ${path.relative(projectRoot, filePath)}`,
-            );
-          }
-        }
-      }
-
-      ts.forEachChild(node, visit);
-    }
-
-    visit(sourceFile);
+    visitStaticNames(sourceFile, map, projectRoot, filePath);
   }
 
   log.info(`Collected ${map.size} static name(s) total`);
   return map;
-}
+};
 
 /**
  * Attempts to determine the runtime service name for a class declaration AST
@@ -252,10 +272,10 @@ function collectStaticNames(
  * @returns The resolved service name string, or `null` if the name could not
  *   be determined.
  */
-function extractServiceName(
+const extractServiceName = (
   node: ts.Node,
   staticNames: Map<string, string>,
-): string | null {
+): string | null => {
   if (ts.isClassDeclaration(node)) {
     const className = node.name ? node.name.text : '<anonymous>';
 
@@ -307,7 +327,99 @@ function extractServiceName(
   }
 
   return null;
-}
+};
+
+/**
+ * Recursively walks a TypeScript AST and extracts {@link ServiceDefinition}
+ * objects from concrete, non-abstract service class declarations.
+ *
+ * Abstract classes are skipped. Classes without a resolvable service name or
+ * without an explicit `dependencies` member are skipped with a log message.
+ *
+ * @param node - The AST node to visit.
+ * @param staticNames - Pre-collected map of `ClassName.member` → string value,
+ *   forwarded to name- and dependency-resolution helpers.
+ * @param services - Array to append discovered service definitions to.
+ * @param classCount - Mutable counter incremented for each class declaration
+ *   encountered, used for diagnostic logging after the walk completes.
+ */
+const visitServiceDefinitions = (
+  node: ts.Node,
+  staticNames: Map<string, string>,
+  services: ServiceDefinition[],
+  classCount: { value: number },
+): void => {
+  if (ts.isClassDeclaration(node)) {
+    classCount.value++;
+
+    const isAbstract =
+      node.modifiers?.some((m) => m.kind === ts.SyntaxKind.AbstractKeyword) ??
+      false;
+
+    if (isAbstract) {
+      log.debug(
+        `Skipping abstract class [${node.name?.text ?? '<anonymous>'}]`,
+      );
+    } else {
+      const serviceName = extractServiceName(node, staticNames);
+
+      if (serviceName) {
+        log.success(`Extracted service name: ${serviceName}`);
+        let assembleDeps: string[] = [];
+        let startDeps: string[] = [];
+        let dependenciesFound = false;
+
+        for (const member of node.members) {
+          if (!ts.isPropertyDeclaration(member)) {
+            continue;
+          }
+
+          const memberName = member.name.getText();
+
+          if (memberName !== 'dependencies') {
+            continue;
+          }
+          dependenciesFound = true;
+          log.debug(`Trying to extract dependencies...`);
+
+          if (
+            member.initializer &&
+            ts.isArrayLiteralExpression(member.initializer)
+          ) {
+            const deps = extractDependenciesFromArray(
+              member.initializer,
+              staticNames,
+            );
+
+            assembleDeps = deps.assembleDeps;
+            startDeps = deps.startDeps;
+            log.success(
+              `Extracted dependency. Assemble: [${assembleDeps.join(',')}] & Start: [${startDeps.join(',')}]`,
+            );
+          } else if (member.initializer) {
+            log.error(
+              `Failed [dependencies initializer is not an array, kind: ${ts.SyntaxKind[member.initializer.kind]}, text: ${member.initializer.getText()}]`,
+            );
+          } else {
+            log.error(`Failed [dependencies member has no initializer]`);
+          }
+        }
+
+        if (!dependenciesFound) {
+          log.warn(
+            `Skipping class [${serviceName}] - no explicit 'dependencies' member found`,
+          );
+        } else {
+          services.push({ name: serviceName, assembleDeps, startDeps });
+        }
+      }
+    }
+  }
+
+  ts.forEachChild(node, (child) =>
+    visitServiceDefinitions(child, staticNames, services, classCount),
+  );
+};
 
 /**
  * Parses a single TypeScript source file and returns all service definitions
@@ -330,11 +442,11 @@ function extractServiceName(
  * @returns An array of {@link ServiceDefinition} objects found in the file.
  *   May be empty if the file contains no recognizable service classes.
  */
-function parseFile(
+const parseFile = (
   filePath: string,
   staticNames: Map<string, string>,
   projectRoot: string,
-): ServiceDefinition[] {
+): ServiceDefinition[] => {
   log.info(`Parsing file [${path.relative(projectRoot, filePath)}]`);
   const content = fs.readFileSync(filePath, 'utf8');
 
@@ -347,89 +459,18 @@ function parseFile(
   );
 
   const services: ServiceDefinition[] = [];
-  let classCount = 0;
+  const classCount = { value: 0 };
 
-  function visit(node: ts.Node) {
-    if (ts.isClassDeclaration(node)) {
-      classCount++;
+  visitServiceDefinitions(sourceFile, staticNames, services, classCount);
 
-      const isAbstract =
-        node.modifiers?.some((m) => m.kind === ts.SyntaxKind.AbstractKeyword) ??
-        false;
-
-      if (isAbstract) {
-        log.debug(
-          `Skipping abstract class [${node.name?.text ?? '<anonymous>'}]`,
-        );
-      } else {
-        const serviceName = extractServiceName(node, staticNames);
-
-        if (serviceName) {
-          log.success(`Extracted service name: ${serviceName}`);
-          let assembleDeps: string[] = [];
-          let startDeps: string[] = [];
-          let dependenciesFound = false;
-
-          for (const member of node.members) {
-            if (!ts.isPropertyDeclaration(member)) {
-              continue;
-            }
-
-            const memberName = member.name.getText();
-
-            if (memberName !== 'dependencies') {
-              continue;
-            }
-            dependenciesFound = true;
-            log.debug(`Trying to extract dependencies...`);
-
-            if (
-              member.initializer &&
-              ts.isArrayLiteralExpression(member.initializer)
-            ) {
-              const deps = extractDependenciesFromArray(
-                member.initializer,
-                staticNames,
-              );
-
-              assembleDeps = deps.assembleDeps;
-              startDeps = deps.startDeps;
-              log.success(
-                `Extracted dependency. Assemble: [${assembleDeps.join(',')}] & Start: [${startDeps.join(',')}]`,
-              );
-            } else if (member.initializer) {
-              log.error(
-                `Failed [dependencies initializer is not an array, kind: ${ts.SyntaxKind[member.initializer.kind]}, text: ${member.initializer.getText()}]`,
-              );
-            } else {
-              log.error(`Failed [dependencies member has no initializer]`);
-            }
-          }
-
-          if (!dependenciesFound) {
-            log.warn(
-              `Skipping class [${serviceName}] - no explicit 'dependencies' member found`,
-            );
-          } else {
-            services.push({ name: serviceName, assembleDeps, startDeps });
-          }
-        }
-      }
-    }
-
-    ts.forEachChild(node, visit);
-  }
-
-  visit(sourceFile);
-
-  if (classCount === 0) {
+  if (classCount.value === 0) {
     log.debug(`No class declarations found in file`);
   }
 
   log.debug(`File yielded ${services.length} service definition(s)`);
 
   return services;
-}
+};
 
 /**
  * Converts a list of service definitions into a flat list of directed edges
@@ -443,7 +484,7 @@ function parseFile(
  * @returns An array of {@link Edge} objects representing every dependency
  *   relationship found across all services.
  */
-function buildEdges(services: ServiceDefinition[]): Edge[] {
+const buildEdges = (services: ServiceDefinition[]): Edge[] => {
   const edges: Edge[] = [];
 
   for (const service of services) {
@@ -457,7 +498,7 @@ function buildEdges(services: ServiceDefinition[]): Edge[] {
   }
 
   return edges;
-}
+};
 
 /**
  * Serializes a list of services and edges into a Graphviz DOT language string
@@ -478,7 +519,7 @@ function buildEdges(services: ServiceDefinition[]): Edge[] {
  * @returns A DOT-format string ready to be written to a `.dot` file or passed
  *   to a Graphviz renderer.
  */
-function generateDot(serviceNames: string[], edges: Edge[]): string {
+const generateDot = (serviceNames: string[], edges: Edge[]): string => {
   const lines: string[] = [];
 
   lines.push('digraph ServiceDependencies {');
@@ -504,7 +545,7 @@ function generateDot(serviceNames: string[], edges: Edge[]): string {
   lines.push('}');
 
   return lines.join('\n');
-}
+};
 
 /**
  * Entry point for the dependency-graph command.
@@ -527,9 +568,9 @@ function generateDot(serviceNames: string[], edges: Edge[]): string {
  * @param options.formats - Output formats to generate. Supported values are
  *   `'svg'` and `'dot'`. Defaults to `['svg']`.
  */
-export async function generateDependencyGraph(
+export const generateDependencyGraph = async (
   options: DependencyGraphOptions,
-): Promise<void> {
+): Promise<void> => {
   const {
     projectRoot,
     dependencyFilter,
@@ -634,4 +675,4 @@ export async function generateDependencyGraph(
   }
 
   log.success(`Done`);
-}
+};
