@@ -17,7 +17,7 @@ export type StatusChangeCallbackFunction = (
 ) => unknown;
 
 export abstract class AbstractService {
-  protected abstract readonly name: string;
+  static readonly name: string;
   protected abstract readonly dependencies: Array<Dependency>;
   private status: ServiceStatus;
   protected callbacks: Array<StatusChangeCallbackFunction> = [];
@@ -45,7 +45,7 @@ export abstract class AbstractService {
   /**
    * returns service name (should be unique)
    */
-  getName = (): string => this.name;
+  getName = (): string => (this.constructor as typeof AbstractService).name;
 
   /**
    * returns service dependencies
@@ -86,7 +86,9 @@ export abstract class AbstractService {
         );
         return this.actionPromise.promise;
       } else
-        throw Error(`Cannot start service [${this.name}]: Service is stopping`);
+        throw Error(
+          `Cannot start service [${this.getName()}]: Service is stopping`,
+        );
     }
     return this.actionSemaphore.acquire().then((release) => {
       if (this.getStatus() !== ServiceStatus.dormant) {
@@ -111,7 +113,7 @@ export abstract class AbstractService {
         })
         .catch((error) => {
           this.logger.warn(
-            `An error occurred while starting service [${this.name}]: ${error}`,
+            `An error occurred while starting service [${this.getName()}]: ${error}`,
           );
           release();
           return false;
@@ -162,7 +164,7 @@ export abstract class AbstractService {
         })
         .catch((error) => {
           this.logger.warn(
-            `An error occurred while stopping service [${this.name}]: ${error}`,
+            `An error occurred while stopping service [${this.getName()}]: ${error}`,
           );
           release();
           return false;
@@ -221,7 +223,7 @@ export abstract class AbstractService {
         })
         .catch((error) => {
           this.logger.warn(
-            `An error occurred while assembling service [${this.name}]: ${error}`,
+            `An error occurred while assembling service [${this.getName()}]: ${error}`,
           );
           release();
           return false;
