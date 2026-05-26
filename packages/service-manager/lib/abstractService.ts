@@ -104,7 +104,8 @@ export abstract class AbstractService {
       };
       return this.actionPromise.promise
         .then((res) => {
-          this.logger.debug(`service [${this.getName()}] is started`);
+          if (res) this.logger.debug(`service [${this.getName()}] is started`);
+          else this.logger.debug(`service [${this.getName()}] failed to start`);
           this.actionPromise = undefined;
           release();
           return res;
@@ -154,7 +155,8 @@ export abstract class AbstractService {
       };
       return this.actionPromise.promise
         .then((res) => {
-          this.logger.debug(`service [${this.getName()}] is stopped`);
+          if (res) this.logger.debug(`service [${this.getName()}] is stopped`);
+          else this.logger.debug(`service [${this.getName()}] failed to stop`);
           this.actionPromise = undefined;
           release();
           return res;
@@ -210,7 +212,10 @@ export abstract class AbstractService {
       };
       return this.actionPromise.promise
         .then((res) => {
-          this.logger.debug(`service [${this.getName()}] is assembled`);
+          if (res)
+            this.logger.debug(`service [${this.getName()}] is assembled`);
+          else
+            this.logger.debug(`service [${this.getName()}] failed to assemble`);
           this.actionPromise = undefined;
           release();
           return res;
