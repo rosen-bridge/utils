@@ -152,7 +152,10 @@ export class ServiceManager {
    * @service service object
    */
   register = (service: AbstractService): void => {
-    this.services.set(service.getName(), service);
+    const serviceName = service.getName();
+    if (this.services.has(serviceName))
+      throw new Error(`Service [${serviceName}] is already registered`);
+    this.services.set(serviceName, service);
     service.addCallback(this.callbackHandler);
   };
 
