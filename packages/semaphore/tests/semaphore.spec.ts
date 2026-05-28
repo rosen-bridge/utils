@@ -128,16 +128,24 @@ describe('Semaphore', () => {
      * - The internal scheduler triggers `setImmediate` instead of `nextTick`.
      */
     it('should look for setImmediate when process.nextTick is unavailable', async () => {
-      if (global.process) {
-        (global.process as any).nextTick = undefined;
+      let originalNextTick;
+      try {
+        if (global.process) {
+          originalNextTick = global.process.nextTick;
+          (global.process as any).nextTick = undefined;
+        }
+        const setImmediateSpy = vi.spyOn(global, 'setImmediate');
+        const semaphore = new Semaphore(1);
+        const createTask = () => async () => {
+          await delay(10);
+        };
+        await Promise.all([semaphore.use(createTask())]);
+        expect(setImmediateSpy).toHaveBeenCalled();
+      } finally {
+        if (originalNextTick) {
+          global.process.nextTick = originalNextTick;
+        }
       }
-      const setImmediateSpy = vi.spyOn(global, 'setImmediate');
-      const semaphore = new Semaphore(1);
-      const createTask = () => async () => {
-        await delay(10);
-      };
-      await Promise.all([semaphore.use(createTask())]);
-      expect(setImmediateSpy).toHaveBeenCalled();
     });
   });
 });
