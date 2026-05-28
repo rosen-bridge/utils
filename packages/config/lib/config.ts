@@ -1020,11 +1020,7 @@ export class ConfigValidator {
           higherLevelSources,
           childPath,
         );
-        if ('secret' in field) {
-          value[childName]['secret'] = field.secret;
-        } else {
-          value[childName]['secret'] = false;
-        }
+        value[childName].secret = 'secret' in field ? field['secret'] : false;
       }
     }
 
@@ -1036,93 +1032,76 @@ export class ConfigValidator {
    *
    * @param {boolean} [options.allEnv] If true, includes all environment variables, otherwise only includes non-secret fields.
    *
-   * @returns {Record<string, any>}
+   * @returns {Record<string, unknown>}
    */
   generateCustomEnvFile = (
     allEnv?: boolean,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ): Record<string, any> => {
-    return this.buildCustomEnvFile(this.schema, [], allEnv === true);
-  };
-
-  /**
-   * Recursively builds a custom environment file from the schema.
-   *
-   * @param {ConfigSchema} schema The configuration schema containing field definitions.
-   * @param {string[]} path The current path of keys in the schema (used for nested schemas).
-   * @param {boolean} allEnv Flag to determine whether to include all fields or only non-secret ones.
-   *
-   * @returns {Record<string, any>}
-   */
-  private buildCustomEnvFile = (
-    schema: ConfigSchema,
-    path: string[],
-    allEnv: boolean,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ): Record<string, any> => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const out: Record<string, any> = Object.create(null);
+    schema: ConfigSchema = this.schema,
+    path: string[] = [],
+  ): Record<string, unknown> => {
+    const out: Record<string, unknown> = Object.create(null);
 
     for (const key of Object.keys(schema)) {
       const field = schema[key];
       const currentPath = [...path, key];
-
-      if (field.type === 'object') {
-        const child = this.buildCustomEnvFile(
-          field.children,
-          currentPath,
-          allEnv,
-        );
-
-        if (Object.keys(child).length > 0) {
-          out[key] = child;
-        }
-
-        continue;
-      }
-
-      if (field.type === 'array') {
-        continue;
-      }
-      if (field.type === 'union') {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const unionOut: Record<string, any> = Object.create(null);
-        let hasPrimitive = false;
-
-        for (const unionChild of field.children) {
-          const childResult = this.buildCustomEnvFile(
-            { [key]: unionChild },
-            path,
+      switch (field.type) {
+        case 'object': {
+          const child = this.generateCustomEnvFile(
             allEnv,
+            field.children,
+            currentPath,
           );
 
-          const childValue = childResult[key];
+          if (Object.keys(child).length > 0) {
+            out[key] = child;
+          }
 
-          if (childValue !== undefined) {
-            if (typeof childValue === 'object') {
-              Object.assign(unionOut, childValue);
-            } else {
-              hasPrimitive = true;
+          break;
+        }
+
+        case 'array': {
+          break;
+        }
+        case 'union': {
+          const unionOut: Record<string, unknown> = Object.create(null);
+          let hasPrimitive = false;
+
+          for (const unionChild of field.children) {
+            const childResult = this.generateCustomEnvFile(
+              allEnv,
+              { [key]: unionChild },
+              path,
+            );
+
+            const childValue = childResult[key];
+
+            if (childValue !== undefined) {
+              if (typeof childValue === 'object') {
+                Object.assign(unionOut, childValue);
+              } else {
+                hasPrimitive = true;
+              }
             }
           }
-        }
 
-        if (Object.keys(unionOut).length > 0) {
-          out[key] = unionOut;
-        } else if (hasPrimitive) {
-          out[key] = currentPath.map((p) => p.toUpperCase()).join('_');
-        }
+          if (Object.keys(unionOut).length > 0) {
+            out[key] = unionOut;
+          } else if (hasPrimitive) {
+            out[key] = currentPath.map((p) => p.toUpperCase()).join('_');
+          }
 
-        continue;
+          break;
+        }
+        default: {
+          if (!(allEnv || field.secret === true)) break;
+
+          const envKey = currentPath.map((p) => p.toUpperCase()).join('_');
+
+          out[key] = envKey;
+          break;
+        }
       }
-
-      if (!(allEnv || field.secret === true)) continue;
-
-      const envKey = currentPath.map((p) => p.toUpperCase()).join('_');
-
-      out[key] = envKey;
     }
-
     return out;
   };
 
