@@ -1,6 +1,5 @@
-import { Semaphore } from 'await-semaphore';
-
 import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
+import { Semaphore } from '@rosen-bridge/semaphore';
 
 import {
   ActionPromise,
