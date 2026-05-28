@@ -1,6 +1,5 @@
 #!/usr/bin/env -S node --experimental-specifier-resolution=node
 
-import chalk from 'chalk';
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
 import ora from 'ora';
@@ -66,9 +65,7 @@ yargs(hideBin(process.argv))
 
       fs.writeFileSync(argv.output, output);
 
-      spinner.succeed(
-        chalk.green(`default config values were output at "${argv.output}"`),
-      );
+      spinner.succeed(`default config values were output at "${argv.output}"`);
     },
   )
   .command(
@@ -106,9 +103,7 @@ yargs(hideBin(process.argv))
 
       fs.writeFileSync(argv.output, tsTypes);
 
-      spinner.succeed(
-        chalk.green(`TypeScript types were output at "${argv.output}"`),
-      );
+      spinner.succeed(`TypeScript types were output at "${argv.output}"`);
     },
   )
   .command(
@@ -136,7 +131,8 @@ yargs(hideBin(process.argv))
           default: 'yaml',
           type: 'string',
         })
-        .option('all-env', {
+        .option('all', {
+          alias: 'a',
           type: 'boolean',
           default: false,
           description:
@@ -151,7 +147,7 @@ yargs(hideBin(process.argv))
 
       const confValidator = ConfigValidator.fromSchema(schema);
 
-      const envConfig = confValidator.generateCustomEnvFile(argv['all-env']);
+      const envConfig = confValidator.generateCustomEnvFile(argv['all']);
 
       let output = '';
       switch (argv.format) {
@@ -167,7 +163,7 @@ yargs(hideBin(process.argv))
 
       fs.writeFileSync(argv.output, output);
 
-      spinner.succeed(chalk.green(`env config was output at "${argv.output}"`));
+      spinner.succeed(`env config was output at "${argv.output}"`);
     },
   )
   .demandCommand(1)

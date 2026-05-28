@@ -183,9 +183,6 @@ export const propertyValidators = {
           `array field type must have a "items" property of type "object"`,
         );
       }
-      if (JSON.stringify(field.items).includes('"secret":true')) {
-        throw new Error(`array items should not have "secret" property`);
-      }
     },
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     default: (field: types.ArrayField, _config: ConfigValidator) => {
@@ -291,12 +288,12 @@ export const propertyValidators = {
         );
       }
     },
-  },
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  secret: (field: types.BigIntField, _config: ConfigValidator) => {
-    if (Object.hasOwn(field, 'secret') && typeof field.secret !== 'boolean') {
-      throw new Error('"secret" must be boolean');
-    }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    secret: (field: types.BigIntField, _config: ConfigValidator) => {
+      if (Object.hasOwn(field, 'secret') && typeof field.secret !== 'boolean') {
+        throw new Error('"secret" must be boolean');
+      }
+    },
   },
 };
 
