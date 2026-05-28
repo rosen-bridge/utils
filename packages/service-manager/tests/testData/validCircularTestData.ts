@@ -2,7 +2,7 @@ import { Dependency, ServiceAction, ServiceStatus } from '../../lib';
 import { TestAbstractService } from '../testAbstractService';
 
 export class X5A extends TestAbstractService {
-  name = 'X5A';
+  static name = 'X5A';
   constructor() {
     super();
   }
@@ -21,7 +21,7 @@ export class X5A extends TestAbstractService {
 }
 
 export class X5B extends TestAbstractService {
-  name = 'X5B';
+  static name = 'X5B';
   constructor() {
     super();
   }
@@ -63,7 +63,7 @@ export class X5B extends TestAbstractService {
 }
 
 export class X5C extends TestAbstractService {
-  name = 'X5C';
+  static name = 'X5C';
   constructor() {
     super();
   }
