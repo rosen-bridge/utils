@@ -5,5 +5,8 @@
     "types": ["node", "vitest/globals"]
   },
   "include": ["lib/**/*", "tests"],
-  "references": [{ "path": "../loggers/abstract-logger" }]
+  "references": [
+    { "path": "../loggers/abstract-logger" },
+    { "path": "../semaphore" }
+  ]
 }
