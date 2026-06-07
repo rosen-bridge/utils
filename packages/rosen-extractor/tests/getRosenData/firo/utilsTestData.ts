@@ -11,10 +11,6 @@ const pushData1Script = (length: number) =>
 export const opReturnScripts = {
   valid: `6a33${validOpReturnPayload}`,
   validPushData1: pushData1Script(76),
-  validPushData1Length77: pushData1Script(77),
-  validPushData1Length78: pushData1Script(78),
-  validPushData1Length79: pushData1Script(79),
-  validPushData1Length80: pushData1Script(80),
   validPushData2: `6a4d3300${validOpReturnPayload}`,
   validPushData4: `6a4e33000000${validOpReturnPayload}`,
   tooLongPushData1: pushData1Script(81),

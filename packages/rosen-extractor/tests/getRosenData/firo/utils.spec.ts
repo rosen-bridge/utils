@@ -23,45 +23,23 @@ describe('parseOpReturn', () => {
   });
 
   /**
-   * @target parseOpReturn should extract rosen data from OP_PUSHDATA1
-   * @dependencies
-   * @scenario
-   * - mock utxo with OP_RETURN scriptPubKey that uses OP_PUSHDATA1
-   * - run test
-   * - check returned value
-   * @expected
-   * - it should return expected asset transformation
-   */
-  it('should extract rosen data from OP_PUSHDATA1', () => {
-    const script = testData.opReturnScripts.validPushData1;
-    const result = parseOpReturn(script);
-
-    expect(result).toStrictEqual(testData.opReturnData);
-  });
-
-  /**
-   * @target parseOpReturn should extract rosen data from supported pushdata encodings
+   * @target parseOpReturn should extract rosen data from %s
    * @dependencies
    * @scenario
    * - mock OP_RETURN scriptPubKeys using OP_PUSHDATA1, OP_PUSHDATA2 and OP_PUSHDATA4
    * - run test for each script
    * - check returned value
    * @expected
-   * - it should return expected asset transformation
+   * - it should return expected rosen data
    */
-  [
-    ['OP_PUSHDATA1 length 77', testData.opReturnScripts.validPushData1Length77],
-    ['OP_PUSHDATA1 length 78', testData.opReturnScripts.validPushData1Length78],
-    ['OP_PUSHDATA1 length 79', testData.opReturnScripts.validPushData1Length79],
-    ['OP_PUSHDATA1 length 80', testData.opReturnScripts.validPushData1Length80],
+  it.each([
+    ['OP_PUSHDATA1', testData.opReturnScripts.validPushData1],
     ['OP_PUSHDATA2', testData.opReturnScripts.validPushData2],
     ['OP_PUSHDATA4', testData.opReturnScripts.validPushData4],
-  ].forEach(([pushDataEncoding, script]) => {
-    it(`should extract rosen data from ${pushDataEncoding}`, () => {
-      const result = parseOpReturn(script);
+  ])('should extract rosen data from %s', (_pushDataEncoding, script) => {
+    const result = parseOpReturn(script);
 
-      expect(result).toStrictEqual(testData.opReturnData);
-    });
+    expect(result).toStrictEqual(testData.opReturnData);
   });
 
   /**

@@ -22,14 +22,15 @@ const firoNetwork = {
   wif: 0xd2,
 };
 
-const readUIntLE = (hex: string): number => {
-  let value = 0;
-  for (let i = 0; i < hex.length; i += 2) {
-    value += parseInt(hex.slice(i, i + 2), 16) * 256 ** (i / 2);
-  }
-  return value;
-};
-
+/**
+ * Extracts Rosen OP_RETURN payload from a Firo scriptPubKey.
+ *
+ * Supports direct push and OP_PUSHDATA1/2/4 encodings while enforcing Rosen's
+ * 80-byte OP_RETURN payload limit.
+ *
+ * @param scriptPubKeyHex Firo scriptPubKey hex
+ * @returns OP_RETURN payload hex
+ */
 const parseOpReturnData = (scriptPubKeyHex: string): string => {
   if (scriptPubKeyHex.length % 2 !== 0) throw Error(`script hex length is odd`);
 
@@ -58,9 +59,9 @@ const parseOpReturnData = (scriptPubKeyHex: string): string => {
   } else if (pushOpcode === OP_PUSHDATA1) {
     dataLength = parseInt(readBytes(1), 16);
   } else if (pushOpcode === OP_PUSHDATA2) {
-    dataLength = readUIntLE(readBytes(2));
+    dataLength = Buffer.from(readBytes(2), 'hex').readUInt16LE();
   } else if (pushOpcode === OP_PUSHDATA4) {
-    dataLength = readUIntLE(readBytes(4));
+    dataLength = Buffer.from(readBytes(4), 'hex').readUInt32LE();
   } else {
     throw Error(`script contains unsupported push opcode [${pushOpcode}]`);
   }
