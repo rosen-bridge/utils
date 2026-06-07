@@ -17,7 +17,7 @@ export type StatusChangeCallbackFunction = (
 ) => unknown;
 
 export abstract class AbstractService {
-  static readonly name: string;
+  static readonly serviceName: string;
   protected abstract readonly dependencies: Array<Dependency>;
   private status: ServiceStatus;
   protected callbacks: Array<StatusChangeCallbackFunction> = [];
@@ -45,7 +45,11 @@ export abstract class AbstractService {
   /**
    * returns service name (should be unique)
    */
-  getName = (): string => (this.constructor as typeof AbstractService).name;
+  getName = (): string => {
+    const name = (this.constructor as typeof AbstractService).serviceName;
+    if (typeof name === 'string') return name;
+    throw new Error(`Service name is not defined`);
+  };
 
   /**
    * returns service dependencies

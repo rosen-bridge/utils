@@ -9,7 +9,7 @@ export class X6B extends X6BInterface {
 
   protected dependencies: Dependency[] = [
     {
-      serviceName: X6A.name, // X6A overwrites it's name
+      serviceName: X6A.serviceName, // X6A overwrites it's name
       allowedStatuses: [
         ServiceStatus.running,
         ServiceStatus.started,

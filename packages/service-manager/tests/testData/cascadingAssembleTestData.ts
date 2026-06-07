@@ -2,7 +2,7 @@ import { Dependency, ServiceAction, ServiceStatus } from '../../lib';
 import { TestAbstractService } from '../testAbstractService';
 
 export class I0A extends TestAbstractService {
-  static name = 'I0A';
+  static serviceName = 'I0A';
   constructor(initialStatus?: ServiceStatus) {
     super(initialStatus);
   }
@@ -25,7 +25,7 @@ export class I0A extends TestAbstractService {
 }
 
 export class I0B extends TestAbstractService {
-  static name = 'I0B';
+  static serviceName = 'I0B';
   constructor(initialStatus?: ServiceStatus) {
     super(initialStatus);
   }

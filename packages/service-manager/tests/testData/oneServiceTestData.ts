@@ -2,7 +2,7 @@ import { Dependency, ServiceStatus } from '../../lib';
 import { TestAbstractService } from '../testAbstractService';
 
 export class OneServiceA extends TestAbstractService {
-  static name = 'OneServiceA';
+  static serviceName = 'OneServiceA';
   constructor() {
     super(ServiceStatus.dormant);
   }

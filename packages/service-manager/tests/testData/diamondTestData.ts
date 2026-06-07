@@ -2,7 +2,7 @@ import { Dependency, ServiceAction, ServiceStatus } from '../../lib';
 import { TestAbstractService } from '../testAbstractService';
 
 export class X3A extends TestAbstractService {
-  static name = 'X3A';
+  static serviceName = 'X3A';
   constructor() {
     super(ServiceStatus.dormant);
   }
@@ -26,7 +26,7 @@ export class X3A extends TestAbstractService {
 }
 
 export class X3B extends TestAbstractService {
-  static name = 'X3B';
+  static serviceName = 'X3B';
   constructor() {
     super(ServiceStatus.dormant);
   }
@@ -45,7 +45,7 @@ export class X3B extends TestAbstractService {
 }
 
 export class X3C extends TestAbstractService {
-  static name = 'X3C';
+  static serviceName = 'X3C';
   constructor() {
     super(ServiceStatus.dormant);
   }
@@ -64,7 +64,7 @@ export class X3C extends TestAbstractService {
 }
 
 export class X3D extends TestAbstractService {
-  static name = 'X3D';
+  static serviceName = 'X3D';
   constructor() {
     super(ServiceStatus.dormant);
   }

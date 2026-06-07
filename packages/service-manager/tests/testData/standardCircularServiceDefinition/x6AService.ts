@@ -3,14 +3,14 @@ import { X6AInterface } from './x6AInterface';
 import { X6BInterface } from './x6BInterface';
 
 export class X6A extends X6AInterface {
-  static name = 'X6A-overwritten';
+  static serviceName = 'X6A-overwritten';
   constructor() {
     super();
   }
 
   protected dependencies: Dependency[] = [
     {
-      serviceName: X6BInterface.name,
+      serviceName: X6BInterface.serviceName,
       allowedStatuses: [ServiceStatus.running],
       action: ServiceAction.start,
     },
