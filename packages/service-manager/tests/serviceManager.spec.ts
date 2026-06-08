@@ -7,6 +7,7 @@ import { X2A, X2B, X2C, X2D } from './testData/midwayFailureTestData';
 import { OneServiceA } from './testData/oneServiceTestData';
 import { X4A, X4B, X4C, X4D } from './testData/partialStartTestData';
 import { R1A, R1B } from './testData/simpleRunningTestData';
+import { X6A, X6B } from './testData/standardCircularServiceDefinition';
 import { X5A, X5B, X5C } from './testData/validCircularTestData';
 import { sleep } from './testUtils';
 
@@ -713,6 +714,100 @@ describe('ServiceManager', () => {
     );
     expect(serviceManager.getStatus(c.getName())).toEqual(
       ServiceStatus.dormant,
+    );
+  }, 10000);
+
+  /**
+   * @target ServiceManager should perform the Valid Circular Scenario with standard definition successfully
+   * @dependencies
+   * - 2 raw services (their definitions should follow the standard)
+   *   - A depends on B for start
+   *   - B depends on A for assemble
+   *   - A should overwrite it's name (the one that is defined in the interface)
+   * @scenario
+   * - generate test service manager
+   * - generate 2 test services of X6
+   * - call start on X6A
+   * - wait 0.5 seconds
+   * - check status of two services
+   * - wait 1 second
+   * - check status of two services
+   * - wait 1 second
+   * - check status of two services
+   * - wait 1 second
+   * - check status of two services
+   * - wait 1 second
+   * - check status of two services
+   * - wait 1 second
+   * - check returned value
+   * - check status of two services
+   * @expected
+   * - after 1st waiting
+   *   - X6A should be in raw status
+   *   - X6B should be in raw status
+   * - after 2nd waiting
+   *   - X6A should be in dormant status
+   *   - X6B should be in raw status
+   * - after 3rd waiting
+   *   - X6A should be in dormant status
+   *   - X6B should be in dormant status
+   * - after 4th waiting
+   *   - X6A should be in dormant status
+   *   - X6B should be in started status
+   * - after 5th waiting
+   *   - X6A should be in dormant status
+   *   - X6B should be in running status
+   * - at the end (after 6th waiting)
+   *   - X6A should be in running status
+   *   - X6B should be in running status
+   * - returned value should be true
+   */
+  it('should perform the Valid Circular Scenario with standard definition successfully', async () => {
+    const serviceManager = ServiceManager.setup();
+
+    const a = new X6A();
+    const b = new X6B();
+    const services = [a, b];
+    services.forEach((service) => serviceManager.register(service));
+
+    const stopPromise = serviceManager.start(a.getName());
+    await sleep(0.5);
+    expect(serviceManager.getStatus(a.getName())).toEqual(ServiceStatus.raw);
+    expect(serviceManager.getStatus(b.getName())).toEqual(ServiceStatus.raw);
+    await sleep(1);
+    expect(serviceManager.getStatus(a.getName())).toEqual(
+      ServiceStatus.dormant,
+    );
+    expect(serviceManager.getStatus(b.getName())).toEqual(ServiceStatus.raw);
+    await sleep(1);
+    expect(serviceManager.getStatus(a.getName())).toEqual(
+      ServiceStatus.dormant,
+    );
+    expect(serviceManager.getStatus(b.getName())).toEqual(
+      ServiceStatus.dormant,
+    );
+    await sleep(1);
+    expect(serviceManager.getStatus(a.getName())).toEqual(
+      ServiceStatus.dormant,
+    );
+    expect(serviceManager.getStatus(b.getName())).toEqual(
+      ServiceStatus.started,
+    );
+    await sleep(1);
+    expect(serviceManager.getStatus(a.getName())).toEqual(
+      ServiceStatus.dormant,
+    );
+    expect(serviceManager.getStatus(b.getName())).toEqual(
+      ServiceStatus.running,
+    );
+    await sleep(1);
+    const res = await stopPromise;
+    expect(res).toEqual(true);
+    expect(serviceManager.getStatus(a.getName())).toEqual(
+      ServiceStatus.running,
+    );
+    expect(serviceManager.getStatus(b.getName())).toEqual(
+      ServiceStatus.running,
     );
   }, 10000);
 });

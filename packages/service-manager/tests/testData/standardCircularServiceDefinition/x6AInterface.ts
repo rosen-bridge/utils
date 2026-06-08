@@ -1,0 +1,5 @@
+import { TestAbstractService } from '../../testAbstractService';
+
+export abstract class X6AInterface extends TestAbstractService {
+  static serviceName = 'X6A';
+}

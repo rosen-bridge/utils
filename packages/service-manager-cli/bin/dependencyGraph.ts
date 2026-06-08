@@ -254,21 +254,28 @@ const collectStaticNames = (
 
 /**
  * Attempts to determine the runtime service name for a class declaration AST
- * node by inspecting its `serviceName` or `name` property member.
+ * node.
  *
  * Resolution is tried in the following order:
- * 1. String literal initializer (e.g. `serviceName = 'my-service'`).
- * 2. Static property access resolved via `staticNames`
- *    (e.g. `serviceName = MyService.serviceName`).
+ * 1. A `static serviceName` member declared directly on the class:
+ *    - String literal initializer (e.g. `static serviceName = 'my-service'`).
+ *    - Static property access resolved via `staticNames`
+ *      (e.g. `static serviceName = ParentClass.serviceName`).
+ * 2. If no own `serviceName` is found, the parent class from the `extends`
+ *    clause is looked up in `staticNames` as `ParentClass.serviceName`. This
+ *    covers the common pattern where the abstract interface declares the name
+ *    and the concrete service class inherits it without redeclaring it.
  *
- * Returns `null` when the node is not a class declaration, or when no
- * `serviceName` / `name` member with a resolvable value is found. Classes
- * without an explicit service name are intentionally excluded from the graph.
+ * Only `static` `serviceName` declarations are considered. Non-static members
+ * and any member named `name` are intentionally ignored.
+ *
+ * Returns `null` when no resolvable `serviceName` is found either directly or
+ * via the parent class. Such classes are excluded from the graph.
  *
  * @param node - The AST node to inspect; only `ClassDeclaration` nodes are
  *   processed.
  * @param staticNames - Pre-collected map of `ClassName.member` → string value
- *   used to resolve property-access expressions.
+ *   used to resolve property-access expressions and parent class lookups.
  * @returns The resolved service name string, or `null` if the name could not
  *   be determined.
  */
@@ -286,9 +293,19 @@ const extractServiceName = (
 
       const memberName = member.name.getText();
 
-      if (memberName !== 'serviceName' && memberName !== 'name') {
+      if (memberName !== 'serviceName') {
         continue;
       }
+
+      const isStatic = member.modifiers?.some(
+        (m) => m.kind === ts.SyntaxKind.StaticKeyword,
+      );
+
+      if (!isStatic) {
+        log.debug(`Skipping non-static 'serviceName' on class [${className}]`);
+        continue;
+      }
+
       log.debug(
         `Trying to extract service name on class [${className}] member [${memberName}]`,
       );
@@ -319,6 +336,31 @@ const extractServiceName = (
           `Failed [class [${className}] member [${memberName}] has no initializer]`,
         );
       }
+    }
+
+    // No own static serviceName found; fall back to the parent class declared
+    // in the extends clause. The parent's serviceName is already present in
+    // staticNames because collectStaticNames scans all classes, including
+    // abstract ones.
+    const extendsClause = node.heritageClauses?.find(
+      (c) => c.token === ts.SyntaxKind.ExtendsKeyword,
+    );
+
+    if (extendsClause && extendsClause.types.length > 0) {
+      const parentName = extendsClause.types[0].expression.getText();
+      const key = `${parentName}.serviceName`;
+      const resolved = staticNames.get(key);
+
+      if (resolved) {
+        log.debug(
+          `Resolved service name from parent class [${parentName}]: ${resolved}`,
+        );
+        return resolved;
+      }
+
+      log.debug(
+        `Parent class [${parentName}] has no 'serviceName' in collected static names`,
+      );
     }
 
     log.warn(
