@@ -58,6 +58,246 @@ export const apiSchemaDefaultValuePairSample = {
   },
 };
 
+export const apiSchemaCustomEnvFileSample = {
+  schema: {
+    apiType: {
+      type: 'string',
+      default: 'explorer',
+      description: 'type of api to use',
+      label: 'api type',
+      validations: [
+        {
+          required: true,
+          error: 'error message when value not validated',
+        },
+        { choices: ['node', 'explorer'] },
+      ],
+    },
+    servers: {
+      type: 'object',
+      children: {
+        url: {
+          type: 'string',
+        },
+        port: {
+          type: 'number',
+        },
+      },
+    },
+    apis: {
+      type: 'object',
+      children: {
+        explorer: {
+          type: 'object',
+          children: {
+            url: {
+              type: 'string',
+              default: 'example.com',
+            },
+            port: {
+              type: 'number',
+              default: 443,
+            },
+          },
+        },
+      },
+    },
+  },
+  customEnvFileVal: {},
+};
+
+export const correctApiSchemaCustomEnvFileSample = {
+  schema: {
+    apiType: {
+      type: 'string',
+      default: 'explorer',
+      description: 'type of api to use',
+      label: 'api type',
+      secret: true,
+      validations: [
+        {
+          required: true,
+          error: 'error message when value not validated',
+        },
+        { choices: ['node', 'explorer'] },
+      ],
+    },
+    servers: {
+      type: 'object',
+      children: {
+        url: {
+          type: 'string',
+        },
+        port: {
+          type: 'number',
+        },
+      },
+    },
+    apis: {
+      type: 'object',
+      children: {
+        explorer: {
+          type: 'object',
+          children: {
+            url: {
+              type: 'string',
+              secret: true,
+              default: 'example.com',
+            },
+            port: {
+              type: 'number',
+              secret: true,
+              default: 443,
+            },
+          },
+        },
+      },
+    },
+  },
+  customEnvFileVal: {
+    apiType: 'APITYPE',
+    apis: {
+      explorer: {
+        port: 'APIS_EXPLORER_PORT',
+        url: 'APIS_EXPLORER_URL',
+      },
+    },
+  },
+};
+
+export const allFieldsApiSchemaCustomEnvFileSample = {
+  schema: {
+    apiType: {
+      type: 'string',
+      default: 'explorer',
+      description: 'type of api to use',
+      label: 'api type',
+      secret: true,
+      validations: [
+        {
+          required: true,
+          error: 'error message when value not validated',
+        },
+        { choices: ['node', 'explorer'] },
+      ],
+    },
+    servers: {
+      type: 'object',
+      children: {
+        url: {
+          secret: false,
+          type: 'string',
+        },
+        port: {
+          type: 'number',
+        },
+      },
+    },
+    apis: {
+      type: 'object',
+      children: {
+        explorer: {
+          type: 'object',
+          children: {
+            url: {
+              type: 'string',
+              secret: true,
+              default: 'example.com',
+            },
+            port: {
+              type: 'number',
+              secret: true,
+              default: 443,
+            },
+          },
+        },
+      },
+    },
+  },
+  customEnvFileVal: {
+    apiType: 'APITYPE',
+    servers: {
+      port: 'SERVERS_PORT',
+      url: 'SERVERS_URL',
+    },
+    apis: {
+      explorer: {
+        port: 'APIS_EXPLORER_PORT',
+        url: 'APIS_EXPLORER_URL',
+      },
+    },
+  },
+};
+
+export const arrayFieldsApiSchemaCustomEnvFileSample = {
+  schema: {
+    logs: {
+      type: 'array',
+      items: {
+        type: 'object',
+        children: {
+          type: {
+            type: 'string',
+            secret: true,
+            validations: [
+              {
+                required: true,
+                error: 'log type must be specified',
+              },
+              { choices: ['file', 'console', 'loki'] },
+            ],
+          },
+          maxSize: {
+            type: 'string',
+            secret: true,
+            validations: [
+              {
+                required: true,
+                error: 'maxSize for file log type must be specified',
+                when: { path: 'logs.type', value: 'file' },
+              },
+            ],
+          },
+          maxFiles: {
+            type: 'string',
+            secret: true,
+            validations: [
+              {
+                required: true,
+                error: 'maxFiles for file log type must be specified',
+                when: { path: 'logs.type', value: 'file' },
+              },
+            ],
+          },
+          path: {
+            type: 'string',
+            secret: true,
+            validations: [
+              {
+                required: true,
+                error: 'path for file log type must be specified',
+                when: { path: 'logs.type', value: 'file' },
+              },
+            ],
+          },
+          level: {
+            type: 'string',
+            secret: true,
+            validations: [
+              {
+                required: true,
+                error: 'log level must be specified',
+                when: { path: 'logs.type', value: 'file' },
+              },
+            ],
+          },
+        },
+      },
+    },
+  },
+  customEnvFileVal: {},
+};
+
 export const correctApiSchema = {
   apiType: {
     type: 'string',

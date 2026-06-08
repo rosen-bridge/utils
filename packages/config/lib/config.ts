@@ -1031,6 +1031,8 @@ export class ConfigValidator {
    * Generates a custom environment file based on the provided schema.
    *
    * @param {boolean} [options.allEnv] If true, includes all environment variables, otherwise only includes non-secret fields.
+   * @param {ConfigSchema} schema
+   * @param {string[]} path
    *
    * @returns {Record<string, unknown>}
    */

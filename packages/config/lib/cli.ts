@@ -136,7 +136,7 @@ yargs(hideBin(process.argv))
           type: 'boolean',
           default: false,
           description:
-            'generate environment variables for all fields regardless of secret',
+            'generate environment variables for all non-array fields, regardless of secrecy',
         }),
     async (argv) => {
       const spinner = ora();
