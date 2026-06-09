@@ -23,6 +23,43 @@ describe('parseOpReturn', () => {
   });
 
   /**
+   * @target parseOpReturn should extract rosen data from %s
+   * @dependencies
+   * @scenario
+   * - mock OP_RETURN scriptPubKeys using OP_PUSHDATA1, OP_PUSHDATA2 and OP_PUSHDATA4
+   * - run test for each script
+   * - check returned value
+   * @expected
+   * - it should return expected rosen data
+   */
+  it.each([
+    ['OP_PUSHDATA1', testData.opReturnScripts.validPushData1],
+    ['OP_PUSHDATA2', testData.opReturnScripts.validPushData2],
+    ['OP_PUSHDATA4', testData.opReturnScripts.validPushData4],
+  ])('should extract rosen data from %s', (_pushDataEncoding, script) => {
+    const result = parseOpReturn(script);
+
+    expect(result).toStrictEqual(testData.opReturnData);
+  });
+
+  /**
+   * @target parseOpReturn should reject OP_RETURN data over Rosen 80-byte limit
+   * @dependencies
+   * @scenario
+   * - mock OP_RETURN scriptPubKey with OP_PUSHDATA1 and 81-byte payload
+   * - run test & check thrown exception
+   * @expected
+   * - it should throw error
+   */
+  it('should reject OP_RETURN data over Rosen 80-byte limit', () => {
+    const script = testData.opReturnScripts.tooLongPushData1;
+
+    expect(() => {
+      parseOpReturn(script);
+    }).toThrow('OP_RETURN data length exceeds Rosen limit [81 > 80]');
+  });
+
+  /**
    * @target parseOpReturn should throw error
    * when script does not start with OP_RETURN opcode
    * @dependencies
