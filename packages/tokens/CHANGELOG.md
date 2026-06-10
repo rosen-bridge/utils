@@ -1,5 +1,11 @@
 # @rosen-bridge/tokens
 
+## 6.0.2
+
+### Patch Changes
+
+- - Replaced the `await-semaphore` dependency with `@rosen-bridge/semaphore`
+
 ## 6.0.1
 
 ### Patch Changes

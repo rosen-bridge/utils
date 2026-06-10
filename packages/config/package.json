@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/config",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "a package to manage configs of rosen bridge projects",
   "repository": {
     "type": "git",

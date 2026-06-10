@@ -1,5 +1,20 @@
 # @rosen-bridge/service-manager
 
+## 3.0.0
+
+### Major Changes
+
+- Change `name` to `serviceName` in the `AbstractService`. It also throws error in the `getName` function if it's not defined
+
+### Minor Changes
+
+- Improve handling name of services in the `AbstractService` (Now it's possible to define the name as a static property of the service parent class)
+
+### Patch Changes
+
+- Improve the logs on the `AbstractService` where the successful message was logged even when the action was failed
+- - Replaced the `await-semaphore` dependency with `@rosen-bridge/semaphore`
+
 ## 2.0.0
 
 ### Major Changes
