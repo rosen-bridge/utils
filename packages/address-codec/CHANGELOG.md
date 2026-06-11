@@ -1,5 +1,11 @@
 # @rosen-bridge/address-codec
 
+## 2.1.0
+
+### Minor Changes
+
+- Add support for Base chain
+
 ## 2.0.0
 
 ### Major Changes
