@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/service-manager-cli",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "A utility package for services that uses @rosen-bridge/service-manager containing tools such as draw the dependency graph of services",
   "repository": {
     "type": "git",

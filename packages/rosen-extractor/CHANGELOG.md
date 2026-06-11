@@ -1,5 +1,18 @@
 # @rosen-bridge/rosen-extractor
 
+## 12.1.0
+
+### Minor Changes
+
+- Add support for Base chain
+
+### Patch Changes
+
+- Fix Firo OP_RETURN parsing for OP_PUSHDATA1 payloads.
+- Improve the `parseRosenData` to throw error if address slice length does not match the given length
+- Update dependencies
+  - @rosen-bridge/tokens@6.0.2
+
 ## 12.0.2
 
 ### Patch Changes
