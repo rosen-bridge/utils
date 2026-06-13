@@ -80,10 +80,7 @@ export const apiSchemaCustomEnvFileSample = {
     },
     timeout: {
       type: 'union',
-      children: [
-        { type: 'number' },
-        { type: 'string' }
-      ]
+      children: [{ type: 'number' }, { type: 'string' }],
     },
     apiType: {
       type: 'string',
@@ -153,10 +150,7 @@ export const correctApiSchemaCustomEnvFileSample = {
     },
     timeout: {
       type: 'union',
-      children: [
-        { type: 'number', secret: true },
-        { type: 'string' }
-      ]
+      children: [{ type: 'number', secret: true }, { type: 'string' }],
     },
     apiType: {
       type: 'string',
@@ -242,10 +236,7 @@ export const allFieldsApiSchemaCustomEnvFileSample = {
     },
     timeout: {
       type: 'union',
-      children: [
-        { type: 'number' },
-        { type: 'string' }
-      ]
+      children: [{ type: 'number' }, { type: 'string' }],
     },
     apiType: {
       type: 'string',
@@ -312,7 +303,7 @@ export const allFieldsApiSchemaCustomEnvFileSample = {
         url: 'APIS_EXPLORER_URL',
       },
     },
-  }
+  },
 };
 
 export const arrayFieldsApiSchemaCustomEnvFileSample = {
