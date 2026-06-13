@@ -60,6 +60,31 @@ export const apiSchemaDefaultValuePairSample = {
 
 export const apiSchemaCustomEnvFileSample = {
   schema: {
+    database: {
+      type: 'union',
+      children: [
+        {
+          type: 'object',
+          children: {
+            host: { type: 'string' },
+            port: { type: 'number' },
+          },
+        },
+        {
+          type: 'object',
+          children: {
+            replicaSet: { type: 'string'},
+          },
+        },
+      ],
+    },
+    timeout: {
+      type: 'union', 
+      children: [
+        { type: 'number' },
+        { type: 'string' }
+      ]
+    },
     apiType: {
       type: 'string',
       default: 'explorer',
@@ -108,6 +133,31 @@ export const apiSchemaCustomEnvFileSample = {
 
 export const correctApiSchemaCustomEnvFileSample = {
   schema: {
+    database: {
+      type: 'union',
+      children: [
+        {
+          type: 'object',
+          children: {
+            host: { type: 'string',secret:true },
+            port: { type: 'number',secret:true },
+          },
+        },
+        {
+          type: 'object',
+          children: {
+            replicaSet: { type: 'string'},
+          },
+        },
+      ],
+    },
+    timeout: {
+      type: 'union', 
+      children: [
+        { type: 'number',secret:true },
+        { type: 'string' }
+      ]
+    },
     apiType: {
       type: 'string',
       default: 'explorer',
@@ -155,6 +205,11 @@ export const correctApiSchemaCustomEnvFileSample = {
     },
   },
   customEnvFileVal: {
+    database: {
+      host: 'DATABASE_HOST',
+      port: 'DATABASE_PORT',
+    },
+    timeout: 'TIMEOUT',
     apiType: 'APITYPE',
     apis: {
       explorer: {
@@ -167,6 +222,31 @@ export const correctApiSchemaCustomEnvFileSample = {
 
 export const allFieldsApiSchemaCustomEnvFileSample = {
   schema: {
+    database: {
+      type: 'union',
+      children: [
+        {
+          type: 'object',
+          children: {
+            host: { type: 'string', secret: true },
+            port: { type: 'number', secret: true },
+          },
+        },
+        {
+          type: 'object',
+          children: {
+            replicaSet: { type: 'string'},
+          },
+        },
+      ],
+    },
+    timeout: {
+      type: 'union',
+      children: [
+        { type: 'number' },
+        { type: 'string' }
+      ]
+    },
     apiType: {
       type: 'string',
       default: 'explorer',
@@ -215,6 +295,12 @@ export const allFieldsApiSchemaCustomEnvFileSample = {
     },
   },
   customEnvFileVal: {
+    database: {
+      host: 'DATABASE_HOST',
+      port: 'DATABASE_PORT',
+      replicaSet: 'DATABASE_REPLICASET',
+    },
+    timeout: 'TIMEOUT',
     apiType: 'APITYPE',
     servers: {
       port: 'SERVERS_PORT',
@@ -226,7 +312,7 @@ export const allFieldsApiSchemaCustomEnvFileSample = {
         url: 'APIS_EXPLORER_URL',
       },
     },
-  },
+  }
 };
 
 export const arrayFieldsApiSchemaCustomEnvFileSample = {
