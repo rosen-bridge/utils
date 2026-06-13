@@ -73,13 +73,13 @@ export const apiSchemaCustomEnvFileSample = {
         {
           type: 'object',
           children: {
-            replicaSet: { type: 'string'},
+            replicaSet: { type: 'string' },
           },
         },
       ],
     },
     timeout: {
-      type: 'union', 
+      type: 'union',
       children: [
         { type: 'number' },
         { type: 'string' }
@@ -139,22 +139,22 @@ export const correctApiSchemaCustomEnvFileSample = {
         {
           type: 'object',
           children: {
-            host: { type: 'string',secret:true },
-            port: { type: 'number',secret:true },
+            host: { type: 'string', secret: true },
+            port: { type: 'number', secret: true },
           },
         },
         {
           type: 'object',
           children: {
-            replicaSet: { type: 'string'},
+            replicaSet: { type: 'string' },
           },
         },
       ],
     },
     timeout: {
-      type: 'union', 
+      type: 'union',
       children: [
-        { type: 'number',secret:true },
+        { type: 'number', secret: true },
         { type: 'string' }
       ]
     },
@@ -235,7 +235,7 @@ export const allFieldsApiSchemaCustomEnvFileSample = {
         {
           type: 'object',
           children: {
-            replicaSet: { type: 'string'},
+            replicaSet: { type: 'string' },
           },
         },
       ],
