@@ -261,6 +261,91 @@ describe('ConfigValidator', () => {
     });
   });
 
+  describe('generateCustomEnvFile', () => {
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+    /**
+     * @target generateCustomEnvFile should return empty custom environment values object for the
+     * non-secret schema
+     * @dependencies
+     * @scenario
+     * - call generateCustomEnvFile
+     * - check if empty custom environment value object is returned
+     * @expected
+     * - empty custom environment value object should have been returned
+     */
+    it(`should return empty custom environment values object for the non-secret schema`, async () => {
+      const config = ConfigValidator.fromSchema(
+        <ConfigSchema>testData.apiSchemaCustomEnvFileSample.schema,
+      );
+
+      expect(config.generateCustomEnvFile()).toEqual(
+        testData.apiSchemaCustomEnvFileSample.customEnvFileVal,
+      );
+    });
+
+    /**
+     * @target generateCustomEnvFile should return custom environment values object for the
+     * secret true fields in schema
+     * @dependencies
+     * @scenario
+     * - call generateCustomEnvFile
+     * - check if correct custom environment value object is returned for the secret true fields in schema
+     * @expected
+     * - correct custom environment value object should have been returned
+     */
+    it(`should return custom environment values object for the secret true fields in schema`, async () => {
+      const config = ConfigValidator.fromSchema(
+        <ConfigSchema>testData.correctApiSchemaCustomEnvFileSample.schema,
+      );
+
+      expect(config.generateCustomEnvFile()).toEqual(
+        testData.correctApiSchemaCustomEnvFileSample.customEnvFileVal,
+      );
+    });
+
+    /**
+     * @target generateCustomEnvFile should return custom environment values object for the
+     * all fields in schema when all-env flag is set
+     * @dependencies
+     * @scenario
+     * - call generateCustomEnvFile with allEnv flag set to true
+     * - check if correct custom environment value object is returned
+     * @expected
+     * - created a custom environment value object with all fields returned.
+     */
+    it(`should return custom environment values object for the all fields in schema when all-env flag is set`, async () => {
+      const config = ConfigValidator.fromSchema(
+        <ConfigSchema>testData.allFieldsApiSchemaCustomEnvFileSample.schema,
+      );
+
+      expect(config.generateCustomEnvFile(true)).toEqual(
+        testData.allFieldsApiSchemaCustomEnvFileSample.customEnvFileVal,
+      );
+    });
+
+    /**
+     * @target generateCustomEnvFile should return empty environment values object for the
+     * array fields in schema
+     * @dependencies
+     * @scenario
+     * - call generateCustomEnvFile
+     * - check if empty custom environment value object is returned
+     * @expected
+     * - empty custom environment value object should have been returned
+     */
+    it(`should return empty environment values object for the array fields in schema`, async () => {
+      const config = ConfigValidator.fromSchema(
+        <ConfigSchema>testData.arrayFieldsApiSchemaCustomEnvFileSample.schema,
+      );
+
+      expect(config.generateCustomEnvFile()).toEqual(
+        testData.arrayFieldsApiSchemaCustomEnvFileSample.customEnvFileVal,
+      );
+    });
+  });
+
   describe('validateSchema', () => {
     /**
      * @target validateSchema should not throw any exceptions when a correct

@@ -58,6 +58,323 @@ export const apiSchemaDefaultValuePairSample = {
   },
 };
 
+export const apiSchemaCustomEnvFileSample = {
+  schema: {
+    database: {
+      type: 'union',
+      children: [
+        {
+          type: 'object',
+          children: {
+            host: { type: 'string' },
+            port: { type: 'number' },
+          },
+        },
+        {
+          type: 'object',
+          children: {
+            replicaSet: { type: 'string' },
+          },
+        },
+      ],
+    },
+    timeout: {
+      type: 'union',
+      children: [{ type: 'number' }, { type: 'string' }],
+    },
+    apiType: {
+      type: 'string',
+      default: 'explorer',
+      description: 'type of api to use',
+      label: 'api type',
+      validations: [
+        {
+          required: true,
+          error: 'error message when value not validated',
+        },
+        { choices: ['node', 'explorer'] },
+      ],
+    },
+    servers: {
+      type: 'object',
+      children: {
+        url: {
+          type: 'string',
+        },
+        port: {
+          type: 'number',
+        },
+      },
+    },
+    apis: {
+      type: 'object',
+      children: {
+        explorer: {
+          type: 'object',
+          children: {
+            url: {
+              type: 'string',
+              default: 'example.com',
+            },
+            port: {
+              type: 'number',
+              default: 443,
+            },
+          },
+        },
+      },
+    },
+  },
+  customEnvFileVal: {},
+};
+
+export const correctApiSchemaCustomEnvFileSample = {
+  schema: {
+    database: {
+      type: 'union',
+      children: [
+        {
+          type: 'object',
+          children: {
+            host: { type: 'string', secret: true },
+            port: { type: 'number', secret: true },
+          },
+        },
+        {
+          type: 'object',
+          children: {
+            replicaSet: { type: 'string' },
+          },
+        },
+      ],
+    },
+    timeout: {
+      type: 'union',
+      children: [{ type: 'number', secret: true }, { type: 'string' }],
+    },
+    apiType: {
+      type: 'string',
+      default: 'explorer',
+      description: 'type of api to use',
+      label: 'api type',
+      secret: true,
+      validations: [
+        {
+          required: true,
+          error: 'error message when value not validated',
+        },
+        { choices: ['node', 'explorer'] },
+      ],
+    },
+    servers: {
+      type: 'object',
+      children: {
+        url: {
+          type: 'string',
+        },
+        port: {
+          type: 'number',
+        },
+      },
+    },
+    apis: {
+      type: 'object',
+      children: {
+        explorer: {
+          type: 'object',
+          children: {
+            url: {
+              type: 'string',
+              secret: true,
+              default: 'example.com',
+            },
+            port: {
+              type: 'number',
+              secret: true,
+              default: 443,
+            },
+          },
+        },
+      },
+    },
+  },
+  customEnvFileVal: {
+    database: {
+      host: 'DATABASE_HOST',
+      port: 'DATABASE_PORT',
+    },
+    timeout: 'TIMEOUT',
+    apiType: 'APITYPE',
+    apis: {
+      explorer: {
+        port: 'APIS_EXPLORER_PORT',
+        url: 'APIS_EXPLORER_URL',
+      },
+    },
+  },
+};
+
+export const allFieldsApiSchemaCustomEnvFileSample = {
+  schema: {
+    database: {
+      type: 'union',
+      children: [
+        {
+          type: 'object',
+          children: {
+            host: { type: 'string', secret: true },
+            port: { type: 'number', secret: true },
+          },
+        },
+        {
+          type: 'object',
+          children: {
+            replicaSet: { type: 'string' },
+          },
+        },
+      ],
+    },
+    timeout: {
+      type: 'union',
+      children: [{ type: 'number' }, { type: 'string' }],
+    },
+    apiType: {
+      type: 'string',
+      default: 'explorer',
+      description: 'type of api to use',
+      label: 'api type',
+      secret: true,
+      validations: [
+        {
+          required: true,
+          error: 'error message when value not validated',
+        },
+        { choices: ['node', 'explorer'] },
+      ],
+    },
+    servers: {
+      type: 'object',
+      children: {
+        url: {
+          secret: false,
+          type: 'string',
+        },
+        port: {
+          type: 'number',
+        },
+      },
+    },
+    apis: {
+      type: 'object',
+      children: {
+        explorer: {
+          type: 'object',
+          children: {
+            url: {
+              type: 'string',
+              secret: true,
+              default: 'example.com',
+            },
+            port: {
+              type: 'number',
+              secret: true,
+              default: 443,
+            },
+          },
+        },
+      },
+    },
+  },
+  customEnvFileVal: {
+    database: {
+      host: 'DATABASE_HOST',
+      port: 'DATABASE_PORT',
+      replicaSet: 'DATABASE_REPLICASET',
+    },
+    timeout: 'TIMEOUT',
+    apiType: 'APITYPE',
+    servers: {
+      port: 'SERVERS_PORT',
+      url: 'SERVERS_URL',
+    },
+    apis: {
+      explorer: {
+        port: 'APIS_EXPLORER_PORT',
+        url: 'APIS_EXPLORER_URL',
+      },
+    },
+  },
+};
+
+export const arrayFieldsApiSchemaCustomEnvFileSample = {
+  schema: {
+    logs: {
+      type: 'array',
+      items: {
+        type: 'object',
+        children: {
+          type: {
+            type: 'string',
+            secret: true,
+            validations: [
+              {
+                required: true,
+                error: 'log type must be specified',
+              },
+              { choices: ['file', 'console', 'loki'] },
+            ],
+          },
+          maxSize: {
+            type: 'string',
+            secret: true,
+            validations: [
+              {
+                required: true,
+                error: 'maxSize for file log type must be specified',
+                when: { path: 'logs.type', value: 'file' },
+              },
+            ],
+          },
+          maxFiles: {
+            type: 'string',
+            secret: true,
+            validations: [
+              {
+                required: true,
+                error: 'maxFiles for file log type must be specified',
+                when: { path: 'logs.type', value: 'file' },
+              },
+            ],
+          },
+          path: {
+            type: 'string',
+            secret: true,
+            validations: [
+              {
+                required: true,
+                error: 'path for file log type must be specified',
+                when: { path: 'logs.type', value: 'file' },
+              },
+            ],
+          },
+          level: {
+            type: 'string',
+            secret: true,
+            validations: [
+              {
+                required: true,
+                error: 'log level must be specified',
+                when: { path: 'logs.type', value: 'file' },
+              },
+            ],
+          },
+        },
+      },
+    },
+  },
+  customEnvFileVal: {},
+};
+
 export const correctApiSchema = {
   apiType: {
     type: 'string',
@@ -1229,6 +1546,7 @@ export const schemaConfigCharPair = {
       description: 'type of api to use',
       default: 'explorer',
       value: null,
+      secret: false,
       override: null,
     },
     servers: {
@@ -1236,6 +1554,7 @@ export const schemaConfigCharPair = {
         label: null,
         description: null,
         default: null,
+        secret: false,
         value: null,
         override: 'some-url.org',
       },
@@ -1244,6 +1563,7 @@ export const schemaConfigCharPair = {
         description: null,
         default: 500,
         value: 777,
+        secret: false,
         override: null,
       },
     },
@@ -1254,12 +1574,14 @@ export const schemaConfigCharPair = {
           description: null,
           default: 'example.com',
           value: null,
+          secret: false,
           override: null,
         },
         port: {
           label: null,
           description: null,
           default: 443,
+          secret: false,
           value: null,
           override: null,
         },

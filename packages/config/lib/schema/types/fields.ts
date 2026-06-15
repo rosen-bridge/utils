@@ -48,6 +48,7 @@ export interface GenericField<T> {
   default?: T;
   description?: string;
   label?: string;
+  secret?: boolean;
 }
 
 export interface StringField extends GenericField<string> {

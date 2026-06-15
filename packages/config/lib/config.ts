@@ -1020,11 +1020,92 @@ export class ConfigValidator {
           higherLevelSources,
           childPath,
         );
+        value[childName].secret = 'secret' in field ? field['secret'] : false;
       }
     }
 
     return value;
   }
+
+  /**
+   * Generates a custom environment file based on the provided schema.
+   *
+   * @param {boolean} [options.allEnv] If true, includes all environment variables, otherwise only includes non-secret fields.
+   * @param {ConfigSchema} schema
+   * @param {string[]} path
+   *
+   * @returns {Record<string, unknown>}
+   */
+  generateCustomEnvFile = (
+    allEnv?: boolean,
+    schema: ConfigSchema = this.schema,
+    path: string[] = [],
+  ): Record<string, unknown> => {
+    const out: Record<string, unknown> = Object.create(null);
+
+    for (const key of Object.keys(schema)) {
+      const field = schema[key];
+      const currentPath = [...path, key];
+      switch (field.type) {
+        case 'object': {
+          const child = this.generateCustomEnvFile(
+            allEnv,
+            field.children,
+            currentPath,
+          );
+
+          if (Object.keys(child).length > 0) {
+            out[key] = child;
+          }
+
+          break;
+        }
+
+        case 'array': {
+          break;
+        }
+        case 'union': {
+          const unionOut: Record<string, unknown> = Object.create(null);
+          let hasPrimitive = false;
+
+          for (const unionChild of field.children) {
+            const childResult = this.generateCustomEnvFile(
+              allEnv,
+              { [key]: unionChild },
+              path,
+            );
+
+            const childValue = childResult[key];
+
+            if (childValue !== undefined) {
+              if (typeof childValue === 'object') {
+                Object.assign(unionOut, childValue);
+              } else {
+                hasPrimitive = true;
+              }
+            }
+          }
+
+          if (Object.keys(unionOut).length > 0) {
+            out[key] = unionOut;
+          } else if (hasPrimitive) {
+            out[key] = currentPath.map((p) => p.toUpperCase()).join('_');
+          }
+
+          break;
+        }
+        default: {
+          if (!(allEnv || field.secret === true)) break;
+
+          const envKey = currentPath.map((p) => p.toUpperCase()).join('_');
+
+          out[key] = envKey;
+          break;
+        }
+      }
+    }
+    return out;
+  };
 
   /**
    * returns a list of config sources used by node config package, ordered from
