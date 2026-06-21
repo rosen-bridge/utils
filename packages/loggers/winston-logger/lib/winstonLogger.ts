@@ -22,14 +22,31 @@ import printf = format.printf;
  * Custom log format that includes timestamp, level, filename, message and context.
  */
 const logFormat = printf(
-  ({ level, message, timestamp, fileName, ...context }) => {
-    return `${timestamp} ${level}: ${fileName ? `[${fileName}] ` : ''}${message}${
+  ({ level, message, timestamp, fileName, serviceName, ...context }) => {
+    return `${timestamp} ${level}: ${serviceName ? `[${serviceName}] ` : ''}${fileName ? `[${fileName}] ` : ''}${message}${
       context && Object.keys(context).length
         ? ` ${JsonBigInt.stringify(context)}`
         : ''
     }`;
   },
 );
+
+/**
+ * Builds a custom format pipeline for file transports, supporting JSON and serviceName injection.
+ */
+const fileFormat = (transportOptions: FileTransportOptions) =>
+  transportOptions.format === 'json' || transportOptions.serviceName
+    ? format.combine(
+        format.timestamp(),
+        format((logEntry) => {
+          if (transportOptions.serviceName) {
+            logEntry.serviceName = transportOptions.serviceName;
+          }
+          return logEntry;
+        })(),
+        transportOptions.format === 'json' ? format.json() : logFormat,
+      )
+    : undefined;
 
 /**
  * Factory functions for creating different winston transport types.
@@ -59,6 +76,9 @@ const logTransports = {
       maxSize: transportOptions.maxSize,
       maxFiles: transportOptions.maxFiles,
       level: transportOptions.level,
+      createSymlink: transportOptions.createSymlink,
+      symlinkName: transportOptions.symlinkName,
+      format: fileFormat(transportOptions),
     }),
 
   /**
@@ -116,6 +136,9 @@ class WinstonLogger extends AbstractLogger {
             case 'file':
               return logTransports.file(transportOptions);
             case 'loki':
+              console.warn(
+                '[WinstonLogger] Loki transport may cause log loss. It is recommended to use file transport with Grafana Alloy to forward logs to Loki instead.',
+              );
               return logTransports.loki(transportOptions);
           }
         }),

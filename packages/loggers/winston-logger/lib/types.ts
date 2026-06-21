@@ -24,6 +24,14 @@ export interface FileTransportOptions extends BaseTransportOptions<'file'> {
   maxFiles: string;
   /** The minimum log level for this transport */
   level: string;
+  /** Optional service name label */
+  serviceName?: string;
+  /** Optional format for the log file. Defaults to plain text. */
+  format?: 'plain' | 'json';
+  /** Optional flag to create a tailable symlink to the current active log file. Defaults to false. */
+  createSymlink?: boolean;
+  /** Optional name for the symlink file. */
+  symlinkName?: string;
 }
 
 /**
