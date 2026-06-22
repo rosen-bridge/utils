@@ -23,7 +23,7 @@ import printf = format.printf;
  */
 const logFormat = printf(
   ({ level, message, timestamp, fileName, serviceName, ...context }) => {
-    return `${timestamp} ${level}: ${serviceName ? `[${serviceName}] ` : ''}${fileName ? `[${fileName}] ` : ''}${message}${
+    return `${timestamp} ${level}: ${fileName ? `[${fileName}]` : ''}${serviceName ? `[${serviceName}] ` : ' '}${message}${
       context && Object.keys(context).length
         ? ` ${JsonBigInt.stringify(context)}`
         : ''
@@ -32,21 +32,28 @@ const logFormat = printf(
 );
 
 /**
- * Builds a custom format pipeline for file transports, supporting JSON and serviceName injection.
+ * Inject `serviceName` into log entries.
+ * @param serviceName - Optional service name.
  */
-const fileFormat = (transportOptions: FileTransportOptions) =>
-  transportOptions.format === 'json' || transportOptions.serviceName
-    ? format.combine(
-        format.timestamp(),
-        format((logEntry) => {
-          if (transportOptions.serviceName) {
-            logEntry.serviceName = transportOptions.serviceName;
-          }
-          return logEntry;
-        })(),
-        transportOptions.format === 'json' ? format.json() : logFormat,
-      )
-    : undefined;
+const createServiceInjector = (serviceName?: string) => {
+  return format((logEntry) => {
+    if (serviceName) {
+      logEntry.serviceName = serviceName;
+    }
+    return logEntry;
+  })();
+};
+/**
+ * Builds the format pipeline for file transports (timestamp, serviceName, and format style).
+ * @param transportOptions - File transport configuration.
+ */
+const fileFormat = (transportOptions: FileTransportOptions) => {
+  return format.combine(
+    format.timestamp(),
+    createServiceInjector(transportOptions.serviceName),
+    transportOptions.format === 'json' ? format.json() : logFormat,
+  );
+};
 
 /**
  * Factory functions for creating different winston transport types.
