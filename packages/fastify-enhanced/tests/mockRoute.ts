@@ -62,6 +62,24 @@ export const mockRoutes = (server: FastifyWithZod) => {
       }
     },
   );
+
+  server.get(
+    '/test-error',
+    {
+      schema: {
+        querystring: TestIncorrectResponseQuerySchema,
+        response: {
+          200: TestIncorrectResponseSchema,
+        },
+      },
+    },
+    async (request, reply) => {
+      // invalid response body
+      const id: string | undefined = undefined;
+      const obj: { id: string } = { id: id! };
+      reply.status(200).send(obj);
+    },
+  );
 };
 
 export const RequestSchema = z.object({
@@ -84,23 +102,19 @@ export const SuccessResponseSchema = z.object({
   type: z.string(),
 });
 
-export const HealthResponseSchema = {
-  content: {
-    'application/json': {
-      schema: z.object({
-        message: z.bigint(),
-        number: z.number(),
-      }),
-    },
-  },
-};
+export const HealthResponseSchema = z.object({
+  message: z.bigint(),
+  number: z.number(),
+});
 
-export const ErrorResponseSchema = {
-  content: {
-    'application/json': {
-      schema: z.object({
-        message: z.string(),
-      }),
-    },
-  },
-};
+export const ErrorResponseSchema = z.object({
+  message: z.string(),
+});
+
+export const TestIncorrectResponseSchema = z.object({
+  id: z.string(),
+});
+
+export const TestIncorrectResponseQuerySchema = z.object({
+  p1: z.string(),
+});

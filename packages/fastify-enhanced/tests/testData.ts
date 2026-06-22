@@ -103,5 +103,31 @@ export const apiSpec = {
         },
       },
     },
+    '/test-error': {
+      get: {
+        parameters: [
+          {
+            schema: { type: 'string' },
+            in: 'query',
+            name: 'p1',
+            required: true,
+          },
+        ],
+        responses: {
+          '200': {
+            description: 'Default Response',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: { id: { type: 'string' } },
+                  required: ['id'],
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   },
 };

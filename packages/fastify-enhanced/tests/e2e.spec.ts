@@ -8,6 +8,7 @@ describe('e2e', () => {
   beforeEach(async () => {
     mockServer = await makeFastify(undefined, {
       bodyLimit: 10 * 1024 * 1024, // value in MB
+      logResponseSerializationErrors: true,
     });
     await mockServer.register(mockRoutes);
   });
@@ -73,5 +74,60 @@ describe('e2e', () => {
     // assert
     expect(result.statusCode).toEqual(200);
     expect(result.body).toEqual(JSON.stringify(apiSpec));
+  });
+
+  /**
+   * @target fastifyServer[GET /test-error] should respond with internal server error when response does not match the schema
+   * @dependencies
+   * @scenario
+   * - define a mock get route that responds with an object not matching its response schema
+   * - send a request to the server
+   * - check the result
+   * @expected
+   * - response status should have been 500
+   * - response body should have been an error with 'Internal server error' message
+   */
+  it('should respond with internal server error when response does not match the schema', async () => {
+    // act
+    const result = await mockServer.inject({
+      method: 'GET',
+      url: '/test-error',
+      query: {
+        p1: 'test',
+      },
+    });
+
+    // assert
+    expect(result.statusCode).toEqual(500);
+    expect(result.json()).toEqual({ message: 'Internal server error' });
+  });
+
+  /**
+   * @target fastifyServer[GET /test-error] should respond with bad request when request does not match the schema
+   * @dependencies
+   * @scenario
+   * - define a mock get route that responds with an object not matching its response schema
+   * - send a request to the server
+   * - check the result
+   * @expected
+   * - response status should have been 400
+   * - response body should have been a 'Bad Request' error
+   */
+  it('should respond with bad request when request does not match the schema', async () => {
+    // act
+    const result = await mockServer.inject({
+      method: 'GET',
+      url: '/test-error',
+      query: {},
+    });
+
+    // assert
+    expect(result.statusCode).toEqual(400);
+    expect(result.json()).toEqual({
+      statusCode: 400,
+      code: 'FST_ERR_VALIDATION',
+      error: 'Bad Request',
+      message: 'querystring/p1 Required',
+    });
   });
 });
