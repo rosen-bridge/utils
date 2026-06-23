@@ -1,3 +1,4 @@
+import type { Format } from 'logform';
 import nodePath from 'node:path';
 import winston, { format } from 'winston';
 import 'winston-daily-rotate-file';
@@ -47,11 +48,11 @@ const createServiceInjector = (serviceName?: string) => {
  * Builds the format pipeline for file transports (timestamp, serviceName, and format style).
  * @param transportOptions - File transport configuration.
  */
-const fileFormat = (transportOptions: FileTransportOptions) => {
+const fileFormatter = (serviceName?: string, fmt: Format = logFormat) => {
   return format.combine(
     format.timestamp(),
-    createServiceInjector(transportOptions.serviceName),
-    transportOptions.format === 'json' ? format.json() : logFormat,
+    createServiceInjector(serviceName),
+    fmt,
   );
 };
 
@@ -75,8 +76,17 @@ const logTransports = {
    * @param transportOptions - File transport configuration options
    * @returns A winston DailyRotateFile transport instance
    */
-  file: (transportOptions: FileTransportOptions) =>
-    new winston.transports.DailyRotateFile({
+  file: (transportOptions: FileTransportOptions) => {
+    let fmt;
+    switch (transportOptions.format) {
+      case 'json':
+        fmt = format.json();
+        break;
+      case 'plain':
+        fmt = logFormat;
+        break;
+    }
+    return new winston.transports.DailyRotateFile({
       filename: `${transportOptions.path}%DATE%.log`,
       datePattern: 'YYYY-MM-DD',
       zippedArchive: true,
@@ -85,8 +95,9 @@ const logTransports = {
       level: transportOptions.level,
       createSymlink: transportOptions.createSymlink,
       symlinkName: transportOptions.symlinkName,
-      format: fileFormat(transportOptions),
-    }),
+      format: fileFormatter(transportOptions.serviceName, fmt),
+    });
+  },
 
   /**
    * Creates a Loki transport for sending logs to Grafana Loki.
