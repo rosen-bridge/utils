@@ -24,7 +24,7 @@ export type FastifyOpts = Omit<
   'loggerInstance' | 'logger'
 > & {
   logger?: AbstractLogger;
-  logResponseSerializationErrors?: boolean;
+  mapResponseSerializationErrors?: boolean;
 };
 
 export type SwaggerOpts = {
