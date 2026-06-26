@@ -1,6 +1,7 @@
 import Fastify from 'fastify';
 import {
   type FastifyZodOpenApiTypeProvider,
+  ResponseSerializationError,
   fastifyZodOpenApiPlugin,
   serializerCompiler,
   validatorCompiler,
@@ -27,10 +28,11 @@ export const makeFastify = async (
   },
   opts: FastifyOpts = {},
 ): Promise<FastifyWithZod> => {
+  const { mapResponseSerializationErrors, ...fastifyOpts } = opts;
   const fastify = Fastify({
-    ...opts,
+    ...fastifyOpts,
     logger: false,
-    loggerInstance: new FastifyLogger(opts.logger ?? new DummyLogger()),
+    loggerInstance: new FastifyLogger(fastifyOpts.logger ?? new DummyLogger()),
   }).withTypeProvider<FastifyZodOpenApiTypeProvider>();
 
   fastify.setValidatorCompiler(validatorCompiler);
@@ -39,6 +41,18 @@ export const makeFastify = async (
   await fastify.register(fastifyZodOpenApiPlugin);
 
   await registerSwagger(fastify, swaggerOpts);
+
+  fastify.setErrorHandler(function (error, request, reply) {
+    if (
+      (mapResponseSerializationErrors ?? true) &&
+      error instanceof ResponseSerializationError
+    ) {
+      this.log.error(error);
+      reply.status(500).send({ message: 'Internal server error' });
+    } else {
+      reply.send(error);
+    }
+  });
 
   return fastify;
 };

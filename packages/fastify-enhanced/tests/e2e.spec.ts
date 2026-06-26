@@ -74,4 +74,99 @@ describe('e2e', () => {
     expect(result.statusCode).toEqual(200);
     expect(result.body).toEqual(JSON.stringify(apiSpec));
   });
+
+  /**
+   * @target fastifyServer[GET /test-error] should respond with internal server error when response does not match the schema
+   * @dependencies
+   * @scenario
+   * - define a mock get route that responds with an object not matching its response schema
+   * - send a request to the server
+   * - check the result
+   * @expected
+   * - response status should have been 500
+   * - response body should have been an error with 'Internal server error' message
+   */
+  it('should respond with internal server error when response does not match the schema', async () => {
+    // act
+    const result = await mockServer.inject({
+      method: 'GET',
+      url: '/test-error',
+      query: {
+        p1: 'test',
+      },
+    });
+
+    // assert
+    expect(result.statusCode).toEqual(500);
+    expect(result.json()).toEqual({ message: 'Internal server error' });
+  });
+
+  /**
+   * @target fastifyServer[GET /test-error] should respond with "Response does not match the schema" error when response does not match the schema and
+   * the mapResponseSerializationErrors is set to false
+   * @dependencies
+   * @scenario
+   * - define a mock server instance with mapResponseSerializationErrors option set to false
+   * - define a mock get route that responds with an object not matching its response schema
+   * - send a request to the server
+   * - check the result
+   * @expected
+   * - response status should have been 500
+   * - response body should have been an error with "Response does not match the schema" message
+   */
+  it('should respond with "Response does not match schema" error when response does not match the schema and the mapResponseSerializationErrors is set to false', async () => {
+    // arrange
+    mockServer = await makeFastify(undefined, {
+      bodyLimit: 10 * 1024 * 1024, // value in MB
+      mapResponseSerializationErrors: false,
+    });
+    await mockServer.register(mockRoutes);
+
+    // act
+    const result = await mockServer.inject({
+      method: 'GET',
+      url: '/test-error',
+      query: {
+        p1: 'test',
+      },
+    });
+
+    // assert
+    expect(result.statusCode).toEqual(500);
+    expect(result.json()).toEqual({
+      statusCode: 500,
+      code: 'FST_ERR_RESPONSE_SERIALIZATION',
+      error: 'Internal Server Error',
+      message: 'Response does not match the schema',
+    });
+  });
+
+  /**
+   * @target fastifyServer[GET /test-error] should respond with bad request when request does not match the schema
+   * @dependencies
+   * @scenario
+   * - define a mock get route that responds with an object not matching its response schema
+   * - send a request to the server
+   * - check the result
+   * @expected
+   * - response status should have been 400
+   * - response body should have been a 'Bad Request' error
+   */
+  it('should respond with bad request when request does not match the schema', async () => {
+    // act
+    const result = await mockServer.inject({
+      method: 'GET',
+      url: '/test-error',
+      query: {},
+    });
+
+    // assert
+    expect(result.statusCode).toEqual(400);
+    expect(result.json()).toEqual({
+      statusCode: 400,
+      code: 'FST_ERR_VALIDATION',
+      error: 'Bad Request',
+      message: 'querystring/p1 Required',
+    });
+  });
 });
