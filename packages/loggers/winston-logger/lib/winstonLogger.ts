@@ -44,11 +44,12 @@ const createServiceInjector = (serviceName?: string) => {
     return logEntry;
   })();
 };
+
 /**
  * Builds the format pipeline for file transports (timestamp, serviceName, and format style).
  * @param transportOptions - File transport configuration.
  */
-const fileFormatter = (serviceName?: string, fmt: Format = logFormat) => {
+const fileFormatter = (fmt: Format, serviceName?: string) => {
   return format.combine(
     format.timestamp(),
     createServiceInjector(serviceName),
@@ -77,7 +78,7 @@ const logTransports = {
    * @returns A winston DailyRotateFile transport instance
    */
   file: (transportOptions: FileTransportOptions) => {
-    let fmt;
+    let fmt: Format = logFormat;
     switch (transportOptions.format) {
       case 'json':
         fmt = format.json();
@@ -95,7 +96,7 @@ const logTransports = {
       level: transportOptions.level,
       createSymlink: transportOptions.createSymlink,
       symlinkName: transportOptions.symlinkName,
-      format: fileFormatter(transportOptions.serviceName, fmt),
+      format: fileFormatter(fmt, transportOptions.serviceName),
     });
   },
 
