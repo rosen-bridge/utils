@@ -1,3 +1,4 @@
+import type { Format } from 'logform';
 import nodePath from 'node:path';
 import winston, { format } from 'winston';
 import 'winston-daily-rotate-file';
@@ -22,14 +23,39 @@ import printf = format.printf;
  * Custom log format that includes timestamp, level, filename, message and context.
  */
 const logFormat = printf(
-  ({ level, message, timestamp, fileName, ...context }) => {
-    return `${timestamp} ${level}: ${fileName ? `[${fileName}] ` : ''}${message}${
+  ({ level, message, timestamp, fileName, serviceName, ...context }) => {
+    return `${timestamp} ${level}: ${fileName ? `[${fileName}]` : ''}${serviceName ? `[${serviceName}] ` : ' '}${message}${
       context && Object.keys(context).length
         ? ` ${JsonBigInt.stringify(context)}`
         : ''
     }`;
   },
 );
+
+/**
+ * Inject `serviceName` into log entries.
+ * @param serviceName - Optional service name.
+ */
+const createServiceInjector = (serviceName?: string) => {
+  return format((logEntry) => {
+    if (serviceName) {
+      logEntry.serviceName = serviceName;
+    }
+    return logEntry;
+  })();
+};
+
+/**
+ * Builds the format pipeline for file transports (timestamp, serviceName, and format style).
+ * @param transportOptions - File transport configuration.
+ */
+const fileFormatter = (fmt: Format, serviceName?: string) => {
+  return format.combine(
+    format.timestamp(),
+    createServiceInjector(serviceName),
+    fmt,
+  );
+};
 
 /**
  * Factory functions for creating different winston transport types.
@@ -51,15 +77,28 @@ const logTransports = {
    * @param transportOptions - File transport configuration options
    * @returns A winston DailyRotateFile transport instance
    */
-  file: (transportOptions: FileTransportOptions) =>
-    new winston.transports.DailyRotateFile({
+  file: (transportOptions: FileTransportOptions) => {
+    let fmt: Format = logFormat;
+    switch (transportOptions.format) {
+      case 'json':
+        fmt = format.json();
+        break;
+      case 'plain':
+        fmt = logFormat;
+        break;
+    }
+    return new winston.transports.DailyRotateFile({
       filename: `${transportOptions.path}%DATE%.log`,
       datePattern: 'YYYY-MM-DD',
       zippedArchive: true,
       maxSize: transportOptions.maxSize,
       maxFiles: transportOptions.maxFiles,
       level: transportOptions.level,
-    }),
+      createSymlink: transportOptions.createSymlink,
+      symlinkName: transportOptions.symlinkName,
+      format: fileFormatter(fmt, transportOptions.serviceName),
+    });
+  },
 
   /**
    * Creates a Loki transport for sending logs to Grafana Loki.
@@ -116,6 +155,9 @@ class WinstonLogger extends AbstractLogger {
             case 'file':
               return logTransports.file(transportOptions);
             case 'loki':
+              console.warn(
+                '[WinstonLogger] Loki transport may cause log loss. It is recommended to use file transport with Grafana Alloy to forward logs to Loki instead.',
+              );
               return logTransports.loki(transportOptions);
           }
         }),

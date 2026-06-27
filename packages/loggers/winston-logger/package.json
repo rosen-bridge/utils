@@ -27,6 +27,7 @@
   "dependencies": {
     "@rosen-bridge/abstract-logger": "^4.0.0",
     "@rosen-bridge/json-bigint": "^1.1.0",
+    "logform": "^2.7.0",
     "winston": "^3.17.0",
     "winston-daily-rotate-file": "^4.7.1",
     "winston-loki": "^6.0.7"
