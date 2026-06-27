@@ -1,5 +1,12 @@
 # @rosen-bridge/config
 
+## 2.1.0
+
+### Minor Changes
+
+- Add supporting union type in config
+- Add secret field to PrimitiveValue fields
+
 ## 2.0.0
 
 ### Major Changes
