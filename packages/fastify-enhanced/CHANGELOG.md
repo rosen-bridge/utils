@@ -1,5 +1,11 @@
 # @rosen-bridge/fastify-enhanced
 
+## 3.3.0
+
+### Minor Changes
+
+- Add error handler to fastify to map the ResponseSerializationError message
+
 ## 3.2.0
 
 ### Minor Changes

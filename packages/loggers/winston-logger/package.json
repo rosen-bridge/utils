@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/winston-logger",
-  "version": "3.0.1",
+  "version": "3.1.0",
   "description": "Rosen Bridge Winston logger, used inside Rosen services",
   "repository": {
     "type": "git",
