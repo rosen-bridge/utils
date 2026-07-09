@@ -15,14 +15,14 @@ export const HANDSHAKE_NATIVE_TOKEN = 'hns';
 export const FIRO_CHAIN = 'firo';
 export const FIRO_NATIVE_TOKEN = 'firo';
 export const SUPPORTED_CHAINS = [
-  ERGO_CHAIN,
-  CARDANO_CHAIN,
-  BITCOIN_CHAIN,
-  ETHEREUM_CHAIN,
-  BINANCE_CHAIN,
-  BASE_CHAIN,
-  DOGE_CHAIN,
-  BITCOIN_RUNES_CHAIN,
-  FIRO_CHAIN,
-  HANDSHAKE_CHAIN,
+  { chain: ERGO_CHAIN, index: 0 },
+  { chain: CARDANO_CHAIN, index: 1 },
+  { chain: BITCOIN_CHAIN, index: 2 },
+  { chain: ETHEREUM_CHAIN, index: 3 },
+  { chain: BINANCE_CHAIN, index: 4 },
+  { chain: DOGE_CHAIN, index: 5 },
+  { chain: BITCOIN_RUNES_CHAIN, index: 6 },
+  { chain: FIRO_CHAIN, index: 7 },
+  { chain: HANDSHAKE_CHAIN, index: 8 },
+  { chain: BASE_CHAIN, index: 9 },
 ];
