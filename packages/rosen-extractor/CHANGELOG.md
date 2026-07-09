@@ -1,5 +1,11 @@
 # @rosen-bridge/rosen-extractor
 
+## 12.1.1
+
+### Patch Changes
+
+- Fix `SUPPORTED_CHAINS` list (the `Base` chain was added at the middle of list by mistake)
+
 ## 12.1.0
 
 ### Minor Changes

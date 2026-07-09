@@ -13,11 +13,13 @@ export const parseRosenData = (
   // parse toChain
   const toChainHex = scriptPubKeyHex.slice(0, 2);
   const toChainCode = parseInt(toChainHex, 16);
-  if (toChainCode >= SUPPORTED_CHAINS.length)
+  const toChain = SUPPORTED_CHAINS.find(
+    (chain) => chain.index === toChainCode,
+  )?.chain;
+  if (!toChain)
     throw Error(
-      `invalid toChain code, found [${toChainCode}] but only [${SUPPORTED_CHAINS.length}] chains are supported`,
+      `invalid toChain code, no chain is found with index [${toChainCode}] while only [${SUPPORTED_CHAINS.length}] chains are supported`,
     );
-  const toChain = SUPPORTED_CHAINS[toChainCode];
 
   // parse bridgeFee
   const bridgeFeeHex = scriptPubKeyHex.slice(2, 18);
