@@ -13,11 +13,15 @@ import {
   FilterConfig,
   FilterField,
   FilterFieldConfig,
+  FilterPaginationFieldConfig,
   FilterSort,
   FilterSortConfig,
   NumberFilterField,
+  NumberOperator,
   StringArrayFilterField,
+  StringArrayOperator,
   StringFilterField,
+  StringOperator,
 } from './types';
 
 /**
@@ -27,11 +31,37 @@ import {
 export class FilterParser {
   private config: FilterConfig;
 
-  private schema: zod.ZodType<Filter>;
+  public schema: zod.ZodType<Filter>;
 
-  constructor(config?: FilterConfig) {
-    this.config = deepmerge(FILTER_CONFIG_DEFAULT, config || {});
+  public querySchema: zod.ZodPipeline<
+    zod.ZodEffects<zod.ZodType<Record<string, string | undefined>>, Filter>,
+    zod.ZodType<Filter>
+  >;
+
+  public urlSchema: zod.ZodPipeline<
+    zod.ZodEffects<zod.ZodString, Filter>,
+    zod.ZodType<Filter>
+  >;
+
+  constructor(config: FilterConfig = {}) {
+    this.config = deepmerge(FILTER_CONFIG_DEFAULT, config);
+
     this.schema = this.createFilterSchema();
+
+    this.querySchema = this.createQuerySchema()
+      .transform<Filter>((query) => {
+        const queryString = decodeURIComponent(
+          new URLSearchParams(query as Record<string, string>).toString(),
+        );
+
+        return this.urlToFilter('?' + queryString);
+      })
+      .pipe(this.schema);
+
+    this.urlSchema = zod
+      .string()
+      .transform<Filter>(this.urlToFilter)
+      .pipe(this.schema);
   }
 
   /**
@@ -42,12 +72,12 @@ export class FilterParser {
   private createFieldSchema = (
     field: FilterFieldConfig,
   ): zod.ZodType<FilterField> => {
-    const operatorParamsError = {
-      error: `Invalid operator for the '${field.key}' field`,
+    const operatorParamsError: zod.RawCreateParams = {
+      message: `Invalid operator for the '${field.key}' field`,
     };
 
-    const valueParamsError = {
-      error: `Invalid value for the '${field.key}' field`,
+    const valueParamsError: zod.RawCreateParams = {
+      message: `Invalid value for the '${field.key}' field`,
     };
 
     switch (field.type) {
@@ -56,7 +86,8 @@ export class FilterParser {
           key: zod.literal(field.key),
           type: zod.literal(field.type),
           operator: zod.enum(
-            field.operators || FILTER_FIELD_NUMBER_OPERATORS,
+            (field.operators ||
+              FILTER_FIELD_NUMBER_OPERATORS) as typeof FILTER_FIELD_NUMBER_OPERATORS,
             operatorParamsError,
           ),
           value: zod.number(valueParamsError),
@@ -66,11 +97,12 @@ export class FilterParser {
           key: zod.literal(field.key),
           type: zod.literal(field.type),
           operator: zod.enum(
-            field.operators || FILTER_FIELD_STRING_OPERATORS,
+            (field.operators ||
+              FILTER_FIELD_STRING_OPERATORS) as typeof FILTER_FIELD_STRING_OPERATORS,
             operatorParamsError,
           ),
           value: field.values
-            ? zod.enum(field.values, valueParamsError)
+            ? zod.enum(field.values as [string], valueParamsError)
             : zod.string(),
         });
       case 'stringArray':
@@ -78,12 +110,13 @@ export class FilterParser {
           key: zod.literal(field.key),
           type: zod.literal(field.type),
           operator: zod.enum(
-            field.operators || FILTER_FIELD_STRING_ARRAY_OPERATORS,
+            (field.operators ||
+              FILTER_FIELD_STRING_ARRAY_OPERATORS) as typeof FILTER_FIELD_STRING_ARRAY_OPERATORS,
             operatorParamsError,
           ),
           values: zod.array(
             field.values
-              ? zod.enum(field.values, valueParamsError)
+              ? zod.enum(field.values as [string], valueParamsError)
               : zod.string(),
           ),
         });
@@ -97,36 +130,22 @@ export class FilterParser {
   private createFieldsSchema = (): zod.ZodType<Filter['fields']> => {
     if (!this.config.fields?.enable) {
       return zod.undefined({
-        error: 'Filtering is disabled',
+        invalid_type_error: 'Filtering is disabled',
       });
     }
 
-    const items =
-      this.config.fields?.items?.map((item) => this.createFieldSchema(item)) ||
-      [];
+    const items = this.config.fields.items?.map(this.createFieldSchema) ?? [];
 
-    if (!items.length) {
-      return zod
-        .array(
-          zod.never({
-            error: (iss) =>
-              `The filter '${(iss.input as FilterField).key}' is not valid`,
-          }),
-        )
-        .optional();
-    }
-
-    const schema = zod
+    return zod
       .array(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         zod.discriminatedUnion('key', items as any, {
-          error: (iss) =>
-            `The filter '${(iss.input as FilterField).key}' is not valid`,
+          errorMap: (_, ctx) => ({
+            message: `The filter '${(ctx.data as FilterField).key}' is not valid`,
+          }),
         }),
       )
       .optional();
-
-    return schema;
   };
 
   /**
@@ -134,65 +153,54 @@ export class FilterParser {
    * @returns A Zod schema for pagination configuration.
    */
   private createPaginationSchema = (): zod.ZodType<Filter['pagination']> => {
-    if (!this.config.pagination?.enable) {
+    const pagination = this.config.pagination;
+
+    if (!pagination?.enable) {
       return zod.undefined({
-        error: 'Pagination is disabled',
+        invalid_type_error: 'Pagination is disabled',
       });
     }
 
-    let limit = zod.number({
-      error: 'Limit must be a number',
-    });
+    const createPaginationFieldSchema = (
+      label: string,
+      rules?: FilterPaginationFieldConfig,
+    ) => {
+      const min = rules?.min;
+      const max = rules?.max;
+      const defaultValue = rules?.default;
 
-    if (this.config.pagination?.limit?.min !== undefined) {
-      limit = limit.min(this.config.pagination.limit.min, {
-        error: `Limit cannot be smaller than ${this.config.pagination.limit.min}`,
+      let schema = zod.number({
+        invalid_type_error: `${label} must be a number`,
       });
-    }
 
-    if (this.config.pagination?.limit?.max !== undefined) {
-      limit = limit.max(this.config.pagination.limit.max, {
-        error: `Limit cannot be greater than ${this.config.pagination.limit.max}`,
-      });
-    }
+      if (min !== undefined)
+        schema = schema.min(min, {
+          message: `${label} cannot be smaller than ${min}`,
+        });
 
-    if (this.config.pagination?.limit?.default !== undefined) {
-      limit = limit.default(
-        this.config.pagination.limit.default,
-      ) as unknown as zod.ZodNumber;
-    }
+      if (max !== undefined)
+        schema = schema.max(max, {
+          message: `${label} cannot be greater than ${max}`,
+        });
 
-    let offset = zod.number({
-      error: 'Offset must be a number',
-    });
-
-    if (this.config.pagination?.offset?.min !== undefined) {
-      offset = offset.min(this.config.pagination.offset.min, {
-        error: `Offset cannot be smaller than ${this.config.pagination.offset.min}`,
-      });
-    }
-
-    if (this.config.pagination?.offset?.max !== undefined) {
-      offset = offset.max(this.config.pagination.offset.max, {
-        error: `Offset cannot be greater than ${this.config.pagination.offset.max}`,
-      });
-    }
-
-    if (this.config.pagination?.offset?.default !== undefined) {
-      offset = offset.default(
-        this.config.pagination.offset.default,
-      ) as unknown as zod.ZodNumber;
-    }
+      return defaultValue !== undefined
+        ? schema.optional().default(defaultValue)
+        : schema.optional();
+    };
 
     const schema = zod
       .object({
-        limit: limit.optional(),
-        offset: offset.optional(),
+        limit: createPaginationFieldSchema('Limit', pagination.limit),
+        offset: createPaginationFieldSchema('Offset', pagination.offset),
       })
-      .prefault({})
       .optional();
 
-    return schema;
+    const paginationHasDefault =
+      this.config.pagination?.enable &&
+      (this.config.pagination.offset?.default ||
+        this.config.pagination.limit?.default);
+
+    return paginationHasDefault ? schema.default(() => ({})) : schema;
   };
 
   /**
@@ -205,17 +213,16 @@ export class FilterParser {
   ): zod.ZodType<FilterSort> => {
     const key = zod.literal(sort.key);
 
-    let order = zod
+    const order = zod
       .enum(['ASC', 'DESC'], {
-        error: (iss) =>
-          `The value '${iss.input}' is not a valid sort order, Only 'ASC' or 'DESC' are allowed`,
+        errorMap: (_, ctx) => ({
+          message: `The value '${ctx.data}' is not a valid sort order, Only 'ASC' or 'DESC' are allowed`,
+        }),
       })
       .optional();
 
     if (sort.defaultOrder) {
-      order = order.default(sort.defaultOrder) as unknown as zod.ZodOptional<
-        zod.ZodEnum<{ ASC: 'ASC'; DESC: 'DESC' }>
-      >;
+      return zod.object({ key, order: order.default(sort.defaultOrder) });
     }
 
     return zod.object({ key, order });
@@ -228,36 +235,22 @@ export class FilterParser {
   private createSortsSchema = (): zod.ZodType<Filter['sorts']> => {
     if (!this.config.sorts?.enable) {
       return zod.undefined({
-        error: 'Sorting is disabled',
+        invalid_type_error: 'Sorting is disabled',
       });
     }
 
-    const items =
-      this.config.sorts?.items?.map((item) => this.createSortSchema(item)) ||
-      [];
+    const items = this.config.sorts.items?.map(this.createSortSchema) ?? [];
 
-    if (!items.length) {
-      return zod
-        .array(
-          zod.never({
-            error: (iss) =>
-              `The sort '${(iss.input as FilterSort).key}' is not valid`,
-          }),
-        )
-        .optional();
-    }
-
-    const schema = zod
+    return zod
       .array(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         zod.discriminatedUnion('key', items as any, {
-          error: (iss) =>
-            `The sort '${(iss.input as FilterSort).key}' is not valid`,
+          errorMap: (_, ctx) => ({
+            message: `The sort '${(ctx.data as FilterSort).key}' is not valid`,
+          }),
         }),
       )
       .optional();
-
-    return schema;
   };
 
   /**
@@ -273,12 +266,67 @@ export class FilterParser {
   };
 
   /**
+   * Creates a Zod schema for the query object used as fastify querystring schema.
+   * @returns A Zod schema for the querystring.
+   */
+  private createQuerySchema = () => {
+    let schema = zod.object(
+      {} as Record<string, zod.ZodOptional<zod.ZodString>>,
+    );
+
+    if (this.config.pagination?.enable)
+      schema = schema.extend({
+        offset: zod.string().optional(),
+        limit: zod.string().optional(),
+      });
+
+    if (this.config.sorts?.enable)
+      schema = schema.extend({
+        sorts: zod.string().optional(),
+      });
+
+    if (this.config.fields?.enable) {
+      this.config.fields.items?.forEach((field) => {
+        let operators:
+          | (NumberOperator | StringOperator | StringArrayOperator)[]
+          | undefined = field.operators;
+
+        if (operators === undefined)
+          switch (field.type) {
+            case 'number':
+              operators = FILTER_FIELD_NUMBER_OPERATORS.slice();
+              break;
+            case 'string':
+              operators = FILTER_FIELD_STRING_OPERATORS.slice();
+              break;
+            case 'stringArray':
+              operators = FILTER_FIELD_STRING_ARRAY_OPERATORS.slice();
+              break;
+          }
+
+        operators.forEach((operator) => {
+          const operatorSymbol =
+            FILTER_FIELD_OPERATORS.find((op) => op.key === operator)?.symbol ??
+            '';
+          const key = `${field.key}${operatorSymbol}`;
+
+          schema = schema.extend({
+            [key]: zod.string().optional(),
+          });
+        });
+      });
+    }
+
+    return schema;
+  };
+
+  /**
    * Parses a URL into a raw Filter object before validation.
    * @param url The URL containing query parameters.
    * @returns A raw Filter object parsed from the URL.
    */
   private urlToFilter = (url: string): Filter => {
-    const { searchParams } = new URL(url);
+    const { searchParams } = new URL(url, 'http://localhost');
 
     const filters: Filter = {};
 
@@ -363,10 +411,8 @@ export class FilterParser {
    * @throws {Error} If validation fails.
    */
   public parse = (url: string): Filter => {
-    const filter = this.urlToFilter(url);
-
     try {
-      return this.schema.parse(filter);
+      return this.urlSchema.parse(url);
     } catch (error) {
       let message: string | undefined;
 

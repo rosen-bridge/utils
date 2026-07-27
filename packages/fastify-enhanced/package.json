@@ -36,6 +36,7 @@
     "zod-openapi": "^4.2.4"
   },
   "devDependencies": {
+    "@rosen-bridge/query-params": "^0.0.0",
     "zod": "^3.21.4"
   },
   "peerDependencies": {

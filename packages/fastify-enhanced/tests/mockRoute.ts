@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { Filter, FilterConfig, FilterParser } from '@rosen-bridge/query-params';
+
 import { FastifyWithZod } from '../lib';
 
 /**
@@ -63,6 +65,23 @@ export const mockRoutes = (server: FastifyWithZod) => {
     },
   );
 
+  const filterSchemaParser = new FilterParser(TestFilterQuerySchema);
+
+  server.get(
+    '/test-filter',
+    {
+      schema: {
+        querystring: filterSchemaParser.querySchema,
+        response: {
+          200: filterSchemaParser.schema,
+        },
+      },
+    },
+    async (request, reply) => {
+      reply.status(200).send(request.query);
+    },
+  );
+
   server.get(
     '/test-error',
     {
@@ -118,3 +137,88 @@ export const TestIncorrectResponseSchema = z.object({
 export const TestIncorrectResponseQuerySchema = z.object({
   p1: z.string(),
 });
+
+export const TestFilterQuerySchema: FilterConfig = {
+  fields: {
+    enable: true,
+    items: [
+      {
+        key: 'chain',
+        type: 'string',
+        operators: ['equal', 'notEqual'],
+        values: ['a', 'b', 'c'],
+      },
+      {
+        key: 'tokenId',
+        type: 'string',
+        operators: ['contains'],
+      },
+      {
+        key: 'tokenName',
+        type: 'string',
+        operators: ['contains'],
+      },
+    ],
+  },
+  pagination: {
+    enable: true,
+    limit: {
+      min: 1,
+      max: 100,
+      default: 50,
+    },
+    offset: {
+      min: 0,
+      default: 0,
+    },
+  },
+  sorts: {
+    enable: true,
+    items: [
+      {
+        key: 'tokenName',
+        defaultOrder: 'ASC',
+      },
+      {
+        key: 'chain',
+      },
+    ],
+  },
+};
+
+export const TestFilterResponse: Filter = {
+  fields: [
+    {
+      key: 'chain',
+      type: 'string',
+      operator: 'equal',
+      value: 'a',
+    },
+    {
+      key: 'chain',
+      type: 'string',
+      operator: 'notEqual',
+      value: 'b',
+    },
+    {
+      key: 'tokenId',
+      type: 'string',
+      operator: 'contains',
+      value: 'ba',
+    },
+  ],
+  pagination: {
+    offset: 10,
+    limit: 50,
+  },
+  sorts: [
+    {
+      key: 'chain',
+      order: 'DESC',
+    },
+    {
+      key: 'tokenName',
+      order: 'ASC',
+    },
+  ],
+};

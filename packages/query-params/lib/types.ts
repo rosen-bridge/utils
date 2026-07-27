@@ -8,44 +8,51 @@ import {
  * Field
  */
 
+export type NumberOperator = (typeof FILTER_FIELD_NUMBER_OPERATORS)[number];
+
 export type NumberFilterField = {
   key: string;
   type: 'number';
-  operator: (typeof FILTER_FIELD_NUMBER_OPERATORS)[number];
+  operator: NumberOperator;
   value: number;
 };
 
 export type NumberFilterFieldConfig = {
   key: string;
   type: 'number';
-  operators?: NumberFilterField['operator'][];
+  operators?: NumberOperator[];
 };
+
+export type StringOperator = (typeof FILTER_FIELD_STRING_OPERATORS)[number];
 
 export type StringFilterField = {
   key: string;
   type: 'string';
-  operator: (typeof FILTER_FIELD_STRING_OPERATORS)[number];
+  operator: StringOperator;
   value: string;
 };
 
 export type StringFilterFieldConfig = {
   key: string;
   type: 'string';
-  operators?: StringFilterField['operator'][];
+  operators?: StringOperator[];
   values?: string[];
 };
+
+export type StringArrayOperator =
+  (typeof FILTER_FIELD_STRING_ARRAY_OPERATORS)[number];
 
 export type StringArrayFilterField = {
   key: string;
   type: 'stringArray';
-  operator: (typeof FILTER_FIELD_STRING_ARRAY_OPERATORS)[number];
+  operator: StringArrayOperator;
   values: string[];
 };
 
 export type StringArrayFilterFieldConfig = {
   key: string;
   type: 'stringArray';
-  operators?: StringArrayFilterField['operator'][];
+  operators?: StringArrayOperator[];
   values?: string[];
 };
 
@@ -68,18 +75,16 @@ export type FilterPagination = {
   limit?: number;
 };
 
+export type FilterPaginationFieldConfig = {
+  min?: number;
+  max?: number;
+  default?: number;
+};
+
 export type FilterPaginationConfig = {
   enable?: boolean;
-  offset?: {
-    min?: number;
-    max?: number;
-    default?: number;
-  };
-  limit?: {
-    min?: number;
-    max?: number;
-    default?: number;
-  };
+  offset?: FilterPaginationFieldConfig;
+  limit?: FilterPaginationFieldConfig;
 };
 
 /**

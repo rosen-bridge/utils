@@ -27,8 +27,13 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "deepmerge": "^4.3.1",
-    "zod": "^4.1.12"
+    "deepmerge": "^4.3.1"
+  },
+  "devDependencies": {
+    "zod": "^3.21.4"
+  },
+  "peerDependencies": {
+    "zod": "^3.21.4"
   },
   "engines": {
     "node": ">=22.18.0",

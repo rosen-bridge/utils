@@ -793,11 +793,15 @@ describe('FilterParser', () => {
       });
 
       expect(() =>
-        filterParser.parse(`http://localhost?limit=${LIMIT_MAX + 1}`),
+        filterParser.parse(
+          `http://localhost?limit=${LIMIT_MAX + 1}&offset=${OFFSET_MAX}`,
+        ),
       ).toThrow(`Limit cannot be greater than ${LIMIT_MAX}`);
 
       expect(() =>
-        filterParser.parse(`http://localhost?offset=${OFFSET_MAX + 1}`),
+        filterParser.parse(
+          `http://localhost?offset=${OFFSET_MAX + 1}&limit=${LIMIT_MAX}`,
+        ),
       ).toThrow(`Offset cannot be greater than ${OFFSET_MAX}`);
     });
 

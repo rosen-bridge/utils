@@ -4,6 +4,7 @@
 
 - [Introduction](#introduction)
 - [Installation](#installation)
+- [Usage](#usage)
 
 ## Introduction
 
@@ -15,12 +16,18 @@ npm:
 
 ```sh
 npm i @rosen-bridge/query-params
+
+# install compatible zod version
+npm i zod@^3.21.4
 ```
 
 yarn:
 
 ```sh
 yarn add @rosen-bridge/query-params
+
+# install compatible zod version
+yarn add zod@^3.21.4
 ```
 
 ## Usage

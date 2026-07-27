@@ -5,5 +5,12 @@
     "outDir": "./dist"
   },
   "exclude": ["tests", "vitest.config.ts"],
-  "references": [{ "path": "../loggers/abstract-logger/tsconfig.build.json" }]
+  "references": [
+    {
+      "path": "../loggers/abstract-logger/tsconfig.build.json"
+    },
+    {
+      "path": "../query-params/tsconfig.build.json"
+    }
+  ]
 }

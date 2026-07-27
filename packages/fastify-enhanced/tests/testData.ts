@@ -103,6 +103,115 @@ export const apiSpec = {
         },
       },
     },
+    '/test-filter': {
+      get: {
+        parameters: [
+          { schema: { type: 'string' }, in: 'query', name: 'offset' },
+          { schema: { type: 'string' }, in: 'query', name: 'limit' },
+          { schema: { type: 'string' }, in: 'query', name: 'sorts' },
+          { schema: { type: 'string' }, in: 'query', name: 'chain' },
+          { schema: { type: 'string' }, in: 'query', name: 'chain!' },
+          { schema: { type: 'string' }, in: 'query', name: 'tokenId*' },
+          { schema: { type: 'string' }, in: 'query', name: 'tokenName*' },
+        ],
+        responses: {
+          '200': {
+            description: 'Default Response',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    fields: {
+                      type: 'array',
+                      items: {
+                        oneOf: [
+                          {
+                            type: 'object',
+                            properties: {
+                              key: { type: 'string', enum: ['chain'] },
+                              type: { type: 'string', enum: ['string'] },
+                              operator: {
+                                type: 'string',
+                                enum: ['equal', 'notEqual'],
+                              },
+                              value: { type: 'string', enum: ['a', 'b', 'c'] },
+                            },
+                            required: ['key', 'type', 'operator', 'value'],
+                          },
+                          {
+                            type: 'object',
+                            properties: {
+                              key: { type: 'string', enum: ['tokenId'] },
+                              type: { type: 'string', enum: ['string'] },
+                              operator: { type: 'string', enum: ['contains'] },
+                              value: { type: 'string' },
+                            },
+                            required: ['key', 'type', 'operator', 'value'],
+                          },
+                          {
+                            type: 'object',
+                            properties: {
+                              key: { type: 'string', enum: ['tokenName'] },
+                              type: { type: 'string', enum: ['string'] },
+                              operator: { type: 'string', enum: ['contains'] },
+                              value: { type: 'string' },
+                            },
+                            required: ['key', 'type', 'operator', 'value'],
+                          },
+                        ],
+                      },
+                    },
+                    pagination: {
+                      type: 'object',
+                      properties: {
+                        limit: {
+                          type: 'number',
+                          minimum: 1,
+                          maximum: 100,
+                          default: 50,
+                        },
+                        offset: { type: 'number', minimum: 0, default: 0 },
+                      },
+                      required: ['limit', 'offset'],
+                      default: {},
+                    },
+                    sorts: {
+                      type: 'array',
+                      items: {
+                        oneOf: [
+                          {
+                            type: 'object',
+                            properties: {
+                              key: { type: 'string', enum: ['tokenName'] },
+                              order: {
+                                type: 'string',
+                                enum: ['ASC', 'DESC'],
+                                default: 'ASC',
+                              },
+                            },
+                            required: ['key', 'order'],
+                          },
+                          {
+                            type: 'object',
+                            properties: {
+                              key: { type: 'string', enum: ['chain'] },
+                              order: { type: 'string', enum: ['ASC', 'DESC'] },
+                            },
+                            required: ['key'],
+                          },
+                        ],
+                      },
+                    },
+                  },
+                  required: ['pagination'],
+                },
+              },
+            },
+          },
+        },
+      },
+    },
     '/test-error': {
       get: {
         parameters: [

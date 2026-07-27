@@ -1,5 +1,5 @@
 import { FastifyWithZod, makeFastify } from '../lib';
-import { mockRoutes } from './mockRoute';
+import { mockRoutes, TestFilterResponse } from './mockRoute';
 import { apiSpec } from './testData';
 
 describe('e2e', () => {
@@ -73,6 +73,29 @@ describe('e2e', () => {
     // assert
     expect(result.statusCode).toEqual(200);
     expect(result.body).toEqual(JSON.stringify(apiSpec));
+  });
+
+  /**
+   * @target fastifyServer[GET /test-filter] should respond with the correctly parsed querystring
+   * @dependencies
+   * @scenario
+   * - define a mock get route that responds with its request query
+   * - send a request to the server
+   * - check the result
+   * @expected
+   * - response status should have been 200
+   * - response body should have matched the correctly parsed Filters object
+   */
+  it('should respond with the correctly parsed querystring', async () => {
+    // act
+    const result = await mockServer.inject({
+      method: 'GET',
+      url: `/test-filter?tokenId*=ba&chain=a&chain!=b&sorts=chain-DESC,tokenName&offset=10`,
+    });
+
+    // assert
+    expect(result.statusCode).toEqual(200);
+    expect(result.json()).toEqual(TestFilterResponse);
   });
 
   /**
