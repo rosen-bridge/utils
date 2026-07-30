@@ -1,6 +1,6 @@
 {
   "name": "@rosen-bridge/query-params",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "A type-safe URL filter parser that converts query parameters into validated field, sort, and pagination objects",
   "repository": {
     "type": "git",
