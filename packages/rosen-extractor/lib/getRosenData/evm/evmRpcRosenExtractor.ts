@@ -86,12 +86,15 @@ export class EvmRpcRosenExtractor extends AbstractRosenDataExtractor<Transaction
           );
           return undefined;
         }
+        // the `to` param occupies a 32-byte calldata slot: 12 zero-padding
+        // bytes followed by the 20-byte address
         if (
-          BigInt('0x' + callData.substring(8, 72)).toString(16) !=
-          this.lockAddress.substring(2)
+          callData.substring(8, 32) !== '0'.repeat(24) ||
+          '0x' + callData.substring(32, 72) !== this.lockAddress
         ) {
           this.logger.debug(
-            baseError + `: 'to' address is not the lock address.`,
+            baseError +
+              `: 'to' parameter is not the lock address with zero padding.`,
           );
           return undefined;
         }
