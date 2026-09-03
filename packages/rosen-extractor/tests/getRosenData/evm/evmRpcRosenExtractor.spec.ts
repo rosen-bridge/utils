@@ -202,6 +202,27 @@ describe('EvmRpcRosenExtractor', () => {
 
     /**
      * @target `EvmRpcRosenExtractor.get` should return undefined when
+     * transaction is an ERC-20 transfer and the `to` param has a non-zero prefix
+     * @dependencies
+     * @scenario
+     * - mock ERC-20 transfer transaction with a non-zero padding prefix
+     *   before an otherwise-correct lock address
+     * - run test
+     * - check returned value
+     * @expected
+     * - it should return undefined
+     */
+    it('should return undefined when transaction is an ERC-20 transfer and the `to` param has a non-zero prefix', () => {
+      const invalidTx = { ...testData.validErc20LockTx };
+      const data = invalidTx.data!;
+      invalidTx.data =
+        data.substring(0, 10) + '1'.repeat(24) + data.substring(34);
+      const result = extractor.get(txLikeToTxResponse(invalidTx));
+      expect(result).toBeUndefined();
+    });
+
+    /**
+     * @target `EvmRpcRosenExtractor.get` should return undefined when
      * transaction is an ERC-20 transfer and token is not supported in the source chain
      * @dependencies
      * @scenario
@@ -236,6 +257,33 @@ describe('EvmRpcRosenExtractor', () => {
       invalidTx.data = invalidTx.data!.substring(0, len - 10);
       const result = extractor.get(txLikeToTxResponse(invalidTx));
       expect(result).toBeUndefined();
+    });
+
+    /**
+     * @target `EvmRpcRosenExtractor.get` should extract rosenData from an
+     * ERC-20 transfer tx when the configured lock address has a leading
+     * zero nibble
+     * @dependencies
+     * @scenario
+     * - mock valid rosen data tx on a lock address with leading zero nibble
+     * - run test
+     * - check returned value
+     * @expected
+     * - it should return expected rosenData object
+     */
+    it('should extract rosenData from an ERC-20 transfer tx when the configured lock address has a leading zero nibble', () => {
+      const zeroNibbleExtractor = new EvmRpcRosenExtractor(
+        testData.zeroNibbleLockAddress,
+        tokenMap,
+        chainName,
+        nativeToken,
+      );
+      const txRes = txLikeToTxResponse(
+        testData.validErc20LockTxOnZeroNibbleAddress,
+      );
+      const result = zeroNibbleExtractor.get(txRes);
+
+      expect(result).toStrictEqual(testData.rosenDataErc20ZeroNibble);
     });
   });
 });
