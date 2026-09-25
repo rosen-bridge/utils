@@ -28,4 +28,20 @@ export { BitcoinRunesRosenExtractor } from './getRosenData/bitcoin-runes/bitcoin
 export { BitcoinRunesRpcRosenExtractor } from './getRosenData/bitcoin-runes/bitcoinRunesRpcRosenExtractor';
 export { HandshakeRosenExtractor } from './getRosenData/handshake/handshakeRosenExtractor';
 export { HandshakeRpcRosenExtractor } from './getRosenData/handshake/handshakeRpcRosenExtractor';
+export {
+  ZcashRpcRosenExtractor,
+  ZcashExtractionError,
+} from './getRosenData/zcash/zcashRpcRosenExtractor';
+export {
+  NativeZcashInspector,
+  NativeInspectionError,
+} from './getRosenData/zcash/nativeInspection';
+export type {
+  ZcashRpcRosenExtractorOptions,
+  ZcashRpcTransaction,
+} from './getRosenData/zcash/zcashRpcRosenExtractor';
+export type {
+  NativeInspectionProvider,
+  NativeZcashInspectorOptions,
+} from './getRosenData/zcash/nativeInspection';
 export { parseRosenData } from './utils';

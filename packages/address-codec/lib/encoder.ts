@@ -27,6 +27,10 @@ import {
   HANDSHAKE_CHAIN,
   encodeHandshakeAddress,
 } from '@rosen-bridge/address-codec-handshake';
+import {
+  ZCASH_CHAIN,
+  encodeZcashAddress,
+} from '@rosen-bridge/address-codec-zcash';
 
 import { BINANCE_CHAIN, BASE_CHAIN, ETHEREUM_CHAIN } from './const';
 import { UnsupportedChainError } from './types';
@@ -42,6 +46,7 @@ export const chainEncoders: Record<string, (address: string) => string> = {
   [BITCOIN_RUNES_CHAIN]: encodeBitcoinRunesAddress,
   [FIRO_CHAIN]: encodeFiroAddress,
   [HANDSHAKE_CHAIN]: encodeHandshakeAddress,
+  [ZCASH_CHAIN]: encodeZcashAddress,
 };
 
 /**

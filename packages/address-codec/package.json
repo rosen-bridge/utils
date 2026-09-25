@@ -34,7 +34,8 @@
     "@rosen-bridge/address-codec-ergo": "^0.1.0",
     "@rosen-bridge/address-codec-evm": "^0.1.0",
     "@rosen-bridge/address-codec-firo": "^0.1.0",
-    "@rosen-bridge/address-codec-handshake": "^0.1.0"
+    "@rosen-bridge/address-codec-handshake": "^0.1.0",
+    "@rosen-bridge/address-codec-zcash": "0.0.0"
   },
   "engines": {
     "node": ">=22.18.0",
