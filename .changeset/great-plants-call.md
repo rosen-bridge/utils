@@ -2,4 +2,4 @@
 '@rosen-bridge/address-codec-zcash': minor
 ---
 
-Initialize the transparent Zcash P2PKH address codec.
+Add transparent Zcash P2PKH and canonical Orchard Unified Address parsing.

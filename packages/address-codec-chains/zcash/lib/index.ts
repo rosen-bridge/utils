@@ -1,6 +1,7 @@
-import { createZcashAddressCodec } from './zcash';
+import { createZcashAddressCodec } from './zcash.js';
 
-export * from './zcash';
+export * from './zcash.js';
+export { MAX_UNIFIED_ADDRESS_LENGTH } from './unified.js';
 
 export const ZCASH_CHAIN = 'zcash';
 
@@ -10,3 +11,6 @@ const mainnet = createZcashAddressCodec('mainnet');
 export const encodeZcashAddress = mainnet.encodeAddress;
 export const decodeZcashAddress = mainnet.decodeAddress;
 export const validateZcashAddress = mainnet.validateAddress;
+export const parseZcashRecipient = mainnet.parseRecipient;
+export const validateZcashTransparentAddress =
+  mainnet.validateTransparentAddress;

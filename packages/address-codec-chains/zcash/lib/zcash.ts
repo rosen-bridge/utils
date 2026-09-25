@@ -1,24 +1,14 @@
 import base58check from 'bs58check';
 
-export type ZcashNetwork = 'mainnet' | 'testnet' | 'regtest';
-export type ZcashAddressFailure =
-  | 'network'
-  | 'unsupported-kind'
-  | 'encoding'
-  | 'checksum';
-export class UnsupportedZcashAddressError extends Error {
-  constructor(public readonly reason: ZcashAddressFailure) {
-    super('Unsupported Zcash address: ' + reason);
-    this.name = 'UnsupportedZcashAddressError';
-  }
-}
-export interface TransparentP2pkhRecipient {
-  readonly kind: 'transparent-p2pkh';
-  readonly network: ZcashNetwork;
-  readonly address: string;
-  readonly payloadHex: string;
-  readonly scriptPubKeyHex: string;
-}
+import {
+  UnsupportedZcashAddressError,
+  type TransparentP2pkhRecipient,
+  type ZcashNetwork,
+  type ZcashRecipient,
+} from './types.js';
+import { parseOrchardRecipient } from './unified.js';
+
+export * from './types.js';
 /**
  * Rosen wire payload: the native two-byte version prefix and 20-byte hash160,
  * without Base58Check checksum, represented as exactly 44 lowercase hex digits.
@@ -78,16 +68,25 @@ export function createZcashAddressCodec(network: ZcashNetwork) {
     });
   };
 
+  const parseRecipient = (address: string): ZcashRecipient =>
+    typeof address === 'string' && /^(?:u1|utest1|uregtest1)/.test(address)
+      ? parseOrchardRecipient(address, network)
+      : parseAddress(address);
+
   return Object.freeze({
     parseAddress,
+    parseRecipient,
     encodeAddress: (address: string): string =>
       parseAddress(address).payloadHex,
     decodeAddress: (payloadHex: string): string => {
       checkPayload(payloadHex);
       return base58check.encode(Buffer.from(payloadHex, 'hex'));
     },
-    validateAddress: (address: string): void => {
+    validateTransparentAddress: (address: string): void => {
       parseAddress(address);
+    },
+    validateAddress: (address: string): void => {
+      parseRecipient(address);
     },
   });
 }
