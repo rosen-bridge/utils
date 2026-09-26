@@ -30,7 +30,8 @@
     "prettify": "prettier --write . --ignore-path ../../.gitignore",
     "prettify:check": "prettier --check . --ignore-path ../../.gitignore",
     "release": "npm run test && npm run build && npm publish --access public",
-    "test": "NODE_OPTIONS='--import tsx' vitest",
+    "test": "vitest",
+    "test:native": "node --import tsx --test tests/getRosenData/zcash/nativeInspection.test.ts",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
@@ -40,6 +41,8 @@
     "@emurgo/cardano-serialization-lib-nodejs": "^13.2.1",
     "@rosen-bridge/abstract-logger": "^4.0.0",
     "@rosen-bridge/address-manager": "^0.1.0",
+    "@rosen-bridge/address-codec-ergo": "^0.1.0",
+    "@rosen-bridge/address-codec-zcash": "0.0.0",
     "@rosen-bridge/json-bigint": "^1.1.0",
     "@rosen-bridge/tokens": "^6.0.2",
     "bitcoinjs-lib": "^6.1.5",

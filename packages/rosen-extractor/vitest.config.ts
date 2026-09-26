@@ -1,4 +1,4 @@
-import { defineConfig, mergeConfig } from 'vitest/config';
+import { configDefaults, defineConfig, mergeConfig } from 'vitest/config';
 
 import configShared from '../../vitest.shared';
 
@@ -7,6 +7,7 @@ export default mergeConfig(
   defineConfig({
     test: {
       setupFiles: ['./tests/setup.ts'],
+      exclude: [...configDefaults.exclude, '**/nativeInspection.test.ts'],
     },
   }),
 );

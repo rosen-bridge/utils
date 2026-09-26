@@ -1,0 +1,89 @@
+name: Release Zcash native finalizer
+
+on:
+  push:
+    tags:
+      - 'rosen-zcash-native-finalizer-v*'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build ${{ matrix.target }}
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            binary: rosen-zcash-native-finalizer.exe
+            asset: rosen-zcash-native-finalizer-x86_64-pc-windows-msvc.exe
+          - os: ubuntu-22.04
+            target: x86_64-unknown-linux-gnu
+            binary: rosen-zcash-native-finalizer
+            asset: rosen-zcash-native-finalizer-x86_64-unknown-linux-gnu
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: pwsh
+        working-directory: native/zcash-payment
+    env:
+      CARGO_TARGET_DIR: ${{ runner.temp }}/zcash-native-finalizer-target
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@1.98.1
+      - name: Build pinned release binary
+        run: |
+          $profilePath = if ($IsWindows) { $env:USERPROFILE } else { $env:HOME }
+          if (-not $profilePath -or -not $env:GITHUB_WORKSPACE) { throw 'runner paths unavailable' }
+          $env:RUSTFLAGS = "--remap-path-prefix=${profilePath}=/build/profile --remap-path-prefix=$($env:GITHUB_WORKSPACE)=/build/source -C strip=symbols"
+          cargo build --locked --release
+      - name: Stage release asset
+        run: |
+          $stage = Join-Path $env:RUNNER_TEMP 'zcash-native-finalizer-release'
+          New-Item -ItemType Directory -Force -Path $stage | Out-Null
+          Copy-Item (Join-Path $env:CARGO_TARGET_DIR "release/${{ matrix.binary }}") (Join-Path $stage '${{ matrix.asset }}')
+      - uses: actions/upload-artifact@v4
+        with:
+          name: zcash-native-finalizer-${{ matrix.target }}
+          path: ${{ runner.temp }}/zcash-native-finalizer-release/${{ matrix.asset }}
+          if-no-files-found: error
+
+  release:
+    name: Create GitHub Release assets
+    needs: build
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@1.98.1
+      - uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+          merge-multiple: true
+      - name: Generate source-bound manifest
+        run: |
+          node native/zcash-payment/release/create-manifest.mjs \
+            --release-directory native/zcash-payment/release \
+            --artifact-directory release-assets \
+            --tag "${GITHUB_REF_NAME}" \
+            --cargo "$(cargo --version)" \
+            --rustc "$(rustc --version)"
+      - name: Create draft release assets
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          fail_on_unmatched_files: true
+          files: |
+            release-assets/rosen-zcash-native-finalizer-x86_64-pc-windows-msvc.exe
+            release-assets/rosen-zcash-native-finalizer-x86_64-unknown-linux-gnu
+            release-assets/manifest.json
+            release-assets/SHA256SUMS

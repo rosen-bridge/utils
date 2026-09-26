@@ -1,0 +1,54 @@
+{
+  "txid": "aaf9bf3fc7be562ff268327ee983510480d212df65e2f91883f82aea60f7727b",
+  "version": {
+    "kind": "v5",
+    "number": 5,
+    "header": "80000005",
+    "version_group_id": "26a7270a"
+  },
+  "consensus_branch_id": "c2d6d0b4",
+  "branch_source": "embedded",
+  "lock_time": 0,
+  "expiry_height": 305,
+  "coinbase": false,
+  "fully_transparent": true,
+  "transparent": {
+    "present": true,
+    "inputs": [
+      {
+        "prevout_txid": "f5ffc9c9d6fa6f4035a83debd4ed68421392dede37879d23f30ab00da7cda1e2",
+        "prevout_index": 1,
+        "script_sig_hex": "483045022100a4f063e9a11ba1c680649258799a3305cc216d65f38397d3b4fa79f1116b48f3022079e79de7f8bf984bc1a4d96f7315e9b6a197e42d3482497febb8460fb520223601210279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+        "sequence": 4294967294
+      }
+    ],
+    "outputs": [
+      {
+        "index": 0,
+        "value_zat": 100000000,
+        "script_pubkey_hex": "76a914f09ce3435526cda8bffce9b09336d23ec5cc7c9188ac",
+        "script_kind": "pubkeyhash"
+      },
+      {
+        "index": 1,
+        "value_zat": 424950000,
+        "script_pubkey_hex": "76a914751e76e8199196d454941c45d1b3a323f1433bd688ac",
+        "script_kind": "pubkeyhash"
+      },
+      {
+        "index": 2,
+        "value_zat": 0,
+        "script_pubkey_hex": "6a3300000000000000138800000000000008982103f999da8e6e42660e4464d17d29e63bc006734a6710a24eb489b466323d3a9339",
+        "script_kind": "nulldata"
+      }
+    ]
+  },
+  "shielded": {
+    "present": false,
+    "sprout_joinsplits": 0,
+    "sapling_spends": 0,
+    "sapling_outputs": 0,
+    "orchard_actions": 0,
+    "ironwood_actions": 0
+  }
+}
