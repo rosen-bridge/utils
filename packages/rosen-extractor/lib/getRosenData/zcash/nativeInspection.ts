@@ -1,6 +1,7 @@
-import { execFileSync } from 'node:child_process';
+import { execFile, execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { closeSync, fstatSync, openSync, readSync } from 'node:fs';
+import { open } from 'node:fs/promises';
 import { isAbsolute } from 'node:path';
 
 const MAX_RAW_TRANSACTION_BYTES = 2_000_000;
@@ -13,6 +14,13 @@ const MAX_NATIVE_OUTPUT_BYTES = 36 * 1024 * 1024;
 const MAX_COLLECTION_ITEMS = 250_000;
 const UINT32_MAX = 0xffff_ffff;
 const HASH_BUFFER_BYTES = 64 * 1024;
+export const MAX_NATIVE_BATCH_TRANSACTIONS = 32;
+export const MAX_NATIVE_BATCH_RAW_BYTES = MAX_RAW_TRANSACTION_BYTES;
+
+export interface NativeInspectionRequest {
+  rawHex: string;
+  expectedBranchId: string;
+}
 
 type JsonRecord = Record<string, unknown>;
 
@@ -67,6 +75,9 @@ export interface NativeInspection {
 
 export interface NativeInspectionProvider {
   inspect(rawHex: string, expectedBranchId: string): NativeInspection;
+  inspectBatchAsync?(
+    requests: readonly NativeInspectionRequest[],
+  ): Promise<NativeInspection[]>;
 }
 
 export interface NativeZcashInspectorOptions {
@@ -357,6 +368,30 @@ function executableSha256(path: string): string {
   return digestHex;
 }
 
+async function executableSha256Async(path: string): Promise<string> {
+  try {
+    const file = await open(path, 'r');
+    try {
+      if (!(await file.stat()).isFile()) throw new Error('not a regular file');
+      const digest = createHash('sha256');
+      const buffer = Buffer.allocUnsafe(HASH_BUFFER_BYTES);
+      for (;;) {
+        const { bytesRead } = await file.read(buffer, 0, buffer.length, null);
+        if (bytesRead === 0) break;
+        digest.update(buffer.subarray(0, bytesRead));
+      }
+      return digest.digest('hex');
+    } finally {
+      await file.close();
+    }
+  } catch {
+    throw new NativeInspectionError(
+      'executable_unavailable',
+      'native inspector executable is unavailable',
+    );
+  }
+}
+
 function decodeJson(bytes: Buffer): unknown {
   let source: string;
   try {
@@ -392,6 +427,7 @@ export class NativeZcashInspector implements NativeInspectionProvider {
   private readonly executablePath: string;
   private readonly expectedSha256: string;
   private readonly timeoutMs: number;
+  private batchRunning = false;
 
   constructor(options: NativeZcashInspectorOptions) {
     if (
@@ -421,6 +457,162 @@ export class NativeZcashInspector implements NativeInspectionProvider {
     this.executablePath = options.executablePath;
     this.expectedSha256 = options.expectedSha256;
     this.timeoutMs = timeoutMs;
+  }
+
+  /** One bounded native process; no RPC projection decides which bytes to inspect. */
+  async inspectBatchAsync(
+    requests: readonly NativeInspectionRequest[],
+  ): Promise<NativeInspection[]> {
+    if (this.batchRunning) {
+      throw new NativeInspectionError(
+        'invalid_input',
+        'native inspector already has a batch in progress',
+      );
+    }
+    if (
+      !Array.isArray(requests) ||
+      requests.length === 0 ||
+      requests.length > MAX_NATIVE_BATCH_TRANSACTIONS
+    ) {
+      throw new NativeInspectionError(
+        'invalid_input',
+        'invalid native batch size',
+      );
+    }
+    let rawBytes = 0;
+    // Own an immutable request snapshot across hashing and process execution.
+    const items = requests.map((request) => {
+      if (
+        !request ||
+        typeof request.rawHex !== 'string' ||
+        request.rawHex.length === 0 ||
+        request.rawHex.length > MAX_RAW_TRANSACTION_BYTES * 2 ||
+        request.rawHex.length % 2 !== 0 ||
+        !/^[0-9a-f]+$/.test(request.rawHex) ||
+        typeof request.expectedBranchId !== 'string' ||
+        !/^[0-9a-f]{8}$/.test(request.expectedBranchId)
+      ) {
+        throw new NativeInspectionError(
+          'invalid_input',
+          'invalid native batch item',
+        );
+      }
+      rawBytes += request.rawHex.length / 2;
+      return {
+        raw_tx_hex: request.rawHex,
+        expected_branch_id: request.expectedBranchId,
+      };
+    });
+    if (rawBytes > MAX_NATIVE_BATCH_RAW_BYTES) {
+      throw new NativeInspectionError(
+        'invalid_input',
+        'native batch is too large',
+      );
+    }
+    const input = Buffer.from(JSON.stringify({ transactions: items }), 'utf8');
+    if (input.length > MAX_RAW_TRANSACTION_BYTES * 2 + 16_384) {
+      throw new NativeInspectionError(
+        'invalid_input',
+        'native batch is too large',
+      );
+    }
+    this.batchRunning = true;
+    try {
+      // Pin each batch, rather than caching a digest across later file changes.
+      if (
+        (await executableSha256Async(this.executablePath)) !==
+        this.expectedSha256
+      ) {
+        throw new NativeInspectionError(
+          'hash_mismatch',
+          'native inspector executable hash mismatch',
+        );
+      }
+      const output = await new Promise<Buffer>((resolve, reject) => {
+        const child = execFile(
+          this.executablePath,
+          ['--batch'],
+          {
+            encoding: 'buffer',
+            maxBuffer: MAX_NATIVE_OUTPUT_BYTES,
+            timeout: this.timeoutMs,
+            killSignal: 'SIGKILL',
+            windowsHide: true,
+            shell: false,
+          },
+          (error, stdout, stderr) => {
+            if (error) {
+              if (error.code === 'ERR_CHILD_PROCESS_STDIO_MAXBUFFER') {
+                reject(
+                  new NativeInspectionError(
+                    'output_too_large',
+                    'native inspector output exceeded its limit',
+                  ),
+                );
+              } else if (error.killed && error.signal === 'SIGKILL') {
+                reject(
+                  new NativeInspectionError(
+                    'timeout',
+                    'native inspector timed out',
+                  ),
+                );
+              } else if (
+                ['ENOENT', 'EACCES', 'EPERM'].includes(String(error.code))
+              ) {
+                reject(
+                  new NativeInspectionError(
+                    'executable_unavailable',
+                    'native inspector executable is unavailable',
+                  ),
+                );
+              } else if (
+                error.code === 1 &&
+                stdout.toString('utf8').trim() === ''
+              ) {
+                try {
+                  reject(
+                    new NativeInspectionError(
+                      'native_refusal',
+                      'native inspector refused the batch',
+                      nativeRefusal(decodeJson(stderr)),
+                    ),
+                  );
+                } catch {
+                  reject(
+                    new NativeInspectionError(
+                      'invalid_response',
+                      'native inspector returned an invalid refusal',
+                    ),
+                  );
+                }
+              } else {
+                reject(
+                  new NativeInspectionError(
+                    'execution_failed',
+                    'native inspector execution failed',
+                  ),
+                );
+              }
+            } else resolve(stdout);
+          },
+        );
+        // Early native refusal may close stdin before the bounded input finishes.
+        // execFile's callback owns the exit/refusal result after stdio closes.
+        child.stdin?.on('error', () => undefined);
+        child.stdin?.end(input);
+      });
+      const decoded = decodeJson(output);
+      if (!Array.isArray(decoded) || decoded.length !== items.length)
+        failResponse();
+      return decoded.map((value, index) => {
+        const result = validateNativeInspection(value);
+        if (result.consensus_branch_id !== items[index].expected_branch_id)
+          failResponse();
+        return result;
+      });
+    } finally {
+      this.batchRunning = false;
+    }
   }
 
   inspect(rawHex: string, expectedBranchId: string): NativeInspection {

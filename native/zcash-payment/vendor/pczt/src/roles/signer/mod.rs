@@ -196,13 +196,15 @@ impl Signer {
             .get(index)
             .ok_or(Error::InvalidIndex)?;
 
+        // librustzcash 5345dbe's callback returns the value directly; the input
+        // method supplies the checked Result and retains its ALL_ONLY policy.
         input.with_signable_input(index, |signable_input| {
-            Ok(sighash(
+            sighash(
                 &self.tx_data,
                 &SignableInput::Transparent(signable_input),
                 &self.txid_parts,
-            ))
-        })
+            )
+        }).map_err(Error::TransparentSign)
     }
 
     /// Signs the transparent spend at the given index with the given spending key.

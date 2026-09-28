@@ -7,7 +7,7 @@ transaction is a Rosen deposit.
 
 ## Contract
 
-The CLI reads one JSON object from standard input:
+With no arguments, the CLI reads one JSON object from standard input:
 
 ```json
 {
@@ -22,6 +22,24 @@ embed a branch ID, so the response labels their branch source as `context`. V5 a
 embed a branch ID; it must equal `expected_branch_id`, and the response labels it `embedded`.
 The transaction version must also be valid in the expected branch according to the pinned
 `zcash_primitives` implementation.
+
+With the explicit `--batch` argument, the CLI instead reads:
+
+```json
+{
+  "transactions": [
+    {"raw_tx_hex": "<canonical-lowercase-transaction-hex>", "expected_branch_id": "77190ad9"}
+  ]
+}
+```
+
+The batch contains 1 through 32 transaction objects, each with the same strict fields and
+inspection checks as a single request. Successful output is a compact JSON array of inspection
+objects in request order. Output is atomic: a failure in any item rejects the whole batch,
+emits one `{ "code": "...", "message": "..." }` error on standard error, exits with status 1,
+and emits no partial result on standard output. Any argument list other than no arguments or
+exactly `--batch` fails with `unsupported_mode`; a consumer must not silently fall back when
+an older binary lacks batch support.
 
 Successful output includes:
 
@@ -58,6 +76,11 @@ Zcash block serialization limit. The CLI reads at most 4,001,025 bytes and rejec
 4,001,024 bytes before JSON parsing. The extra 1,024 bytes cover the JSON field names, branch ID,
 and ordinary formatting around a maximum-size canonical hex string.
 
+In batch mode, the sum of decoded transaction sizes is capped at 2,000,000 bytes. The request
+limit is 4,016,384 bytes, including JSON overhead; the bounded reader reads at most one byte
+beyond that limit to detect oversize input. An empty batch or more than 32 items yields
+`invalid_batch_size`, and an excessive aggregate transaction size yields `batch_too_large`.
+
 Canonical raw hex is nonempty, even-length, lowercase, and has no `0x` prefix. Failures are emitted
 as JSON on standard error with a stable `code`:
 
@@ -65,7 +88,8 @@ as JSON on standard error with a stable `code`:
 - `missing_branch_id`, `invalid_branch_id`, `unsupported_branch_id`, `branch_mismatch`;
 - `unsupported_transaction_format`, `truncated_transaction`, `malformed_transaction`,
   `trailing_bytes`, `noncanonical_transaction`;
-- `invalid_json`, `input_too_large`, `input_read_failed`.
+- `invalid_json`, `input_too_large`, `input_read_failed`;
+- `invalid_batch_size`, `batch_too_large`, `unsupported_mode`.
 
 An unknown version or version-group pair is `unsupported_transaction_format`; a recognized format
 whose remaining fields cannot be decoded is `malformed_transaction`. This distinction reports the
@@ -90,12 +114,15 @@ CARGO_TARGET_DIR='<machine-local-target>' cargo run --locked --offline < example
 ```
 
 The binary accepts stdin only. Redirecting a file and piping JSON use the same bounded reader.
+For a batch request file, use `cargo run --locked --offline -- --batch < batch.json` in a POSIX
+shell, or `Get-Content -Raw batch.json | cargo run --locked --offline -- --batch` in PowerShell.
 
 ## Exact dependencies and fixture provenance
 
 Direct dependencies are exact pins: `hex 0.4.3`, `serde 1.0.229`, `serde_json 1.0.145`,
-`zcash_primitives 0.30.1`, `zcash_protocol 0.10.5`, `zcash_script 0.4.3`, and
-`zcash_transparent 0.10.0`. `Cargo.lock` freezes the transitive graph.
+`zcash_script 0.4.3`, and the following crates from `zcash/librustzcash` commit
+`5345dbe0cd6c7f2057e631a34a74dffa84ff1d48`: `zcash_primitives 0.30.1`,
+`zcash_protocol 0.10.6`, and `zcash_transparent 0.10.0`. `Cargo.lock` freezes the transitive graph.
 
 Tests contain only public transaction bytes:
 
@@ -112,3 +139,12 @@ The matrix covers canonical txids, exact output amounts and scripts, coinbase, s
 counts, transparent V4 branch context, multi-input preservation, strict byte consumption, limits,
 and isolated missing, malformed, truncated, unsupported-format, unknown-branch, branch-mismatch,
 noncanonical-hex, and parser-normalization failures.
+
+The current suite has 29 passing tests. NU7 cases use branch `77190ad9`: V4 is rejected,
+V5 and V6 are decoded with exact upstream empty-transaction digest fixtures, retired provisional
+branch IDs are rejected, and an unchanged historical signed transaction is rejected against
+the new branch context. Batch cases cover order, bounds, malformed requests and atomic failure.
+The empty upstream fixtures come from `zcash_primitives/src/transaction/tests.rs` at the commit
+above; they are codec fixtures, not spendable transactions. Parsing a NU7 transaction does not
+verify its signatures or establish node admission. NU7 node admission and an activation schedule
+remain unqualified by this suite.

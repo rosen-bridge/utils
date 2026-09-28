@@ -6,12 +6,46 @@ use zcash_protocol::consensus::BranchId;
 
 pub const MAX_RAW_TRANSACTION_BYTES: usize = 2_000_000;
 pub const MAX_REQUEST_BYTES: usize = MAX_RAW_TRANSACTION_BYTES * 2 + 1_024;
+pub const MAX_BATCH_TRANSACTIONS: usize = 32;
+pub const MAX_BATCH_REQUEST_BYTES: usize = MAX_RAW_TRANSACTION_BYTES * 2 + 16_384;
 
 #[derive(Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Request {
     pub raw_tx_hex: Option<String>,
     pub expected_branch_id: Option<String>,
+}
+
+// A map-only wrapper preserves Serde's duplicate/unknown-field rejection and
+// prevents its derived struct visitor from accepting positional request arrays.
+struct BatchItem(Request);
+
+impl<'de> Deserialize<'de> for BatchItem {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        struct ObjectVisitor;
+        impl<'de> serde::de::Visitor<'de> for ObjectVisitor {
+            type Value = BatchItem;
+
+            fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+                formatter.write_str("a transaction request object")
+            }
+
+            fn visit_map<M: serde::de::MapAccess<'de>>(
+                self,
+                map: M,
+            ) -> Result<Self::Value, M::Error> {
+                Request::deserialize(serde::de::value::MapAccessDeserializer::new(map))
+                    .map(BatchItem)
+            }
+        }
+        deserializer.deserialize_map(ObjectVisitor)
+    }
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct BatchRequest {
+    transactions: Vec<BatchItem>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -357,20 +391,68 @@ pub fn run_json(input: &str) -> Result<Inspection, ToolError> {
 }
 
 pub fn run_reader<R: Read>(reader: R) -> Result<Inspection, ToolError> {
+    let bytes = read_bounded(reader, MAX_REQUEST_BYTES)?;
+    let text = std::str::from_utf8(&bytes)
+        .map_err(|e| ToolError::new("invalid_json", format!("request is not UTF-8: {e}")))?;
+    run_json(text)
+}
+
+pub fn run_batch_json(input: &str) -> Result<Vec<Inspection>, ToolError> {
+    if !input
+        .trim_start_matches([' ', '\t', '\r', '\n'])
+        .starts_with('{')
+    {
+        return Err(ToolError::new(
+            "invalid_json",
+            "batch JSON must be one object",
+        ));
+    }
+    let batch: BatchRequest = serde_json::from_str(input)
+        .map_err(|e| ToolError::new("invalid_json", format!("batch JSON is invalid: {e}")))?;
+    if batch.transactions.is_empty() || batch.transactions.len() > MAX_BATCH_TRANSACTIONS {
+        return Err(ToolError::new(
+            "invalid_batch_size",
+            format!("batch must contain between 1 and {MAX_BATCH_TRANSACTIONS} transactions"),
+        ));
+    }
+    // Check the aggregate before parsing any transactions. Invalid/missing hex
+    // still fails the ordinary inspector below; it never yields a partial result.
+    let total_hex_bytes = batch.transactions.iter().try_fold(0usize, |total, item| {
+        total.checked_add(item.0.raw_tx_hex.as_ref().map_or(0, String::len))
+    });
+    if total_hex_bytes.is_none_or(|total| total > MAX_RAW_TRANSACTION_BYTES * 2) {
+        return Err(ToolError::new(
+            "batch_too_large",
+            format!("batch raw transactions exceed the {MAX_RAW_TRANSACTION_BYTES}-byte limit"),
+        ));
+    }
+    batch
+        .transactions
+        .into_iter()
+        .map(|item| inspect(item.0))
+        .collect()
+}
+
+pub fn run_batch_reader<R: Read>(reader: R) -> Result<Vec<Inspection>, ToolError> {
+    let bytes = read_bounded(reader, MAX_BATCH_REQUEST_BYTES)?;
+    let text = std::str::from_utf8(&bytes)
+        .map_err(|e| ToolError::new("invalid_json", format!("request is not UTF-8: {e}")))?;
+    run_batch_json(text)
+}
+
+fn read_bounded<R: Read>(reader: R, maximum: usize) -> Result<Vec<u8>, ToolError> {
     let mut bytes = Vec::new();
     reader
-        .take((MAX_REQUEST_BYTES + 1) as u64)
+        .take((maximum + 1) as u64)
         .read_to_end(&mut bytes)
         .map_err(|e| {
             ToolError::new("input_read_failed", format!("stdin could not be read: {e}"))
         })?;
-    if bytes.len() > MAX_REQUEST_BYTES {
+    if bytes.len() > maximum {
         return Err(ToolError::new(
             "input_too_large",
-            format!("JSON input exceeds the {MAX_REQUEST_BYTES}-byte limit"),
+            format!("JSON input exceeds the {maximum}-byte limit"),
         ));
     }
-    let text = std::str::from_utf8(&bytes)
-        .map_err(|e| ToolError::new("invalid_json", format!("request is not UTF-8: {e}")))?;
-    run_json(text)
+    Ok(bytes)
 }

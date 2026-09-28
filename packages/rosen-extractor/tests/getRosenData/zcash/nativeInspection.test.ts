@@ -334,7 +334,7 @@ test('executable hash is checked again before every process execution', () => {
   }
 });
 
-test('actual child timeout and stdout overflow are classified', () => {
+test('actual child timeout and stdout overflow are classified', async () => {
   const stem = join(
     tmpdir(),
     `native-inspector-helper-${process.pid}-${Date.now()}-${Math.random().toString(16).slice(2)}`,
@@ -377,6 +377,13 @@ fn main() {
       timeoutMs: 50,
     });
     expectCode(() => timeoutInspector.inspect('00', BRANCH_ID), 'timeout');
+    await assert.rejects(
+      timeoutInspector.inspectBatchAsync([
+        { rawHex: '00', expectedBranchId: BRANCH_ID },
+      ]),
+      (error: unknown) =>
+        error instanceof NativeInspectionError && error.code === 'timeout',
+    );
 
     const overflowInspector = new NativeZcashInspector({
       executablePath: helperPath,
@@ -386,9 +393,100 @@ fn main() {
       () => overflowInspector.inspect('01', BRANCH_ID),
       'output_too_large',
     );
+    await assert.rejects(
+      overflowInspector.inspectBatchAsync([
+        { rawHex: '01', expectedBranchId: BRANCH_ID },
+      ]),
+      (error: unknown) =>
+        error instanceof NativeInspectionError &&
+        error.code === 'output_too_large',
+    );
   } finally {
     for (const path of [sourcePath, helperPath, helperPdbPath]) {
       if (existsSync(path)) unlinkSync(path);
     }
+  }
+});
+
+test('native batches preserve ordered inspections, immutable requests and event-loop progress', async () => {
+  const requests = Array.from({ length: 32 }, (_, index) => ({
+    rawHex: delivered.transactions[index % 2].hex,
+    expectedBranchId: BRANCH_ID,
+  }));
+  const expected = requests.map(({ rawHex }) =>
+    inspector.inspect(rawHex, BRANCH_ID),
+  );
+  let yielded = false;
+  setImmediate(() => {
+    yielded = true;
+  });
+  const pending = inspector.inspectBatchAsync(requests);
+  requests[0].rawHex = '00';
+  requests[0].expectedBranchId = 'deadbeef';
+  await assert.rejects(
+    inspector.inspectBatchAsync([
+      { rawHex: deposit.hex, expectedBranchId: BRANCH_ID },
+    ]),
+    (error: unknown) =>
+      error instanceof NativeInspectionError && error.code === 'invalid_input',
+  );
+  assert.deepEqual(await pending, expected);
+  assert.equal(yielded, true);
+});
+
+test('batch bounds and one invalid transaction reject before any result is consumed', async () => {
+  const valid = { rawHex: deposit.hex, expectedBranchId: BRANCH_ID };
+  for (const requests of [
+    [],
+    Array(33).fill(valid),
+    [{ ...valid, rawHex: '0' }],
+    [
+      { ...valid, rawHex: '00'.repeat(1_000_001) },
+      { ...valid, rawHex: '00'.repeat(1_000_000) },
+    ],
+  ]) {
+    await assert.rejects(
+      inspector.inspectBatchAsync(requests),
+      (error: unknown) =>
+        error instanceof NativeInspectionError &&
+        error.code === 'invalid_input',
+    );
+  }
+  await assert.rejects(
+    inspector.inspectBatchAsync([valid, { ...valid, rawHex: '00' }]),
+    (error: unknown) =>
+      error instanceof NativeInspectionError && error.code === 'native_refusal',
+  );
+  assert.equal(
+    (await inspector.inspectBatchAsync([valid]))[0].txid,
+    deposit.txid,
+  );
+});
+
+test('batch executable drift is detected again after a successful batch', async () => {
+  const path = join(
+    tmpdir(),
+    `batch-inspector-${process.pid}-${Date.now()}.exe`,
+  );
+  copyFileSync(executablePath, path);
+  try {
+    const local = new NativeZcashInspector({
+      executablePath: path,
+      expectedSha256: executableSha256,
+    });
+    await local.inspectBatchAsync([
+      { rawHex: deposit.hex, expectedBranchId: BRANCH_ID },
+    ]);
+    appendFileSync(path, Buffer.from([0]));
+    await assert.rejects(
+      local.inspectBatchAsync([
+        { rawHex: deposit.hex, expectedBranchId: BRANCH_ID },
+      ]),
+      (error: unknown) =>
+        error instanceof NativeInspectionError &&
+        error.code === 'hash_mismatch',
+    );
+  } finally {
+    unlinkSync(path);
   }
 });

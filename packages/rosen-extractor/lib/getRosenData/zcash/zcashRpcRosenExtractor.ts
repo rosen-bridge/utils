@@ -12,7 +12,12 @@ import type { TokenMap } from '@rosen-bridge/tokens';
 import { parseRosenData } from '../../utils';
 import AbstractRosenDataExtractor from '../abstract/abstractRosenDataExtractor';
 import type { RosenData } from '../abstract/types';
-import type { NativeInspectionProvider } from './nativeInspection.js';
+import {
+  MAX_NATIVE_BATCH_RAW_BYTES,
+  MAX_NATIVE_BATCH_TRANSACTIONS,
+  type NativeInspection,
+  type NativeInspectionProvider,
+} from './nativeInspection.js';
 
 /** Structural RPC envelope; this package does not depend on a scanner. */
 export interface ZcashRpcTransaction extends Record<string, unknown> {
@@ -75,6 +80,8 @@ export class ZcashRpcRosenExtractor extends AbstractRosenDataExtractor<ZcashRpcT
   private readonly branchIdAtHeight: (height: number) => string;
   private inGet = false;
   private producedCandidate = false;
+  private batchActive = false;
+  private prepared?: Map<ZcashRpcTransaction, NativeInspection>;
 
   constructor(options: ZcashRpcRosenExtractorOptions) {
     super(
@@ -112,6 +119,63 @@ export class ZcashRpcRosenExtractor extends AbstractRosenDataExtractor<ZcashRpcT
     };
   }
 
+  /** Keep the synchronous Rosen consumer while doing native work off the event loop. */
+  async withNativeBatch<Result>(
+    transactions: readonly ZcashRpcTransaction[],
+    consume: (snapshot: ZcashRpcTransaction[]) => Promise<Result>,
+  ): Promise<Result> {
+    if (this.batchActive || this.inGet) configuration();
+    this.targetToken();
+    this.batchActive = true;
+    try {
+      // Only these private snapshots can consume the prepared inspections. RPC
+      // projections remain irrelevant, and callers cannot mutate identities mid-await.
+      const snapshot = transactions.map((tx) => Object.freeze({ ...tx }));
+      const requests = snapshot.map((tx) => ({
+        rawHex: tx.hex,
+        expectedBranchId: this.branchForTransaction(tx),
+      }));
+      const prepared = new Map<ZcashRpcTransaction, NativeInspection>();
+      for (let offset = 0; offset < requests.length; ) {
+        let end = offset;
+        let bytes = 0;
+        while (
+          end < requests.length &&
+          end - offset < MAX_NATIVE_BATCH_TRANSACTIONS
+        ) {
+          const length = requests[end].rawHex.length / 2;
+          if (bytes + length > MAX_NATIVE_BATCH_RAW_BYTES) break;
+          bytes += length;
+          end++;
+        }
+        if (end === offset) throw new ZcashExtractionError('evidence');
+        const batch = requests.slice(offset, end);
+        const results = this.inspector.inspectBatchAsync
+          ? await this.inspector.inspectBatchAsync(batch)
+          : batch.map((request) =>
+              this.inspector.inspect(request.rawHex, request.expectedBranchId),
+            );
+        if (results.length !== batch.length)
+          throw new ZcashExtractionError('evidence');
+        for (let index = offset; index < end; index++) {
+          const value = results[index - offset];
+          if (
+            value.txid !== snapshot[index].txid ||
+            value.consensus_branch_id !== requests[index].expectedBranchId
+          )
+            throw new ZcashExtractionError('identity');
+          prepared.set(snapshot[index], value);
+        }
+        offset = end;
+      }
+      this.prepared = prepared;
+      return await consume(snapshot);
+    } finally {
+      this.prepared = undefined;
+      this.batchActive = false;
+    }
+  }
+
   private targetToken(): string {
     // TokenMap searches every chain, including unbridgeable sets, for this ID.
     // Validate that exact selection before base.get can round the source amount.
@@ -138,8 +202,7 @@ export class ZcashRpcRosenExtractor extends AbstractRosenDataExtractor<ZcashRpcT
     return set.ergo.tokenId;
   }
 
-  extractData = (transaction: ZcashRpcTransaction): RosenData | undefined => {
-    const targetChainTokenId = this.targetToken();
+  private branchForTransaction(transaction: ZcashRpcTransaction): string {
     if (
       typeof transaction !== 'object' ||
       transaction === null ||
@@ -161,9 +224,18 @@ export class ZcashRpcRosenExtractor extends AbstractRosenDataExtractor<ZcashRpcT
     const branchId = this.branchIdAtHeight(transaction.height);
     if (typeof branchId !== 'string' || !/^[0-9a-f]{8}$/.test(branchId))
       configuration();
+    return branchId;
+  }
+
+  extractData = (transaction: ZcashRpcTransaction): RosenData | undefined => {
+    const targetChainTokenId = this.targetToken();
+    const branchId = this.branchForTransaction(transaction);
     // NativeInspectionProvider is a trusted parsing boundary. Production uses
     // NativeZcashInspector with its pinned executable and strict DTO validation.
-    const native = this.inspector.inspect(transaction.hex, branchId);
+    const native = this.batchActive
+      ? this.prepared?.get(transaction)
+      : this.inspector.inspect(transaction.hex, branchId);
+    if (!native) throw new ZcashExtractionError('evidence');
     if (
       native.txid !== transaction.txid ||
       native.consensus_branch_id !== branchId

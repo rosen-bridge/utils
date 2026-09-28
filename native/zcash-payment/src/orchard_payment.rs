@@ -123,6 +123,7 @@ impl OrchardNetwork {
                     nu6_1: two,
                     nu6_2: two,
                     nu6_3: None,
+                    nu7: None,
                 })
             }
         }
@@ -150,6 +151,11 @@ impl TryFromAddress for OrchardReceiver {
         _: NetworkType,
         ua: unified::Address,
     ) -> Result<Self, ConversionError<Self::Error>> {
+        if ua.revision() != zcash_protocol::address::Revision::R0 {
+            return Err(ConversionError::User(
+                "only Revision-0 Unified Addresses are supported",
+            ));
+        }
         let raw = ua
             .items()
             .into_iter()
@@ -709,6 +715,34 @@ mod tests {
     use secp256k1::{Message, Secp256k1, SecretKey};
     use zcash_address::unified::Encoding;
 
+    fn revision_zero_ua(items: Vec<unified::Receiver>) -> unified::Address {
+        unified::Address::try_from_items(
+            zcash_protocol::address::Revision::R0,
+            items.into_iter().map(unified::Uitem::Data).collect(),
+        )
+        .unwrap()
+    }
+
+    #[test]
+    fn dependency_upgrade_does_not_admit_revision_two_recipients() {
+        let recipient = FullViewingKey::from(&SpendingKey::from_bytes([0u8; 32]).unwrap())
+            .address_at(0u32, Scope::External);
+        let items = vec![unified::Uitem::Data(unified::Receiver::Orchard(
+            recipient.to_raw_address_bytes(),
+        ))];
+        for revision in [
+            zcash_protocol::address::Revision::R0,
+            zcash_protocol::address::Revision::R2,
+        ] {
+            let ua = unified::Address::try_from_items(revision, items.clone()).unwrap();
+            let result = OrchardReceiver::try_from_unified(NetworkType::Test, ua);
+            assert_eq!(
+                result.is_ok(),
+                revision == zcash_protocol::address::Revision::R0
+            );
+        }
+    }
+
     #[test]
     fn synthetic_orchard_payment_and_mutated_intent() {
         let reserve_key = SecretKey::from_slice(&[1u8; 32]).unwrap();
@@ -716,11 +750,10 @@ mod tests {
         let recipient_key = SpendingKey::from_bytes([0u8; 32]).unwrap();
         let recipient_fvk = FullViewingKey::from(&recipient_key);
         let recipient = recipient_fvk.address_at(0u32, Scope::External);
-        let ua = unified::Address::try_from_items(vec![
+        let ua = revision_zero_ua(vec![
             unified::Receiver::Orchard(recipient.to_raw_address_bytes()),
             unified::Receiver::P2pkh([7u8; 20]),
         ])
-        .unwrap()
         .encode(&NetworkType::Test);
         let intent = OrchardIntent {
             network: OrchardNetwork::TestnetNu6_2,
@@ -769,9 +802,9 @@ mod tests {
                 "script_pubkey_hex": hex::encode(Script::from(
                     TransparentAddress::from_pubkey(&pubkey).script()).0.0)},
             "compressed_pubkey_hex": hex::encode(pubkey.serialize()),
-            "recipient_ua": unified::Address::try_from_items(vec![
+            "recipient_ua": revision_zero_ua(vec![
                 unified::Receiver::Orchard(recipient.to_raw_address_bytes()),
-                unified::Receiver::P2pkh([7u8; 20])]).unwrap().encode(&NetworkType::Test),
+                unified::Receiver::P2pkh([7u8; 20])]).encode(&NetworkType::Test),
             "payout_zat": 80000, "change_zat": 5000,
         });
         let from_json = |v: serde_json::Value| serde_json::from_value::<OrchardIntent>(v).unwrap();
@@ -788,7 +821,7 @@ mod tests {
         assert_eq!(verified_digest, sighash_all);
         let mut changed_recipient = intent_json.clone();
         changed_recipient["recipient_ua"] = serde_json::json!(
-            unified::Address::try_from_items(vec![
+            revision_zero_ua(vec![
                 unified::Receiver::Orchard(
                     recipient_fvk
                         .address_at(1u32, Scope::External)
@@ -796,7 +829,6 @@ mod tests {
                 ),
                 unified::Receiver::P2pkh([7u8; 20]),
             ])
-            .unwrap()
             .encode(&NetworkType::Test)
         );
         assert!(verify(from_json(changed_recipient), &pczt_hex).is_err());

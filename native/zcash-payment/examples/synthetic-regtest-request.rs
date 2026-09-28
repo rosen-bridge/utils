@@ -6,10 +6,13 @@ use zcash_protocol::consensus::NetworkType;
 fn main() {
     let recipient_key = SpendingKey::from_bytes([0u8; 32]).unwrap();
     let receiver = FullViewingKey::from(&recipient_key).address_at(0u32, Scope::External);
-    let ua = unified::Address::try_from_items(vec![
-        unified::Receiver::Orchard(receiver.to_raw_address_bytes()),
-        unified::Receiver::P2pkh([7u8; 20]),
-    ])
+    let ua = unified::Address::try_from_items(
+        zcash_protocol::address::Revision::R0,
+        vec![
+            unified::Uitem::Data(unified::Receiver::Orchard(receiver.to_raw_address_bytes())),
+            unified::Uitem::Data(unified::Receiver::P2pkh([7u8; 20])),
+        ],
+    )
     .unwrap()
     .encode(&NetworkType::Regtest);
     println!(

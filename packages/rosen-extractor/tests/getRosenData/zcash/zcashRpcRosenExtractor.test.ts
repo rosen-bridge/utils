@@ -113,12 +113,125 @@ test.skipIf(
     });
     assert.equal(extractor.get(deposit)?.amount, '100000000');
     assert.equal(extractor.get(deposit)?.toAddress, target);
+    const synchronous = extractor.get(deposit);
+    const asynchronous = await extractor.withNativeBatch(
+      fixture.transactions,
+      async (snapshot) => snapshot.map((tx) => extractor.get(tx)),
+    );
+    assert.deepEqual(asynchronous, [undefined, synchronous]);
   },
 );
 
 test('base get rawData option remains effective', async () => {
   const { extractor } = await setup(structuredClone(decoded), false);
   assert.equal(extractor.get(deposit)?.rawData, 'raw-data extraction is off');
+});
+
+test('batch snapshots retain raw authority, order and the inherited Rosen get semantics', async () => {
+  const { options } = await setup();
+  let release!: () => void;
+  const gate = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  let batches = 0;
+  const extractor = new ZcashRpcRosenExtractor({
+    ...options,
+    inspector: {
+      inspect: () => {
+        throw new Error('synchronous inspection must not run');
+      },
+      inspectBatchAsync: async (requests) => {
+        batches++;
+        await gate;
+        return requests.map(() => structuredClone(decoded));
+      },
+    },
+  });
+  const transactions = Array.from({ length: 33 }, () => ({
+    ...deposit,
+    vout: 'malformed redundant projection',
+  }));
+  const pending = extractor.withNativeBatch(transactions, async (snapshot) =>
+    snapshot.map((tx) => extractor.get(tx)),
+  );
+  transactions[0].hex = '00';
+  assert.throws(() => extractor.get(deposit), /evidence/);
+  await assert.rejects(
+    extractor.withNativeBatch([deposit], async () => undefined),
+    /configuration/,
+  );
+  release();
+  const data = await pending;
+  assert.equal(batches, 2);
+  assert.equal(data.length, 33);
+  assert.ok(
+    data.every(
+      (row) => row?.amount === '100000000' && row?.toAddress === target,
+    ),
+  );
+  assert.throws(() => extractor.get(deposit), /synchronous inspection/);
+});
+
+test('batch failure never reaches persistence and cannot leave reusable inspections', async () => {
+  const { options } = await setup();
+  let fail = true;
+  let consumed = false;
+  const extractor = new ZcashRpcRosenExtractor({
+    ...options,
+    inspector: {
+      inspect: () => {
+        throw new Error('no cache outside batch');
+      },
+      inspectBatchAsync: async () => {
+        if (fail) throw new Error('native fault');
+        return [structuredClone(decoded)];
+      },
+    },
+  });
+  await assert.rejects(
+    extractor.withNativeBatch([deposit], async () => {
+      consumed = true;
+    }),
+    /native fault/,
+  );
+  assert.equal(consumed, false);
+  fail = false;
+  await assert.rejects(
+    extractor.withNativeBatch([deposit], async () => {
+      throw new Error('persistence fault');
+    }),
+    /persistence fault/,
+  );
+  assert.throws(() => extractor.get(deposit), /no cache outside batch/);
+  await extractor.withNativeBatch([deposit], async (snapshot) => {
+    assert.throws(() => extractor.get(deposit), /evidence/);
+    assert.equal(extractor.get(snapshot[0])?.amount, '100000000');
+  });
+});
+
+test('batch response count and per-position identity are mandatory', async () => {
+  const { options } = await setup();
+  for (const response of [
+    [],
+    [{ ...decoded, txid: '00'.repeat(32) }],
+    [{ ...decoded, consensus_branch_id: 'deadbeef' }],
+  ]) {
+    const extractor = new ZcashRpcRosenExtractor({
+      ...options,
+      inspector: {
+        inspect: () => structuredClone(decoded),
+        inspectBatchAsync: async () => response,
+      },
+    });
+    let consumed = false;
+    await assert.rejects(
+      extractor.withNativeBatch([deposit], async () => {
+        consumed = true;
+      }),
+      /evidence|identity/,
+    );
+    assert.equal(consumed, false);
+  }
 });
 
 test('missing operational evidence propagates instead of becoming an ordinary nondeposit', async () => {

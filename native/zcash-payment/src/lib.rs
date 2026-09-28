@@ -542,6 +542,12 @@ fn validate_common(
             format!("expected branch {expected:08x}, transaction embeds {actual:08x}"),
         ));
     }
+    if !tx.version().valid_in_branch(tx.consensus_branch_id()) {
+        return Err(ToolError::new(
+            "branch_mismatch",
+            "transaction version is not valid in its consensus branch",
+        ));
+    }
     if tx.sprout_bundle().is_some()
         || tx.sapling_bundle().is_some()
         || tx.orchard_bundle().is_some()
@@ -1099,6 +1105,90 @@ mod tests {
         let e = execute(request).unwrap_err();
         assert_eq!(e.code, "script_rejected", "{e:?}");
         assert_eq!(e.callback_count, Some(1), "{e:?}");
+    }
+
+    #[test]
+    fn nu7_transparent_construct_and_external_signature_bind_the_branch() {
+        use secp256k1::{Message, Secp256k1, SecretKey};
+        let nu7 = BranchId::try_from(0x7719_0ad9).unwrap();
+        let raw = rebuild(nu7, 1, |_| {});
+        let hash = match execute(digest(&raw, 100_000, nu7)).unwrap() {
+            Response::Digest { sighash_all, .. } => sighash_all,
+            _ => panic!("wrong response variant"),
+        };
+        assert_ne!(hash, DIGEST);
+        let scalar_one = SecretKey::from_slice(&[&[0u8; 31][..], &[1]].concat()).unwrap();
+        let hash_bytes: [u8; 32] = hex::decode(&hash).unwrap().try_into().unwrap();
+        let signature = Secp256k1::new().sign_ecdsa(&Message::from_digest(hash_bytes), &scalar_one);
+        let mut signing_request = finalize(&raw, 100_000, nu7);
+        if let Request::Finalize {
+            compact_signature_hex,
+            ..
+        } = &mut signing_request
+        {
+            *compact_signature_hex = hex::encode(signature.serialize_compact());
+        }
+        let signed = match execute(signing_request).unwrap() {
+            Response::Finalize {
+                signed_tx_hex,
+                sighash_all,
+                callback_count,
+                ..
+            } => {
+                assert_eq!(sighash_all, hash);
+                assert_eq!(callback_count, 1);
+                signed_tx_hex
+            }
+            _ => panic!("wrong response variant"),
+        };
+        assert_eq!(
+            parse_transaction(&hex::decode(signed).unwrap())
+                .unwrap()
+                .consensus_branch_id(),
+            nu7
+        );
+        // The old valid signature cannot authorize the changed consensus branch.
+        checksig_reject(finalize(&raw, 100_000, nu7));
+        assert_eq!(
+            execute(digest(UNSIGNED, 100_000, nu7)).unwrap_err().code,
+            "branch_mismatch"
+        );
+        let mut constructor = construct_withdrawal();
+        if let Request::Construct {
+            expected_branch_id, ..
+        } = &mut constructor
+        {
+            *expected_branch_id = branch(nu7);
+        }
+        assert!(execute(constructor).is_ok());
+    }
+
+    #[test]
+    fn nu7_v6_remains_outside_the_transparent_payment_profile() {
+        let nu7 = BranchId::try_from(0x7719_0ad9).unwrap();
+        let v5 = parse_transaction(&hex::decode(rebuild(nu7, 1, |_| {})).unwrap()).unwrap();
+        let v6 = TransactionData::<TransactionAuthorized>::from_parts_v6(
+            nu7,
+            v5.lock_time(),
+            v5.expiry_height(),
+            v5.transparent_bundle().cloned(),
+            None,
+            None,
+            None,
+        )
+        .freeze()
+        .unwrap();
+        let mut encoded = vec![];
+        v6.write(&mut encoded).unwrap();
+        let raw = hex::encode(encoded);
+        assert_eq!(
+            execute(digest(&raw, 100_000, nu7)).unwrap_err().code,
+            "unsupported_version"
+        );
+        assert_eq!(
+            execute(finalize(&raw, 100_000, nu7)).unwrap_err().code,
+            "unsupported_version"
+        );
     }
 
     #[test]

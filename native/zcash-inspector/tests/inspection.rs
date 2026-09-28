@@ -1,7 +1,8 @@
 use std::io::Cursor;
 
 use rosen_zcash_native_inspector::{
-    MAX_RAW_TRANSACTION_BYTES, MAX_REQUEST_BYTES, Request, inspect, run_json, run_reader,
+    MAX_BATCH_REQUEST_BYTES, MAX_BATCH_TRANSACTIONS, MAX_RAW_TRANSACTION_BYTES, MAX_REQUEST_BYTES,
+    Request, inspect, run_batch_json, run_batch_reader, run_json, run_reader,
 };
 use zcash_primitives::transaction::{
     Authorized as TransactionAuthorized, Transaction, TransactionData, TxVersion,
@@ -24,6 +25,245 @@ fn request(raw: impl Into<String>, branch: &str) -> Request {
         raw_tx_hex: Some(raw.into()),
         expected_branch_id: Some(branch.to_owned()),
     }
+}
+
+// Empty codec fixtures from zcash/librustzcash@5345dbe0cd6c7f2057e631a34a74dffa84ff1d48,
+// zcash_primitives/src/transaction/tests.rs. They are not spendable transactions.
+const NU7_CODEC_FIXTURES: [(&str, &str, &str); 2] = [
+    (
+        "v5",
+        "050000800a27a726d90a197700000000010000000000000000",
+        "328d975581fbf002206ef6f0b69fe57fb47f40ec31c59ac62c3565d4e259e128",
+    ),
+    (
+        "v6",
+        "0600008098b684d8d90a19770000000001000000000000000000",
+        "78296c68a370c2e1f058d997c81c7b011c4562c52fc5ca2994ad59cd179fbe9e",
+    ),
+];
+
+#[test]
+fn upstream_nu7_v5_and_v6_codec_vectors_preserve_identity() {
+    for (version, raw, digest) in NU7_CODEC_FIXTURES {
+        let result = inspect(request(raw, "77190ad9")).unwrap();
+        let mut display_digest = hex::decode(digest).unwrap();
+        display_digest.reverse();
+        assert_eq!(result.txid, hex::encode(display_digest));
+        assert_eq!(result.version.kind, version);
+        assert_eq!(result.consensus_branch_id, "77190ad9");
+        assert_eq!(result.branch_source, "embedded");
+        assert_eq!(result.expiry_height, 1);
+    }
+}
+
+#[test]
+fn nu7_rejects_v4_but_preserves_historical_context() {
+    assert!(inspect(request(REVIEW_V4_ZERO, "37a5165b")).is_ok());
+    assert_eq!(
+        inspect(request(REVIEW_V4_ZERO, "77190ad9"))
+            .unwrap_err()
+            .code,
+        "branch_mismatch"
+    );
+}
+
+#[test]
+fn nu7_rejects_retired_ids_and_cross_branch_bytes() {
+    for (_, raw, _) in NU7_CODEC_FIXTURES {
+        assert_eq!(
+            inspect(request(raw, "37a5165b")).unwrap_err().code,
+            "branch_mismatch"
+        );
+        for (branch, encoded) in [("77190ad8", "d80a1977"), ("ffffffff", "ffffffff")] {
+            assert_eq!(
+                inspect(request(raw, branch)).unwrap_err().code,
+                "unsupported_branch_id"
+            );
+            let retired = format!("{}{}{}", &raw[..16], encoded, &raw[24..]);
+            assert_eq!(
+                inspect(request(retired, "77190ad9")).unwrap_err().code,
+                "unsupported_branch_id"
+            );
+        }
+    }
+}
+
+#[test]
+fn nu7_codec_rejects_truncation_and_trailing_bytes() {
+    for (_, raw, _) in NU7_CODEC_FIXTURES {
+        assert_eq!(
+            inspect(request(format!("{raw}00"), "77190ad9"))
+                .unwrap_err()
+                .code,
+            "trailing_bytes"
+        );
+        assert_eq!(
+            inspect(request(&raw[..raw.len() - 2], "77190ad9"))
+                .unwrap_err()
+                .code,
+            "truncated_transaction"
+        );
+    }
+}
+
+#[test]
+fn retained_signed_withdrawal_cannot_be_reinterpreted_as_nu7() {
+    // Preserve the exact old signed bytes: parsing is not signature verification.
+    assert!(inspect(request(WITHDRAWAL, "c2d6d0b4")).is_ok());
+    assert_eq!(
+        inspect(request(WITHDRAWAL, "77190ad9")).unwrap_err().code,
+        "branch_mismatch"
+    );
+}
+
+fn batch_json(items: &[(&str, &str)]) -> String {
+    serde_json::json!({"transactions": items.iter().map(|(raw, branch)| {
+        serde_json::json!({"raw_tx_hex": raw, "expected_branch_id": branch})
+    }).collect::<Vec<_>>()})
+    .to_string()
+}
+
+#[test]
+fn batch_keeps_input_order_and_the_single_transaction_authority() {
+    let items = [
+        (WITHDRAWAL, "c2d6d0b4"),
+        (NU7_CODEC_FIXTURES[1].1, "77190ad9"),
+        (DEPOSIT, "c2d6d0b4"),
+        (NU7_CODEC_FIXTURES[0].1, "77190ad9"),
+    ];
+    let batch = run_batch_json(&batch_json(&items)).unwrap();
+    let single: Vec<_> = items
+        .into_iter()
+        .map(|(raw, branch)| inspect(request(raw, branch)).unwrap())
+        .collect();
+    assert_eq!(batch, single);
+    assert_eq!(
+        run_batch_json(&batch_json(&vec![
+            (DEPOSIT, "c2d6d0b4");
+            MAX_BATCH_TRANSACTIONS
+        ]))
+        .unwrap()
+        .len(),
+        MAX_BATCH_TRANSACTIONS
+    );
+}
+
+#[test]
+fn batch_limits_are_applied_before_transaction_processing() {
+    assert_eq!(
+        run_batch_json("{\"transactions\":[]}").unwrap_err().code,
+        "invalid_batch_size"
+    );
+    assert_eq!(
+        run_batch_json(&batch_json(&vec![
+            (DEPOSIT, "c2d6d0b4");
+            MAX_BATCH_TRANSACTIONS + 1
+        ]))
+        .unwrap_err()
+        .code,
+        "invalid_batch_size"
+    );
+    let at_limit = "00".repeat(MAX_RAW_TRANSACTION_BYTES);
+    // A nonsensical transaction at the size boundary reaches the ordinary parser.
+    assert_ne!(
+        run_batch_json(&batch_json(&[(&at_limit, "77190ad9")]))
+            .unwrap_err()
+            .code,
+        "batch_too_large"
+    );
+    assert_eq!(
+        run_batch_json(&batch_json(&[(&at_limit, "77190ad9"), ("00", "77190ad9")]))
+            .unwrap_err()
+            .code,
+        "batch_too_large"
+    );
+    assert_eq!(
+        run_batch_reader(Cursor::new(vec![b' '; MAX_BATCH_REQUEST_BYTES + 1]))
+            .unwrap_err()
+            .code,
+        "input_too_large"
+    );
+}
+
+#[test]
+fn batch_schema_rejects_aliases_duplicates_and_unknown_fields() {
+    for json in [
+        "[]",
+        "{\"transactions\":[[\"00\",\"77190ad9\"]]}",
+        "{\"transactions\":[],\"transactions\":[]}",
+        "{\"transactions\":[],\"extra\":true}",
+        "{\"transactions\":[{\"raw_tx_hex\":\"00\",\"raw_tx_hex\":\"01\"}]}",
+        "{\"transactions\":[{\"raw_tx_hex\":\"00\",\"extra\":true}]}",
+    ] {
+        assert_eq!(
+            run_batch_json(json).unwrap_err().code,
+            "invalid_json",
+            "{json}"
+        );
+    }
+}
+
+fn invoke_cli(args: &[&str], input: &str) -> std::process::Output {
+    use std::{
+        io::Write,
+        process::{Command, Stdio},
+    };
+    let mut child = Command::new(env!("CARGO_BIN_EXE_rosen-zcash-native-inspector"))
+        .args(args)
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn()
+        .unwrap();
+    child
+        .stdin
+        .take()
+        .unwrap()
+        .write_all(input.as_bytes())
+        .unwrap();
+    child.wait_with_output().unwrap()
+}
+
+#[test]
+fn batch_cli_is_explicit_ordered_and_atomic_on_failure() {
+    let success = invoke_cli(
+        &["--batch"],
+        &batch_json(&[(DEPOSIT, "c2d6d0b4"), (WITHDRAWAL, "c2d6d0b4")]),
+    );
+    assert!(success.status.success());
+    assert!(success.stderr.is_empty());
+    let values: serde_json::Value = serde_json::from_slice(&success.stdout).unwrap();
+    assert_eq!(values.as_array().unwrap().len(), 2);
+    assert_eq!(
+        values[0]["txid"],
+        inspect(request(DEPOSIT, "c2d6d0b4")).unwrap().txid
+    );
+    let failure = invoke_cli(
+        &["--batch"],
+        &batch_json(&[(DEPOSIT, "c2d6d0b4"), (WITHDRAWAL, "77190ad9")]),
+    );
+    assert_eq!(failure.status.code(), Some(1));
+    assert!(failure.stdout.is_empty());
+    assert_eq!(
+        serde_json::from_slice::<serde_json::Value>(&failure.stderr).unwrap()["code"],
+        "branch_mismatch"
+    );
+    let legacy = invoke_cli(
+        &[],
+        &serde_json::json!({"raw_tx_hex": DEPOSIT, "expected_branch_id": "c2d6d0b4"}).to_string(),
+    );
+    assert!(legacy.status.success());
+    assert!(
+        serde_json::from_slice::<serde_json::Value>(&legacy.stdout)
+            .unwrap()
+            .is_object()
+    );
+    let invalid_mode = invoke_cli(&["--other"], "");
+    assert_eq!(invalid_mode.status.code(), Some(1));
+    assert_eq!(
+        serde_json::from_slice::<serde_json::Value>(&invalid_mode.stderr).unwrap()["code"],
+        "unsupported_mode"
+    );
 }
 
 fn rebuild(version: TxVersion, duplicate_input: bool) -> String {

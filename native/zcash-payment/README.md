@@ -2,7 +2,7 @@
 
 This offline Rust experiment constructs one-input P2PKH version-5 payment candidates, computes their ZIP-244 `SIGHASH_ALL` digest, and can consume an externally produced compact ECDSA signature and compressed public key to form and verify a P2PKH `scriptSig`.
 
-The isolated Orchard extension adds `orchard_prepare`, `orchard_verify`, and `orchard_finalize` for one transparent P2PKH reserve input, one explicitly selected Orchard receiver in a Unified Address, and one P2PKH change output. It fixes the Nu6.2 branch (`5437f330`), two-action Orchard bundle, and 15,000-zat ZIP-317 fee. The explicit `network` value is `regtest_nu6_2_at_two` for a disposable regtest configured with Overwinter through Canopy at height 1, NU5 through NU6.2 at height 2, and NU6.3 inactive. The alternate `testnet_nu6_2` accepts heights 4,052,000 through 4,133,999; this is a historical window and does not represent current Testnet. It does not import the reserve custody key; synthetic keys appear only in the local test and fixture generator.
+The isolated Orchard extension adds `orchard_prepare`, `orchard_verify`, and `orchard_finalize` for one transparent P2PKH reserve input, one explicitly selected Orchard receiver in a revision-0 Unified Address, and one P2PKH change output. It fixes version 5, the Nu6.2 branch (`5437f330`), two-action Orchard bundle, and 15,000-zat ZIP-317 fee. The explicit `network` value is `regtest_nu6_2_at_two` for a disposable regtest configured with Overwinter through Canopy at height 1, NU5 through NU6.2 at height 2, and NU6.3 and NU7 inactive. The alternate `testnet_nu6_2` accepts heights 4,052,000 through 4,133,999; this is a historical window and does not represent current Testnet. It does not import the reserve custody key; synthetic keys appear only in the local test and fixture generator. Revision-2 addresses remain rejected despite the upgraded address parser supporting them.
 
 `orchard_prepare` accepts `{"operation":"orchard_prepare","intent":{...}}`. The `intent` fields are `network`, `expected_branch_id`, `target_height`, `expiry_height`, `input` (same shape as `construct`), `compressed_pubkey_hex`, `recipient_ua`, `payout_zat`, and `change_zat`. Regtest requires an `uregtest1...` UA and target height at least 2; the expiry must be within 40 blocks. It constructs and proves an Orchard PCZT, performs IO finalization, independently verifies the frozen PCZT against the intent, then returns `pczt_hex`, `txid_raw`, `fingerprint_sha256`, `sighash_all`, `actual_fee_zat`, `recipient_ciphertext_verified`, and `orchard_proof_verified`.
 
@@ -12,7 +12,7 @@ The isolated Orchard extension adds `orchard_prepare`, `orchard_verify`, and `or
 
 The independent PCZT verifier checks exact reserve outpoint/value/script/sequence, transparent change, expiry/branch/version, empty other shielded pools, one value-carrying Orchard payout, the note commitment, sender-side ciphertext recovery using a transaction-random OVK retained as PCZT output metadata, and the Orchard circuit proof. The recovered note's recipient, value, and commitment must match the approved receiver, payout, and action `cmx`. The pinned Orchard builder does not retain the derived OCK in its PCZT output (`ock: None`), so the per-transaction OVK is stored under `rosen:output-ovk` and bound by the PCZT fingerprint. A signer must accept only the digest returned by `orchard_verify` for the fingerprint approved by peers. The operation does not query a node or assert node acceptance.
 
-It never creates a key or signature. `finalize` parses the caller's 64-byte `r || s` signature with `secp256k1`, rejects high-S, serializes canonical DER, appends `SIGHASH_ALL` byte `01`, binds `HASH160(compressed_pubkey)` to the supplied P2PKH prevout, and evaluates the signed input through `zcash_script`'s real callback verifier. A successful result requires exactly one CHECKSIG callback.
+The transparent `construct`/`digest`/`finalize` path never creates a key or signature. `finalize` parses the caller's 64-byte `r || s` signature with `secp256k1`, rejects high-S, serializes canonical DER, appends `SIGHASH_ALL` byte `01`, binds `HASH160(compressed_pubkey)` to the supplied P2PKH prevout, and evaluates the signed input through `zcash_script`'s real callback verifier. A successful result requires exactly one CHECKSIG callback.
 
 ## Build and run
 
@@ -80,7 +80,7 @@ The constructor rejects unknown fields, non-lowercase identifiers, unknown branc
 
 The helper trusts the caller's prevout identity, amount, and script. It does not fetch or prove the referenced output, enforce dust or relay policy, select UTXOs, call RPC, broadcast, or validate TSS/key-generation/signing behavior. The original `construct`/`digest`/`finalize` operations remain transparent-only; the new Orchard operations use the separate PCZT path above. Neither path supports multiple inputs. Node acceptance remains a separate gate.
 
-The public signature in `examples/finalize-known-fixture.json` is a historical synthetic scalar-1 test fixture. The source contains no private key and no signing path.
+The public signature in `examples/finalize-known-fixture.json` is a historical synthetic scalar-1 test fixture. The production CLI contains no private-key import or signing operation; tests use the public synthetic scalar to exercise external signing and signature verification.
 
 ## Exact dependency and source basis
 
@@ -89,7 +89,7 @@ The public signature in `examples/finalize-known-fixture.json` is a historical s
 | Crate | Version | Role |
 | --- | ---: | --- |
 | `zcash_primitives` | 0.30.1 | v5 parsing, ZIP-244 digest, ZIP-317 fee rule, serialization |
-| `zcash_protocol` | 0.10.5 | branch IDs, heights, bounded zatoshis |
+| `zcash_protocol` | 0.10.6 | branch IDs, heights, bounded zatoshis |
 | `zcash_transparent` | 0.10.0 | transparent bundles and sighash context |
 | `zcash_script` | 0.4.3 | actual script evaluator and signature callback |
 | `secp256k1` | 0.29.1 | compact signature, low-S and public-key parsing, canonical DER |
@@ -100,9 +100,16 @@ The public signature in `examples/finalize-known-fixture.json` is a historical s
 | `pczt` | vendored 0.9.3 source | Orchard proof/IO/sign/extract roles |
 | `zcash_address` / `zcash_note_encryption` | 0.13.0 / 0.4.2 | UA parsing and output ciphertext recovery |
 
+`zcash_primitives`, `zcash_protocol`, `zcash_transparent`, and `zcash_address` are pinned to
+`zcash/librustzcash` commit `5345dbe0cd6c7f2057e631a34a74dffa84ff1d48`. The vendored PCZT remains
+the 0.9.3 source based on `1f6bb207`, with the existing output-effect extension. Its Zcash
+dependencies use the same exact new commit; the minimal branch and `with_signable_input` API
+adaptations preserve the `ALL_ONLY` signing policy. The locked graph contains one
+`zcash_protocol 0.10.6` instance across both payment paths.
+
 The locked `zcash_script 0.4.3` registry checksum is `c6ef9d04e0434a80b62ad06c5a610557be358ef60a98afa5dbc8ecaf19ad72e7`; its packaged VCS commit is `8a0b0c7cba1e89bcd8e5de0ebdbf8a232aa749d2`. The implementation was checked against the installed primary crate sources for `zcash_primitives::transaction::{sighash, fees::zip317}`, `zcash_transparent::sighash`, `secp256k1::ecdsa`, and `zcash_script::{script, interpreter, signature}`. Protocol references are [ZIP 244](https://zips.z.cash/zip-0244) and [ZIP 317](https://zips.z.cash/zip-0317).
 
-`SHA256SUMS.txt` records the review-candidate source bytes and excludes Cargo build output.
+`SHA256SUMS.txt` records the committed Git source blobs (LF line endings) and excludes Cargo build output.
 
 ## Validation matrix
 
@@ -119,5 +126,15 @@ The tests cover exact construction of the frozen funded-withdrawal bytes, txid, 
 
 Validation toolchain: `rustc 1.98.1 (48a229cea 2026-09-01)`, host `x86_64-pc-windows-msvc`; `cargo 1.98.1 (797e8a9bc 2026-08-05)`.
 
-The checkpoint-007 native suite has 20 passing tests (19 library, one CLI),
-including isolated positional-input, positional-output and duplicate-key cases.
+The current native suite has 24 passing tests (23 library, one CLI), including the existing
+Orchard proof and signed-restore checks, isolated positional-input, positional-output and
+duplicate-key cases, and revision-0 acceptance with revision-2 rejection.
+
+The NU7 transparent test constructs a real version-5 transaction with branch `77190ad9`,
+computes its digest through the pinned library, signs with the public synthetic scalar outside
+the finalizer, and verifies the result through actual CHECKSIG. It rejects the old signature
+after changing the branch and rejects unchanged old-branch unsigned bytes against NU7 context.
+Version 6 remains outside the payment profile and is explicitly rejected, even though the
+separate inspector can decode it. These are offline construction and signature checks; NU7 node
+admission remains unqualified, and this helper does not select or invent an activation schedule.
+The Orchard revision-0, Nu6.2, version-5 profile remains unchanged.
