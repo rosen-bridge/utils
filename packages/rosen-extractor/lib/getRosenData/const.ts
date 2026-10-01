@@ -1,6 +1,8 @@
 export const CARDANO_NATIVE_TOKEN = 'ada';
 export const ERGO_NATIVE_TOKEN = 'erg';
 export const BITCOIN_NATIVE_TOKEN = 'btc';
+export const BITCOIN_CASH_NATIVE_TOKEN = 'bch';
+export const BITCOIN_CASH_CHAIN = 'bitcoin-cash';
 export const BITCOIN_CHAIN = 'bitcoin';
 export const ETHEREUM_CHAIN = 'ethereum';
 export const BINANCE_CHAIN = 'binance';
@@ -25,4 +27,6 @@ export const SUPPORTED_CHAINS = [
   { chain: FIRO_CHAIN, index: 7 },
   { chain: HANDSHAKE_CHAIN, index: 8 },
   { chain: BASE_CHAIN, index: 9 },
+  // Local candidate allocation; upstream protocol approval is still required.
+  { chain: BITCOIN_CASH_CHAIN, index: 10 },
 ];

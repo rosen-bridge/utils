@@ -7,6 +7,7 @@ export { default as AbstractRosenDataExtractor } from './getRosenData/abstract/a
 export { BitcoinEsploraRosenExtractor } from './getRosenData/bitcoin/bitcoinEsploraRosenExtractor';
 export { BitcoinRosenExtractor } from './getRosenData/bitcoin/bitcoinRosenExtractor';
 export { BitcoinRpcRosenExtractor } from './getRosenData/bitcoin/bitcoinRpcRosenExtractor';
+export * from './getRosenData/bitcoin-cash';
 export { EvmEthersRosenExtractor } from './getRosenData/evm/evmEthersRosenExtractor';
 export { EvmRpcRosenExtractor } from './getRosenData/evm/evmRpcRosenExtractor';
 export { EvmRosenExtractor } from './getRosenData/evm/evmRosenExtractor';

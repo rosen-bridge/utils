@@ -34,6 +34,8 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@bitauth/libauth": "3.0.0",
+    "@rosen-bridge/address-codec-bitcoin-cash": "^0.1.0",
     "@bitcoinerlab/secp256k1": "^1.2.0",
     "@blockfrost/openapi": "^0.1.80",
     "@cardano-ogmios/schema": "^6.0.3",
@@ -49,6 +51,7 @@
   },
   "devDependencies": {
     "@rosen-bridge/address-codec": "^2.1.0",
+    "@rosen-bridge/address-codec-ergo": "^0.1.0",
     "@types/lodash-es": "^4.17.6"
   },
   "engines": {

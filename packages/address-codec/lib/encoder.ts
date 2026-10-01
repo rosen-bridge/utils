@@ -3,6 +3,10 @@ import {
   encodeBitcoinAddress,
 } from '@rosen-bridge/address-codec-bitcoin';
 import {
+  BITCOIN_CASH_CHAIN,
+  encodeBitcoinCashAddress,
+} from '@rosen-bridge/address-codec-bitcoin-cash';
+import {
   BITCOIN_RUNES_CHAIN,
   encodeBitcoinRunesAddress,
 } from '@rosen-bridge/address-codec-bitcoin-runes';
@@ -35,6 +39,7 @@ export const chainEncoders: Record<string, (address: string) => string> = {
   [ERGO_CHAIN]: encodeErgoAddress,
   [CARDANO_CHAIN]: encodeCardanoAddress,
   [BITCOIN_CHAIN]: encodeBitcoinAddress,
+  [BITCOIN_CASH_CHAIN]: encodeBitcoinCashAddress,
   [ETHEREUM_CHAIN]: generateEvmAddressEncoder(ETHEREUM_CHAIN),
   [BINANCE_CHAIN]: generateEvmAddressEncoder(BINANCE_CHAIN),
   [BASE_CHAIN]: generateEvmAddressEncoder(BASE_CHAIN),

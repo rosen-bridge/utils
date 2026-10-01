@@ -1,4 +1,4 @@
-import { ValueTransformer } from 'typeorm/decorator/options/ValueTransformer';
+import { ValueTransformer } from 'typeorm/decorator/options/ValueTransformer.js';
 
 class BigIntValueTransformer implements ValueTransformer {
   from(value: string): bigint {
