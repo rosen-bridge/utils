@@ -3,6 +3,8 @@
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
 import ora from 'ora';
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 
@@ -10,12 +12,22 @@ import { JsonBigIntFactory } from '@rosen-bridge/json-bigint';
 
 import { ConfigValidator } from './index';
 
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const pkg = JSON.parse(
+  fs.readFileSync(join(__dirname, '..', 'package.json'), 'utf-8'),
+) as { version: string };
+
 const JsonBigInt = JsonBigIntFactory({
   alwaysParseAsBig: false,
   useNativeBigInt: true,
 });
 
 yargs(hideBin(process.argv))
+  .scriptName('config')
+  .help('help')
+  .alias('h', 'help')
+  .version(pkg.version)
+  .alias('v', 'version')
   .command(
     'generate-default',
     'generates an object using the default values of the passed schema',
