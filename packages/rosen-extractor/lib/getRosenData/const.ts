@@ -14,6 +14,8 @@ export const HANDSHAKE_CHAIN = 'handshake';
 export const HANDSHAKE_NATIVE_TOKEN = 'hns';
 export const FIRO_CHAIN = 'firo';
 export const FIRO_NATIVE_TOKEN = 'firo';
+export const ZCASH_CHAIN = 'zcash';
+export const ZCASH_NATIVE_TOKEN = 'zec';
 export const SUPPORTED_CHAINS = [
   { chain: ERGO_CHAIN, index: 0 },
   { chain: CARDANO_CHAIN, index: 1 },
@@ -25,4 +27,5 @@ export const SUPPORTED_CHAINS = [
   { chain: FIRO_CHAIN, index: 7 },
   { chain: HANDSHAKE_CHAIN, index: 8 },
   { chain: BASE_CHAIN, index: 9 },
+  { chain: ZCASH_CHAIN, index: 10 },
 ];

@@ -27,6 +27,10 @@ import {
   HANDSHAKE_CHAIN,
   validateHandshakeAddress,
 } from '@rosen-bridge/address-codec-handshake';
+import {
+  ZCASH_CHAIN,
+  validateZcashAddress,
+} from '@rosen-bridge/address-codec-zcash';
 
 import { BINANCE_CHAIN, BASE_CHAIN, ETHEREUM_CHAIN } from './const';
 import { UnsupportedChainError } from './types';
@@ -42,6 +46,7 @@ export const chainValidators: Record<string, (address: string) => void> = {
   [BITCOIN_RUNES_CHAIN]: validateBitcoinRunesAddress,
   [FIRO_CHAIN]: validateFiroAddress,
   [HANDSHAKE_CHAIN]: validateHandshakeAddress,
+  [ZCASH_CHAIN]: validateZcashAddress,
 };
 
 /**
