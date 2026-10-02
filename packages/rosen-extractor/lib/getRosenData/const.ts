@@ -27,6 +27,5 @@ export const SUPPORTED_CHAINS = [
   { chain: FIRO_CHAIN, index: 7 },
   { chain: HANDSHAKE_CHAIN, index: 8 },
   { chain: BASE_CHAIN, index: 9 },
-  // Local candidate allocation; upstream protocol approval is still required.
-  { chain: BITCOIN_CASH_CHAIN, index: 10 },
+  // BCH remains a supported source; its destination index awaits Rosen allocation.
 ];

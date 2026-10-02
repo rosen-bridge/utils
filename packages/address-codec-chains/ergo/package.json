@@ -11,6 +11,9 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "browser": {
+    "ergo-lib-wasm-nodejs": "ergo-lib-wasm-browser"
+  },
   "files": [
     "dist",
     "CHANGELOG.md"
@@ -27,7 +30,8 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "ergo-lib-wasm-nodejs": "^0.24.1"
+    "ergo-lib-wasm-browser": "0.24.1",
+    "ergo-lib-wasm-nodejs": "0.24.1"
   },
   "engines": {
     "node": ">=22.18.0",

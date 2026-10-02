@@ -25,6 +25,13 @@ export class BitcoinCashRpcRosenExtractor extends AbstractRosenDataExtractor<Bit
   readonly chain = BITCOIN_CASH_CHAIN;
   protected readonly lockScriptPubKey: string;
 
+  /**
+   * Configure a native treasury and the authoritative asset map.
+   * @param lockAddress ordinary mainnet P2PKH CashAddr
+   * @param tokens configured Rosen asset mappings
+   * @param logger optional extraction logger
+   * @param storeRawData whether inherited get retains the original payload
+   */
   constructor(
     lockAddress: string,
     tokens: TokenMap,
@@ -35,6 +42,11 @@ export class BitcoinCashRpcRosenExtractor extends AbstractRosenDataExtractor<Bit
     this.lockScriptPubKey = encodeBitcoinCashAddress(lockAddress);
   }
 
+  /**
+   * Authenticate raw transaction bytes against their RPC projection.
+   * @param transaction raw bytes, input references and projected outputs
+   * @returns native deposit fields, or undefined for invalid or unsupported data
+   */
   extractData = (
     transaction: BitcoinCashRpcTransaction,
   ): RosenData | undefined => {
@@ -127,6 +139,12 @@ export class BitcoinCashRpcRosenExtractor extends AbstractRosenDataExtractor<Bit
     }
   };
 
+  /**
+   * Resolve the native asset's configured destination without wrapping twice.
+   * @param amount raw integer satoshis authenticated by extraction
+   * @param toChain assigned destination parsed from Rosen metadata
+   * @returns raw source amount and token identities, or undefined if unmapped
+   */
   getAssetTransformation = (
     amount: bigint,
     toChain: string,

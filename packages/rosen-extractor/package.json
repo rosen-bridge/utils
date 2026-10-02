@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "@bitauth/libauth": "3.0.0",
-    "@rosen-bridge/address-codec-bitcoin-cash": "^0.1.0",
+    "@rosen-bridge/address-codec-bitcoin-cash": "^0.0.0",
     "@bitcoinerlab/secp256k1": "^1.2.0",
     "@blockfrost/openapi": "^0.1.80",
     "@cardano-ogmios/schema": "^6.0.3",

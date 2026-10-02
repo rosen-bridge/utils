@@ -9,6 +9,7 @@ export const MAX_BITCOIN_CASH_TRANSACTION_IO = 4096;
 export const MAX_BITCOIN_CASH_OP_RETURN_PAYLOAD_BYTES = 80;
 const MAX_UINT64 = 0xffffffffffffffffn;
 
+/** Check that a value is a nonempty sequence of complete hexadecimal bytes. */
 export const isHex = (value: unknown): value is string =>
   typeof value === 'string' && /^(?:[0-9a-fA-F]{2})+$/.test(value);
 
@@ -32,6 +33,7 @@ export const decodeBitcoinCashOpReturnPayload = (scriptHex: string): Buffer => {
   return script.subarray(offset);
 };
 
+/** Parse a bounded canonical push whose address consumes its entire payload. */
 export const parseBitcoinCashOpReturn = (
   scriptHex: string,
 ): MinimalOnChainRosenData => {

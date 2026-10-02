@@ -7,6 +7,7 @@ import {
 import { BITCOIN_CASH_CHAIN } from './const';
 import { UnsupportedAddressError } from './types';
 
+/** Reject an unsupported CashAddr or locking script with its validation reason. */
 const unsupported = (value: string, reason: string): never => {
   throw new UnsupportedAddressError(BITCOIN_CASH_CHAIN, value, reason);
 };
@@ -67,6 +68,7 @@ export const decodeBitcoinCashAddress = (encodedAddress: string): string => {
   }).address;
 };
 
+/** Validate an ordinary mainnet CashAddr through the canonical native encoder. */
 export const validateBitcoinCashAddress = (address: string): void => {
   encodeBitcoinCashAddress(address);
 };

@@ -1,10 +1,11 @@
 {
   "name": "@rosen-bridge/address-codec-bitcoin-cash",
-  "version": "0.1.0",
+  "version": "0.0.0",
   "description": "Bitcoin Cash native mainnet address encoding for Rosen bridge",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rosen-bridge/utils.git"
+    "url": "git+https://github.com/rosen-bridge/utils.git",
+    "directory": "packages/address-codec-chains/bitcoin-cash"
   },
   "license": "MIT",
   "author": "A. Shannon",
@@ -12,18 +13,22 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
-    "dist",
+    "dist/**/*.js",
+    "dist/**/*.js.map",
+    "dist/**/*.d.ts",
+    "dist/**/*.d.ts.map",
     "CHANGELOG.md"
   ],
   "scripts": {
     "build": "tsc --build tsconfig.build.json",
+    "clean": "rimraf dist && rimraf tsconfig.build.tsbuildinfo",
     "coverage": "npm run test -- --run --coverage",
     "lint": "eslint --fix . && npm run prettify",
     "lint:check": "eslint . && npm run prettify:check",
     "prettify": "prettier --write . --ignore-path ../../../.gitignore",
     "prettify:check": "prettier --check . --ignore-path ../../../.gitignore",
     "release": "npm run test -- --run && npm run build && npm publish --access public",
-    "test": "NODE_OPTIONS='--import tsx' vitest",
+    "test": "cross-env NODE_OPTIONS=\"--import tsx\" vitest",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {

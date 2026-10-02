@@ -479,6 +479,46 @@ describe('TokenMap', () => {
       expect(result.amount).toEqual(123456789n);
       expect(result.decimals).toEqual(6);
     });
+
+    describe('BCH RCS decimal conversion', () => {
+      /**
+       * @target TokenMap.wrapAmount / TokenMap.unwrapAmount - converts BCH8 to wrapped6 with ceiling and restores whole wrapped units to native satoshis
+       * @dependencies Self-contained native BCH8 and wrapped Ergo6 token mapping.
+       * @scenario Configure the token map, wrap 100000001 satoshis, then unwrap 1000001 wrapped units.
+       * @expected Round upward to 1000001 wrapped units and restore 100000100 native satoshis.
+       */
+      it('converts BCH8 to wrapped6 with ceiling and restores whole wrapped units to native satoshis', async () => {
+        const tokens = new TokenMap();
+        await tokens.updateConfigByJson([
+          {
+            'bitcoin-cash': {
+              tokenId: 'bch',
+              name: 'BCH',
+              decimals: 8,
+              type: 'native',
+              residency: 'native',
+              extra: {},
+            },
+            ergo: {
+              tokenId: '56'.repeat(32),
+              name: 'Wrapped BCH',
+              decimals: 6,
+              type: 'EIP-004',
+              residency: 'wrapped',
+              extra: {},
+            },
+          },
+        ]);
+        expect(tokens.wrapAmount('bch', 100000001n, 'bitcoin-cash')).toEqual({
+          amount: 1000001n,
+          decimals: 6,
+        });
+        expect(tokens.unwrapAmount('bch', 1000001n, 'bitcoin-cash')).toEqual({
+          amount: 100000100n,
+          decimals: 8,
+        });
+      });
+    });
   });
 
   describe('unwrapAmount', () => {
