@@ -15,7 +15,7 @@ import { TokenMap } from '@rosen-bridge/tokens';
 import {
   BitcoinCashRpcRosenExtractor,
   BitcoinCashRpcTransaction,
-} from '../../../lib';
+} from '../../../lib/bitcoinCash';
 import { MAX_BITCOIN_CASH_TRANSACTION_BYTES } from '../../../lib/getRosenData/bitcoin-cash/utils';
 import { BITCOIN_CASH_CHAIN } from '../../../lib/getRosenData/const';
 

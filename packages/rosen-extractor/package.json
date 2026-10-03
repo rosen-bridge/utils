@@ -31,6 +31,7 @@
     "prettify:check": "prettier --check . --ignore-path ../../.gitignore",
     "release": "npm run test && npm run build && npm publish --access public",
     "test": "NODE_OPTIONS='--import tsx' vitest",
+    "test:entrypoints": "npm run build && cross-env ROSEN_EXTRACTOR_BUILT_TESTS=1 NODE_OPTIONS=\"--import tsx\" vitest run tests/index.spec.ts tests/bitcoinCash.spec.ts",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {

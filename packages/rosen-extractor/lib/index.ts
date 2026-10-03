@@ -7,7 +7,6 @@ export { default as AbstractRosenDataExtractor } from './getRosenData/abstract/a
 export { BitcoinEsploraRosenExtractor } from './getRosenData/bitcoin/bitcoinEsploraRosenExtractor';
 export { BitcoinRosenExtractor } from './getRosenData/bitcoin/bitcoinRosenExtractor';
 export { BitcoinRpcRosenExtractor } from './getRosenData/bitcoin/bitcoinRpcRosenExtractor';
-export * from './getRosenData/bitcoin-cash';
 export { EvmEthersRosenExtractor } from './getRosenData/evm/evmEthersRosenExtractor';
 export { EvmRpcRosenExtractor } from './getRosenData/evm/evmRpcRosenExtractor';
 export { EvmRosenExtractor } from './getRosenData/evm/evmRosenExtractor';
@@ -18,7 +17,10 @@ export { CardanoRosenExtractor } from './getRosenData/cardano/cardanoRosenExtrac
 export { CardanoBlockFrostRosenExtractor } from './getRosenData/cardano/cardanoBlockFrostRosenExtractor';
 export { ErgoRosenExtractor } from './getRosenData/ergo/ergoRosenExtractor';
 export { ErgoNodeRosenExtractor } from './getRosenData/ergo/ergoNodeRosenExtractor';
-export { RosenData, TokenTransformation } from './getRosenData/abstract/types';
+export type {
+  RosenData,
+  TokenTransformation,
+} from './getRosenData/abstract/types';
 export { DogeEsploraRosenExtractor } from './getRosenData/doge/dogeEsploraRosenExtractor';
 export { DogeRosenExtractor } from './getRosenData/doge/dogeRosenExtractor';
 export { DogeRpcRosenExtractor } from './getRosenData/doge/dogeRpcRosenExtractor';

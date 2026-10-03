@@ -13,7 +13,7 @@ import {
   BitcoinCashRosenExtractor,
   BitcoinCashRpcRosenExtractor,
   BitcoinCashRpcTransaction,
-} from '../../../lib';
+} from '../../../lib/bitcoinCash';
 
 const address = encodeCashAddress({
   prefix: 'bitcoincash',

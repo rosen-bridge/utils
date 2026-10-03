@@ -10,6 +10,7 @@
 - [Description](#description)
 - [Installation](#installation)
 - [Usage](#usage)
+- [Bitcoin Cash entry](#bitcoin-cash-entry)
 
 ## Description
 
@@ -95,3 +96,37 @@ const rosenExtractor = new ErgoNodeRosenExtractor(ergoLockAddress, tokenMap);
 const res = rosenExtractor.get(tx);
 console.log(res);
 ```
+
+## Bitcoin Cash entry
+
+Import the native BCH extractors and transaction types from the dedicated entry:
+
+```typescript
+import {
+  BitcoinCashRosenExtractor,
+  BitcoinCashRpcRosenExtractor,
+} from '@rosen-bridge/rosen-extractor/dist/bitcoinCash.js';
+import type { BitcoinCashRpcTransaction } from '@rosen-bridge/rosen-extractor/dist/bitcoinCash.js';
+```
+
+`BitcoinCashRpcRosenExtractor` accepts authenticated raw transaction bytes with
+their RPC projection. `BitcoinCashRosenExtractor` accepts that transaction
+serialized as JSON for Guard's universal extractor interface. Both support
+native BCH deposits; CashTokens are excluded. The inherited `get` method still
+requires `AddressManager` and `TokenMap` initialization as described above.
+
+The package root exports the existing chain extractors and does not import the
+BCH transaction decoder. The dedicated BCH entry initializes libauth's
+cryptographic runtime, so a multi-chain service must load it only when enabling
+BCH. A static import in a shared service bootstrap would make that dependency
+eager again, even when BCH is disabled in configuration. Existing package deep
+imports remain available; no restrictive export map is introduced.
+
+Run `npm run test:entrypoints` from this package to build and check the source
+and published `dist` entry paths in fresh Node processes. The regression tests
+reject libauth's root and crypto modules for the legacy entry, check that the
+BCH entry trips the same rejection, and then load BCH with its real dependency.
+Ordinary unit tests exercise the source paths; the built-path cases are enabled
+by this command. These checks use the repository's `tsx` loader for its
+extensionless internal imports. They do not establish a complete service or
+container deployment; consumers must also test their own startup import graph.
