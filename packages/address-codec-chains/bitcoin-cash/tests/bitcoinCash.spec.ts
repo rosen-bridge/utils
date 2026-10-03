@@ -4,6 +4,8 @@ import {
   encodeCashAddressNonStandard,
   encodeCashAddressFormat,
 } from '@bitauth/libauth';
+import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 
 import {
   UnsupportedAddressError,
@@ -13,6 +15,51 @@ import {
 } from '../lib';
 
 const hash = '76a04053bda0a88bda5177b86a15c3b29f559873';
+
+describe('Bitcoin Cash codec module', () => {
+  /**
+   * @target Bitcoin Cash codec - preserves synchronous loading without crypto startup
+   * @dependencies Fresh Node process, the actual source package and exact libauth pin
+   * @scenario Require the codec with libauth crypto imports forbidden and roundtrip a public CashAddr vector
+   * @expected Load synchronously, retain the native script and address, and validate successfully
+   */
+  it('loads and roundtrips without libauth crypto initialization', () => {
+    const child = spawnSync(
+      process.execPath,
+      [
+        '--import',
+        'tsx',
+        '--eval',
+        `
+      const assert = require('node:assert/strict');
+      const { registerHooks } = require('node:module');
+      registerHooks({
+        load(url, context, nextLoad) {
+          if (url.includes('/@bitauth/libauth/build/lib/crypto/'))
+            throw Error('Unexpected libauth crypto import');
+          return nextLoad(url, context);
+        }
+      });
+      const codec = require('./lib/bitcoinCash.ts');
+      const address = 'bitcoincash:qpm2qsznhks23z7629mms6s4cwef74vcwvy22gdx6a';
+      const script = '76a91476a04053bda0a88bda5177b86a15c3b29f55987388ac';
+      assert.equal(codec.encodeBitcoinCashAddress(address), script);
+      assert.equal(codec.decodeBitcoinCashAddress(script), address);
+      assert.equal(codec.validateBitcoinCashAddress(address), undefined);
+    `,
+      ],
+      {
+        cwd: fileURLToPath(new URL('..', import.meta.url)),
+        encoding: 'utf8',
+        timeout: 10_000,
+        env: { ...process.env, NODE_OPTIONS: '' },
+      },
+    );
+    expect(child.error).toBeUndefined();
+    expect(child.stderr).toBe('');
+    expect(child.status).toBe(0);
+  });
+});
 // Official CashAddr translation and larger-payload vectors:
 // https://github.com/bitcoincashorg/bitcoincash.org/blob/master/spec/cashaddr.md
 const vectors = [

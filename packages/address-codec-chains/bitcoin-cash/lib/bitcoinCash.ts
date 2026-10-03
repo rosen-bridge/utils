@@ -2,7 +2,7 @@ import {
   CashAddressType,
   decodeCashAddress,
   encodeCashAddress,
-} from '@bitauth/libauth';
+} from '@bitauth/libauth/build/lib/address/cash-address.js';
 
 import { BITCOIN_CASH_CHAIN } from './const';
 import { UnsupportedAddressError } from './types';

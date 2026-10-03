@@ -1,5 +1,6 @@
 import {
   CashAddressType,
+  decodeTransactionBCH,
   encodeCashAddress,
   encodeTransactionBCH,
   hashTransaction,
@@ -94,6 +95,58 @@ const raw = (
     })),
   };
 };
+/** Encode a consistent deposit at one admission boundary, without claiming script validity. */
+const boundedDeposit = (
+  inputCount: number,
+  outputCount: number,
+  byteLength?: number,
+): BitcoinCashRpcTransaction => {
+  const otherScript = Buffer.from(`76a914${'02'.repeat(20)}88ac`, 'hex');
+  const outputs = [
+    native(),
+    event(),
+    ...Array.from({ length: outputCount - 2 }, () => ({
+      lockingBytecode: otherScript,
+      valueSatoshis: 546n,
+    })),
+  ];
+  const inputs = Array.from({ length: inputCount }, (_, index) => ({
+    outpointTransactionHash: Uint8Array.from(inputId),
+    outpointIndex: index + 7,
+    sequenceNumber: 0xffffffff,
+    unlockingBytecode: new Uint8Array(byteLength === undefined ? 1 : 256),
+  }));
+  const transaction = { version: 2, locktime: 0, inputs, outputs };
+  if (byteLength !== undefined) {
+    const padding = byteLength - encodeTransactionBCH(transaction).length;
+    if (padding < 0) throw Error('Fixture byte target is too small');
+    inputs.forEach((input, index) => {
+      input.unlockingBytecode = new Uint8Array(
+        256 +
+          Math.floor(padding / inputCount) +
+          (index < padding % inputCount ? 1 : 0),
+      );
+      if (input.unlockingBytecode.length > 10_000)
+        throw Error('Fixture input script exceeds its isolated script bound');
+    });
+  }
+  const bytes = encodeTransactionBCH(transaction);
+  return {
+    hex: Buffer.from(bytes).toString('hex'),
+    txid: hashTransaction(bytes),
+    vin: inputs.map((input) => ({
+      txid: Buffer.from(input.outpointTransactionHash).toString('hex'),
+      vout: input.outpointIndex,
+    })),
+    vout: outputs.map((output, n) => ({
+      n,
+      value: decimal(output.valueSatoshis),
+      scriptPubKey: {
+        hex: Buffer.from(output.lockingBytecode).toString('hex'),
+      },
+    })),
+  };
+};
 /** Map the native BCH asset to its Ergo representation at selected decimals. */
 const tokens = async (
   sourceDecimals = 8,
@@ -160,6 +213,50 @@ describe('BitcoinCashRpcRosenExtractor', () => {
   });
 
   describe('get', () => {
+    /**
+     * @target BitcoinCashRpcRosenExtractor.get should enforce the current deposit admission boundary
+     * @dependencies Real extractor, TokenMap and canonical libauth-encoded deposits with exact RPC projections
+     * @scenario Vary only input count, output count or serialized byte length at its inclusive bound and one above
+     * @expected Accept each exact bound and reject one above; raw identity, metadata, treasury and payload remain coherent
+     */
+    it.each([
+      ['inputs at limit', 4096, 2, undefined, true],
+      ['inputs above limit', 4097, 2, undefined, false],
+      ['outputs at limit', 1, 4096, undefined, true],
+      ['outputs above limit', 1, 4097, undefined, false],
+      ['bytes at limit', 100, 2, 1_000_000, true],
+      ['bytes above limit', 100, 2, 1_000_001, false],
+    ] as const)(
+      'isolates canonical deposit %s',
+      (_name, inputs, outputs, bytes, accepted) => {
+        const transaction = boundedDeposit(inputs, outputs, bytes);
+        const encoded = Uint8Array.from(Buffer.from(transaction.hex, 'hex'));
+        const decoded = decodeTransactionBCH(encoded);
+        if (typeof decoded === 'string') throw Error(decoded);
+        expect(decoded.inputs).toHaveLength(inputs);
+        expect(decoded.outputs).toHaveLength(outputs);
+        expect(transaction.vin).toHaveLength(inputs);
+        expect(transaction.vout).toHaveLength(outputs);
+        expect(
+          Buffer.from(encodeTransactionBCH(decoded)).toString('hex'),
+        ).toEqual(transaction.hex);
+        expect(hashTransaction(encoded)).toEqual(transaction.txid);
+        if (bytes !== undefined) expect(encoded.length).toEqual(bytes);
+        else expect(encoded.length).toBeLessThan(1_000_000);
+        const result = extractor.get(transaction);
+        if (accepted)
+          expect(result).toMatchObject({
+            toChain: 'ergo',
+            toAddress: destinationAddress,
+            amount: '123456789',
+            bridgeFee: '291',
+            networkFee: '1110',
+            sourceTxId: transaction.txid,
+          });
+        else expect(result).toBeUndefined();
+      },
+    );
+
     /**
      * @target BitcoinCashRpcRosenExtractor.get should recover the complete request
      * @dependencies
