@@ -31,9 +31,12 @@
     "prettify:check": "prettier --check . --ignore-path ../../.gitignore",
     "release": "npm run test && npm run build && npm publish --access public",
     "test": "NODE_OPTIONS='--import tsx' vitest",
+    "test:entrypoints": "npm run build && cross-env ROSEN_EXTRACTOR_BUILT_TESTS=1 NODE_OPTIONS=\"--import tsx\" vitest run tests/index.spec.ts tests/bitcoinCash.spec.ts",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@bitauth/libauth": "3.0.0",
+    "@rosen-bridge/address-codec-bitcoin-cash": "^0.0.0",
     "@bitcoinerlab/secp256k1": "^1.2.0",
     "@blockfrost/openapi": "^0.1.80",
     "@cardano-ogmios/schema": "^6.0.3",
@@ -49,6 +52,7 @@
   },
   "devDependencies": {
     "@rosen-bridge/address-codec": "^2.1.0",
+    "@rosen-bridge/address-codec-ergo": "^0.1.0",
     "@types/lodash-es": "^4.17.6"
   },
   "engines": {

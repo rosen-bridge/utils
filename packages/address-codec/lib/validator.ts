@@ -3,6 +3,10 @@ import {
   validateBitcoinAddress,
 } from '@rosen-bridge/address-codec-bitcoin';
 import {
+  BITCOIN_CASH_CHAIN,
+  validateBitcoinCashAddress,
+} from '@rosen-bridge/address-codec-bitcoin-cash';
+import {
   BITCOIN_RUNES_CHAIN,
   validateBitcoinRunesAddress,
 } from '@rosen-bridge/address-codec-bitcoin-runes';
@@ -35,6 +39,7 @@ export const chainValidators: Record<string, (address: string) => void> = {
   [ERGO_CHAIN]: validateErgoAddress,
   [CARDANO_CHAIN]: validateCardanoAddress,
   [BITCOIN_CHAIN]: validateBitcoinAddress,
+  [BITCOIN_CASH_CHAIN]: validateBitcoinCashAddress,
   [ETHEREUM_CHAIN]: generateEvmAddressValidator(ETHEREUM_CHAIN),
   [BINANCE_CHAIN]: generateEvmAddressValidator(BINANCE_CHAIN),
   [BASE_CHAIN]: generateEvmAddressValidator(BASE_CHAIN),

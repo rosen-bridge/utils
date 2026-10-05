@@ -3,6 +3,18 @@ import * as testData from './testData';
 
 describe('parseRosenData', () => {
   /**
+   * @target parseRosenData rejects the unassigned BCH destination index
+   * @dependencies existing assigned destination fixture and protocol registry
+   * @scenario change only the destination code to the former provisional BCH10
+   * @expected the unassigned code is rejected before address interpretation
+   */
+  it('rejects the unassigned BCH destination index', () => {
+    const script = '0a' + testData.opReturnScripts.valid.slice(2);
+    expect(() => parseRosenData(script)).toThrow(
+      /invalid toChain code.*\[10\]/,
+    );
+  });
+  /**
    * @target `parseRosenData` should extract rosen data successfully
    * @dependencies
    * @scenario

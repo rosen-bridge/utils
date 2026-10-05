@@ -6,6 +6,7 @@ import {
   NetworkError,
   NotFoundError,
 } from '../lib';
+import { bitcoinCashFeeBox } from './bitcoinCashTestUtils';
 import TestNetwork from './network/testNetwork.mock';
 import * as testData from './testData';
 import { TestMinimumFeeBox } from './testMinimumFeeBox';
@@ -314,6 +315,33 @@ describe('MinimumFeeBox', () => {
       expect(() => {
         minimumFeeBox.getFee('ergo', 12000, 'cardano');
       }).toThrow(Error);
+    });
+
+    describe('BCH RCS fee namespace', () => {
+      /**
+       * @target MinimumFeeBox.getFee - requires exact bitcoin-cash R4 source namespace
+       * @dependencies Synthetic fetched fee box with JSON-decoded R4-R9 registers.
+       * @scenario Replace only the source R4 chain name with bitcoinCash.
+       * @expected Reject a bitcoin-cash source lookup as an absent chain.
+       */
+      it('requires exact bitcoin-cash R4 source namespace', async () => {
+        const fees = await bitcoinCashFeeBox(['bitcoinCash', 'ergo']);
+        expect(() => fees.getFee('bitcoin-cash', 101, 'ergo')).toThrow(
+          'No fee found for chain',
+        );
+      });
+      /**
+       * @target MinimumFeeBox.getFee - requires exact bitcoin-cash R4 target namespace
+       * @dependencies Synthetic fetched fee box with JSON-decoded R4-R9 registers.
+       * @scenario Replace only the target R4 chain name with bitcoinCash.
+       * @expected Reject a bitcoin-cash destination without a matching fee row.
+       */
+      it('requires exact bitcoin-cash R4 target namespace', async () => {
+        const fees = await bitcoinCashFeeBox(['bitcoinCash', 'ergo']);
+        expect(() => fees.getFee('ergo', 201, 'bitcoin-cash')).toThrow(
+          'not supported',
+        );
+      });
     });
   });
 });

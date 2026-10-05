@@ -7,6 +7,7 @@
   "exclude": ["tests", "vitest.config.ts"],
   "references": [
     { "path": "../address-codec-chains/bitcoin/tsconfig.build.json" },
+    { "path": "../address-codec-chains/bitcoin-cash/tsconfig.build.json" },
     { "path": "../address-codec-chains/bitcoin-runes/tsconfig.build.json" },
     { "path": "../address-codec-chains/cardano/tsconfig.build.json" },
     { "path": "../address-codec-chains/doge/tsconfig.build.json" },

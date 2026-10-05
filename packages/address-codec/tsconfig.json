@@ -7,6 +7,7 @@
   "include": ["tests", "lib"],
   "references": [
     { "path": "../address-codec-chains/bitcoin" },
+    { "path": "../address-codec-chains/bitcoin-cash" },
     { "path": "../address-codec-chains/bitcoin-runes" },
     { "path": "../address-codec-chains/cardano" },
     { "path": "../address-codec-chains/doge" },
