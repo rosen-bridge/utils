@@ -1,8 +1,8 @@
 import { Mutex } from 'async-mutex';
 import { DataSource, QueryRunner, ReplicationMode } from 'typeorm';
-import { SqliteDriver } from 'typeorm/driver/sqlite/SqliteDriver.js';
+import { SqliteDriver } from 'typeorm/driver/sqlite/SqliteDriver';
 
-import { CustomQueryRunner } from './customQueryRunner.js';
+import { CustomQueryRunner } from './customQueryRunner';
 
 class CustomSqliteDriver extends SqliteDriver {
   protected mutex: Mutex;

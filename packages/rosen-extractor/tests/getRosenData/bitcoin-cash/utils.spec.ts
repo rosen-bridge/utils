@@ -3,14 +3,11 @@ import {
   decodeBitcoinCashOpReturnPayload,
   parseBitcoinCashOpReturn,
 } from '../../../lib/getRosenData/bitcoin-cash/utils';
-
-/** Encode a canonical OP_RETURN push without interpreting its receiver. */
-const push = (data: Buffer): string =>
-  `6a${data.length <= 75 ? data.length.toString(16).padStart(2, '0') : `4c${data.length.toString(16)}`}${data.toString('hex')}`;
+import { push } from './bitcoinCashTestUtils';
 
 describe('decodeBitcoinCashOpReturnPayload', () => {
   /**
-   * @target decodeBitcoinCashOpReturnPayload
+   * @target decodeBitcoinCashOpReturnPayload accepts canonical framing of%i bytes
    * @dependencies raw canonical push fixtures
    * @scenario frame75,76 and80bytes including an assigned Ergo destination code
    * @expected exact payload bytes are recovered independently of receiver parsing
@@ -25,7 +22,7 @@ describe('decodeBitcoinCashOpReturnPayload', () => {
   });
 
   /**
-   * @target decodeBitcoinCashOpReturnPayload
+   * @target decodeBitcoinCashOpReturnPayload rejects ambiguous and nonminimal pushes
    * @dependencies malformed opcode and nonminimal PUSHDATA1 fixtures
    * @scenario decode opcode76 without its length and PUSHDATA1 for75bytes
    * @expected both noncanonical push forms are rejected
@@ -42,7 +39,7 @@ describe('decodeBitcoinCashOpReturnPayload', () => {
 
 describe('parseBitcoinCashOpReturn', () => {
   /**
-   * @target parseBitcoinCashOpReturn
+   * @target parseBitcoinCashOpReturn rejects the malformed Ergo receiver at%i bytes
    * @dependencies canonical framing and the real Ergo address decoder
    * @scenario supply valid framing with malformed receiver bytes at75,76,80bytes
    * @expected rejection occurs at receiver decoding after successful framing
@@ -62,7 +59,7 @@ describe('parseBitcoinCashOpReturn', () => {
   );
 
   /**
-   * @target parseBitcoinCashOpReturn
+   * @target parseBitcoinCashOpReturn rejects malformed framing%s
    * @dependencies isolated malformed push fixtures
    * @scenario parse empty,truncated,nonminimal,multiple,nonhex or oversized pushes
    * @expected every input is rejected before Rosen data can be returned
@@ -84,7 +81,7 @@ describe('parseBitcoinCashOpReturn', () => {
 
 describe('bitcoinCashValueToSatoshis', () => {
   /**
-   * @target bitcoinCashValueToSatoshis
+   * @target bitcoinCashValueToSatoshis preserves one satoshi and rejects uint64 overflow
    * @dependencies real decimal conversion without Number aggregation
    * @scenario parse one satoshi in exponent notation and uint64 plus one
    * @expected the satoshi is exact and the amount beyond uint64 is rejected

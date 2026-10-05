@@ -3,7 +3,7 @@ import * as testData from './testData';
 
 describe('parseRosenData', () => {
   /**
-   * @target parseRosenData
+   * @target parseRosenData rejects the unassigned BCH destination index
    * @dependencies existing assigned destination fixture and protocol registry
    * @scenario change only the destination code to the former provisional BCH10
    * @expected the unassigned code is rejected before address interpretation

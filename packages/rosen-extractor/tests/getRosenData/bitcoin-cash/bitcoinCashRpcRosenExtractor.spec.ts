@@ -1,15 +1,10 @@
 import {
-  CashAddressType,
   decodeTransactionBCH,
-  encodeCashAddress,
   encodeTransactionBCH,
   hashTransaction,
   Output,
-  TransactionCommon,
 } from '@bitauth/libauth';
 
-import { encodeBitcoinCashAddress } from '@rosen-bridge/address-codec-bitcoin-cash';
-import { encodeErgoAddress } from '@rosen-bridge/address-codec-ergo';
 import { TokenMap } from '@rosen-bridge/tokens';
 
 import {
@@ -18,163 +13,18 @@ import {
 } from '../../../lib/bitcoinCash';
 import { MAX_BITCOIN_CASH_TRANSACTION_BYTES } from '../../../lib/getRosenData/bitcoin-cash/utils';
 import { BITCOIN_CASH_CHAIN } from '../../../lib/getRosenData/const';
-
-const address = encodeCashAddress({
-  prefix: 'bitcoincash',
-  type: CashAddressType.p2pkh,
-  payload: Buffer.alloc(20, 1),
-}).address;
-const script = encodeBitcoinCashAddress(address);
-const inputId = Buffer.from(
-  Array.from({ length: 32 }, (_, index) => index + 1),
-);
-const targetToken = 'aa'.repeat(32);
-const destinationAddress =
-  '9iMjQx8PzwBKXRvsFUJFJAPoy31znfEeBUGz8DRkcnJX4rJYjVd';
-const destinationScript = encodeErgoAddress(destinationAddress);
-const payload = Buffer.from(
-  `0000000000000001230000000000000456${(destinationScript.length / 2).toString(16).padStart(2, '0')}${destinationScript}`,
-  'hex',
-);
-/** Encode a canonical direct push or PUSHDATA1 fixture. */
-const push = (data: Buffer): string =>
-  `6a${data.length <= 75 ? data.length.toString(16).padStart(2, '0') : `4c${data.length.toString(16)}`}${data.toString('hex')}`;
-/** Construct a native treasury output without token metadata. */
-const native = (satoshis = 123456789n): Output => ({
-  lockingBytecode: Buffer.from(script, 'hex'),
-  valueSatoshis: satoshis,
-});
-/** Construct the assigned Ergo destination payload output. */
-const event = (): Output => ({
-  lockingBytecode: Buffer.from(push(payload), 'hex'),
-  valueSatoshis: 0n,
-});
-/** Project integer satoshis to exact RPC BCH decimal text. */
-const decimal = (value: bigint): string =>
-  `${value / 100000000n}.${(value % 100000000n).toString().padStart(8, '0')}`;
-/** Encode raw bytes and their matching RPC transaction projection. */
-const raw = (
-  outputs: Output[] = [native(), event()],
-  inputHash = inputId,
-): BitcoinCashRpcTransaction => {
-  const tx: TransactionCommon = {
-    version: 2,
-    locktime: 0,
-    inputs: [
-      {
-        outpointTransactionHash: Uint8Array.from(inputHash),
-        outpointIndex: 7,
-        sequenceNumber: 0xffffffff,
-        unlockingBytecode: Uint8Array.of(0x51),
-      },
-    ],
-    outputs: outputs.map((output) => ({
-      ...output,
-      lockingBytecode: Uint8Array.from(output.lockingBytecode),
-      token: output.token && {
-        ...output.token,
-        category: Uint8Array.from(output.token.category),
-        nft: output.token.nft && {
-          ...output.token.nft,
-          commitment: Uint8Array.from(output.token.nft.commitment),
-        },
-      },
-    })),
-  };
-  const bytes = encodeTransactionBCH(tx);
-  return {
-    hex: Buffer.from(bytes).toString('hex'),
-    txid: hashTransaction(bytes),
-    vin: [{ txid: Buffer.from(inputHash).toString('hex'), vout: 7 }],
-    vout: outputs.map((output, n) => ({
-      n,
-      value: decimal(output.valueSatoshis),
-      scriptPubKey: {
-        hex: Buffer.from(output.lockingBytecode).toString('hex'),
-      },
-    })),
-  };
-};
-/** Encode a consistent deposit at one admission boundary, without claiming script validity. */
-const boundedDeposit = (
-  inputCount: number,
-  outputCount: number,
-  byteLength?: number,
-): BitcoinCashRpcTransaction => {
-  const otherScript = Buffer.from(`76a914${'02'.repeat(20)}88ac`, 'hex');
-  const outputs = [
-    native(),
-    event(),
-    ...Array.from({ length: outputCount - 2 }, () => ({
-      lockingBytecode: otherScript,
-      valueSatoshis: 546n,
-    })),
-  ];
-  const inputs = Array.from({ length: inputCount }, (_, index) => ({
-    outpointTransactionHash: Uint8Array.from(inputId),
-    outpointIndex: index + 7,
-    sequenceNumber: 0xffffffff,
-    unlockingBytecode: new Uint8Array(byteLength === undefined ? 1 : 256),
-  }));
-  const transaction = { version: 2, locktime: 0, inputs, outputs };
-  if (byteLength !== undefined) {
-    const padding = byteLength - encodeTransactionBCH(transaction).length;
-    if (padding < 0) throw Error('Fixture byte target is too small');
-    inputs.forEach((input, index) => {
-      input.unlockingBytecode = new Uint8Array(
-        256 +
-          Math.floor(padding / inputCount) +
-          (index < padding % inputCount ? 1 : 0),
-      );
-      if (input.unlockingBytecode.length > 10_000)
-        throw Error('Fixture input script exceeds its isolated script bound');
-    });
-  }
-  const bytes = encodeTransactionBCH(transaction);
-  return {
-    hex: Buffer.from(bytes).toString('hex'),
-    txid: hashTransaction(bytes),
-    vin: inputs.map((input) => ({
-      txid: Buffer.from(input.outpointTransactionHash).toString('hex'),
-      vout: input.outpointIndex,
-    })),
-    vout: outputs.map((output, n) => ({
-      n,
-      value: decimal(output.valueSatoshis),
-      scriptPubKey: {
-        hex: Buffer.from(output.lockingBytecode).toString('hex'),
-      },
-    })),
-  };
-};
-/** Map the native BCH asset to its Ergo representation at selected decimals. */
-const tokens = async (
-  sourceDecimals = 8,
-  targetDecimals = 8,
-): Promise<TokenMap> => {
-  const map = new TokenMap();
-  await map.updateConfigByJson([
-    {
-      'bitcoin-cash': {
-        tokenId: 'bch',
-        name: 'BCH',
-        decimals: sourceDecimals,
-        type: 'native',
-        residency: 'native',
-        extra: {},
-      },
-      ergo: {
-        tokenId: targetToken,
-        name: 'rsBCH',
-        decimals: targetDecimals,
-        type: 'EIP-004',
-        residency: 'wrapped',
-        extra: {},
-      },
-    },
-  ]);
-  return map;
-};
+import {
+  address,
+  inputId,
+  payload,
+  native,
+  event,
+  raw,
+  boundedDeposit,
+  tokens,
+} from './bitcoinCashRpcRosenExtractorTestUtils';
+import { targetToken, destinationAddress } from './bitcoinCashTestData';
+import { push } from './bitcoinCashTestUtils';
 
 describe('BitcoinCashRpcRosenExtractor', () => {
   let extractor: BitcoinCashRpcRosenExtractor;
@@ -184,7 +34,7 @@ describe('BitcoinCashRpcRosenExtractor', () => {
 
   describe('constructor', () => {
     /**
-     * @target BitcoinCashRpcRosenExtractor.constructor
+     * @target BitcoinCashRpcRosenExtractor.constructor exports a distinct native BCH source identity
      * @dependencies
      * - The real extractor and TokenMap fixture
      * @scenario
@@ -196,7 +46,7 @@ describe('BitcoinCashRpcRosenExtractor', () => {
       expect(extractor.chain).toEqual(BITCOIN_CASH_CHAIN);
     });
     /**
-     * @target BitcoinCashRpcRosenExtractor.constructor
+     * @target BitcoinCashRpcRosenExtractor.constructor rejects legacy Bitcoin treasury address at construction
      * @dependencies real BCH codec and an empty TokenMap
      * @scenario construct with a legacy Bitcoin Base58 treasury
      * @expected construction rejects the incompatible treasury
@@ -214,7 +64,7 @@ describe('BitcoinCashRpcRosenExtractor', () => {
 
   describe('get', () => {
     /**
-     * @target BitcoinCashRpcRosenExtractor.get should enforce the current deposit admission boundary
+     * @target BitcoinCashRpcRosenExtractor.get isolates canonical deposit %s
      * @dependencies Real extractor, TokenMap and canonical libauth-encoded deposits with exact RPC projections
      * @scenario Vary only input count, output count or serialized byte length at its inclusive bound and one above
      * @expected Accept each exact bound and reject one above; raw identity, metadata, treasury and payload remain coherent
@@ -258,7 +108,7 @@ describe('BitcoinCashRpcRosenExtractor', () => {
     );
 
     /**
-     * @target BitcoinCashRpcRosenExtractor.get should recover the complete request
+     * @target BitcoinCashRpcRosenExtractor.get joins exact raw bytes, native treasury, Ergo destination and fee units through get()
      * @dependencies
      * - Libauth transaction bytes, canonical CashAddr and real TokenMap fixture
      * @scenario
@@ -283,7 +133,7 @@ describe('BitcoinCashRpcRosenExtractor', () => {
     });
 
     /**
-     * @target BitcoinCashRpcRosenExtractor.get
+     * @target BitcoinCashRpcRosenExtractor.get wraps amount with the real TokenMap while preserving fee source units
      * @dependencies
      * - Real TokenMap, Ergo codec, AddressManager and libauth transaction fixture
      * @scenario
@@ -330,7 +180,7 @@ describe('BitcoinCashRpcRosenExtractor', () => {
     });
 
     /**
-     * @target BitcoinCashRpcRosenExtractor.get
+     * @target BitcoinCashRpcRosenExtractor.get honors raw-data suppression through inherited get()
      * @dependencies
      * - The real extractor, TokenMap and valid native transaction fixture
      * @scenario
@@ -350,7 +200,7 @@ describe('BitcoinCashRpcRosenExtractor', () => {
     });
 
     /**
-     * @target BitcoinCashRpcRosenExtractor.get
+     * @target BitcoinCashRpcRosenExtractor.get fails closed for %s
      * @dependencies
      * - Real extractor and valid raw transaction mutated one field at a time
      * @scenario
@@ -494,7 +344,7 @@ describe('BitcoinCashRpcRosenExtractor', () => {
     });
 
     /**
-     * @target BitcoinCashRpcRosenExtractor.get
+     * @target BitcoinCashRpcRosenExtractor.get rejects %s
      * @dependencies
      * - Real extractor and independently encoded malformed transaction fixtures
      * @scenario
@@ -595,7 +445,7 @@ describe('BitcoinCashRpcRosenExtractor', () => {
     });
 
     /**
-     * @target BitcoinCashRpcRosenExtractor.get
+     * @target BitcoinCashRpcRosenExtractor.get permits unrelated parsed CashTokens and checks any explicit token metadata
      * @dependencies
      * - Real extractor and a native request with one unrelated CashToken output
      * @scenario
@@ -618,7 +468,7 @@ describe('BitcoinCashRpcRosenExtractor', () => {
     });
 
     /**
-     * @target BitcoinCashRpcRosenExtractor.get
+     * @target BitcoinCashRpcRosenExtractor.get rejects unrelated CashToken metadata mismatch in %s
      * @dependencies
      * - Real extractor and a valid CashToken fixture with an NFT
      * @scenario
@@ -682,7 +532,7 @@ describe('BitcoinCashRpcRosenExtractor', () => {
     );
 
     /**
-     * @target BitcoinCashRpcRosenExtractor.get
+     * @target BitcoinCashRpcRosenExtractor.get accepts empty unrelated scripts and explicit native token absence
      * @dependencies
      * - Real extractor and native request with an empty-script zero-value output
      * @scenario
@@ -701,7 +551,7 @@ describe('BitcoinCashRpcRosenExtractor', () => {
     });
 
     /**
-     * @target BitcoinCashRpcRosenExtractor.get
+     * @target BitcoinCashRpcRosenExtractor.get preserves the largest uint64 fee without scaling or precision loss
      * @dependencies
      * - Real extractor and a Rosen payload with both fee fields set to all ones
      * @scenario
@@ -726,7 +576,7 @@ describe('BitcoinCashRpcRosenExtractor', () => {
     });
 
     /**
-     * @target BitcoinCashRpcRosenExtractor.get
+     * @target BitcoinCashRpcRosenExtractor.get returns no event for unknown native token map
      * @dependencies
      * - Real extractor, empty TokenMap and valid native request fixture
      * @scenario
@@ -740,7 +590,7 @@ describe('BitcoinCashRpcRosenExtractor', () => {
       ).toBeUndefined();
     });
     /**
-     * @target BitcoinCashRpcRosenExtractor.get
+     * @target BitcoinCashRpcRosenExtractor.get returns no event for a missing target transformation
      * @dependencies
      * - Real extractor and a TokenMap containing an unrelated BCH asset only
      * @scenario
@@ -770,7 +620,7 @@ describe('BitcoinCashRpcRosenExtractor', () => {
 
   describe('extractData', () => {
     /**
-     * @target BitcoinCashRpcRosenExtractor.extractData
+     * @target BitcoinCashRpcRosenExtractor.extractData keeps uint64 satoshi amounts exact without Number conversion
      * @dependencies
      * - Real raw extractor and authenticated libauth transaction bytes
      * @scenario

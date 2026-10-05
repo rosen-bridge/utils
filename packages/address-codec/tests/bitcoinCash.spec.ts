@@ -3,9 +3,9 @@ import { decodeAddress, encodeAddress, validateAddress } from '../lib';
 const address = 'bitcoincash:qpm2qsznhks23z7629mms6s4cwef74vcwvy22gdx6a';
 const script = '76a91476a04053bda0a88bda5177b86a15c3b29f55987388ac';
 
-describe('Bitcoin Cash dispatch', () => {
+describe('encodeAddress', () => {
   /**
-   * @target Address dispatch should join the distinct BCH codec functions
+   * @target encodeAddress joins encoding, decoding and validation under the distinct BCH chain
    * @dependencies
    * - The real address dispatcher, BCH codec and canonical address fixture
    * @scenario
@@ -21,7 +21,7 @@ describe('Bitcoin Cash dispatch', () => {
   });
 
   /**
-   * @target Address dispatch should preserve native BCH validation limits
+   * @target encodeAddress preserves native-only validation through generic dispatch
    * @dependencies
    * - The real address dispatcher and BCH codec; no mocks
    * @scenario

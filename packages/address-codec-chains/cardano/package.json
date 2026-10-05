@@ -11,9 +11,6 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "browser": {
-    "@emurgo/cardano-serialization-lib-nodejs": "@emurgo/cardano-serialization-lib-browser"
-  },
   "files": [
     "dist",
     "CHANGELOG.md"
@@ -30,8 +27,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@emurgo/cardano-serialization-lib-browser": "13.2.1",
-    "@emurgo/cardano-serialization-lib-nodejs": "13.2.1"
+    "@emurgo/cardano-serialization-lib-nodejs": "^13.2.1"
   },
   "engines": {
     "node": ">=22.18.0",
