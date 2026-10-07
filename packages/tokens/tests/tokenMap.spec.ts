@@ -65,6 +65,67 @@ describe('TokenMap', () => {
       }).rejects.toThrow(CorruptedConfigError);
       expect(mockedCallback).not.toHaveBeenCalled();
     });
+
+    /**
+     * @target TokenMap.updateConfigByJson should accept a new config after a corrupted config update failed
+     * @dependencies
+     * - RosenToken json
+     * @scenario
+     * - call updateConfigByJson with a corrupted config and check it throws
+     * - call updateConfigByJson with a valid config
+     * @expected
+     * - the valid update should complete (the failed update must not keep the semaphore)
+     * - the config should equal the valid config
+     */
+    it('should accept a new config after a corrupted config update failed', async () => {
+      const tokenMap = new TokenMap();
+
+      await expect(async () => {
+        await tokenMap.updateConfigByJson([
+          ...firstTokenMapWithUnbridgeableTokens,
+          invalidTokenSet,
+        ]);
+      }).rejects.toThrow(CorruptedConfigError);
+
+      const updated = await Promise.race([
+        tokenMap.updateConfigByJson(firstTokenMap).then(() => true),
+        new Promise<false>((resolve) => setTimeout(() => resolve(false), 1000)),
+      ]);
+      expect(updated).toEqual(true);
+      expect(tokenMap.getConfig()).toEqual(firstTokenMap);
+    });
+
+    /**
+     * @target TokenMap.updateConfigByJson should accept a new config after a registered callback throws
+     * @dependencies
+     * - RosenToken json
+     * @scenario
+     * - register a callback that throws
+     * - call updateConfigByJson and check it throws
+     * - unregister the callback
+     * - call updateConfigByJson again
+     * @expected
+     * - the second update should complete (the throwing callback must not keep the semaphore)
+     * - the config should equal the valid config
+     */
+    it('should accept a new config after a registered callback throws', async () => {
+      const tokenMap = new TokenMap();
+      const callbackId = tokenMap.registerCallback(() => {
+        throw new Error('callback failed');
+      });
+
+      await expect(async () => {
+        await tokenMap.updateConfigByJson(firstTokenMap);
+      }).rejects.toThrow('callback failed');
+
+      tokenMap.unregisterCallback(callbackId);
+      const updated = await Promise.race([
+        tokenMap.updateConfigByJson(firstTokenMap).then(() => true),
+        new Promise<false>((resolve) => setTimeout(() => resolve(false), 1000)),
+      ]);
+      expect(updated).toEqual(true);
+      expect(tokenMap.getConfig()).toEqual(firstTokenMap);
+    });
   });
 
   describe('search', () => {

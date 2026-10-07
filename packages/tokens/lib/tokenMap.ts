@@ -80,7 +80,10 @@ export class TokenMap {
    * @param tokens
    */
   updateConfigByJson = async (tokens: RosenTokens) => {
-    await this.updateSemaphore.acquire().then(async (release) => {
+    // `use` releases the semaphore on every path: releasing only on success
+    // would block every later update forever after a single failure (e.g. a
+    // corrupted config or a throwing callback)
+    await this.updateSemaphore.use(async () => {
       const newTokenConfig: RosenTokens = [];
       const newUnbridgeableTokens: RosenTokens = [];
       tokens.forEach((tokenSet) => {
@@ -101,7 +104,6 @@ export class TokenMap {
       this.tokensConfig = newTokenConfig;
       this.unbridgeableTokens = newUnbridgeableTokens;
       for (const callback of this.callbacks.values()) callback();
-      release();
     });
   };
 
