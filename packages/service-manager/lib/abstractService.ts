@@ -119,6 +119,7 @@ export abstract class AbstractService {
           this.logger.warn(
             `An error occurred while starting service [${this.getName()}]: ${error}`,
           );
+          this.actionPromise = undefined;
           release();
           return false;
         });
@@ -170,6 +171,7 @@ export abstract class AbstractService {
           this.logger.warn(
             `An error occurred while stopping service [${this.getName()}]: ${error}`,
           );
+          this.actionPromise = undefined;
           release();
           return false;
         });
@@ -229,6 +231,7 @@ export abstract class AbstractService {
           this.logger.warn(
             `An error occurred while assembling service [${this.getName()}]: ${error}`,
           );
+          this.actionPromise = undefined;
           release();
           return false;
         });
