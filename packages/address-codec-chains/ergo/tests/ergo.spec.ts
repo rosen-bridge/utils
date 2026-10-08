@@ -34,6 +34,36 @@ describe('encodeErgoAddress', () => {
       encodeErgoAddress(testData.longErgoAddress);
     }).toThrow(UnsupportedAddressError);
   });
+
+  /**
+   * @target `encodeErgoAddress` should throw error for testnet address
+   * @dependencies
+   * @scenario
+   * - run test & check thrown exception
+   * @expected
+   * - it should throw UnsupportedAddress error, since decoding always
+   *   rebuilds a mainnet address from the stored bytes
+   */
+  it('should throw error for testnet address', () => {
+    expect(() => {
+      encodeErgoAddress(testData.testnetErgoAddress);
+    }).toThrow(UnsupportedAddressError);
+  });
+
+  /**
+   * @target `encodeErgoAddress` should throw error for P2S address
+   * @dependencies
+   * @scenario
+   * - run test & check thrown exception
+   * @expected
+   * - it should throw UnsupportedAddress error, since decoding always
+   *   rebuilds a P2PK address from the stored bytes
+   */
+  it('should throw error for P2S address', () => {
+    expect(() => {
+      encodeErgoAddress(testData.p2sErgoAddress);
+    }).toThrow(UnsupportedAddressError);
+  });
 });
 
 describe('decodeErgoAddress', () => {
@@ -93,5 +123,35 @@ describe('validateErgoAddress', () => {
     expect(() => {
       validateErgoAddress(testData.invalidErgoAddress);
     }).toThrow();
+  });
+
+  /**
+   * @target `validateErgoAddress` should throw error for testnet address
+   * @dependencies
+   * @scenario
+   * - run test & check thrown exception
+   * @expected
+   * - it should throw UnsupportedAddress error, since the codec cannot
+   *   turn a testnet address back into itself
+   */
+  it('should throw error for testnet address', () => {
+    expect(() => {
+      validateErgoAddress(testData.testnetErgoAddress);
+    }).toThrow(UnsupportedAddressError);
+  });
+
+  /**
+   * @target `validateErgoAddress` should throw error for P2S address
+   * @dependencies
+   * @scenario
+   * - run test & check thrown exception
+   * @expected
+   * - it should throw UnsupportedAddress error, since the codec cannot
+   *   turn a P2S address back into itself
+   */
+  it('should throw error for P2S address', () => {
+    expect(() => {
+      validateErgoAddress(testData.p2sErgoAddress);
+    }).toThrow(UnsupportedAddressError);
   });
 });
