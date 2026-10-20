@@ -1,45 +1,52 @@
 {
   "name": "@rosen-bridge/config",
   "version": "2.1.0",
-  "description": "a package to manage configs of rosen bridge projects",
+  "description": "Schema definition and validation for configuration loaded with the Node.js config package",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rosen-bridge/utils.git"
+    "url": "git+https://github.com/rosen-bridge/utils.git",
+    "directory": "./packages/config"
   },
   "license": "MIT",
   "author": "Rosen Team",
   "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "bin": "dist/cli.js",
+  "bin": "./dist/cli.js",
   "files": [
     "dist",
+    "docs",
     "CHANGELOG.md"
   ],
   "scripts": {
     "build": "tsc --build tsconfig.build.json",
+    "postbuild": "node -e \"require('fs').chmodSync('dist/cli.js', 0o755)\"",
+    "clean": "rimraf dist && rimraf tsconfig.build.tsbuildinfo",
     "coverage": "npm run test -- --run --coverage",
     "lint": "eslint --fix . && npm run prettify",
     "lint:check": "eslint . && npm run prettify:check",
     "prettify": "prettier --write . --ignore-path ../../.gitignore",
     "prettify:check": "prettier --check . --ignore-path ../../.gitignore",
-    "release": "npm run build && npm publish --access public",
-    "test": "NODE_OPTIONS='--import tsx' vitest",
+    "release": "npm run test -- --run && npm run clean && npm run build && npm publish --access public",
+    "test": "cross-env NODE_OPTIONS=\"--import tsx\" vitest",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@rosen-bridge/abstract-logger": "^4.0.0",
     "@rosen-bridge/json-bigint": "^1.1.0",
-    "config": "^3.3.10",
-    "js-yaml": "^4.1.0",
-    "ora": "^8.0.1",
-    "yargs": "^17.7.2"
+    "config": "^5.0.1",
+    "js-yaml": "^4.3.2",
+    "yargs": "^18.2.0"
   },
   "devDependencies": {
-    "@types/config": "^3.3.3",
     "@types/js-yaml": "^4.0.9",
-    "@types/lodash-es": "^4.17.12",
-    "lodash-es": "^4.17.21",
-    "uuid": "^11.1.0"
+    "@types/yargs": "^17.0.35"
   },
   "engines": {
     "node": ">=22.18.0",

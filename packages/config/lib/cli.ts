@@ -1,182 +1,313 @@
-#!/usr/bin/env -S node --experimental-specifier-resolution=node
-
-import * as fs from 'fs';
-import * as yaml from 'js-yaml';
-import ora from 'ora';
-import { dirname, join } from 'path';
-import { fileURLToPath } from 'url';
+#!/usr/bin/env node
+import { createRequire } from 'node:module';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 
-import { JsonBigIntFactory } from '@rosen-bridge/json-bigint';
+import { ConfigValidator } from './configValidator.js';
+import {
+  CliCommands,
+  CliOptions,
+  CliShortOptions,
+  EXIT,
+  PACKAGE_MANIFEST,
+  SchemaFormat,
+  SchemaFormats,
+} from './constants/index.js';
+import { SchemaError } from './parsing/result.js';
 
-import { ConfigValidator } from './index';
+/**
+ * The name of the command, in usage and messages.
+ */
+const SCRIPT_NAME = 'config';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const pkg = JSON.parse(
-  fs.readFileSync(join(__dirname, '..', 'package.json'), 'utf-8'),
-) as { version: string };
+/**
+ * Loads the package manifest for `--version`.
+ */
+const load = createRequire(import.meta.url);
 
-const JsonBigInt = JsonBigIntFactory({
-  alwaysParseAsBig: false,
-  useNativeBigInt: true,
-});
+/**
+ * The formats of schema and output files.
+ */
+const FORMATS: readonly SchemaFormat[] = Object.values(SchemaFormats);
+
+/**
+ * Prints the problems of `subject`, one per line at its path.
+ * @param subject - what has the problems (a schema file, the configuration)
+ * @param errors - the problems
+ */
+const printErrors = (subject: string, errors: readonly SchemaError[]): void => {
+  console.error(`${subject}: ${errors.length} problem(s)`);
+  for (const { path, message } of errors)
+    console.error(`  ${path || '(root)'}: ${message}`);
+};
+
+/**
+ * The validator of a schema file, or `undefined` (with the schema-error exit
+ * code) after printing its problems.
+ * @param schema - the schema file
+ * @param format - the format of the file (default: its extension)
+ */
+const readSchema = (
+  schema: string,
+  format?: SchemaFormat,
+): ConfigValidator | undefined => {
+  const validator = ConfigValidator.fromFile(schema, format);
+  if (validator.ok) return validator.value;
+  printErrors(schema, validator.errors);
+  process.exitCode = EXIT.schemaError;
+  return undefined;
+};
+
+/**
+ * Prints an error that stopped a command and sets the failed exit code.
+ * @param error - the thrown error
+ */
+const failed = (error: unknown): void => {
+  console.error(error instanceof Error ? error.message : String(error));
+  process.exitCode = EXIT.failed;
+};
+
+/**
+ * Runs `action`, then prints `done`; when it throws, prints the error
+ * instead and sets the failed exit code.
+ * @param action - writes a file
+ * @param done - the line printed when it succeeds
+ */
+const run = (action: () => void, done: string): void => {
+  try {
+    action();
+    console.log(done);
+  } catch (error) {
+    failed(error);
+  }
+};
+
+/**
+ * Prints a usage error and exits.
+ * @param message - the problem with the command line
+ */
+const usageError = (message: string): never => {
+  console.error(`${message}\nRun ${SCRIPT_NAME} --help for usage.`);
+  process.exit(EXIT.usage);
+};
+
+const schema = {
+  type: 'string',
+  alias: CliShortOptions.Schema,
+  demandOption: true,
+  describe: 'The schema file (.json, .yaml or .yml)',
+} as const;
+
+const output = {
+  type: 'string',
+  alias: CliShortOptions.Output,
+  demandOption: true,
+  describe: 'The file to write (replaced when it exists)',
+} as const;
+
+const format = {
+  choices: FORMATS,
+  alias: CliShortOptions.Format,
+  describe: 'The format of the file to write (default: its extension)',
+} as const;
+
+const schemaFormat = {
+  choices: FORMATS,
+  describe: 'The format of the schema file (default: its extension)',
+} as const;
 
 yargs(hideBin(process.argv))
-  .scriptName('config')
-  .help('help')
-  .alias('h', 'help')
-  .version(pkg.version)
-  .alias('v', 'version')
+  .scriptName(SCRIPT_NAME)
   .command(
-    'generate-default',
-    'generates an object using the default values of the passed schema',
-    (yargs) =>
-      yargs
-        .option('schema', {
-          alias: 's',
-          demandOption: true,
-          description: 'input schema file path which should be in json format',
+    CliCommands.Check,
+    'Read a schema and report its problems',
+    (y) =>
+      y.options({
+        [CliOptions.Schema]: schema,
+        [CliOptions.Format]: { ...schemaFormat, alias: CliShortOptions.Format },
+      }),
+    (args) => {
+      const validator = readSchema(
+        args.schema,
+        args[CliOptions.Format] as SchemaFormat | undefined,
+      );
+      if (validator) console.log(`${args.schema}: valid`);
+    },
+  )
+  .command(
+    CliCommands.CheckTypes,
+    'Check that generated types still have the SCHEMA_HASH of the schema',
+    (y) =>
+      y.options({
+        [CliOptions.Schema]: schema,
+        [CliOptions.Types]: {
           type: 'string',
-        })
-        .option('output', {
-          alias: 'o',
+          alias: CliShortOptions.Types,
           demandOption: true,
-          description: 'generated default values output path',
-          type: 'string',
-        })
-        .option('format', {
-          alias: 'f',
-          demandOption: true,
-          description: 'generated default values output path',
-          choices: ['json', 'yaml'],
-          default: 'yaml',
-          type: 'string',
-        }),
-    async (argv) => {
-      const spinner = ora();
-      spinner.start(`Generating config default values`);
-
-      const rawSchemaData = fs.readFileSync(argv.schema, 'utf-8');
-      const schema = JsonBigInt.parse(rawSchemaData);
-
-      const confValidator = ConfigValidator.fromSchema(schema);
-      const defaultConf = confValidator.generateDefault();
-
-      let output = '';
-      switch (argv.format) {
-        case 'json': {
-          output = JsonBigInt.stringify(defaultConf);
-          break;
+          describe: `The TypeScript file written by ${CliCommands.GenerateTsTypes}`,
+        },
+        [CliOptions.Format]: { ...schemaFormat, alias: CliShortOptions.Format },
+      }),
+    (args) => {
+      const validator = readSchema(
+        args.schema,
+        args[CliOptions.Format] as SchemaFormat | undefined,
+      );
+      if (!validator) return;
+      try {
+        if (validator.checkTypes(args.types)) {
+          console.log(`${args.types}: up to date`);
+          return;
         }
-        case 'yaml': {
-          output = yaml.dump(defaultConf);
-          break;
-        }
+        console.error(
+          `${args.types}: the schema changed since these types were generated: run ${SCRIPT_NAME} ${CliCommands.GenerateTsTypes} again`,
+        );
+        process.exitCode = EXIT.invalid;
+      } catch (error) {
+        failed(error);
       }
-
-      fs.writeFileSync(argv.output, output);
-
-      spinner.succeed(`default config values were output at "${argv.output}"`);
     },
   )
   .command(
-    'generate-ts-types',
-    'generates compatible TypeScript interface types for the passed schema',
-    (yargs) =>
-      yargs
-        .option('schema', {
-          alias: 's',
-          demandOption: true,
-          description: 'input schema file path which should be in json format',
+    CliCommands.GenerateTsTypes,
+    'Write the TypeScript types of the configuration',
+    (y) =>
+      y.options({
+        [CliOptions.Schema]: schema,
+        [CliOptions.SchemaFormat]: schemaFormat,
+        [CliOptions.Output]: output,
+        [CliOptions.RootType]: {
           type: 'string',
-        })
-        .option('output', {
-          alias: 'o',
-          demandOption: true,
-          description: 'generated TypeScript interfaces',
-          type: 'string',
-        })
-        .option('root-type', {
-          alias: 'r',
-          demandOption: true,
-          description: 'Name of top root interface',
-          type: 'string',
-        }),
-    async (argv) => {
-      const spinner = ora();
-      spinner.start(`Generating TypeScript types`);
-
-      const rawSchemaData = fs.readFileSync(argv.schema, 'utf-8');
-      const schema = JsonBigInt.parse(rawSchemaData);
-
-      const confValidator = ConfigValidator.fromSchema(schema);
-      const tsTypes = confValidator.generateTSTypes(argv.rootType);
-
-      fs.writeFileSync(argv.output, tsTypes);
-
-      spinner.succeed(`TypeScript types were output at "${argv.output}"`);
+          alias: CliShortOptions.RootType,
+          describe: 'The name of the root type (default: from the schema id)',
+        },
+      }),
+    (args) => {
+      const validator = readSchema(
+        args.schema,
+        args[CliOptions.SchemaFormat] as SchemaFormat | undefined,
+      );
+      if (validator)
+        run(
+          () => validator.generateTypes(args.output, args[CliOptions.RootType]),
+          `${args.schema}: types written to ${args.output}`,
+        );
     },
   )
   .command(
-    'generate-env',
-    'generates custom-environment-variables file from schema',
-    (yargs) =>
-      yargs
-        .option('schema', {
-          alias: 's',
-          demandOption: true,
-          description: 'input schema file path which should be in json format',
-          type: 'string',
-        })
-        .option('output', {
-          alias: 'o',
-          demandOption: true,
-          description: 'generated env output path',
-          type: 'string',
-        })
-        .option('format', {
-          alias: 'f',
-          demandOption: true,
-          description: 'output format',
-          choices: ['json', 'yaml'],
-          default: 'yaml',
-          type: 'string',
-        })
-        .option('all', {
-          alias: 'a',
+    CliCommands.GenerateDefault,
+    'Write the default configuration',
+    (y) =>
+      y.options({
+        [CliOptions.Schema]: schema,
+        [CliOptions.SchemaFormat]: schemaFormat,
+        [CliOptions.Output]: output,
+        [CliOptions.Format]: format,
+      }),
+    (args) => {
+      const validator = readSchema(
+        args.schema,
+        args[CliOptions.SchemaFormat] as SchemaFormat | undefined,
+      );
+      if (validator)
+        run(
+          () =>
+            validator.defaults(
+              args.output,
+              args[CliOptions.Format] as SchemaFormat | undefined,
+            ),
+          `${args.schema}: defaults written to ${args.output}`,
+        );
+    },
+  )
+  .command(
+    CliCommands.GenerateEnv,
+    'Write the custom-environment-variables file of the config package',
+    (y) =>
+      y.options({
+        [CliOptions.Schema]: schema,
+        [CliOptions.SchemaFormat]: schemaFormat,
+        [CliOptions.Output]: output,
+        [CliOptions.Format]: format,
+        [CliOptions.All]: {
           type: 'boolean',
+          alias: CliShortOptions.All,
           default: false,
-          description:
-            'generate environment variables for all non-array fields, regardless of secrecy',
-        }),
-    async (argv) => {
-      const spinner = ora();
-      spinner.start(`Generating custom environment variables`);
-
-      const rawSchemaData = fs.readFileSync(argv.schema, 'utf-8');
-      const schema = JsonBigInt.parse(rawSchemaData);
-
-      const confValidator = ConfigValidator.fromSchema(schema);
-
-      const envConfig = confValidator.generateCustomEnvFile(argv['all']);
-
-      let output = '';
-      switch (argv.format) {
-        case 'json': {
-          output = JSON.stringify(envConfig, null, 2);
-          break;
-        }
-        case 'yaml': {
-          output = yaml.dump(envConfig);
-          break;
-        }
-      }
-
-      fs.writeFileSync(argv.output, output);
-
-      spinner.succeed(`env config was output at "${argv.output}"`);
+          describe: 'Map every value, not only the secret ones',
+        },
+        [CliOptions.Prefix]: {
+          type: 'string',
+          default: '',
+          describe: 'The prefix of every variable name',
+        },
+      }),
+    (args) => {
+      const validator = readSchema(
+        args.schema,
+        args[CliOptions.SchemaFormat] as SchemaFormat | undefined,
+      );
+      if (validator)
+        run(
+          () =>
+            validator.environment(
+              args.output,
+              args[CliOptions.Format] as SchemaFormat | undefined,
+              args[CliOptions.All],
+              args[CliOptions.Prefix],
+            ),
+          `${args.schema}: environment variables written to ${args.output}`,
+        );
     },
   )
-  .demandCommand(1)
+  .command(
+    CliCommands.Validate,
+    'Validate the configuration loaded by the config package',
+    (y) =>
+      y.options({
+        [CliOptions.Schema]: schema,
+        [CliOptions.Format]: { ...schemaFormat, alias: CliShortOptions.Format },
+        [CliOptions.ConfigDir]: {
+          type: 'string',
+          describe:
+            'The configuration directory (default: NODE_CONFIG_DIR or ./config)',
+        },
+        [CliOptions.Env]: {
+          type: 'string',
+          describe:
+            'The deployment to load (default: NODE_CONFIG_ENV or NODE_ENV)',
+        },
+        [CliOptions.Hash]: {
+          type: 'string',
+          describe: 'The SCHEMA_HASH of the generated types, to check first',
+        },
+      }),
+    (args) => {
+      const validator = readSchema(
+        args.schema,
+        args[CliOptions.Format] as SchemaFormat | undefined,
+      );
+      if (!validator) return;
+      // The config package reads these when it is loaded, on the first
+      // buildConfig.
+      const configDir = args[CliOptions.ConfigDir];
+      if (configDir !== undefined) process.env.NODE_CONFIG_DIR = configDir;
+      if (args.env !== undefined) process.env.NODE_CONFIG_ENV = args.env;
+      try {
+        const result = validator.buildConfig(args[CliOptions.Hash]);
+        if (result.ok) {
+          console.log('the configuration is valid');
+          return;
+        }
+        printErrors('configuration', result.errors);
+        process.exitCode = EXIT.invalid;
+      } catch (error) {
+        failed(error);
+      }
+    },
+  )
+  .demandCommand(1, 'expected a command')
+  .strict()
+  .alias('h', 'help')
+  .version((load(PACKAGE_MANIFEST) as { version: string }).version)
+  .fail((message, error) => usageError(message ?? error.message))
   .parse();
