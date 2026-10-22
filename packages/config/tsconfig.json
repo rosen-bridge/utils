@@ -1,9 +1,12 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "rootDir": ".",
+    "outDir": "./dist",
     "types": ["node", "vitest/globals"]
   },
   "include": ["tests", "lib"],
-  "references": [{ "path": "../json-bigint" }]
+  "references": [
+    { "path": "../loggers/abstract-logger/tsconfig.json" },
+    { "path": "../json-bigint/tsconfig.json" }
+  ]
 }
