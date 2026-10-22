@@ -4,7 +4,7 @@
     "rootDir": ".",
     "types": ["node", "vitest/globals"]
   },
-  "include": ["**/*.ts"],
+  "include": ["tests", "lib"],
   "exclude": ["vitest.config.ts"],
   "references": []
 }
