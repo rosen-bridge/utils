@@ -1,0 +1,107 @@
+import { ArrayElement } from '../../../lib/elements/types/arrayElement';
+import { parseType } from '../../testUtils';
+import { environment, errors, read, type } from './typesTestUtils';
+
+describe('ArrayElement', () => {
+  describe('parseExtra', () => {
+    /**
+     * @target ArrayElement.parseExtra should require an items type
+     * @dependencies
+     * @scenario
+     * - parse an array without items, then with a default that fails them
+     * @expected
+     * - a problem at the type, then at the default item
+     */
+    it('should require an items type', () => {
+      expect(errors(parseType({ type: 'array' }))[0].path).toEqual('schema');
+      expect(
+        errors(
+          parseType({
+            type: 'array',
+            items: { type: 'number' },
+            default: [1, 'x'],
+          }),
+        ).map(({ path }) => path),
+      ).toEqual(['schema.default.1']);
+    });
+  });
+
+  describe('transform', () => {
+    /**
+     * @target ArrayElement.transform should read every item
+     * @dependencies
+     * - NumberElement
+     * @scenario
+     * - read `["1", 2]`, then a value that is not an array, then a bad item
+     * @expected
+     * - the numbers, then a problem at the value and at the item
+     */
+    it('should read every item', () => {
+      const element = type({ type: 'array', items: { type: 'number' } });
+      expect(read(element, ['1', 2])).toEqual({ ok: true, value: [1, 2] });
+      expect(errors(read(element, 'x')).map(({ path }) => path)).toEqual([
+        'value',
+      ]);
+      expect(errors(read(element, [1, 'x'])).map(({ path }) => path)).toEqual([
+        'value.1',
+      ]);
+    });
+  });
+
+  describe('defaultValue', () => {
+    /**
+     * @target ArrayElement.defaultValue should give the converted default
+     * @dependencies
+     * @scenario
+     * - read the default of an array with `default: ["1"]`, and its missing
+     *   value
+     * @expected
+     * - `[1]` both times
+     */
+    it('should give the converted default', () => {
+      const element = type({
+        type: 'array',
+        items: { type: 'number' },
+        default: ['1'],
+      });
+      expect(element.defaultValue()).toEqual([1]);
+      expect(read(element, undefined)).toEqual({ ok: true, value: [1] });
+    });
+  });
+
+  describe('absent', () => {
+    /**
+     * @target ArrayElement.absent should give no value without a default
+     * @dependencies
+     * @scenario
+     * - read no value with an array without a default
+     * @expected
+     * - undefined
+     */
+    it('should give no value without a default', () => {
+      expect(
+        read(type({ type: 'array', items: { type: 'number' } }), undefined),
+      ).toEqual({ ok: true, value: undefined });
+    });
+  });
+
+  describe('environment', () => {
+    /**
+     * @target ArrayElement.environment should give no variable
+     * @dependencies
+     * @scenario
+     * - name a secret array with every value
+     * @expected
+     * - undefined
+     */
+    it('should give no variable', () => {
+      const element = type({
+        type: 'array',
+        secret: true,
+        items: { type: 'string' },
+      }) as ArrayElement;
+      expect(environment(element, true)).toEqual(undefined);
+      expect(element.itemType.kind).toEqual('string');
+    });
+  });
+});
