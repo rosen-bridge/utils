@@ -1,0 +1,14 @@
+{
+  "id": "service",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "port": { "type": "number", "default": 8080 },
+      "mode": {
+        "type": "string",
+        "rules": [{ "kind": "enum", "choices": ["dev", "prod"] }]
+      },
+      "token": { "type": "string", "secret": true }
+    }
+  }
+}
