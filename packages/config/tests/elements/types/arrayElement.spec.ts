@@ -1,6 +1,6 @@
 import { ArrayElement } from '../../../lib/elements/types/arrayElement';
 import { parseType } from '../../testUtils';
-import { environment, errors, read, type } from './typesTestUtils';
+import { code, environment, errors, read, type } from './typesTestUtils';
 
 describe('ArrayElement', () => {
   describe('parseExtra', () => {
@@ -82,6 +82,33 @@ describe('ArrayElement', () => {
       expect(
         read(type({ type: 'array', items: { type: 'number' } }), undefined),
       ).toEqual({ ok: true, value: undefined });
+    });
+  });
+
+  describe('code', () => {
+    /**
+     * @target ArrayElement.code should write a readonly array of its items
+     * @dependencies
+     * @scenario
+     * - generate an array of numbers and one of enum strings
+     * @expected
+     * - `readonly number[]`, and a `ReadonlyArray` of the literals
+     */
+    it('should write a readonly array of its items', () => {
+      expect(
+        code(type({ type: 'array', items: { type: 'number' } })).name,
+      ).toEqual('readonly number[]');
+      expect(
+        code(
+          type({
+            type: 'array',
+            items: {
+              type: 'string',
+              rules: [{ kind: 'enum', choices: ['a', 'b'] }],
+            },
+          }),
+        ).name,
+      ).toEqual("ReadonlyArray<'a' | 'b'>");
     });
   });
 

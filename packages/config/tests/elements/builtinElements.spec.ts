@@ -51,6 +51,26 @@ describe('BuiltinElements', () => {
     });
   });
 
+  describe('parseRule', () => {
+    /**
+     * @target BuiltinElements.parseRule should reject unknown kinds and kinds
+     * for other types
+     * @dependencies
+     * @scenario
+     * - parse a string, a node without `kind`, an unknown kind and `min` for
+     *   a string
+     * @expected
+     * - problems at the node, the node, `kind` and `kind`
+     */
+    it('should reject unknown kinds and kinds for other types', () => {
+      expect(
+        ['x', {}, { kind: 'between' }, { kind: 'min', bound: 1 }].map((node) =>
+          errorPaths(elements.parseRule(node, scope, 'p', 'string')),
+        ),
+      ).toEqual([['p'], ['p'], ['p.kind'], ['p.kind']]);
+    });
+  });
+
   describe('parseCondition', () => {
     /**
      * @target BuiltinElements.parseCondition should reject nodes that name

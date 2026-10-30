@@ -1,5 +1,5 @@
 import { parseType } from '../../testUtils';
-import { errorPaths, read, type } from './typesTestUtils';
+import { code, errorPaths, errors, read, type } from './typesTestUtils';
 
 describe('TypeElement', () => {
   describe('parseNode', () => {
@@ -37,6 +37,33 @@ describe('TypeElement', () => {
 
   describe('parseDefault', () => {
     /**
+     * @target TypeElement.parseDefault should check the default against the
+     * rules
+     * @dependencies
+     * - NumberElement, MinRule
+     * @scenario
+     * - parse a number with `default: 0` and a `min` of 1
+     * @expected
+     * - a problem at `default`
+     */
+    it('should check the default against the rules', () => {
+      expect(
+        errors(
+          parseType({
+            type: 'number',
+            default: 0,
+            rules: [{ kind: 'min', bound: 1 }],
+          }),
+        ),
+      ).toEqual([
+        {
+          path: 'schema.default',
+          message: 'default must be at least 1, got 0',
+        },
+      ]);
+    });
+
+    /**
      * @target TypeElement.parseDefault should convert the default
      * @dependencies
      * - NumberElement
@@ -67,6 +94,32 @@ describe('TypeElement', () => {
         ok: true,
         value: 'a',
       });
+    });
+
+    /**
+     * @target TypeElement.normalize should hide the value of a secret type
+     * @dependencies
+     * - StringElement, MinLengthRule
+     * @scenario
+     * - read a short value with a secret string with `minLength` 5
+     * @expected
+     * - a message without the value
+     */
+    it('should hide the value of a secret type', () => {
+      expect(
+        errors(
+          read(
+            type({
+              type: 'string',
+              secret: true,
+              rules: [{ kind: 'minLength', length: 5 }],
+            }),
+            'abc',
+          ),
+        ),
+      ).toEqual([
+        { path: 'value', message: 'must have at least 5 characters' },
+      ]);
     });
   });
 
@@ -110,6 +163,28 @@ describe('TypeElement', () => {
         }).documentation(),
       ).toEqual('/**\n * Host\n *\n * a *\\/ b\n */\n');
       expect(type({ type: 'string' }).documentation()).toEqual('');
+    });
+  });
+
+  describe('code', () => {
+    /**
+     * @target TypeElement.code should narrow a scalar to its enum values
+     * @dependencies
+     * - StringElement, EnumRule
+     * @scenario
+     * - generate a string with an enum
+     * @expected
+     * - the union of the literals
+     */
+    it('should narrow a scalar to its enum values', () => {
+      expect(
+        code(
+          type({
+            type: 'string',
+            rules: [{ kind: 'enum', choices: ['a', 'b'] }],
+          }),
+        ).name,
+      ).toEqual("'a' | 'b'");
     });
   });
 });

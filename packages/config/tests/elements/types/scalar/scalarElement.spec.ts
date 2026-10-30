@@ -1,4 +1,4 @@
-import { environment, type } from '../typesTestUtils';
+import { code, environment, type } from '../typesTestUtils';
 
 describe('ScalarElement', () => {
   describe('environment', () => {
@@ -18,6 +18,33 @@ describe('ScalarElement', () => {
         'APP',
       );
       expect(environment(type({ type: 'string' }), true)).toEqual('APP');
+    });
+  });
+
+  describe('code', () => {
+    /**
+     * @target ScalarElement.code should write the type, or never for enums
+     * with nothing in common
+     * @dependencies
+     * - NumberElement, EnumRule
+     * @scenario
+     * - generate a number, and one with two enums that share no value
+     * @expected
+     * - `number`, then `never`
+     */
+    it('should write the type, or never for enums with nothing in common', () => {
+      expect(code(type({ type: 'number' })).name).toEqual('number');
+      expect(
+        code(
+          type({
+            type: 'number',
+            rules: [
+              { kind: 'enum', choices: [1] },
+              { kind: 'enum', choices: [2] },
+            ],
+          }),
+        ).name,
+      ).toEqual('never');
     });
   });
 
