@@ -69,6 +69,37 @@ describe('ArrayElement', () => {
     });
   });
 
+  describe('resolveExtra', () => {
+    /**
+     * @target ArrayElement.resolveExtra should resolve the conditions of the
+     * items
+     * @dependencies
+     * - ExistsCondition
+     * @scenario
+     * - resolve an array whose items have a rule reading a missing path
+     * @expected
+     * - a problem at the path of the item rule
+     */
+    it('should resolve the conditions of the items', () => {
+      const element = type({
+        type: 'array',
+        items: {
+          type: 'string',
+          rules: [
+            {
+              kind: 'required',
+              when: { kind: 'exists', operand: { path: 'nope' } },
+            },
+          ],
+        },
+      });
+      const result = element.resolve(element);
+      expect(!result.ok && result.errors.map(({ path }) => path)).toEqual([
+        'schema.items.rules.0.when.operand.path',
+      ]);
+    });
+  });
+
   describe('absent', () => {
     /**
      * @target ArrayElement.absent should give no value without a default

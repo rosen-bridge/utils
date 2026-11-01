@@ -31,4 +31,25 @@ describe('allowedByAll', () => {
     ]);
     expect(allowedByAll(rules)).toEqual(['a', 'b']);
   });
+
+  /**
+   * @target allowedByAll should ignore conditional enums and return
+   * undefined without a limit
+   * @dependencies
+   * - EnumRule
+   * @scenario
+   * - take an enum rule with a `when`
+   * @expected
+   * - undefined
+   */
+  it('should ignore conditional enums and return undefined without a limit', () => {
+    const rules = parseRules([
+      {
+        kind: 'enum',
+        choices: ['a'],
+        when: { kind: 'exists', operand: { path: 'x' } },
+      },
+    ]);
+    expect(allowedByAll(rules)).toEqual(undefined);
+  });
 });

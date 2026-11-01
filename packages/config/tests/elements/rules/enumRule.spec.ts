@@ -71,4 +71,29 @@ describe('EnumRule', () => {
       expect(levels.validate('trace')).toEqual('must be one of "info", "warn"');
     });
   });
+
+  describe('allowedValues', () => {
+    /**
+     * @target EnumRule.allowedValues should list the choices unless the rule
+     * has a `when`
+     * @dependencies
+     * - ExistsCondition
+     * @scenario
+     * - read the allowed values of a plain and a conditional enum
+     * @expected
+     * - the choices, then undefined
+     */
+    it('should list the choices unless the rule has a `when`', () => {
+      expect(rule({ kind: 'enum', choices: ['a'] }).allowedValues()).toEqual([
+        'a',
+      ]);
+      expect(
+        rule({
+          kind: 'enum',
+          choices: ['a'],
+          when: { kind: 'exists', operand: { path: 'x' } },
+        }).allowedValues(),
+      ).toEqual(undefined);
+    });
+  });
 });

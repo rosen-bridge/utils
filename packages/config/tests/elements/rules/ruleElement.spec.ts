@@ -1,8 +1,32 @@
-import { createScope } from '../../testUtils';
+import { createScope, unwrap } from '../../testUtils';
+import { conditionRoot } from '../conditions/conditionsTestUtils';
 import { errorPaths, parseRule, rule } from './rulesTestUtils';
+
+const when = {
+  kind: 'eq',
+  left: { path: 'mode' },
+  right: { value: 'strict' },
+};
 
 describe('RuleElement', () => {
   describe('parseNode', () => {
+    /**
+     * @target RuleElement.parseNode should accept a `when` only when allowed
+     * @dependencies
+     * - MinLengthRule, EqCondition
+     * @scenario
+     * - parse a rule with a `when`, allowed and not allowed
+     * @expected
+     * - success, then an unknown key at `when`
+     */
+    it('should accept a `when` only when allowed', () => {
+      const node = { kind: 'minLength', length: 1, when };
+      expect(parseRule(node).ok).toEqual(true);
+      expect(errorPaths(parseRule(node, 'string', false))).toEqual([
+        'rule.when',
+      ]);
+    });
+
     /**
      * @target RuleElement.parseNode should check the message
      * @dependencies
@@ -58,6 +82,51 @@ describe('RuleElement', () => {
       expect(rule({ kind: 'minLength', length: 3 }).validate('abc')).toEqual(
         undefined,
       );
+    });
+  });
+
+  describe('applies', () => {
+    /**
+     * @target RuleElement.applies should hold without a `when` or when it
+     * holds
+     * @dependencies
+     * - MinLengthRule, EqCondition
+     * @scenario
+     * - check a rule without `when`, then one with a `when` on `mode`
+     * @expected
+     * - always for the first, only for mode `strict` for the second
+     */
+    it('should hold without a `when` or when it holds', () => {
+      expect(rule({ kind: 'minLength', length: 1 }).applies({}, [])).toEqual(
+        true,
+      );
+      const conditional = rule({ kind: 'minLength', length: 1, when });
+      unwrap(conditional.resolve(conditionRoot, ['port']));
+      expect(conditional.conditional()).toEqual(true);
+      expect(conditional.applies({ mode: 'strict' }, [])).toEqual(true);
+      expect(conditional.applies({ mode: 'loose' }, [])).toEqual(false);
+    });
+  });
+
+  describe('resolve', () => {
+    /**
+     * @target RuleElement.resolve should report the problems of its `when`
+     * @dependencies
+     * - MinLengthRule, EqCondition
+     * @scenario
+     * - resolve a rule whose `when` reads a missing path
+     * @expected
+     * - a problem at the path of the `when`
+     */
+    it('should report the problems of its `when`', () => {
+      const conditional = rule({
+        kind: 'minLength',
+        length: 1,
+        when: { ...when, left: { path: 'missing' } },
+      });
+      expect(errorPaths(conditional.resolve(conditionRoot, []))).toEqual([
+        'rule.when.left.path',
+      ]);
     });
   });
 

@@ -1,0 +1,33 @@
+import { ParseResult, ok } from '../../../parsing/result';
+import { resolveCompared } from '../../../utils/evaluators';
+import { TypeElement } from '../../types/typeElement';
+import { CompareCondition } from './compareCondition';
+
+/**
+ * Base of the conditions ordering two set values (`gt`, `gte`, `lt`, `lte`):
+ * numbers, bigints or strings (UTF-16 code-unit order), every compared side of
+ * one kind. A subclass only defines its `kind` and `compare`.
+ */
+export abstract class OrderCondition extends CompareCondition {
+  /**
+   * The kinds of the scalar types whose values can be ordered.
+   */
+  private readonly ordered: readonly string[] = ['number', 'bigint', 'string'];
+
+  /**
+   * Resolves and binds both sides, then checks that they can be ordered: a
+   * `boolean` cannot.
+   * @param root - the parsed root type
+   * @param at - the configuration path of the node whose rule has it
+   */
+  resolve = (root: TypeElement, at: readonly string[]): ParseResult<void> => {
+    const resolved = resolveCompared([this.left, this.right], root, at);
+    if (!resolved.ok) return resolved;
+    const kind = (this.left.type ?? this.right.type)?.kind;
+    return kind !== undefined && this.ordered.includes(kind)
+      ? ok(undefined)
+      : this.error(
+          `${this.kind} orders numbers, bigints or strings, not a ${kind}`,
+        );
+  };
+}

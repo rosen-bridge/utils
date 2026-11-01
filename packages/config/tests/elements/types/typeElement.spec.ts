@@ -1,4 +1,5 @@
-import { parseType } from '../../testUtils';
+import { parseType, unwrap } from '../../testUtils';
+import { conditionRoot } from '../conditions/conditionsTestUtils';
 import { code, errorPaths, errors, read, type } from './typesTestUtils';
 
 describe('TypeElement', () => {
@@ -120,6 +121,38 @@ describe('TypeElement', () => {
       ).toEqual([
         { path: 'value', message: 'must have at least 5 characters' },
       ]);
+    });
+  });
+
+  describe('checkRules', () => {
+    /**
+     * @target TypeElement.checkRules should report each failed rule and defer
+     * conditional ones
+     * @dependencies
+     * - StringElement, MinLengthRule, PatternRule
+     * @scenario
+     * - read `a` with two failing rules and a failing conditional one
+     * @expected
+     * - two problems now, and one deferred check
+     */
+    it('should report each failed rule and defer conditional ones', () => {
+      const element = type({
+        type: 'string',
+        rules: [
+          { kind: 'minLength', length: 2 },
+          { kind: 'pattern', pattern: '^b' },
+          {
+            kind: 'maxLength',
+            length: 0,
+            when: { kind: 'exists', operand: { path: 'mode' } },
+          },
+        ],
+      });
+      unwrap(element.resolve(conditionRoot));
+      const reading = { subject: '', secret: false, deferred: [] };
+      const result = element.normalize('a', 'mode', reading);
+      expect(errorPaths(result)).toEqual(['mode', 'mode']);
+      expect(reading.deferred.length).toEqual(1);
     });
   });
 
