@@ -1,0 +1,100 @@
+id: extended-typeorm
+
+# Import with:
+#   imports:
+#     - from: '@rosen-bridge/extended-typeorm/schema.yaml'
+#       as: db
+# and use `db.database` (or `db.sqlite`, `db.postgres`). The keys follow the
+# TypeORM `DataSourceOptions`, so the read value can be spread into
+# `new DataSource({ ...config.database, entities, migrations })`.
+
+definitions:
+  types:
+    sqlite:
+      type: object
+      label: SQLite
+      description: A SQLite database file
+      properties:
+        type:
+          type: literal
+          value: sqlite
+        database:
+          type: string
+          description: The path of the database file
+          rules:
+            - kind: required
+            - kind: minLength
+              length: 1
+
+    postgres:
+      type: object
+      label: PostgreSQL
+      description: A PostgreSQL server
+      properties:
+        type:
+          type: literal
+          value: postgres
+        host:
+          type: string
+          description: The host of the server
+          default: localhost
+          rules:
+            - kind: minLength
+              length: 1
+        port:
+          type: number
+          description: The port of the server
+          default: 5432
+          rules:
+            - kind: min
+              bound: 1
+            - kind: max
+              bound: 65535
+              message: must be a valid port
+        username:
+          type: string
+          description: The user to connect as
+          rules:
+            - kind: required
+            - kind: minLength
+              length: 1
+        password:
+          type: string
+          description: The password of the user
+          secret: true
+        database:
+          type: string
+          description: The name of the database
+          rules:
+            - kind: required
+            - kind: minLength
+              length: 1
+        schema:
+          type: string
+          description: The schema to use (default of the server, usually public)
+          rules:
+            - kind: minLength
+              length: 1
+        ssl:
+          type: boolean
+          description: Whether to connect over TLS
+          default: false
+
+    database:
+      type: union
+      label: Database
+      description: The database of the service, SQLite or PostgreSQL
+      options:
+        - option:
+            type: ref
+            ref: sqlite
+        - option:
+            type: ref
+            ref: postgres
+
+schema:
+  type: object
+  properties:
+    database:
+      type: ref
+      ref: database
