@@ -1,6 +1,31 @@
 import { rule } from './rulesTestUtils';
 
 describe('RequiredRule', () => {
+  describe('targets', () => {
+    /**
+     * @target RequiredRule.targets should list every type kind
+     * @dependencies
+     * - the type classes
+     * @scenario
+     * - read the targets of a `required` rule
+     * @expected
+     * - every built-in type kind
+     */
+    it('should list every type kind', () => {
+      expect([...rule({ kind: 'required' }).targets].sort()).toEqual([
+        'array',
+        'bigint',
+        'boolean',
+        'literal',
+        'number',
+        'object',
+        'ref',
+        'string',
+        'union',
+      ]);
+    });
+  });
+
   describe('evaluate', () => {
     /**
      * @target RequiredRule.evaluate should fail for a value that is not set

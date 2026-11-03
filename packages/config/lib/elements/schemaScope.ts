@@ -1,6 +1,9 @@
 import type { AbstractLogger } from '@rosen-bridge/abstract-logger';
 
+import type { ParseResult } from '../parsing/result';
 import type { ElementsMap } from './elementsMap';
+import type { RuleElement } from './rules/ruleElement';
+import type { TypeElement } from './types/typeElement';
 
 /**
  * What an element can reach of the document it belongs to. `SchemaDocument`
@@ -18,4 +21,24 @@ export interface SchemaScope {
    * The logger of the document, used by its elements.
    */
   readonly logger: AbstractLogger;
+
+  /**
+   * The type defined as `name` under `definitions.types`, parsed for a use at
+   * `location`, or a failure when there is none.
+   * @param name - the name of the definition (`<as>.<name>` when imported)
+   * @param location - the configuration path of the use
+   */
+  getType: (
+    name: string,
+    location: readonly string[],
+  ) => ParseResult<TypeElement>;
+
+  /**
+   * The rule defined as `name` under `definitions.rules`, parsed for a use on
+   * a type of kind `target`, or a failure when there is none or it does not
+   * list `target`.
+   * @param name - the name of the definition (`<as>.<name>` when imported)
+   * @param target - the kind of the type the rule is used on
+   */
+  getRule: (name: string, target: string) => ParseResult<RuleElement>;
 }

@@ -53,6 +53,27 @@ describe('BuiltinElements', () => {
 
   describe('parseRule', () => {
     /**
+     * @target BuiltinElements.parseRule should create a rule or a reference
+     * @dependencies
+     * @scenario
+     * - parse a `minLength` rule and a `{ ref }`
+     * @expected
+     * - a `minLength` rule, then a missing definition at `ref`
+     */
+    it('should create a rule or a reference', () => {
+      const rule = elements.parseRule(
+        { kind: 'minLength', length: 1 },
+        scope,
+        'p',
+        'string',
+      );
+      expect(rule.ok && rule.value.kind).toEqual('minLength');
+      expect(
+        errorPaths(elements.parseRule({ ref: 'x' }, scope, 'p', 'string')),
+      ).toEqual(['p.ref']);
+    });
+
+    /**
      * @target BuiltinElements.parseRule should reject unknown kinds and kinds
      * for other types
      * @dependencies

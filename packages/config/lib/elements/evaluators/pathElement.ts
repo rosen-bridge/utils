@@ -8,7 +8,7 @@ import {
 import { createReading } from '../../parsing/reading';
 import { ParseResult, ok } from '../../parsing/result';
 import { isRecord } from '../../utils/guards';
-import { expand, step } from '../../utils/typeTree';
+import { expand, step, unwrap } from '../../utils/typeTree';
 import { LiteralElement } from '../types/literalElement';
 import { ScalarElement } from '../types/scalar/scalarElement';
 import type { TypeElement } from '../types/typeElement';
@@ -198,8 +198,8 @@ export class PathElement extends EvaluatorElement {
 
   /**
    * Builds the full path for the node at `at` and keeps the types found at
-   * it, into every union option that has its next segment; a path that is
-   * not in the schema fails.
+   * it, through references and into every union option that has its next
+   * segment; a path that is not in the schema fails.
    * @param root - the parsed root type
    * @param at - the configuration path of the node, with any index for items
    */
@@ -210,12 +210,12 @@ export class PathElement extends EvaluatorElement {
         `${JSON.stringify(this.pathText)} goes above the configuration root`,
         'path',
       );
-    let types = [root];
+    let types = [unwrap(root)];
     const chain = [types[0]];
     for (const [index, segment] of path.entries()) {
       const next = types.flatMap(expand).flatMap((type) => {
         const found = step(type, segment);
-        return found === undefined ? [] : [found];
+        return found === undefined ? [] : [unwrap(found)];
       });
       if (next.length === 0)
         return this.error(

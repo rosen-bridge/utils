@@ -27,11 +27,14 @@ import {
 } from '../../parsing/result';
 import { quote, typeName } from '../../utils/format';
 import { deepFreeze } from '../../utils/freeze';
+import { isRecord } from '../../utils/guards';
 import { BuiltinElements } from '../builtinElements';
 import { ElementsMap } from '../elementsMap';
+import { RuleElement } from '../rules/ruleElement';
 import { SchemaElement } from '../schemaElement';
 import { SchemaScope } from '../schemaScope';
 import { TypeElement } from '../types/typeElement';
+import { DefinitionsElement } from './definitionsElement';
 
 /**
  * Where a document comes from, given to the `SchemaDocument` constructor.
@@ -45,17 +48,32 @@ export interface DocumentSource {
 }
 
 /**
- * The schema document `{ $schema?, id?, schema }`, the root element
- * (pointer `''`). `schema` is the root type.
+ * The schema document `{ $schema?, id?, definitions?, schema }`, the root
+ * element (pointer `''`). `schema` is the root type.
  */
 export class SchemaDocument extends SchemaElement implements SchemaScope {
+  /**
+   * The definitions of the document: empty until `parse` reads the
+   * `definitions` node into them, before the root type, so references in the
+   * root type (and in the definitions themselves) can be resolved.
+   */
+  private definitions = new DefinitionsElement(
+    this,
+    this.pointerOf('definitions'),
+  );
+
   private root?: TypeElement;
 
   private schemaId?: string;
 
   private readonly file?: string;
 
-  protected readonly keys: readonly string[] = ['$schema', 'id', 'schema'];
+  protected readonly keys: readonly string[] = [
+    '$schema',
+    'id',
+    'definitions',
+    'schema',
+  ];
 
   /**
    * The kind of the element, `document`.
@@ -109,10 +127,14 @@ export class SchemaDocument extends SchemaElement implements SchemaScope {
   };
 
   /**
-   * Clones the document with its root type.
+   * Clones the document with its definitions and root type.
    * @param copy - the new, empty document to fill
    */
   protected cloneMembers = (copy: SchemaDocument): void => {
+    copy.definitions = this.definitions.clone(
+      copy,
+      copy.pointerOf('definitions'),
+    );
     copy.root = this.root?.clone(copy, copy.pointerOf('schema'));
     copy.schemaId = this.schemaId;
   };
@@ -198,7 +220,27 @@ export class SchemaDocument extends SchemaElement implements SchemaScope {
   };
 
   /**
-   * Parses `$schema`, `id` and the root type, then
+   * The rule defined as `name` in the document's definitions, parsed for a
+   * type of kind `target`.
+   * @param name - the name of the definition
+   * @param target - the kind of the type the rule is used on
+   */
+  getRule = (name: string, target: string): ParseResult<RuleElement> =>
+    this.definitions.getRule(name, target);
+
+  /**
+   * The type defined as `name` in the document's definitions, parsed at
+   * `location`.
+   * @param name - the name of the definition
+   * @param location - the configuration path of the use
+   */
+  getType = (
+    name: string,
+    location: readonly string[],
+  ): ParseResult<TypeElement> => this.definitions.getType(name, location);
+
+  /**
+   * Parses `$schema`, `id`, `definitions` and the root type, then
    * resolves every condition of the root type once the whole schema is valid;
    * repeated problems are reported once.
    * @param node - the schema document node
@@ -206,11 +248,13 @@ export class SchemaDocument extends SchemaElement implements SchemaScope {
   protected parseNode = (node: Record<string, unknown>): ParseResult<void> => {
     this.logger.debug('parsing the schema document');
     const id = this.parseId(node.id);
+    const definitions = this.parseDefinitions(node.definitions);
     const result = combine([
       node.$schema === undefined || typeof node.$schema === 'string'
         ? ok(undefined)
         : this.error('$schema must be a string', '$schema'),
       id,
+      definitions,
       Object.hasOwn(node, 'schema')
         ? this.scope.elements.parseType(
             node.schema,
@@ -222,7 +266,7 @@ export class SchemaDocument extends SchemaElement implements SchemaScope {
     ]);
     if (!result.ok) return result;
     this.schemaId = result.value[1];
-    this.root = result.value[2];
+    this.root = result.value[3];
     if (this.root === undefined) {
       this.logger.debug('the schema document has no schema');
       return ok(undefined);
@@ -230,6 +274,19 @@ export class SchemaDocument extends SchemaElement implements SchemaScope {
     this.logger.debug('resolving the conditions of the schema');
     const resolved = this.root.resolve(this.root);
     return resolved.ok ? ok(undefined) : fail(uniqueErrors(resolved.errors));
+  };
+
+  /**
+   * Parses the `definitions` into the document's own definitions, so
+   * `getType` and `getRule` reach them while they are parsed.
+   * @param node - the `definitions` of the document
+   */
+  private parseDefinitions = (
+    node: unknown,
+  ): ParseResult<DefinitionsElement> => {
+    if (node !== undefined && !isRecord(node))
+      return this.error('definitions must be an object', 'definitions');
+    return this.definitions.parse(node ?? {});
   };
 
   /**

@@ -9,6 +9,7 @@ import { ElementClass, ElementsMap, RuleClass, TypeClass } from './elementsMap';
 import { EvaluatorElement } from './evaluators/evaluatorElement';
 import * as evaluators from './evaluators/index';
 import * as rules from './rules/index';
+import { RefRule } from './rules/refRule';
 import { RuleElement } from './rules/ruleElement';
 import type { SchemaScope } from './schemaScope';
 import * as types from './types/index';
@@ -16,14 +17,15 @@ import { TypeElement } from './types/typeElement';
 
 /**
  * The built-in element classes: every concrete class of `types/`, `rules/`,
- * `conditions/` and `evaluators/`. Parses a node into the class it names.
+ * `conditions/` and `evaluators/`, except `RefRule` (a `{ ref }` node is
+ * recognized by its `ref` key). Parses a node into the class it names.
  */
 export class BuiltinElements implements ElementsMap {
   private readonly types: ReadonlyMap<string, TypeClass<TypeElement>> =
     findClasses(types, TypeElement);
 
   private readonly rules: ReadonlyMap<string, RuleClass<RuleElement>> =
-    findClasses(rules, RuleElement);
+    findClasses(rules, RuleElement, [RefRule]);
 
   private readonly conditions: ReadonlyMap<
     string,
@@ -86,8 +88,8 @@ export class BuiltinElements implements ElementsMap {
   };
 
   /**
-   * Parses a rule node into the rule its `kind` names when that rule applies
-   * to `target`.
+   * Parses a rule node: a `{ ref }`, or the rule its `kind` names when that
+   * rule applies to `target`.
    * @param node - the rule node
    * @param scope - the document of the rule
    * @param pointer - the pointer of the node
@@ -102,6 +104,8 @@ export class BuiltinElements implements ElementsMap {
     allowsWhen = false,
   ): ParseResult<RuleElement> => {
     if (!isRecord(node)) return failAt('a rule must be an object', pointer);
+    if (Object.hasOwn(node, 'ref'))
+      return new RefRule(scope, pointer, target, allowsWhen).parse(node);
     if (!Object.hasOwn(node, 'kind'))
       return failAt('missing required key "kind"', pointer);
     const element =

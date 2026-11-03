@@ -5,6 +5,15 @@ import { serviceSchema } from './schemaDocumentTestData';
 const service = unwrap(parseDocument(serviceSchema));
 const empty = unwrap(parseDocument({}));
 
+/**
+ * The paths of the problems of parsing `node`.
+ * @param node - the schema document node
+ */
+const documentErrors = (node: Record<string, unknown>) => {
+  const result = parseDocument(node);
+  return result.ok ? [] : result.errors.map(({ path }) => path);
+};
+
 describe('SchemaDocument', () => {
   describe('initialize', () => {
     /**
@@ -18,6 +27,45 @@ describe('SchemaDocument', () => {
     it('should create an empty root document', () => {
       const document = SchemaDocument.initialize();
       expect([document.kind, document.pointer]).toEqual(['document', '']);
+    });
+  });
+
+  describe('parseNode', () => {
+    /**
+     * @target SchemaDocument.parseNode should resolve the conditions of the
+     * root type once
+     * @dependencies
+     * - ExistsCondition
+     * @scenario
+     * - use a definition with a bad path in two properties
+     * @expected
+     * - the problem is reported once
+     */
+    it('should resolve the conditions of the root type once', () => {
+      expect(
+        documentErrors({
+          definitions: {
+            types: {
+              t: {
+                type: 'string',
+                rules: [
+                  {
+                    kind: 'required',
+                    when: { kind: 'exists', operand: { path: 'nope' } },
+                  },
+                ],
+              },
+            },
+          },
+          schema: {
+            type: 'object',
+            properties: {
+              a: { type: 'ref', ref: 't' },
+              b: { type: 'ref', ref: 't' },
+            },
+          },
+        }),
+      ).toEqual(['definitions.types.t.rules.0.when.operand.path']);
     });
   });
 
