@@ -1,6 +1,10 @@
+import { join } from 'node:path';
+
 import { SchemaDocument } from '../../../lib/elements/document/schemaDocument';
 import { parseDocument, unwrap } from '../../testUtils';
-import { serviceSchema } from './schemaDocumentTestData';
+import { richSchema, serviceSchema } from './schemaDocumentTestData';
+
+const fixtures = new URL('../../fixtures/', import.meta.url).pathname;
 
 const service = unwrap(parseDocument(serviceSchema));
 const empty = unwrap(parseDocument({}));
@@ -31,6 +35,47 @@ describe('SchemaDocument', () => {
   });
 
   describe('parseNode', () => {
+    /**
+     * @target SchemaDocument.parseNode should check the members of the
+     * document
+     * @dependencies
+     * @scenario
+     * - parse documents with a numeric `$schema`, an invalid `id`, imports
+     *   that are not a list, definitions that are not an object and an
+     *   unknown key
+     * @expected
+     * - a problem at each member
+     */
+    it('should check the members of the document', () => {
+      expect(
+        documentErrors({
+          $schema: 1,
+          id: '1x',
+          imports: {},
+          definitions: [],
+          extra: 1,
+        }),
+      ).toEqual(['extra', '$schema', 'id', 'imports', 'definitions']);
+    });
+
+    /**
+     * @target SchemaDocument.parseNode should check the imports
+     * @dependencies
+     * - ImportElement
+     * @scenario
+     * - parse imports with an item that is not an object and a name used
+     *   twice
+     * @expected
+     * - problems at the item and at the second `as`
+     */
+    it('should check the imports', () => {
+      expect(
+        documentErrors({
+          imports: [5, { from: './a', as: 'a' }, { from: './b', as: 'a' }],
+        }),
+      ).toEqual(['imports.0', 'imports.1.from', 'imports.2.as']);
+    });
+
     /**
      * @target SchemaDocument.parseNode should resolve the conditions of the
      * root type once
@@ -66,6 +111,43 @@ describe('SchemaDocument', () => {
           },
         }),
       ).toEqual(['definitions.types.t.rules.0.when.operand.path']);
+    });
+  });
+
+  describe('getType', () => {
+    /**
+     * @target SchemaDocument.getType should fail for an unknown import
+     * @dependencies
+     * @scenario
+     * - get `common.port` without imports
+     * @expected
+     * - a problem at `imports`
+     */
+    it('should fail for an unknown import', () => {
+      const result = empty.getType('common.port', []);
+      expect(!result.ok && result.errors.map(({ path }) => path)).toEqual([
+        'imports',
+      ]);
+    });
+
+    /**
+     * @target SchemaDocument.getType should name the import of a problem
+     * found in it
+     * @dependencies
+     * - the fixture `common.schema.json`
+     * @scenario
+     * - get `common.missing` from a document importing `common`
+     * @expected
+     * - a problem naming the import
+     */
+    it('should name the import of a problem found in it', () => {
+      const document = unwrap(
+        parseDocument(richSchema, join(fixtures, 'main.json')),
+      );
+      const result = document.getType('common.missing', []);
+      expect(!result.ok && result.errors[0].message).toContain(
+        'in the import "common"',
+      );
     });
   });
 
@@ -280,6 +362,30 @@ describe('SchemaDocument', () => {
       expect(copy.hash()).toEqual(service.hash());
       expect(copy.validate({ mode: 'prod' }).ok).toEqual(false);
       expect(copy.id).toEqual('my-service');
+    });
+
+    /**
+     * @target SchemaDocument.clone should copy every kind of element
+     * @dependencies
+     * - the fixture `common.schema.json`
+     * @scenario
+     * - clone a document using every kind of element, then validate valid
+     *   and invalid configurations with both
+     * @expected
+     * - the copy gives the same results
+     */
+    it('should copy every kind of element', () => {
+      const document = unwrap(
+        parseDocument(richSchema, join(fixtures, 'main.json')),
+      );
+      const copy = document.clone();
+      for (const config of [
+        { name: 'ab', fee: '2', list: [1], store: 's' },
+        { name: 'abcd', port: 70000, fee: 0, list: [3], store: { kind: 'x' } },
+        { mode: 'b', name: 'x', list: [], store: { kind: 'x' } },
+      ])
+        expect(copy.validate(config)).toEqual(document.validate(config));
+      expect(copy.generateTypes()).toEqual(document.generateTypes());
     });
   });
 });

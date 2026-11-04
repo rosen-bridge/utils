@@ -1,0 +1,13 @@
+{
+  "definitions": {
+    "types": {
+      "port": { "type": "number", "rules": [{ "kind": "max", "bound": 65535 }] }
+    },
+    "rules": {
+      "nonEmpty": {
+        "type": ["string"],
+        "rules": [{ "kind": "minLength", "length": 1 }]
+      }
+    }
+  }
+}

@@ -10,6 +10,7 @@ import {
   HASH_DOCUMENTATION,
   HASH_ROOT_NAME,
   ID_PATTERN,
+  NAMESPACE_SEPARATOR,
 } from '../../constants/index';
 import {
   EnvironmentNames,
@@ -35,6 +36,8 @@ import { SchemaElement } from '../schemaElement';
 import { SchemaScope } from '../schemaScope';
 import { TypeElement } from '../types/typeElement';
 import { DefinitionsElement } from './definitionsElement';
+import { ImportElement } from './importElement';
+import { ImportGraph } from './importGraph';
 
 /**
  * Where a document comes from, given to the `SchemaDocument` constructor.
@@ -45,11 +48,30 @@ export interface DocumentSource {
    * for a schema not read from a file).
    */
   readonly file?: string;
+  /**
+   * The files read by the documents of the schema (a new one for a root).
+   */
+  readonly graph?: ImportGraph;
+  /**
+   * `''` for the root document, `[<file>]` for an imported one.
+   */
+  readonly pointer?: string;
+  /**
+   * Whether it is imported, so only `imports` and `definitions` are parsed.
+   */
+  readonly imported?: boolean;
 }
 
 /**
- * The schema document `{ $schema?, id?, definitions?, schema }`, the root
- * element (pointer `''`). `schema` is the root type.
+ * Where definitions are found by name: a document's own definitions, or an
+ * imported document (which looks in its own definitions and imports).
+ */
+type Definitions = Pick<SchemaScope, 'getType' | 'getRule'>;
+
+/**
+ * The schema document `{ $schema?, id?, imports?, definitions?, schema }`, the
+ * root element (pointer `''`, or `[<file>]` when imported). `schema` is the
+ * root type, not parsed in an imported document.
  */
 export class SchemaDocument extends SchemaElement implements SchemaScope {
   /**
@@ -66,11 +88,27 @@ export class SchemaDocument extends SchemaElement implements SchemaScope {
 
   private schemaId?: string;
 
+  /**
+   * The imports of the document that were read without problems, by name.
+   */
+  private imports: ReadonlyMap<string, ImportElement> = new Map();
+
+  /**
+   * The names of the imports that have problems, so a reference to them says
+   * so instead of naming an unknown import.
+   */
+  private failedImports: ReadonlySet<string> = new Set();
+
   private readonly file?: string;
+
+  private readonly graph: ImportGraph;
+
+  private readonly imported: boolean;
 
   protected readonly keys: readonly string[] = [
     '$schema',
     'id',
+    'imports',
     'definitions',
     'schema',
   ];
@@ -100,8 +138,12 @@ export class SchemaDocument extends SchemaElement implements SchemaScope {
     readonly logger: AbstractLogger = new DummyLogger(),
     source: DocumentSource = {},
   ) {
-    super(undefined, '');
+    super(undefined, source.pointer ?? '');
     this.file = source.file;
+    this.graph =
+      source.graph ??
+      new ImportGraph((...args) => new SchemaDocument(...args), source.file);
+    this.imported = source.imported ?? false;
   }
 
   /**
@@ -123,11 +165,14 @@ export class SchemaDocument extends SchemaElement implements SchemaScope {
   protected create = (): this => {
     return new SchemaDocument(this.elements, this.logger, {
       file: this.file,
+      graph: this.graph,
+      pointer: this.pointer,
+      imported: this.imported,
     }) as this;
   };
 
   /**
-   * Clones the document with its definitions and root type.
+   * Clones the document with its definitions, root type and imports.
    * @param copy - the new, empty document to fill
    */
   protected cloneMembers = (copy: SchemaDocument): void => {
@@ -137,6 +182,13 @@ export class SchemaDocument extends SchemaElement implements SchemaScope {
     );
     copy.root = this.root?.clone(copy, copy.pointerOf('schema'));
     copy.schemaId = this.schemaId;
+    copy.imports = new Map(
+      [...this.imports].map(([name, element]) => [
+        name,
+        element.clone(copy, element.pointer),
+      ]),
+    );
+    copy.failedImports = this.failedImports;
   };
 
   /**
@@ -220,42 +272,82 @@ export class SchemaDocument extends SchemaElement implements SchemaScope {
   };
 
   /**
-   * The rule defined as `name` in the document's definitions, parsed for a
-   * type of kind `target`.
+   * The rule defined as `name`, parsed for a type of kind `target`: in the
+   * document's own definitions, or for `<as>.<name>` in the import `<as>`.
    * @param name - the name of the definition
    * @param target - the kind of the type the rule is used on
    */
   getRule = (name: string, target: string): ParseResult<RuleElement> =>
-    this.definitions.getRule(name, target);
+    this.find(name, (definitions, rest) => definitions.getRule(rest, target));
 
   /**
-   * The type defined as `name` in the document's definitions, parsed at
-   * `location`.
+   * The type defined as `name`, parsed at `location`: in the document's own
+   * definitions, or for `<as>.<name>` in the document of the import `<as>`.
    * @param name - the name of the definition
    * @param location - the configuration path of the use
    */
   getType = (
     name: string,
     location: readonly string[],
-  ): ParseResult<TypeElement> => this.definitions.getType(name, location);
+  ): ParseResult<TypeElement> =>
+    this.find(name, (definitions, rest) => definitions.getType(rest, location));
 
   /**
-   * Parses `$schema`, `id`, `definitions` and the root type, then
+   * The definition `name` found with `resolve` in the document's own
+   * definitions, or for a dotted name in the import named before the first
+   * dot; fails at `imports` when that import is missing or has problems.
+   * @param name - the name of the definition
+   * @param resolve - finds the rest of the name in definitions
+   */
+  private find = <T>(
+    name: string,
+    resolve: (definitions: Definitions, rest: string) => ParseResult<T>,
+  ): ParseResult<T> => {
+    if (!name.includes(NAMESPACE_SEPARATOR))
+      return resolve(this.definitions, name);
+    const [prefix, ...parts] = name.split(NAMESPACE_SEPARATOR);
+    const imported = this.imports.get(prefix);
+    if (imported === undefined)
+      return this.error(
+        this.failedImports.has(prefix)
+          ? `the import ${JSON.stringify(prefix)} has errors`
+          : `no import is named ${JSON.stringify(prefix)}`,
+        'imports',
+      );
+    const result = resolve(imported.document, parts.join(NAMESPACE_SEPARATOR));
+    return result.ok
+      ? result
+      : fail(
+          result.errors.map(({ path, message }) => ({
+            path,
+            message: `${message} in the import ${JSON.stringify(prefix)}`,
+          })),
+        );
+  };
+
+  /**
+   * Parses `$schema`, `id`, `imports`, `definitions` and the root type, then
    * resolves every condition of the root type once the whole schema is valid;
    * repeated problems are reported once.
    * @param node - the schema document node
    */
   protected parseNode = (node: Record<string, unknown>): ParseResult<void> => {
-    this.logger.debug('parsing the schema document');
+    this.logger.debug(
+      this.imported
+        ? `parsing the imported schema ${this.pointer}`
+        : 'parsing the schema document',
+    );
     const id = this.parseId(node.id);
+    const imports = this.parseImports(node.imports);
     const definitions = this.parseDefinitions(node.definitions);
     const result = combine([
       node.$schema === undefined || typeof node.$schema === 'string'
         ? ok(undefined)
         : this.error('$schema must be a string', '$schema'),
       id,
+      imports,
       definitions,
-      Object.hasOwn(node, 'schema')
+      !this.imported && Object.hasOwn(node, 'schema')
         ? this.scope.elements.parseType(
             node.schema,
             this,
@@ -266,7 +358,7 @@ export class SchemaDocument extends SchemaElement implements SchemaScope {
     ]);
     if (!result.ok) return result;
     this.schemaId = result.value[1];
-    this.root = result.value[3];
+    this.root = result.value[4];
     if (this.root === undefined) {
       this.logger.debug('the schema document has no schema');
       return ok(undefined);
@@ -301,6 +393,45 @@ export class SchemaDocument extends SchemaElement implements SchemaScope {
           'id must be a non-empty string of letters, digits, "-" and "_"',
           'id',
         );
+  };
+
+  /**
+   * Parses the optional `imports`, imports with distinct names; those read
+   * without problems are kept, and the names of the others too.
+   * @param node - the `imports` of the document
+   */
+  private parseImports = (node: unknown): ParseResult<void> => {
+    if (node === undefined) return ok(undefined);
+    if (!Array.isArray(node))
+      return this.error('imports must be a list of imports', 'imports');
+    const imports = new Map<string, ImportElement>();
+    const failed = new Set<string>();
+    const errors = node.flatMap((item, index) => {
+      if (!isRecord(item))
+        return [this.problem('an import must be an object', 'imports', index)];
+      const name = item.as;
+      if (typeof name === 'string' && (imports.has(name) || failed.has(name)))
+        return [
+          this.problem(
+            `the name ${JSON.stringify(name)} is already imported`,
+            'imports',
+            index,
+            'as',
+          ),
+        ];
+      const parsed = new ImportElement(
+        this,
+        this.pointerOf('imports', index),
+        this.file,
+        this.graph,
+      ).parse(item);
+      if (parsed.ok) imports.set(parsed.value.name, parsed.value);
+      else if (typeof name === 'string') failed.add(name);
+      return parsed.ok ? [] : parsed.errors;
+    });
+    this.imports = imports;
+    this.failedImports = failed;
+    return errors.length > 0 ? fail(errors) : ok(undefined);
   };
 
   /**
