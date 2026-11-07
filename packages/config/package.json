@@ -18,12 +18,14 @@
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "bin": "./dist/cli.js",
   "files": [
     "dist",
     "CHANGELOG.md"
   ],
   "scripts": {
     "build": "tsc --build tsconfig.build.json",
+    "postbuild": "node -e \"require('fs').chmodSync('dist/cli.js', 0o755)\"",
     "clean": "rimraf dist && rimraf tsconfig.build.tsbuildinfo",
     "coverage": "npm run test -- --run --coverage",
     "lint": "eslint --fix . && npm run prettify",

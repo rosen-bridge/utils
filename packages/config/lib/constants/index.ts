@@ -1,3 +1,4 @@
+export * from './cli';
 export * from './formats';
 export * from './generated';
 export * from './keys';
