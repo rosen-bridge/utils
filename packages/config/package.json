@@ -21,6 +21,7 @@
   "bin": "./dist/cli.js",
   "files": [
     "dist",
+    "docs",
     "CHANGELOG.md"
   ],
   "scripts": {
