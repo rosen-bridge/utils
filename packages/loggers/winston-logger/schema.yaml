@@ -1,0 +1,154 @@
+id: winston-logger
+
+# Import with:
+#   imports:
+#     - from: '@rosen-bridge/winston-logger/schema.yaml'
+#       as: logger
+# and use `logger.transports` (or `logger.transport`, `logger.level`, ...).
+# The read value of `transports` is the `TransportOptions[]` of
+# `WinstonLogger.createLogger`.
+
+definitions:
+  types:
+    level:
+      type: string
+      label: Log level
+      description: The minimum level a transport writes
+      default: info
+      rules:
+        - kind: enum
+          choices: [critical, error, warn, info, debug, trace]
+
+    serviceName:
+      type: string
+      label: Service name
+      description: The `serviceName` label added to every log entry
+      rules:
+        - kind: minLength
+          length: 1
+
+    consoleTransport:
+      type: object
+      label: Console transport
+      description: Writes logs to stdout
+      properties:
+        type:
+          type: literal
+          value: console
+        level:
+          type: ref
+          ref: level
+
+    fileTransport:
+      type: object
+      label: File transport
+      description: Writes logs to daily rotated, compressed files
+      properties:
+        type:
+          type: literal
+          value: file
+        level:
+          type: ref
+          ref: level
+        path:
+          type: string
+          description: The prefix of the log files, `<path><YYYY-MM-DD>.log`
+          default: ./logs/
+          rules:
+            - kind: minLength
+              length: 1
+        maxSize:
+          type: string
+          description: The size at which a file is rotated, in bytes or with a k, m or g suffix
+          default: 20m
+          rules:
+            - kind: pattern
+              pattern: ^\d+[kmg]?$
+              message: must be a size such as 1048576, 500k, 20m or 1g
+        maxFiles:
+          type: string
+          description: The number of files to keep, or the number of days with a d suffix
+          default: 14d
+          rules:
+            - kind: pattern
+              pattern: ^\d+d?$
+              message: must be a count such as 10, or days such as 14d
+        serviceName:
+          type: ref
+          ref: serviceName
+        format:
+          type: string
+          description: The format of the log lines; json suits log shippers such as Grafana Alloy
+          default: plain
+          rules:
+            - kind: enum
+              choices: [plain, json]
+        createSymlink:
+          type: boolean
+          description: Whether to keep a symlink to the current log file, for tailing
+          default: false
+        symlinkName:
+          type: string
+          description: The name of the symlink (default of winston-daily-rotate-file, current.log)
+          rules:
+            - kind: minLength
+              length: 1
+
+    lokiTransport:
+      type: object
+      label: Loki transport
+      description: Sends logs to Grafana Loki; may lose logs, prefer a file transport with a log shipper
+      properties:
+        type:
+          type: literal
+          value: loki
+        level:
+          type: ref
+          ref: level
+        host:
+          type: string
+          description: The URL of the Loki server
+          rules:
+            - kind: required
+            - kind: pattern
+              pattern: ^https?://
+              message: must be an http or https URL
+        basicAuth:
+          type: string
+          description: The basic authentication credentials, `<user>:<password>`
+          secret: true
+        serviceName:
+          type: ref
+          ref: serviceName
+
+    transport:
+      type: union
+      label: Log transport
+      options:
+        - option:
+            type: ref
+            ref: consoleTransport
+        - option:
+            type: ref
+            ref: fileTransport
+        - option:
+            type: ref
+            ref: lokiTransport
+
+    transports:
+      type: array
+      label: Log transports
+      description: The transports logs are written to
+      items:
+        type: ref
+        ref: transport
+      default:
+        - type: console
+          level: info
+
+schema:
+  type: object
+  properties:
+    logs:
+      type: ref
+      ref: transports
