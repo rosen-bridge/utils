@@ -21,7 +21,8 @@
     "./bootstrap": {
       "import": "./dist/bootstrap.js",
       "types": "./dist/bootstrap.d.ts"
-    }
+    },
+    "./schema.yaml": "./schema.yaml"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -31,6 +32,7 @@
   },
   "files": [
     "dist",
+    "schema.yaml",
     "CHANGELOG.md"
   ],
   "bin": "dist/cli.js",
