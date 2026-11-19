@@ -4,10 +4,9 @@ import { TypeElement } from '../../types/typeElement';
 import { CompareCondition } from './compareCondition';
 
 /**
- * Base of the conditions that order two values (`gt`, `gte`, `lt`, `lte`):
- * both sides are set and in the order the subclass requires. The sides are
- * numbers, bigints or strings (in UTF-16 code-unit order), of one kind as
- * every compared side. A subclass only defines its `kind` and `compare`.
+ * Base of the conditions ordering two set values (`gt`, `gte`, `lt`, `lte`):
+ * numbers, bigints or strings (UTF-16 code-unit order), every compared side of
+ * one kind. A subclass only defines its `kind` and `compare`.
  */
 export abstract class OrderCondition extends CompareCondition {
   /**

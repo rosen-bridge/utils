@@ -6,10 +6,9 @@ import { TypeElement } from '../../types/typeElement';
 import { ConditionElement } from '../conditionElement';
 
 /**
- * Base of the conditions that compare two evaluators
- * (`{ kind: 'eq', left: { path: 'server.port' }, right: { value: 8080 } }`).
- * At least one side is a path; both sides are values of the scalar type at
- * the first path. A subclass only defines its `kind` and `compare`.
+ * Base of the conditions comparing two evaluators (`{ kind: 'eq', left:
+ * { path: 'port' }, right: { value: 8080 } }`): at least one is a path, both of
+ * the scalar type at the first path. A subclass defines `kind` and `compare`.
  */
 export abstract class CompareCondition extends ConditionElement {
   protected readonly keys: readonly string[] = [

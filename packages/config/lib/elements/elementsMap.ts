@@ -38,11 +38,9 @@ export type RuleClass<T extends RuleElement> = new (
 ) => T;
 
 /**
- * Parses the nodes of a schema into elements, reached by every element
- * through its document (`scope.elements`). Each function creates an element
- * of the class the node names in `scope` at `pointer` (the node's pointer in
- * the schema document) and parses the node into it, or fails with a problem
- * at `pointer` (or below it) when the node names no class.
+ * Parses schema nodes into elements; every element reaches it through its
+ * document (`scope.elements`). Each function parses a node into the class it
+ * names at `pointer`, or fails there (or below) when it names no class.
  */
 export interface ElementsMap {
   /**

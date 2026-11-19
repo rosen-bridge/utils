@@ -2,10 +2,18 @@ import type { ParseResult } from '../../parsing/result';
 import type { SchemaDocument } from './schemaDocument';
 
 /**
- * The schema files a document and its imports read, shared by all of them:
- * each file is read and parsed once (`load`), and an import of a file that
- * is still being parsed (one of its own imports, directly or not) is a cycle
- * (`cycle`).
+ * Creates a document, with the arguments of the `SchemaDocument`
+ * constructor; given to the graph by `SchemaDocument`, so imports create the
+ * documents they read without importing `SchemaDocument` themselves.
+ */
+export type DocumentFactory = (
+  ...args: ConstructorParameters<typeof SchemaDocument>
+) => SchemaDocument;
+
+/**
+ * The schema files read by a document and its imports, shared by all: each is
+ * parsed once (`load`), importing one still being parsed is a cycle (`cycle`),
+ * and imported documents are created with `createDocument`.
  */
 export class ImportGraph {
   /**
@@ -20,9 +28,13 @@ export class ImportGraph {
 
   /**
    * A graph whose root is the schema read from `file`.
+   * @param createDocument - creates the document of an imported file
    * @param file - the absolute path of the root schema, if read from a file
    */
-  constructor(file?: string) {
+  constructor(
+    readonly createDocument: DocumentFactory,
+    file?: string,
+  ) {
     this.stack = file === undefined ? [] : [file];
   }
 

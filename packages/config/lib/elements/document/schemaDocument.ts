@@ -40,17 +40,25 @@ import { ImportElement } from './importElement';
 import { ImportGraph } from './importGraph';
 
 /**
- * Where a document comes from: the absolute path of its `file` (relative
- * imports start from its directory; `undefined` for a schema not read from a
- * file), the `graph` of files read by the documents of the schema (a new one
- * for a root document), its `pointer` (`''` for the root document,
- * `[<file>]` for an imported one) and whether it is `imported` (only its
- * `imports` and `definitions` are parsed).
+ * Where a document comes from, given to the `SchemaDocument` constructor.
  */
 export interface DocumentSource {
+  /**
+   * The absolute path of its file, where relative imports start (`undefined`
+   * for a schema not read from a file).
+   */
   readonly file?: string;
+  /**
+   * The files read by the documents of the schema (a new one for a root).
+   */
   readonly graph?: ImportGraph;
+  /**
+   * `''` for the root document, `[<file>]` for an imported one.
+   */
   readonly pointer?: string;
+  /**
+   * Whether it is imported, so only `imports` and `definitions` are parsed.
+   */
   readonly imported?: boolean;
 }
 
@@ -61,10 +69,9 @@ export interface DocumentSource {
 type Definitions = Pick<SchemaScope, 'getType' | 'getRule'>;
 
 /**
- * The schema document `{ $schema?, id?, imports?, definitions?, schema }`,
- * the root element of a schema (pointer `''`, or `[<file>]` when imported):
- * `id` names it, `imports` and `definitions` hold what its types refer to,
- * and `schema` is the root type, not parsed in an imported document.
+ * The schema document `{ $schema?, id?, imports?, definitions?, schema }`, the
+ * root element (pointer `''`, or `[<file>]` when imported). `schema` is the
+ * root type, not parsed in an imported document.
  */
 export class SchemaDocument extends SchemaElement implements SchemaScope {
   /**
@@ -133,7 +140,9 @@ export class SchemaDocument extends SchemaElement implements SchemaScope {
   ) {
     super(undefined, source.pointer ?? '');
     this.file = source.file;
-    this.graph = source.graph ?? new ImportGraph(source.file);
+    this.graph =
+      source.graph ??
+      new ImportGraph((...args) => new SchemaDocument(...args), source.file);
     this.imported = source.imported ?? false;
   }
 

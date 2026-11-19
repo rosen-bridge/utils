@@ -7,10 +7,9 @@ import type { SchemaScope } from '../schemaScope';
 import type { TypeElement } from '../types/typeElement';
 
 /**
- * Base of every rule of a schema (`minLength`, `pattern`, ...). A rule may
- * have a `when` condition unless its class says otherwise in its
- * constructor (`allowsWhen`), and may have a `message` that replaces the
- * message of its evaluation when a value fails it.
+ * Base of every schema rule (`minLength`, `pattern`, ...). It may have a
+ * `when` condition unless its class disallows it (`allowsWhen`), and a
+ * `message` replacing its own when a value fails it.
  */
 export abstract class RuleElement extends SchemaElement {
   /**

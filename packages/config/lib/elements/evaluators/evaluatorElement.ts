@@ -11,10 +11,9 @@ export interface Lookup {
 }
 
 /**
- * Base of every evaluator: an operand of a condition that gives a value for
- * a read configuration. Its node is recognized by its only key, its `kind`:
- * `{ path: 'server.port' }` (`PathElement`) or `{ value: 8080 }`
- * (`StaticElement`).
+ * Base of every evaluator: a condition operand giving a value for a read
+ * configuration. Its node has one key, its `kind`: `{ path: 'server.port' }`
+ * (`PathElement`) or `{ value: 8080 }` (`StaticElement`).
  */
 export abstract class EvaluatorElement extends SchemaElement {
   /**

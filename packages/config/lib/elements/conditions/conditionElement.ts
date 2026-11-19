@@ -6,10 +6,9 @@ import { SchemaElement } from '../schemaElement';
 import type { TypeElement } from '../types/typeElement';
 
 /**
- * Base of every condition of a schema (the `when` of a rule), written
- * `{ kind, ... }`: `kind` names the condition (`eq`, `all`, ...). It is
- * evaluated against the read configuration. Conditions share no member
- * besides `kind`, so each implements `parseNode` and `cloneMembers` itself.
+ * Base of every condition (the `when` of a rule), written `{ kind, ... }` and
+ * evaluated against the read configuration. Conditions share only `kind`, so
+ * each implements `parseNode` and `cloneMembers` itself.
  */
 export abstract class ConditionElement extends SchemaElement {
   protected readonly keys: readonly string[] = CONDITION_KEYS;

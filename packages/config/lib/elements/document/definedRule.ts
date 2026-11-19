@@ -4,10 +4,9 @@ import { RuleElement } from '../rules/ruleElement';
 import type { SchemaScope } from '../schemaScope';
 
 /**
- * A rule defined under `definitions.rules` (`{ type: [...], description?,
- * rules: [...] }`), used by `{ ref, when? }`, parsed for one of the kinds
- * `type` lists. Its rules are inline rules or references to other defined
- * rules; neither may have a `when`, which belongs to the `{ ref }`.
+ * A rule in `definitions.rules` (`{ type: [...], description?, rules: [...] }`)
+ * used by `{ ref, when? }`, parsed for one of the kinds `type` lists. Its
+ * rules, inline or refs to other defined rules, may not have a `when`.
  */
 export class DefinedRule extends RuleElement {
   protected readonly keys: readonly string[] = ['type', 'description', 'rules'];

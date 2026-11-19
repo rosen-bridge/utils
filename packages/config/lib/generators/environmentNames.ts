@@ -20,10 +20,9 @@ export interface EnvironmentTree {
 }
 
 /**
- * Names the environment variables of a configuration after their paths in
- * UPPER_SNAKE_CASE, after the prefix (`server.tls.key` → `SERVER_TLS_KEY`),
- * for secret values only or every value; two paths with one name are logged
- * as a warning.
+ * Names the environment variables of a configuration after their paths, in
+ * UPPER_SNAKE_CASE after the prefix (`server.tls.key` → `SERVER_TLS_KEY`), for
+ * secrets only or all values; two paths with one name log a warning.
  */
 export class EnvironmentNames {
   /**

@@ -2,6 +2,8 @@ import { ImportGraph } from '../../../lib/elements/document/importGraph';
 import { ok } from '../../../lib/parsing/result';
 import { createScope } from '../../testUtils';
 
+const createDocument = vi.fn();
+
 describe('ImportGraph', () => {
   describe('cycle', () => {
     /**
@@ -13,7 +15,7 @@ describe('ImportGraph', () => {
      * - the chain back to the file each time; none for another file
      */
     it('should find a file that is being parsed', () => {
-      const graph = new ImportGraph('/a.json');
+      const graph = new ImportGraph(createDocument, '/a.json');
       expect(graph.cycle('/a.json')).toEqual(['/a.json', '/a.json']);
       expect(graph.cycle('/b.json')).toEqual(undefined);
       graph.load('/b.json', () => {
@@ -24,7 +26,9 @@ describe('ImportGraph', () => {
         ]);
         return ok(createScope());
       });
-      expect(new ImportGraph().cycle('/a.json')).toEqual(undefined);
+      expect(new ImportGraph(createDocument).cycle('/a.json')).toEqual(
+        undefined,
+      );
     });
   });
 
@@ -38,7 +42,7 @@ describe('ImportGraph', () => {
      * - the parser is called once and the same result is returned
      */
     it('should parse each file once', () => {
-      const graph = new ImportGraph();
+      const graph = new ImportGraph(createDocument);
       const parse = vi.fn(() => ok(createScope()));
       const first = graph.load('/c.json', parse);
       expect(graph.load('/c.json', parse)).toBe(first);

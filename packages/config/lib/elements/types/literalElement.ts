@@ -22,9 +22,8 @@ export type LiteralValue = string | number | bigint | boolean;
 
 /**
  * The `literal` type (`{ type: 'literal', value: 'postgres' }`): exactly one
- * string, number, bigint or boolean, read with the scalar type of `value`
- * (`"8080"` for `8080`). It is always required, has no `default`, and only
- * the `required` rule applies to it.
+ * scalar value, read with the scalar type of `value` (`"8080"` for `8080`).
+ * Always required, with no `default`; only the `required` rule applies.
  */
 export class LiteralElement extends TypeElement {
   protected readonly keys: readonly string[] = [...TYPE_KEYS, 'value'];

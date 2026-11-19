@@ -1,8 +1,7 @@
 /**
- * Exit codes of the CLI: the configuration is not valid or the types are out
- * of date (`invalid`), the schema has problems (`schemaError`), the command
- * line is wrong (`usage`), or a file cannot be read or written or the
- * configuration cannot be loaded (`failed`).
+ * Exit codes of the CLI: invalid configuration or stale types (`invalid`),
+ * schema problems (`schemaError`), a wrong command line (`usage`), or a
+ * failed read, write or configuration load (`failed`).
  */
 export const EXIT = {
   ok: 0,

@@ -4,9 +4,9 @@ import { isNonNegativeInteger } from '../../../utils/guards';
 import { RuleElement } from '../ruleElement';
 
 /**
- * Base of the rules that limit the number of items of an array (`minItems`,
- * `maxItems`, `eqItems`: `{ kind: 'minItems', count: 1 }`). A subclass only defines its `kind`, `compare` and the `relation`
- * used in messages.
+ * Base of the rules limiting the number of items of an array (`minItems`,
+ * `maxItems`, `eqItems`: `{ kind: 'minItems', count: 1 }`). A subclass only
+ * defines its `kind`, `compare` and the `relation` used in messages.
  */
 export abstract class ItemCountRule extends RuleElement {
   readonly targets: readonly string[] = ['array'];

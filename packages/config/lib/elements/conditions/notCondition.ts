@@ -4,7 +4,8 @@ import { TypeElement } from '../types/typeElement';
 import { ConditionElement } from './conditionElement';
 
 /**
- * The `not` condition (`{ kind: 'not', condition }`): the condition does not hold.
+ * The `not` condition (`{ kind: 'not', condition }`): the condition does not
+ * hold.
  */
 export class NotCondition extends ConditionElement {
   private condition: ConditionElement;

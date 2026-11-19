@@ -6,10 +6,9 @@ import { TypeElement } from '../types/typeElement';
 import { ConditionElement } from './conditionElement';
 
 /**
- * The `in` condition (`{ kind: 'in', operand, choices: [...] }`): the
- * operand is set and equals one of the `choices`. The operand and the
- * choices are evaluators, at least one of them a path; all are values of the
- * scalar type at the first path.
+ * The `in` condition (`{ kind: 'in', operand, choices: [...] }`): the operand
+ * is set and equals a choice. All are evaluators, at least one a path, and are
+ * values of the scalar type at the first path.
  */
 export class InCondition extends ConditionElement {
   protected readonly keys: readonly string[] = [

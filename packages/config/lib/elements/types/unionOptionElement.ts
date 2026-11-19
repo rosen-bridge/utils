@@ -5,10 +5,9 @@ import type { SchemaScope } from '../schemaScope';
 import type { TypeElement } from './typeElement';
 
 /**
- * An option of a union (`{ option, when? }`): the type of the option and an
- * optional condition under which the option applies. It is created by its
- * `UnionElement`, not by `ElementsMap`, and is not exported with the types:
- * it is not a type (its kind is `option`).
+ * A union option (`{ option, when? }`): a type and an optional condition for
+ * when it applies. Created by its `UnionElement`, not `ElementsMap`; it is not
+ * a type (its kind is `option`), so it is not exported with them.
  */
 export class UnionOptionElement extends SchemaElement {
   protected readonly keys: readonly string[] = ['option', 'when'];

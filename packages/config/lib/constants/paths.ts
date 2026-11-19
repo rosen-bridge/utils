@@ -1,8 +1,7 @@
 /**
- * The segment that stands for any item of an array in the location of a type
- * (`nodes.*.url`) and in the paths built from it while the schema is
- * resolved, where the index is not known yet. A written path never has an
- * empty segment, so it cannot be confused with a key.
+ * The segment for any array item in a type's location (`nodes.*.url`) and in
+ * paths built while resolving the schema. A written path never has an empty
+ * segment, so it cannot be confused with a key.
  */
 export const ANY_INDEX = '';
 

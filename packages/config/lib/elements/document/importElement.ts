@@ -13,13 +13,12 @@ import { readSchemaFile } from '../../utils/schemaFile';
 import { SchemaElement } from '../schemaElement';
 import type { SchemaScope } from '../schemaScope';
 import { ImportGraph } from './importGraph';
-import { SchemaDocument } from './schemaDocument';
+import type { SchemaDocument } from './schemaDocument';
 
 /**
- * An import of a schema document (`{ from, as }`): the file `from`, relative
- * to the importing schema or in an installed package, whose definitions are
- * referred to as `<as>.<name>`. Only its `imports` and `definitions` are
- * parsed. It is created by its `SchemaDocument`.
+ * An import (`{ from, as }`) of a schema file, relative to the importing one
+ * or in an installed package; its definitions are named `<as>.<name>`. Only
+ * its `imports` and `definitions` are parsed. Created by `SchemaDocument`.
  */
 export class ImportElement extends SchemaElement {
   protected readonly keys: readonly string[] = ['from', 'as'];
@@ -113,12 +112,14 @@ export class ImportElement extends SchemaElement {
           `${JSON.stringify(from)} must contain a schema document (an object)`,
           'from',
         );
-      return new SchemaDocument(this.scope.elements, this.scope.logger, {
-        file,
-        graph: this.graph,
-        pointer: `[${relative(process.cwd(), file)}]`,
-        imported: true,
-      }).parse(read.value);
+      return this.graph
+        .createDocument(this.scope.elements, this.scope.logger, {
+          file,
+          graph: this.graph,
+          pointer: `[${relative(process.cwd(), file)}]`,
+          imported: true,
+        })
+        .parse(read.value);
     });
   };
 

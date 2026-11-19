@@ -11,18 +11,27 @@ export type DeferredCheck = (config: unknown) => readonly SchemaError[];
 
 /**
  * What reading a value with a type (`TypeElement.normalize`) needs and
- * collects besides the value: the `subject` that starts every message
- * (`'default'` for a schema default, empty for a configuration), whether
- * the value is `secret` (it is, or is below, a type with `secret: true`), so
- * it never appears in messages, the whole `config` being read, against which
- * the `when` of union options is checked (`undefined` for a value of the
- * schema, so every option applies), and the checks of conditional rules to
- * run once the whole value is read.
+ * collects besides the value.
  */
 export interface Reading {
+  /**
+   * Starts every message: `'default'` for a schema default, empty for a
+   * configuration.
+   */
   readonly subject: string;
+  /**
+   * Whether the value is secret (it is, or is below, a type with
+   * `secret: true`), so it never appears in messages.
+   */
   readonly secret: boolean;
+  /**
+   * The whole configuration, against which union options' `when` is checked
+   * (`undefined` for a schema value, so every option applies).
+   */
   readonly config?: unknown;
+  /**
+   * The checks of conditional rules, run once the whole value is read.
+   */
   readonly deferred: DeferredCheck[];
 }
 

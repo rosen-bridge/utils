@@ -40,9 +40,9 @@ export abstract class ScalarElement<T> extends TypeElement {
   protected cloneExtra = (): void => {};
 
   /**
-   * A scalar needs no declaration: its type is `typeScriptName`, or the union of the literals of the values the rules
-   * allow when they limit the value to a list (`'debug' | 'info'`); `never`
-   * when no value passes every such rule.
+   * A scalar needs no declaration: its type is `typeScriptName`, or the union
+   * of the literals the rules allow when they limit it to a list
+   * (`'debug' | 'info'`); `never` when no value passes every such rule.
    */
   code = (): TypeScriptResult => {
     const values = allowedByAll(this.rules) as T[] | undefined;

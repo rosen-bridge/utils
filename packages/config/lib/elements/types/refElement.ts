@@ -9,10 +9,9 @@ import { ParseResult, fail, ok } from '../../parsing/result';
 import { TypeElement, TypeScriptResult } from './typeElement';
 
 /**
- * The `ref` type (`{ type: 'ref', ref: 'name' }`): its own copy of the type
- * defined under `definitions.types.<name>`. Its `rules` are checked after
- * the referenced type's own, so a use can narrow a definition but not relax
- * it, and its `default` replaces the referenced type's.
+ * The `ref` type (`{ type: 'ref', ref: 'name' }`): its own copy of the type in
+ * `definitions.types.<name>`. Its `rules` run after the target's, so they can
+ * narrow but not relax it, and its `default` replaces the target's.
  */
 export class RefElement extends TypeElement {
   /**

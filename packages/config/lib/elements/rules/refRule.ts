@@ -2,10 +2,9 @@ import { ParseResult, fail, ok } from '../../parsing/result';
 import { RuleElement } from './ruleElement';
 
 /**
- * A reference to a defined rule (`{ ref: 'name', when? }`): the rule defined
- * under `definitions.rules.<name>` (`DefinedRule`), parsed for the kind of
- * type the reference is used on, which its `type` must list. It applies when its own `when` and
- * the defined rule's `when` hold, and checks a value with its rules.
+ * A reference (`{ ref: 'name', when? }`) to `definitions.rules.<name>`, parsed
+ * for the kind of type it is used on, which that rule's `type` must list. It
+ * applies when both `when`s hold, and checks a value with the rule's rules.
  */
 export class RefRule extends RuleElement {
   private rule: RuleElement;

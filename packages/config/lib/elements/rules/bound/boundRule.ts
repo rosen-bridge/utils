@@ -16,9 +16,9 @@ export type Bound = number | bigint;
 const BOUND_TYPES = [BigintElement, NumberElement];
 
 /**
- * Base of the rules that compare a number or bigint with a `bound` (`min`,
- * `max`, `eq`: `{ kind: 'min', bound: 1 }`). A subclass only defines its `kind`, `compare` and the `relation`
- * used in messages.
+ * Base of the rules comparing a number or bigint with a `bound` (`min`,
+ * `max`, `eq`: `{ kind: 'min', bound: 1 }`). A subclass only defines its
+ * `kind`, `compare` and the `relation` used in messages.
  */
 export abstract class BoundRule extends RuleElement {
   readonly targets: readonly string[] = ['number', 'bigint'];

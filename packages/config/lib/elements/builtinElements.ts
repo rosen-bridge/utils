@@ -16,10 +16,9 @@ import * as types from './types/index';
 import { TypeElement } from './types/typeElement';
 
 /**
- * The built-in element classes: every concrete class exported from
- * `types/`, `rules/` (except `RefRule`, the `ref`: a `{ ref }` node is
- * recognized by its `ref` key, not by a `kind`), `conditions/` and
- * `evaluators/`. Parses a node into an element of the class it names.
+ * The built-in element classes: every concrete class of `types/`, `rules/`,
+ * `conditions/` and `evaluators/`, except `RefRule` (a `{ ref }` node is
+ * recognized by its `ref` key). Parses a node into the class it names.
  */
 export class BuiltinElements implements ElementsMap {
   private readonly types: ReadonlyMap<string, TypeClass<TypeElement>> =

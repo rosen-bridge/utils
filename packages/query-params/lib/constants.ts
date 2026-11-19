@@ -1,4 +1,4 @@
-import { FilterConfig } from './types';
+import type { FilterConfig } from './types';
 
 export const FILTER_FIELD_OPERATORS = [
   {

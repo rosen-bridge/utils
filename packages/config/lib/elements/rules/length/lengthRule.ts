@@ -4,9 +4,9 @@ import { isNonNegativeInteger } from '../../../utils/guards';
 import { RuleElement } from '../ruleElement';
 
 /**
- * Base of the rules that limit the length of a string in code points
- * (`minLength`, `maxLength`, `eqLength`: `{ kind: 'minLength', length: 1 }`). A subclass only defines its `kind`, `compare` and the `relation`
- * used in messages.
+ * Base of the rules limiting a string's length in code points (`minLength`,
+ * `maxLength`, `eqLength`: `{ kind: 'minLength', length: 1 }`). A subclass
+ * only defines its `kind`, `compare` and the `relation` used in messages.
  */
 export abstract class LengthRule extends RuleElement {
   readonly targets: readonly string[] = ['string'];

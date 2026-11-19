@@ -23,10 +23,9 @@ const comparedAs = (type: TypeElement): TypeElement =>
   type instanceof LiteralElement ? type.scalarType : type;
 
 /**
- * The value at a `path` of the configuration (`{ path: 'server.port' }`):
- * dot-separated names from the root or, after leading dots, relative to the
- * node whose rule has it (one dot is its parent, each further dot one level
- * up). Through a union it goes into the options that have its next segment.
+ * The value at a `path` (`{ path: 'server.port' }`): from the root, or with
+ * leading dots from the rule's node (`.` is its parent, each further dot one
+ * level up). Through a union it enters the options that have the next segment.
  */
 export class PathElement extends EvaluatorElement {
   protected readonly keys: readonly string[] = ['path'];

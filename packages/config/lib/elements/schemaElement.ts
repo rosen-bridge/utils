@@ -6,12 +6,9 @@ import type { ElementClass } from './elementsMap';
 import type { SchemaScope } from './schemaScope';
 
 /**
- * Type of the clone hooks (`cloneMembers`, `cloneExtra`): copies the parsed
- * members of an element into `copy`, a new element of the same class. It is
- * written as a method signature so that its parameter is checked
- * bivariantly: each class implements the hook with an arrow function taking
- * its own class (`(copy: ArrayElement) => void`), which a function type
- * would reject under `strictFunctionTypes`.
+ * The clone hooks (`cloneMembers`, `cloneExtra`): copy parsed members into
+ * `copy`, a new element of the same class. A method signature, so each class
+ * can take its own class as `copy` despite `strictFunctionTypes`.
  */
 export type CloneHook<T> = {
   /**
@@ -22,10 +19,9 @@ export type CloneHook<T> = {
 }['hook'];
 
 /**
- * Base of every element of a schema: types, rules and conditions. An element
- * knows the document it belongs to (`scope`) and its own place in the
- * schema (`pointer`). It is created empty and becomes valid only when
- * `parse` succeeds; until then its parsed members are not set.
+ * Base of every schema element (types, rules, conditions): it knows its
+ * document (`scope`) and its place in the schema (`pointer`). It is created
+ * empty and is valid only once `parse` succeeds.
  */
 export abstract class SchemaElement extends ErrorHandler {
   /**

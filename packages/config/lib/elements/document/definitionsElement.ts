@@ -60,9 +60,8 @@ class DefinitionTable<T extends SchemaElement> {
 
 /**
  * The `definitions` of a schema document (`{ types?, rules? }`), used as
- * `{ type: 'ref', ref }` and `{ ref }`. Every definition is parsed, also
- * when unused, once it is first needed, so their order does not matter; a
- * definition that refers to itself is an error.
+ * `{ type: 'ref', ref }` and `{ ref }`. Each is parsed when first needed (even
+ * if unused), so order does not matter; a self-reference is an error.
  */
 export class DefinitionsElement extends SchemaElement {
   protected readonly keys: readonly string[] = ['types', 'rules'];
