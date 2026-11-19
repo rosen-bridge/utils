@@ -1,9 +1,9 @@
 import type { AbstractLogger } from '@rosen-bridge/abstract-logger';
 
-import type { ParseResult } from '../parsing/result.js';
-import type { ElementsMap } from './elementsMap.js';
-import type { RuleElement } from './rules/ruleElement.js';
-import type { TypeElement } from './types/typeElement.js';
+import type { ParseResult } from '../parsing/result';
+import type { ElementsMap } from './elementsMap';
+import type { RuleElement } from './rules/ruleElement';
+import type { TypeElement } from './types/typeElement';
 
 /**
  * What an element can reach of the document it belongs to. `SchemaDocument`

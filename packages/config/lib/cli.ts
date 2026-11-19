@@ -3,7 +3,7 @@ import { createRequire } from 'node:module';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 
-import { ConfigValidator } from './configValidator.js';
+import { ConfigValidator } from './configValidator';
 import {
   CliCommands,
   CliOptions,
@@ -12,8 +12,8 @@ import {
   PACKAGE_MANIFEST,
   SchemaFormat,
   SchemaFormats,
-} from './constants/index.js';
-import { SchemaError } from './parsing/result.js';
+} from './constants/index';
+import { SchemaError } from './parsing/result';
 
 /**
  * The name of the command, in usage and messages.

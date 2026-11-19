@@ -1,6 +1,6 @@
-import type { EvaluatorElement } from '../elements/evaluators/evaluatorElement.js';
-import type { TypeElement } from '../elements/types/typeElement.js';
-import { ParseResult, all, ok } from '../parsing/result.js';
+import type { EvaluatorElement } from '../elements/evaluators/evaluatorElement';
+import type { TypeElement } from '../elements/types/typeElement';
+import { ParseResult, all, ok } from '../parsing/result';
 
 /**
  * Resolves `evaluators` against the root type, then binds them to the type of

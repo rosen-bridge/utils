@@ -1,4 +1,4 @@
-import { GroupCondition } from './groupCondition.js';
+import { GroupCondition } from './groupCondition';
 
 /**
  * The `all` condition: every listed condition holds.

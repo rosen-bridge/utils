@@ -1,7 +1,7 @@
-import { BOOLEAN_BY_STRING } from '../../../constants/index.js';
-import { Reading, withValue } from '../../../parsing/reading.js';
-import { ParseResult, fail, ok } from '../../../parsing/result.js';
-import { ScalarElement } from './scalarElement.js';
+import { BOOLEAN_BY_STRING } from '../../../constants/index';
+import { Reading, withValue } from '../../../parsing/reading';
+import { ParseResult, fail, ok } from '../../../parsing/result';
+import { ScalarElement } from './scalarElement';
 
 /**
  * The `boolean` type: `true` or `false`, written as a boolean or as the

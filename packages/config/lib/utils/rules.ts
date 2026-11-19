@@ -1,5 +1,5 @@
-import type { RuleElement } from '../elements/rules/ruleElement.js';
-import { intersect } from './arrays.js';
+import type { RuleElement } from '../elements/rules/ruleElement';
+import { intersect } from './arrays';
 
 /**
  * The values allowed by every rule that limits a value to a list

@@ -1,4 +1,4 @@
-import { Bound, BoundRule } from './boundRule.js';
+import { Bound, BoundRule } from './boundRule';
 
 /**
  * The `max` rule: a number or bigint is at most the bound.

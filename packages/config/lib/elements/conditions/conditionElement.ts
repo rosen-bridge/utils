@@ -1,9 +1,9 @@
-import { CONDITION_KEYS } from '../../constants/index.js';
-import { ParseResult, ok } from '../../parsing/result.js';
-import { EvaluatorElement } from '../evaluators/evaluatorElement.js';
-import { PathElement } from '../evaluators/pathElement.js';
-import { SchemaElement } from '../schemaElement.js';
-import { TypeElement } from '../types/typeElement.js';
+import { CONDITION_KEYS } from '../../constants/index';
+import { ParseResult, ok } from '../../parsing/result';
+import type { EvaluatorElement } from '../evaluators/evaluatorElement';
+import { PathElement } from '../evaluators/pathElement';
+import { SchemaElement } from '../schemaElement';
+import type { TypeElement } from '../types/typeElement';
 
 /**
  * Base of every condition of a schema (the `when` of a rule), written

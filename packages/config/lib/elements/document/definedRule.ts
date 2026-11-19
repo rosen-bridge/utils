@@ -1,7 +1,7 @@
-import { ParseResult, all, combine, ok } from '../../parsing/result.js';
-import { allowedByAll } from '../../utils/rules.js';
-import { RuleElement } from '../rules/ruleElement.js';
-import type { SchemaScope } from '../schemaScope.js';
+import { ParseResult, all, combine, ok } from '../../parsing/result';
+import { allowedByAll } from '../../utils/rules';
+import { RuleElement } from '../rules/ruleElement';
+import type { SchemaScope } from '../schemaScope';
 
 /**
  * A rule defined under `definitions.rules` (`{ type: [...], description?,

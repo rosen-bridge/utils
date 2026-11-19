@@ -1,14 +1,8 @@
-import {
-  ParseResult,
-  all,
-  fail,
-  ok,
-  uniqueErrors,
-} from '../../parsing/result.js';
-import { isRecord } from '../../utils/guards.js';
-import { SchemaElement } from '../schemaElement.js';
-import { TypeElement } from '../types/typeElement.js';
-import { DefinedRule } from './definedRule.js';
+import { ParseResult, all, fail, ok, uniqueErrors } from '../../parsing/result';
+import { isRecord } from '../../utils/guards';
+import { SchemaElement } from '../schemaElement';
+import { TypeElement } from '../types/typeElement';
+import { DefinedRule } from './definedRule';
 
 /**
  * The definitions of one kind (types or defined rules): their nodes by name,

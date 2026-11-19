@@ -1,8 +1,8 @@
 import type { AbstractLogger } from '@rosen-bridge/abstract-logger';
 
-import { ENV_NAME_SEPARATOR, PATH_SEPARATOR } from '../constants/index.js';
-import { envName } from '../utils/format.js';
-import { isRecord } from '../utils/guards.js';
+import { ENV_NAME_SEPARATOR, PATH_SEPARATOR } from '../constants/index';
+import { envName } from '../utils/format';
+import { isRecord } from '../utils/guards';
 
 /**
  * What the `custom-environment-variables` file of the `config` package maps

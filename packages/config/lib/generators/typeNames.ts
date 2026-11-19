@@ -1,4 +1,4 @@
-import { typeName } from '../utils/format.js';
+import { typeName } from '../utils/format';
 
 /**
  * Names of the declared TypeScript types: the last segment of a type's path

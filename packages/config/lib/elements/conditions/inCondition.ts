@@ -1,9 +1,9 @@
-import { CONDITION_KEYS } from '../../constants/index.js';
-import { ParseResult, all, combine, ok } from '../../parsing/result.js';
-import { resolveCompared } from '../../utils/evaluators.js';
-import { EvaluatorElement } from '../evaluators/evaluatorElement.js';
-import { TypeElement } from '../types/typeElement.js';
-import { ConditionElement } from './conditionElement.js';
+import { CONDITION_KEYS } from '../../constants/index';
+import { ParseResult, all, combine, ok } from '../../parsing/result';
+import { resolveCompared } from '../../utils/evaluators';
+import { EvaluatorElement } from '../evaluators/evaluatorElement';
+import { TypeElement } from '../types/typeElement';
+import { ConditionElement } from './conditionElement';
 
 /**
  * The `in` condition (`{ kind: 'in', operand, choices: [...] }`): the

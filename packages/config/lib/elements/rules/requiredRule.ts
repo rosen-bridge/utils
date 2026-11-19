@@ -1,6 +1,6 @@
-import { ParseResult, ok } from '../../parsing/result.js';
-import * as types from '../types/index.js';
-import { RuleElement } from './ruleElement.js';
+import { ParseResult, ok } from '../../parsing/result';
+import * as types from '../types/index';
+import { RuleElement } from './ruleElement';
 
 /**
  * The `required` rule (`{ kind: 'required', when? }`): the value is set. It

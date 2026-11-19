@@ -11,13 +11,13 @@ import {
   HASH_ROOT_NAME,
   ID_PATTERN,
   NAMESPACE_SEPARATOR,
-} from '../../constants/index.js';
+} from '../../constants/index';
 import {
   EnvironmentNames,
   EnvironmentTree,
-} from '../../generators/environmentNames.js';
-import { TypeNames } from '../../generators/typeNames.js';
-import { createReading } from '../../parsing/reading.js';
+} from '../../generators/environmentNames';
+import { TypeNames } from '../../generators/typeNames';
+import { createReading } from '../../parsing/reading';
 import {
   ParseResult,
   SchemaError,
@@ -25,19 +25,19 @@ import {
   fail,
   ok,
   uniqueErrors,
-} from '../../parsing/result.js';
-import { quote, typeName } from '../../utils/format.js';
-import { deepFreeze } from '../../utils/freeze.js';
-import { isRecord } from '../../utils/guards.js';
-import { BuiltinElements } from '../builtinElements.js';
-import { ElementsMap } from '../elementsMap.js';
-import { RuleElement } from '../rules/ruleElement.js';
-import { SchemaElement } from '../schemaElement.js';
-import { SchemaScope } from '../schemaScope.js';
-import { TypeElement } from '../types/typeElement.js';
-import { DefinitionsElement } from './definitionsElement.js';
-import { ImportElement } from './importElement.js';
-import { ImportGraph } from './importGraph.js';
+} from '../../parsing/result';
+import { quote, typeName } from '../../utils/format';
+import { deepFreeze } from '../../utils/freeze';
+import { isRecord } from '../../utils/guards';
+import { BuiltinElements } from '../builtinElements';
+import { ElementsMap } from '../elementsMap';
+import { RuleElement } from '../rules/ruleElement';
+import { SchemaElement } from '../schemaElement';
+import { SchemaScope } from '../schemaScope';
+import { TypeElement } from '../types/typeElement';
+import { DefinitionsElement } from './definitionsElement';
+import { ImportElement } from './importElement';
+import { ImportGraph } from './importGraph';
 
 /**
  * Where a document comes from: the absolute path of its `file` (relative

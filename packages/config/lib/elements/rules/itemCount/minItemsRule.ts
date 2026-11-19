@@ -1,4 +1,4 @@
-import { ItemCountRule } from './itemCountRule.js';
+import { ItemCountRule } from './itemCountRule';
 
 /**
  * The `minItems` rule: an array has at least `limit` items.

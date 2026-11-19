@@ -1,10 +1,10 @@
-import { ANY_INDEX, TYPE_KEYS } from '../../constants/index.js';
-import type { EnvironmentVariable } from '../../generators/environmentNames.js';
-import type { TypeNames } from '../../generators/typeNames.js';
-import { Reading, withValue } from '../../parsing/reading.js';
-import { ParseResult, all, fail, ok } from '../../parsing/result.js';
-import { appendPointer } from '../../utils/pointer.js';
-import { TypeElement, TypeScriptResult } from './typeElement.js';
+import { ANY_INDEX, TYPE_KEYS } from '../../constants/index';
+import type { EnvironmentVariable } from '../../generators/environmentNames';
+import type { TypeNames } from '../../generators/typeNames';
+import { Reading, withValue } from '../../parsing/reading';
+import { ParseResult, all, fail, ok } from '../../parsing/result';
+import { appendPointer } from '../../utils/pointer';
+import { TypeElement, TypeScriptResult } from './typeElement';
 
 /**
  * The `array` type: a list whose items all have the type `items`, with an

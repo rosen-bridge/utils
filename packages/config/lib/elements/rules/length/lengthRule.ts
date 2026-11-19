@@ -1,7 +1,7 @@
-import { RULE_KEYS } from '../../../constants/index.js';
-import { ParseResult, ok } from '../../../parsing/result.js';
-import { isNonNegativeInteger } from '../../../utils/guards.js';
-import { RuleElement } from '../ruleElement.js';
+import { RULE_KEYS } from '../../../constants/index';
+import { ParseResult, ok } from '../../../parsing/result';
+import { isNonNegativeInteger } from '../../../utils/guards';
+import { RuleElement } from '../ruleElement';
 
 /**
  * Base of the rules that limit the length of a string in code points

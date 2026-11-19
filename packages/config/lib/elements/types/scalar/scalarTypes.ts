@@ -1,7 +1,7 @@
-import { BigintElement } from './bigintElement.js';
-import { BooleanElement } from './booleanElement.js';
-import { NumberElement } from './numberElement.js';
-import { StringElement } from './stringElement.js';
+import { BigintElement } from './bigintElement';
+import { BooleanElement } from './booleanElement';
+import { NumberElement } from './numberElement';
+import { StringElement } from './stringElement';
 
 /**
  * The scalar type classes, whose kinds are the `typeof` of their values

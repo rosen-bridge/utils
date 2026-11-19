@@ -1,9 +1,9 @@
-import { RULE_KEYS } from '../../../constants/index.js';
-import { createReading } from '../../../parsing/reading.js';
-import { ParseResult, ok } from '../../../parsing/result.js';
-import { BigintElement } from '../../types/scalar/bigintElement.js';
-import { NumberElement } from '../../types/scalar/numberElement.js';
-import { RuleElement } from '../ruleElement.js';
+import { RULE_KEYS } from '../../../constants/index';
+import { createReading } from '../../../parsing/reading';
+import { ParseResult, ok } from '../../../parsing/result';
+import { BigintElement } from '../../types/scalar/bigintElement';
+import { NumberElement } from '../../types/scalar/numberElement';
+import { RuleElement } from '../ruleElement';
 
 /**
  * A number or bigint bound.

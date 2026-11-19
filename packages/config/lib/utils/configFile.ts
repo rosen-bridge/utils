@@ -9,7 +9,7 @@ import {
   FORMAT_BY_EXTENSION,
   SchemaFormat,
   SchemaFormats,
-} from '../constants/index.js';
+} from '../constants/index';
 
 /**
  * `value` as plain values for YAML, which cannot write a `bigint`: each

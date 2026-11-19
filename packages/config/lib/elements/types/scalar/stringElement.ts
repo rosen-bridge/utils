@@ -1,7 +1,7 @@
-import { Reading, withValue } from '../../../parsing/reading.js';
-import { ParseResult, fail, ok } from '../../../parsing/result.js';
-import { quote } from '../../../utils/format.js';
-import { ScalarElement } from './scalarElement.js';
+import { Reading, withValue } from '../../../parsing/reading';
+import { ParseResult, fail, ok } from '../../../parsing/result';
+import { quote } from '../../../utils/format';
+import { ScalarElement } from './scalarElement';
 
 /**
  * The `string` type: a string.

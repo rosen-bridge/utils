@@ -9,9 +9,9 @@ import {
   FORMAT_BY_EXTENSION,
   SchemaFormat,
   SchemaFormats,
-} from '../constants/index.js';
-import { ParseResult, fail, ok } from '../parsing/result.js';
-import { isRecord } from './guards.js';
+} from '../constants/index';
+import { ParseResult, fail, ok } from '../parsing/result';
+import { isRecord } from './guards';
 
 /**
  * Parses JSON keeping every digit of an integer: an integer beyond the safe

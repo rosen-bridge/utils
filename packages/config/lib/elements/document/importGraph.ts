@@ -1,5 +1,5 @@
-import type { ParseResult } from '../../parsing/result.js';
-import type { SchemaDocument } from './schemaDocument.js';
+import type { ParseResult } from '../../parsing/result';
+import type { SchemaDocument } from './schemaDocument';
 
 /**
  * The schema files a document and its imports read, shared by all of them:

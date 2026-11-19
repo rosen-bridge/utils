@@ -1,4 +1,4 @@
-import { GroupCondition } from './groupCondition.js';
+import { GroupCondition } from './groupCondition';
 
 /**
  * The `any` condition: at least one listed condition holds.

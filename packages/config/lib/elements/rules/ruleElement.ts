@@ -1,10 +1,10 @@
-import { MAX_MESSAGE_LENGTH, RULE_KEYS } from '../../constants/index.js';
-import { ParseResult, combine, ok } from '../../parsing/result.js';
-import { ConditionElement } from '../conditions/conditionElement.js';
-import type { RuleClass } from '../elementsMap.js';
-import { CloneHook, SchemaElement } from '../schemaElement.js';
-import type { SchemaScope } from '../schemaScope.js';
-import type { TypeElement } from '../types/typeElement.js';
+import { MAX_MESSAGE_LENGTH, RULE_KEYS } from '../../constants/index';
+import { ParseResult, combine, ok } from '../../parsing/result';
+import type { ConditionElement } from '../conditions/conditionElement';
+import type { RuleClass } from '../elementsMap';
+import { CloneHook, SchemaElement } from '../schemaElement';
+import type { SchemaScope } from '../schemaScope';
+import type { TypeElement } from '../types/typeElement';
 
 /**
  * Base of every rule of a schema (`minLength`, `pattern`, ...). A rule may

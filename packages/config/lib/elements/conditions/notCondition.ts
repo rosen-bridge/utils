@@ -1,7 +1,7 @@
-import { CONDITION_KEYS } from '../../constants/index.js';
-import { ParseResult, ok } from '../../parsing/result.js';
-import { TypeElement } from '../types/typeElement.js';
-import { ConditionElement } from './conditionElement.js';
+import { CONDITION_KEYS } from '../../constants/index';
+import { ParseResult, ok } from '../../parsing/result';
+import { TypeElement } from '../types/typeElement';
+import { ConditionElement } from './conditionElement';
 
 /**
  * The `not` condition (`{ kind: 'not', condition }`): the condition does not hold.

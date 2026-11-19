@@ -1,5 +1,5 @@
-import { ParseResult, fail } from '../parsing/result.js';
-import { appendPointer } from './pointer.js';
+import { ParseResult, fail } from '../parsing/result';
+import { appendPointer } from './pointer';
 
 /**
  * Failed result with one problem at `pointer`, or at `segments` below it.

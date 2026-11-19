@@ -1,7 +1,7 @@
-import { Reading, withValue } from '../../../parsing/reading.js';
-import { ParseResult, fail, ok } from '../../../parsing/result.js';
-import { isBigintLiteral } from '../../../utils/guards.js';
-import { ScalarElement } from './scalarElement.js';
+import { Reading, withValue } from '../../../parsing/reading';
+import { ParseResult, fail, ok } from '../../../parsing/result';
+import { isBigintLiteral } from '../../../utils/guards';
+import { ScalarElement } from './scalarElement';
 
 /**
  * The `bigint` type: an integer of any size, written as a `bigint`, a safe

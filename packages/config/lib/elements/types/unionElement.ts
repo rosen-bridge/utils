@@ -1,16 +1,16 @@
-import { TYPE_KEYS } from '../../constants/index.js';
+import { TYPE_KEYS } from '../../constants/index';
 import {
   EnvironmentNames,
   EnvironmentVariable,
   mergeVariables,
-} from '../../generators/environmentNames.js';
-import type { TypeNames } from '../../generators/typeNames.js';
-import { Reading, withValue } from '../../parsing/reading.js';
-import { ParseResult, all, fail, ok } from '../../parsing/result.js';
-import { isRecord } from '../../utils/guards.js';
-import { splitPointer } from '../../utils/pointer.js';
-import { TypeElement, TypeScriptResult } from './typeElement.js';
-import { UnionOptionElement } from './unionOptionElement.js';
+} from '../../generators/environmentNames';
+import type { TypeNames } from '../../generators/typeNames';
+import { Reading, withValue } from '../../parsing/reading';
+import { ParseResult, all, fail, ok } from '../../parsing/result';
+import { isRecord } from '../../utils/guards';
+import { splitPointer } from '../../utils/pointer';
+import { TypeElement, TypeScriptResult } from './typeElement';
+import { UnionOptionElement } from './unionOptionElement';
 
 /**
  * The `union` type: a value of one of the types in `options`, each

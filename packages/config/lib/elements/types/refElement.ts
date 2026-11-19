@@ -1,12 +1,12 @@
-import { TYPE_KEYS } from '../../constants/index.js';
+import { TYPE_KEYS } from '../../constants/index';
 import type {
   EnvironmentNames,
   EnvironmentVariable,
-} from '../../generators/environmentNames.js';
-import type { TypeNames } from '../../generators/typeNames.js';
-import { Reading } from '../../parsing/reading.js';
-import { ParseResult, fail, ok } from '../../parsing/result.js';
-import { TypeElement, TypeScriptResult } from './typeElement.js';
+} from '../../generators/environmentNames';
+import type { TypeNames } from '../../generators/typeNames';
+import { Reading } from '../../parsing/reading';
+import { ParseResult, fail, ok } from '../../parsing/result';
+import { TypeElement, TypeScriptResult } from './typeElement';
 
 /**
  * The `ref` type (`{ type: 'ref', ref: 'name' }`): its own copy of the type

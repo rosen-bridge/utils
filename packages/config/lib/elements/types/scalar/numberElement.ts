@@ -1,7 +1,7 @@
-import { Reading, withValue } from '../../../parsing/reading.js';
-import { ParseResult, fail, ok } from '../../../parsing/result.js';
-import { isFiniteNumber, isNumberLiteral } from '../../../utils/guards.js';
-import { ScalarElement } from './scalarElement.js';
+import { Reading, withValue } from '../../../parsing/reading';
+import { ParseResult, fail, ok } from '../../../parsing/result';
+import { isFiniteNumber, isNumberLiteral } from '../../../utils/guards';
+import { ScalarElement } from './scalarElement';
 
 /**
  * The `number` type: a finite number, also written as a number string

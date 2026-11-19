@@ -1,6 +1,6 @@
-import { formatValue } from '../utils/format.js';
-import { isScalarValue } from '../utils/guards.js';
-import type { SchemaError } from './result.js';
+import { formatValue } from '../utils/format';
+import { isScalarValue } from '../utils/guards';
+import type { SchemaError } from './result';
 
 /**
  * The check of a conditional rule on a read value, run once the whole

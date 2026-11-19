@@ -1,7 +1,7 @@
-import { ParseResult, ok } from '../../../parsing/result.js';
-import { resolveCompared } from '../../../utils/evaluators.js';
-import { TypeElement } from '../../types/typeElement.js';
-import { CompareCondition } from './compareCondition.js';
+import { ParseResult, ok } from '../../../parsing/result';
+import { resolveCompared } from '../../../utils/evaluators';
+import { TypeElement } from '../../types/typeElement';
+import { CompareCondition } from './compareCondition';
 
 /**
  * Base of the conditions that order two values (`gt`, `gte`, `lt`, `lte`):

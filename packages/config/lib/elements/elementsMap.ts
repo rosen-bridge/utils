@@ -1,10 +1,10 @@
-import type { ParseResult } from '../parsing/result.js';
-import type { ConditionElement } from './conditions/conditionElement.js';
-import type { EvaluatorElement } from './evaluators/evaluatorElement.js';
-import type { RuleElement } from './rules/ruleElement.js';
-import type { SchemaElement } from './schemaElement.js';
-import type { SchemaScope } from './schemaScope.js';
-import type { TypeElement } from './types/typeElement.js';
+import type { ParseResult } from '../parsing/result';
+import type { ConditionElement } from './conditions/conditionElement';
+import type { EvaluatorElement } from './evaluators/evaluatorElement';
+import type { RuleElement } from './rules/ruleElement';
+import type { SchemaElement } from './schemaElement';
+import type { SchemaScope } from './schemaScope';
+import type { TypeElement } from './types/typeElement';
 
 /**
  * A concrete element class creating a `T`, called like the `SchemaElement`

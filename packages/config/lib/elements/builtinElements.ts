@@ -1,24 +1,19 @@
-import { ParseResult } from '../parsing/result.js';
-import { findClasses } from '../utils/classes.js';
-import { failAt } from '../utils/errors.js';
-import { expectedKinds } from '../utils/format.js';
-import { isRecord } from '../utils/guards.js';
-import { ConditionElement } from './conditions/conditionElement.js';
-import * as conditions from './conditions/index.js';
-import {
-  ElementClass,
-  ElementsMap,
-  RuleClass,
-  TypeClass,
-} from './elementsMap.js';
-import { EvaluatorElement } from './evaluators/evaluatorElement.js';
-import * as evaluators from './evaluators/index.js';
-import * as rules from './rules/index.js';
-import { RefRule } from './rules/refRule.js';
-import { RuleElement } from './rules/ruleElement.js';
-import type { SchemaScope } from './schemaScope.js';
-import * as types from './types/index.js';
-import { TypeElement } from './types/typeElement.js';
+import { ParseResult } from '../parsing/result';
+import { findClasses } from '../utils/classes';
+import { failAt } from '../utils/errors';
+import { expectedKinds } from '../utils/format';
+import { isRecord } from '../utils/guards';
+import { ConditionElement } from './conditions/conditionElement';
+import * as conditions from './conditions/index';
+import { ElementClass, ElementsMap, RuleClass, TypeClass } from './elementsMap';
+import { EvaluatorElement } from './evaluators/evaluatorElement';
+import * as evaluators from './evaluators/index';
+import * as rules from './rules/index';
+import { RefRule } from './rules/refRule';
+import { RuleElement } from './rules/ruleElement';
+import type { SchemaScope } from './schemaScope';
+import * as types from './types/index';
+import { TypeElement } from './types/typeElement';
 
 /**
  * The built-in element classes: every concrete class exported from

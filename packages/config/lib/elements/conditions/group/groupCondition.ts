@@ -1,7 +1,7 @@
-import { CONDITION_KEYS } from '../../../constants/index.js';
-import { ParseResult, all, ok } from '../../../parsing/result.js';
-import { TypeElement } from '../../types/typeElement.js';
-import { ConditionElement } from '../conditionElement.js';
+import { CONDITION_KEYS } from '../../../constants/index';
+import { ParseResult, all, ok } from '../../../parsing/result';
+import { TypeElement } from '../../types/typeElement';
+import { ConditionElement } from '../conditionElement';
 
 /**
  * Base of the conditions that combine a non-empty list of conditions

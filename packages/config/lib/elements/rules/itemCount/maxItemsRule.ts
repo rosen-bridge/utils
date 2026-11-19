@@ -1,4 +1,4 @@
-import { ItemCountRule } from './itemCountRule.js';
+import { ItemCountRule } from './itemCountRule';
 
 /**
  * The `maxItems` rule: an array has at most `limit` items.

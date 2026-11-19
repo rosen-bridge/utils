@@ -1,15 +1,15 @@
-import { TYPE_KEYS } from '../../constants/index.js';
+import { TYPE_KEYS } from '../../constants/index';
 import type {
   EnvironmentNames,
   EnvironmentVariable,
-} from '../../generators/environmentNames.js';
-import type { TypeNames } from '../../generators/typeNames.js';
-import { Reading, withSubject, withValue } from '../../parsing/reading.js';
-import { ParseResult, all, fail, ok } from '../../parsing/result.js';
-import { indent, propertyKey } from '../../utils/format.js';
-import { isRecord } from '../../utils/guards.js';
-import { appendPointer } from '../../utils/pointer.js';
-import { TypeElement, TypeScriptResult } from './typeElement.js';
+} from '../../generators/environmentNames';
+import type { TypeNames } from '../../generators/typeNames';
+import { Reading, withSubject, withValue } from '../../parsing/reading';
+import { ParseResult, all, fail, ok } from '../../parsing/result';
+import { indent, propertyKey } from '../../utils/format';
+import { isRecord } from '../../utils/guards';
+import { appendPointer } from '../../utils/pointer';
+import { TypeElement, TypeScriptResult } from './typeElement';
 
 /**
  * The `object` type: named `properties`, each read by its own type, with an

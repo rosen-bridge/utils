@@ -1,4 +1,4 @@
-import { Bound, BoundRule } from './boundRule.js';
+import { Bound, BoundRule } from './boundRule';
 
 /**
  * The `eq` rule: a number or bigint equals the bound.

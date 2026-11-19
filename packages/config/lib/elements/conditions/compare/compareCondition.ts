@@ -1,9 +1,9 @@
-import { CONDITION_KEYS } from '../../../constants/index.js';
-import { ParseResult, combine, ok } from '../../../parsing/result.js';
-import { resolveCompared } from '../../../utils/evaluators.js';
-import { EvaluatorElement, Lookup } from '../../evaluators/evaluatorElement.js';
-import { TypeElement } from '../../types/typeElement.js';
-import { ConditionElement } from '../conditionElement.js';
+import { CONDITION_KEYS } from '../../../constants/index';
+import { ParseResult, combine, ok } from '../../../parsing/result';
+import { resolveCompared } from '../../../utils/evaluators';
+import { EvaluatorElement, Lookup } from '../../evaluators/evaluatorElement';
+import { TypeElement } from '../../types/typeElement';
+import { ConditionElement } from '../conditionElement';
 
 /**
  * Base of the conditions that compare two evaluators

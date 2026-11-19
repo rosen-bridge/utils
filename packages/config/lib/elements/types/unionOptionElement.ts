@@ -1,8 +1,8 @@
-import { ParseResult, combine, ok } from '../../parsing/result.js';
-import type { ConditionElement } from '../conditions/conditionElement.js';
-import { SchemaElement } from '../schemaElement.js';
-import type { SchemaScope } from '../schemaScope.js';
-import type { TypeElement } from './typeElement.js';
+import { ParseResult, combine, ok } from '../../parsing/result';
+import type { ConditionElement } from '../conditions/conditionElement';
+import { SchemaElement } from '../schemaElement';
+import type { SchemaScope } from '../schemaScope';
+import type { TypeElement } from './typeElement';
 
 /**
  * An option of a union (`{ option, when? }`): the type of the option and an

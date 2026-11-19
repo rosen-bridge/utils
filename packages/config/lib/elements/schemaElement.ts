@@ -1,9 +1,9 @@
-import { PATH_SEPARATOR, UNSAFE_NAMES } from '../constants/index.js';
-import { ErrorHandler } from '../parsing/errorHandler.js';
-import { ParseResult, combine, fail, ok } from '../parsing/result.js';
-import { appendPointer } from '../utils/pointer.js';
-import type { ElementClass } from './elementsMap.js';
-import type { SchemaScope } from './schemaScope.js';
+import { PATH_SEPARATOR, UNSAFE_NAMES } from '../constants/index';
+import { ErrorHandler } from '../parsing/errorHandler';
+import { ParseResult, combine, fail, ok } from '../parsing/result';
+import { appendPointer } from '../utils/pointer';
+import type { ElementClass } from './elementsMap';
+import type { SchemaScope } from './schemaScope';
 
 /**
  * Type of the clone hooks (`cloneMembers`, `cloneExtra`): copies the parsed

@@ -3,7 +3,7 @@ import {
   CAMEL_BOUNDARY_PATTERN,
   ENV_NAME_SEPARATOR,
   WORD_SEPARATOR_PATTERN,
-} from '../constants/index.js';
+} from '../constants/index';
 
 /**
  * Formats a scalar value for a message: strings as JSON, other values

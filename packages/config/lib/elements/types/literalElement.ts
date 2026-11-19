@@ -1,19 +1,19 @@
-import { TYPE_KEYS } from '../../constants/index.js';
+import { TYPE_KEYS } from '../../constants/index';
 import type {
   EnvironmentNames,
   EnvironmentVariable,
-} from '../../generators/environmentNames.js';
+} from '../../generators/environmentNames';
 import {
   Reading,
   createReading,
   withSubject,
   withValue,
-} from '../../parsing/reading.js';
-import { ParseResult, fail, ok } from '../../parsing/result.js';
-import { formatValue } from '../../utils/format.js';
-import { ScalarElement } from './scalar/scalarElement.js';
-import { SCALAR_TYPES } from './scalar/scalarTypes.js';
-import { TypeElement, TypeScriptResult } from './typeElement.js';
+} from '../../parsing/reading';
+import { ParseResult, fail, ok } from '../../parsing/result';
+import { formatValue } from '../../utils/format';
+import { ScalarElement } from './scalar/scalarElement';
+import { SCALAR_TYPES } from './scalar/scalarTypes';
+import { TypeElement, TypeScriptResult } from './typeElement';
 
 /**
  * A value a `literal` type can have.

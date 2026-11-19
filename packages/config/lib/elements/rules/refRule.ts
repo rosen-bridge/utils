@@ -1,5 +1,5 @@
-import { ParseResult, fail, ok } from '../../parsing/result.js';
-import { RuleElement } from './ruleElement.js';
+import { ParseResult, fail, ok } from '../../parsing/result';
+import { RuleElement } from './ruleElement';
 
 /**
  * A reference to a defined rule (`{ ref: 'name', when? }`): the rule defined

@@ -1,5 +1,5 @@
-import { Lookup } from '../../evaluators/evaluatorElement.js';
-import { OrderCondition } from './orderCondition.js';
+import { Lookup } from '../../evaluators/evaluatorElement';
+import { OrderCondition } from './orderCondition';
 
 /**
  * The `gte` condition (`{ kind: 'gte', left, right }`): both sides are

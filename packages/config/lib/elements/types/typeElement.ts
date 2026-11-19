@@ -1,10 +1,10 @@
-import { TYPE_KEYS } from '../../constants/index.js';
+import { TYPE_KEYS } from '../../constants/index';
 import type {
   EnvironmentNames,
   EnvironmentVariable,
-} from '../../generators/environmentNames.js';
-import type { TypeNames } from '../../generators/typeNames.js';
-import { Reading, createReading, withValue } from '../../parsing/reading.js';
+} from '../../generators/environmentNames';
+import type { TypeNames } from '../../generators/typeNames';
+import { Reading, createReading, withValue } from '../../parsing/reading';
 import {
   ParseResult,
   SchemaError,
@@ -12,12 +12,12 @@ import {
   combine,
   fail,
   ok,
-} from '../../parsing/result.js';
-import { splitPointer } from '../../utils/pointer.js';
-import type { TypeClass } from '../elementsMap.js';
-import { RuleElement } from '../rules/ruleElement.js';
-import { CloneHook, SchemaElement } from '../schemaElement.js';
-import type { SchemaScope } from '../schemaScope.js';
+} from '../../parsing/result';
+import { splitPointer } from '../../utils/pointer';
+import type { TypeClass } from '../elementsMap';
+import type { RuleElement } from '../rules/ruleElement';
+import { CloneHook, SchemaElement } from '../schemaElement';
+import type { SchemaScope } from '../schemaScope';
 
 /**
  * The TypeScript of a type: `name` is the type to write where it is used

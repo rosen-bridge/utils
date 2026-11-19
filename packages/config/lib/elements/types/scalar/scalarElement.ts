@@ -1,12 +1,12 @@
-import { TYPE_KEYS } from '../../../constants/index.js';
+import { TYPE_KEYS } from '../../../constants/index';
 import type {
   EnvironmentNames,
   EnvironmentVariable,
-} from '../../../generators/environmentNames.js';
-import { Reading } from '../../../parsing/reading.js';
-import { ParseResult, ok } from '../../../parsing/result.js';
-import { allowedByAll } from '../../../utils/rules.js';
-import { TypeElement, TypeScriptResult } from '../typeElement.js';
+} from '../../../generators/environmentNames';
+import { Reading } from '../../../parsing/reading';
+import { ParseResult, ok } from '../../../parsing/result';
+import { allowedByAll } from '../../../utils/rules';
+import { TypeElement, TypeScriptResult } from '../typeElement';
 
 /**
  * Base of the scalar types (`string`, `number`, `bigint`, `boolean`). A

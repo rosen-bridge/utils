@@ -1,8 +1,8 @@
-import { CONDITION_KEYS } from '../../constants/index.js';
-import { ParseResult, ok } from '../../parsing/result.js';
-import { PathElement } from '../evaluators/pathElement.js';
-import { TypeElement } from '../types/typeElement.js';
-import { ConditionElement } from './conditionElement.js';
+import { CONDITION_KEYS } from '../../constants/index';
+import { ParseResult, ok } from '../../parsing/result';
+import { PathElement } from '../evaluators/pathElement';
+import { TypeElement } from '../types/typeElement';
+import { ConditionElement } from './conditionElement';
 
 /**
  * The `exists` condition (`{ kind: 'exists', operand: { path } }`): the

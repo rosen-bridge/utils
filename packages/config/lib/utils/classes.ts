@@ -1,5 +1,5 @@
-import type { ElementClass } from '../elements/elementsMap.js';
-import type { SchemaElement } from '../elements/schemaElement.js';
+import type { ElementClass } from '../elements/elementsMap';
+import type { SchemaElement } from '../elements/schemaElement';
 
 /**
  * The classes of `module` that extend `base` and implement `kind` on their

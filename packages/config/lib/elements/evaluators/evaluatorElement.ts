@@ -1,6 +1,6 @@
-import { ParseResult } from '../../parsing/result.js';
-import { SchemaElement } from '../schemaElement.js';
-import { TypeElement } from '../types/typeElement.js';
+import { ParseResult } from '../../parsing/result';
+import { SchemaElement } from '../schemaElement';
+import type { TypeElement } from '../types/typeElement';
 
 /**
  * The value an evaluator finds in a configuration.

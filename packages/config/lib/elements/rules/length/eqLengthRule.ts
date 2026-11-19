@@ -1,4 +1,4 @@
-import { LengthRule } from './lengthRule.js';
+import { LengthRule } from './lengthRule';
 
 /**
  * The `eqLength` rule: a string has exactly `limit` code points.

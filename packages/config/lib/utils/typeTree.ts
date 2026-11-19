@@ -1,9 +1,9 @@
-import { ANY_INDEX, INDEX_PATTERN } from '../constants/index.js';
-import { ArrayElement } from '../elements/types/arrayElement.js';
-import { ObjectElement } from '../elements/types/objectElement.js';
-import { RefElement } from '../elements/types/refElement.js';
-import type { TypeElement } from '../elements/types/typeElement.js';
-import { UnionElement } from '../elements/types/unionElement.js';
+import { ANY_INDEX, INDEX_PATTERN } from '../constants/index';
+import { ArrayElement } from '../elements/types/arrayElement';
+import { ObjectElement } from '../elements/types/objectElement';
+import { RefElement } from '../elements/types/refElement';
+import type { TypeElement } from '../elements/types/typeElement';
+import { UnionElement } from '../elements/types/unionElement';
 
 /**
  * The type a reference points to, through any number of references.

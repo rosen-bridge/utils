@@ -1,4 +1,4 @@
-import { ItemCountRule } from './itemCountRule.js';
+import { ItemCountRule } from './itemCountRule';
 
 /**
  * The `eqItems` rule: an array has exactly `limit` items.

@@ -4,15 +4,15 @@ import {
   INDEX_PATTERN,
   LEADING_DOTS_PATTERN,
   PATH_SEPARATOR,
-} from '../../constants/index.js';
-import { createReading } from '../../parsing/reading.js';
-import { ParseResult, ok } from '../../parsing/result.js';
-import { isRecord } from '../../utils/guards.js';
-import { expand, step, unwrap } from '../../utils/typeTree.js';
-import { LiteralElement } from '../types/literalElement.js';
-import { ScalarElement } from '../types/scalar/scalarElement.js';
-import { TypeElement } from '../types/typeElement.js';
-import { EvaluatorElement, Lookup } from './evaluatorElement.js';
+} from '../../constants/index';
+import { createReading } from '../../parsing/reading';
+import { ParseResult, ok } from '../../parsing/result';
+import { isRecord } from '../../utils/guards';
+import { expand, step, unwrap } from '../../utils/typeTree';
+import { LiteralElement } from '../types/literalElement';
+import { ScalarElement } from '../types/scalar/scalarElement';
+import type { TypeElement } from '../types/typeElement';
+import { EvaluatorElement, Lookup } from './evaluatorElement';
 
 /**
  * The type a value of `type` is compared as: the scalar type of the value of

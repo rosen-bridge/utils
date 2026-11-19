@@ -5,16 +5,12 @@ import { resolve } from 'node:path';
 
 import { AbstractLogger, DummyLogger } from '@rosen-bridge/abstract-logger';
 
-import {
-  HASH_CONSTANT,
-  HASH_PATTERN,
-  SchemaFormat,
-} from './constants/index.js';
-import { SchemaDocument } from './elements/document/schemaDocument.js';
-import { ParseResult, SchemaError, fail, ok } from './parsing/result.js';
-import { writeConfigFile } from './utils/configFile.js';
-import { isRecord } from './utils/guards.js';
-import { readSchemaFile } from './utils/schemaFile.js';
+import { HASH_CONSTANT, HASH_PATTERN, SchemaFormat } from './constants/index';
+import { SchemaDocument } from './elements/document/schemaDocument';
+import { ParseResult, SchemaError, fail, ok } from './parsing/result';
+import { writeConfigFile } from './utils/configFile';
+import { isRecord } from './utils/guards';
+import { readSchemaFile } from './utils/schemaFile';
 
 /**
  * Loads `config` with CommonJS, so `buildConfig` can load it synchronously

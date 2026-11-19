@@ -1,5 +1,5 @@
-import { Lookup } from '../../evaluators/evaluatorElement.js';
-import { CompareCondition } from './compareCondition.js';
+import { Lookup } from '../../evaluators/evaluatorElement';
+import { CompareCondition } from './compareCondition';
 
 /**
  * The `neq` condition (`{ kind: 'neq', left, right }`): exactly `not` around

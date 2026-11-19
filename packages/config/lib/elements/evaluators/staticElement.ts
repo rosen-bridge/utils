@@ -1,8 +1,8 @@
-import { createReading } from '../../parsing/reading.js';
-import { ParseResult, ok } from '../../parsing/result.js';
-import { ScalarElement } from '../types/scalar/scalarElement.js';
-import { TypeElement } from '../types/typeElement.js';
-import { EvaluatorElement, Lookup } from './evaluatorElement.js';
+import { createReading } from '../../parsing/reading';
+import { ParseResult, ok } from '../../parsing/result';
+import { ScalarElement } from '../types/scalar/scalarElement';
+import { TypeElement } from '../types/typeElement';
+import { EvaluatorElement, Lookup } from './evaluatorElement';
 
 /**
  * A static value (`{ value: 8080 }`), written like a value of the type it is

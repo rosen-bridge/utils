@@ -1,5 +1,5 @@
-import { appendPointer } from '../utils/pointer.js';
-import { ParseResult, SchemaError, fail, ok } from './result.js';
+import { appendPointer } from '../utils/pointer';
+import { ParseResult, SchemaError, fail, ok } from './result';
 
 /**
  * Base of the classes that report problems at their place in the schema

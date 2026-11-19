@@ -1,3 +1,3 @@
-export * from './evaluatorElement.js';
-export * from './pathElement.js';
-export * from './staticElement.js';
+export * from './evaluatorElement';
+export * from './pathElement';
+export * from './staticElement';

@@ -6,14 +6,14 @@ import {
   IMPORT_NAME_PATTERN,
   RELATIVE_IMPORT_PREFIXES,
   URL_SCHEME_PATTERN,
-} from '../../constants/index.js';
-import { ParseResult, combine, fail, ok } from '../../parsing/result.js';
-import { isRecord } from '../../utils/guards.js';
-import { readSchemaFile } from '../../utils/schemaFile.js';
-import { SchemaElement } from '../schemaElement.js';
-import type { SchemaScope } from '../schemaScope.js';
-import { ImportGraph } from './importGraph.js';
-import { SchemaDocument } from './schemaDocument.js';
+} from '../../constants/index';
+import { ParseResult, combine, fail, ok } from '../../parsing/result';
+import { isRecord } from '../../utils/guards';
+import { readSchemaFile } from '../../utils/schemaFile';
+import { SchemaElement } from '../schemaElement';
+import type { SchemaScope } from '../schemaScope';
+import { ImportGraph } from './importGraph';
+import { SchemaDocument } from './schemaDocument';
 
 /**
  * An import of a schema document (`{ from, as }`): the file `from`, relative

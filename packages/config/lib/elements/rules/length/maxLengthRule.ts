@@ -1,4 +1,4 @@
-import { LengthRule } from './lengthRule.js';
+import { LengthRule } from './lengthRule';
 
 /**
  * The `maxLength` rule: a string has at most `limit` code points.

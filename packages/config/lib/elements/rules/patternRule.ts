@@ -1,11 +1,7 @@
-import {
-  PATTERN_FLAGS,
-  RULE_KEYS,
-  UNICODE_FLAG,
-} from '../../constants/index.js';
-import { ParseResult, all, combine, ok } from '../../parsing/result.js';
-import { isString } from '../../utils/guards.js';
-import { RuleElement } from './ruleElement.js';
+import { PATTERN_FLAGS, RULE_KEYS, UNICODE_FLAG } from '../../constants/index';
+import { ParseResult, all, combine, ok } from '../../parsing/result';
+import { isString } from '../../utils/guards';
+import { RuleElement } from './ruleElement';
 
 /**
  * The `pattern` rule (`{ kind: 'pattern', pattern: '^[a-z]+$' }`): a string

@@ -1,4 +1,4 @@
-import { LengthRule } from './lengthRule.js';
+import { LengthRule } from './lengthRule';
 
 /**
  * The `minLength` rule: a string has at least `limit` code points.

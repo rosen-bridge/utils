@@ -1,12 +1,12 @@
-import { RULE_KEYS } from '../../constants/index.js';
-import { createReading } from '../../parsing/reading.js';
-import { ParseResult, all, fail, ok } from '../../parsing/result.js';
-import { formatValue } from '../../utils/format.js';
-import { isNonEmptyArray } from '../../utils/guards.js';
-import { ScalarElement } from '../types/scalar/scalarElement.js';
-import { SCALAR_TYPES } from '../types/scalar/scalarTypes.js';
-import type { TypeElement } from '../types/typeElement.js';
-import { RuleElement } from './ruleElement.js';
+import { RULE_KEYS } from '../../constants/index';
+import { createReading } from '../../parsing/reading';
+import { ParseResult, all, fail, ok } from '../../parsing/result';
+import { formatValue } from '../../utils/format';
+import { isNonEmptyArray } from '../../utils/guards';
+import { ScalarElement } from '../types/scalar/scalarElement';
+import { SCALAR_TYPES } from '../types/scalar/scalarTypes';
+import type { TypeElement } from '../types/typeElement';
+import { RuleElement } from './ruleElement';
 
 /**
  * A value an `enum` rule can list.
